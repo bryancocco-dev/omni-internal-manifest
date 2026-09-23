@@ -1,0 +1,850 @@
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     plan-c — Plan page, BOTTOM (Figma 4771:78604 bottom + 4771:82411)
+     Modules: Channel & Partner Plan (4771:79699) · Plan Comparison
+     (4771:82411, folded 4771:82412 / unfolded 4771:83115) · Sources
+     (4771:79703). Prefix: planc-. Scoped entirely to this fragment.
+     See PLAN.md.
+     ═══════════════════════════════════════════════════════════════ */
+
+  .planc-root { display: flex; flex-direction: column; gap: 32px; }
+
+  .planc-card {
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+
+  .planc-eyebrow {
+    display: flex; align-items: center;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin: 0 0 14px;
+  }
+  .planc-spark { color: var(--accent); margin-right: 6px; font-size: 12px; }
+
+  /* ---------------------------------------------------------------
+     Channel & Partner Plan
+     --------------------------------------------------------------- */
+  .planc-table-scroll { overflow-x: auto; }
+  .planc-table { min-width: 900px; }
+
+  .planc-gridrow {
+    display: grid;
+    grid-template-columns: minmax(250px, 2fr) 84px 108px 112px 100px 96px 66px 132px;
+    column-gap: 10px;
+    align-items: center;
+  }
+
+  .planc-thead {
+    padding: 0 0 10px;
+    border-bottom: 0.5px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .planc-th {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .planc-th-lead { justify-content: flex-start; }
+  .planc-th:not(.planc-th-lead) { justify-content: flex-end; }
+  .planc-th-label { white-space: nowrap; }
+
+  .planc-info {
+    flex: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px; height: 14px;
+    padding: 0; margin: 0; border: 0; border-radius: 50%;
+    background: none;
+    color: var(--text-subtle);
+    opacity: 0.75;
+    cursor: help;
+  }
+  .planc-info svg { width: 11px; height: 11px; display: block; }
+  .planc-info:hover, .planc-info:focus-visible { opacity: 1; color: var(--accent); }
+  .planc-info:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 2px; border-radius: 50%; }
+  .planc-info[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute; z-index: 6; top: calc(100% + 8px);
+    right: 0; left: auto;
+    width: 220px; padding: 10px 12px; border-radius: 8px;
+    background: var(--panel-bg-3); border: 0.5px solid var(--line);
+    box-shadow: 0 8px 20px var(--shadow-card);
+    color: var(--text-body); font-size: 11px; font-weight: 400; line-height: 1.5;
+    text-align: left; text-transform: none; letter-spacing: normal; white-space: normal;
+    opacity: 0; pointer-events: none; transform: translateY(-4px);
+    transition: opacity 180ms cubic-bezier(.16,1,.3,1), transform 180ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-info[data-align="left"][data-tip]::after { right: auto; left: 0; }
+  .planc-info[data-align="center"][data-tip]::after { right: auto; left: 50%; transform: translateX(-50%) translateY(-4px); }
+  .planc-info[data-tip]:hover::after, .planc-info[data-tip]:focus-visible::after {
+    opacity: 1; transform: translateY(0);
+  }
+  .planc-info[data-align="center"][data-tip]:hover::after,
+  .planc-info[data-align="center"][data-tip]:focus-visible::after { transform: translateX(-50%) translateY(0); }
+  .planc-root.planc-scrolling .planc-info[data-tip]::after { opacity: 0 !important; }
+
+  .planc-ghead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 12px 10px;
+    margin: 4px -12px 0;
+    border-radius: 8px;
+    cursor: default;
+    transition: background 200ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-ghead:hover { background: var(--hover-tint); }
+  .planc-partner:first-of-type + .planc-ghead,
+  .planc-ghead { border-top: 0.5px solid var(--line); }
+  .planc-table > .planc-ghead:first-of-type { border-top: none; margin-top: 0; }
+  /* no doubled hairlines: any group head directly after the column
+     header row drops its own top rule (the thead's bottom rule serves) */
+  .planc-thead + .planc-ghead,
+  .planc-thead + * > .planc-ghead:first-child { border-top: none; }
+  .planc-gname {
+    display: flex; align-items: baseline; gap: 9px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--text-strong);
+    flex: none;
+  }
+  .planc-gbar { width: 3px; height: 13px; border-radius: 2px; background: var(--bar, var(--accent)); flex: none; }
+  .planc-gpct { font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-subtle); }
+  .planc-gmeta { display: flex; align-items: flex-start; gap: 22px; max-width: 620px; }
+  .planc-grationale { margin: 0; font-style: italic; font-size: 11.5px; line-height: 1.5; color: var(--text-subtle); text-align: right; }
+  .planc-gsubtotal { margin: 0; font-size: 14px; font-weight: 400; color: var(--ms-pos); white-space: nowrap; }
+
+  .planc-partner { border-bottom: 0.5px solid var(--line); }
+  .planc-partner:last-child { border-bottom: none; }
+  .planc-prow {
+    padding: 12px 12px; margin: 0 -12px;
+    border-radius: 8px;
+    transition: background 200ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-prow:hover { background: var(--hover-tint); }
+
+  .planc-toggle {
+    display: flex; align-items: center; gap: 10px;
+    background: none; border: 0; padding: 0; margin: 0;
+    font: inherit; color: inherit; text-align: left;
+    cursor: pointer; min-width: 0;
+  }
+  .planc-chev {
+    flex: none; width: 12px; height: 12px; color: var(--text-subtle);
+    transform: rotate(-90deg);
+    transition: transform 380ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-toggle[aria-expanded="true"] .planc-chev { transform: rotate(0deg); }
+
+  .planc-logo {
+    flex: none; width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel-bg-3);
+    border: 0.5px solid var(--line);
+  }
+  .planc-logo img { width: 16px; height: 16px; object-fit: contain; display: block; }
+  .planc-pname { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .planc-pname b { font-size: 13.5px; font-weight: 600; color: var(--text-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .planc-pname small { font-size: 11px; color: var(--text-subtle); }
+
+  .planc-cell { font-size: 12.5px; color: var(--text-body); text-align: right; font-variant-numeric: tabular-nums; }
+  .planc-idx {
+    display: inline-flex; padding: 2px 8px; border-radius: 20px;
+    background: color-mix(in srgb, var(--ms-pos) 16%, transparent);
+    color: var(--ms-pos); font-size: 11px; font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+  .planc-priority { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+  .planc-priority b { display: block; font-size: 13.5px; font-weight: 400; color: var(--text-strong); font-variant-numeric: tabular-nums; }
+  .planc-priority-track {
+    width: 100%; max-width: 58px; height: 3px; border-radius: 2px;
+    background: var(--line); overflow: hidden;
+  }
+  .planc-priority-track i {
+    display: block; height: 100%;
+    width: var(--w, 0%);
+    background: var(--ms-pos); border-radius: 2px; font-style: normal;
+    transform-origin: left center;
+  }
+  .planc-budget { font-weight: 400; color: var(--text-strong); font-variant-numeric: tabular-nums; }
+
+  .planc-why {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 11px; border-radius: 20px;
+    border: 1px solid var(--accent); background: transparent;
+    color: var(--accent); font-size: 10.5px; font-weight: 600;
+    cursor: pointer;
+    transition: background 200ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-why:hover, .planc-why:focus-visible { background: var(--accent-soft); }
+  .planc-why-chev { width: 9px; height: 9px; transition: transform 200ms cubic-bezier(.16,1,.3,1); }
+  .planc-why[aria-expanded="true"] .planc-why-chev { transform: rotate(180deg); }
+
+  .planc-evidence {
+    height: 0; overflow: hidden;
+    transition: height 420ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-evidence.is-open { height: auto; overflow: visible; }
+  .planc-evidence-inner {
+    margin: 0 0 14px; padding: 10px 14px;
+    border-left: 2px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    max-width: 640px;
+  }
+  .planc-evidence-label {
+    margin: 0 0 4px; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-subtle);
+  }
+  .planc-evidence-text { margin: 0; font-size: 12px; line-height: 1.6; color: var(--text-body); }
+
+  .planc-subrows {
+    display: flex; flex-direction: column;
+    height: 0; overflow: hidden;
+    transition: height 420ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-subrows.is-open { height: auto; overflow: visible; }
+  .planc-srow {
+    padding: 10px 12px; margin: 0 -12px; border-radius: 8px;
+    border-top: 0.5px dashed var(--line);
+    opacity: 1; transform: none;
+    transition:
+      background 200ms cubic-bezier(.16,1,.3,1),
+      opacity 260ms cubic-bezier(.16,1,.3,1),
+      transform 260ms cubic-bezier(.16,1,.3,1);
+  }
+  .planc-srow:hover { background: var(--hover-tint); }
+  .planc-subrows:not(.is-open) .planc-srow { opacity: 0; transform: translateY(-4px); transition: none; }
+  .planc-subrows.is-open .planc-srow:nth-child(1) { transition-delay: 70ms; }
+  .planc-subrows.is-open .planc-srow:nth-child(2) { transition-delay: 110ms; }
+  .planc-subrows.is-open .planc-srow:nth-child(3) { transition-delay: 150ms; }
+  .planc-subrows.is-open .planc-srow:nth-child(4) { transition-delay: 190ms; }
+  .planc-srow-main { display: flex; align-items: flex-start; gap: 9px; min-width: 0; padding-left: 38px; }
+  .planc-dot { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--ms-chart-4); margin-top: 6px; }
+  .planc-srow-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .planc-srow-name { font-size: 12.5px; font-weight: 600; color: var(--text-body); display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .planc-srow-name small { font-size: 11px; font-weight: 400; color: var(--text-subtle); }
+  .planc-tag {
+    display: inline-flex; padding: 2px 7px; border-radius: 4px;
+    background: var(--panel-bg-3); color: var(--text-subtle);
+    font-size: 10px; font-weight: 500; font-style: normal;
+  }
+  .planc-srow-desc { font-size: 11.5px; color: var(--text-subtle); line-height: 1.5; }
+  .planc-grp { font-size: 11px; color: var(--text-subtle); }
+
+  body.ms-motion-off .planc-srow,
+  body.ms-motion-off .planc-subrows:not(.is-open) .planc-srow {
+    transition: none !important; opacity: 1 !important; transform: none !important; transition-delay: 0s !important;
+  }
+  body.ms-motion-off .planc-subrows,
+  body.ms-motion-off .planc-evidence,
+  body.ms-motion-off .planc-chev,
+  body.ms-motion-off .planc-why-chev,
+  body.ms-motion-off .planc-info[data-tip]::after { transition: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .planc-srow,
+    .planc-subrows:not(.is-open) .planc-srow { transition: none !important; opacity: 1 !important; transform: none !important; transition-delay: 0s !important; }
+    .planc-subrows, .planc-evidence, .planc-chev, .planc-why-chev, .planc-info[data-tip]::after { transition: none !important; }
+  }
+
+  /* ---------------------------------------------------------------
+     Plan Comparison
+     --------------------------------------------------------------- */
+  .planc-compare-lead { margin: 0 0 18px; font-size: 13px; line-height: 1.6; color: var(--text-body); }
+  .planc-compare-lead strong { color: var(--text-strong); font-weight: 600; }
+
+  .planc-wincards {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-bottom: 16px;
+  }
+  .planc-wincard {
+    border-radius: 12px; padding: 14px 16px;
+    background: color-mix(in srgb, var(--tint) 14%, var(--card-bg) 86%);
+    border: 0.5px solid color-mix(in srgb, var(--tint) 45%, var(--line) 55%);
+  }
+  .planc-wincard-title { margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: var(--tint); }
+  .planc-wincard-body { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-body); }
+
+  .planc-disclosure {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; margin-top: 14px; padding: 0;
+    background: none; border: 0; font: inherit;
+    font-size: 13px; font-weight: 500; color: var(--text-body);
+    cursor: pointer;
+  }
+  .planc-disclosure .planc-chev { transform: rotate(0deg); }
+  .planc-disclosure[aria-expanded="true"] .planc-chev { transform: rotate(180deg); }
+
+  .planc-metrictable { margin-top: 16px; padding-top: 16px; border-top: 0.5px solid var(--line); }
+  .planc-mrow {
+    display: grid;
+    grid-template-columns: minmax(130px, 1fr) minmax(140px, 1.15fr) minmax(140px, 1.15fr) minmax(140px, 1.15fr) minmax(190px, 1.7fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .planc-mrow-head { font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-subtle); margin-bottom: 12px; }
+  .planc-mrow-head span:nth-child(2) { color: var(--ms-chart-3); }
+  .planc-mrow-head span:nth-child(3) { color: var(--ms-chart-4); }
+  .planc-mrow-head span:nth-child(4) { color: var(--ms-chart-5); }
+  .planc-mcell {
+    border: 0.5px solid var(--line); border-radius: 8px;
+    background: color-mix(in srgb, var(--panel-bg-3) 50%, var(--card-bg));
+    padding: 10px 12px;
+    font-size: 12.5px; color: var(--text-body);
+    display: flex; align-items: center;
+  }
+  .planc-mname { font-weight: 600; color: var(--text-strong); }
+  .planc-mval { font-weight: 400; color: var(--text-strong); }
+  .planc-mval em { margin-left: 6px; font-style: normal; font-size: 10.5px; font-weight: 400; color: var(--ms-pos); }
+  .planc-mval.planc-mwin {
+    border: 1.5px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .planc-mread { font-size: 11.5px; color: var(--text-subtle); line-height: 1.4; }
+
+  /* ---------------------------------------------------------------
+     Sources
+     --------------------------------------------------------------- */
+  .planc-sources-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .planc-scol { display: flex; flex-direction: column; gap: 14px; }
+  .planc-sctitle { margin: 0; font-size: 15px; font-weight: 600; color: var(--text-strong); }
+  .planc-slist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .planc-slist li {
+    display: flex; gap: 14px; padding: 12px 0;
+    border-top: 0.5px solid var(--line);
+    font-size: 11.5px;
+  }
+  .planc-slist li:first-child { border-top: none; padding-top: 0; }
+  .planc-snum { flex: none; font-weight: 400; color: var(--text-strong); }
+  .planc-sdoc { margin: 0 0 2px; color: var(--text-body); line-height: 1.5; }
+  .planc-sdoc.planc-slink { color: var(--accent); cursor: pointer; }
+  .planc-sdoc.planc-slink:hover { text-decoration: underline; }
+  .planc-sdoc a { color: var(--accent); text-decoration: none; }
+  .planc-sdoc a:hover { text-decoration: underline; }
+  .planc-svkn { margin: 0; color: var(--text-body); line-height: 1.5; }
+
+  @media (max-width: 860px) {
+    .planc-wincards { grid-template-columns: repeat(2, 1fr); }
+    .planc-sources-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ═══ OUR-WORLD PASS (Bryan, 2026-08-05) — Swiss integration over
+     the original layout, mirroring aud-list's pass. Structure/copy
+     retained; typography, hairlines, and restraint are ours. Delete
+     this block to restore the original treatment. ═══ */
+
+  /* module eyebrow: mono uppercase label, hairline under the real
+     header row (matches aud-list's data-dictionary heading) */
+  .planc-eyebrow {
+    font: 500 10px/1.6 var(--ms-mono);
+    letter-spacing: 0.14em;
+    padding-bottom: 10px;
+  }
+
+  /* module-root cards sit directly on the matte — their own border
+     duplicates the matte edge. Side-by-side grid cards (Sources
+     columns) keep their hairline since the matte doesn't frame them
+     individually. */
+  .planc-card { border: none; border-radius: 8px; }
+  .planc-scol.planc-card { border: 0.5px solid var(--line); }
+  .planc-wincard { border-radius: 8px; }
+
+  /* inner box: calmer radius, hairline retained */
+  .planc-mcell { border-radius: 8px; }
+
+  /* big stat numeral: tabular alignment */
+  .planc-gsubtotal { font-variant-numeric: tabular-nums; }
+</style>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="planc-ico-chev" viewBox="0 0 12 12">
+    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="planc-ico-info" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <path d="M8 7.3V11.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    <circle cx="8" cy="4.9" r="0.9" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<div class="planc-root">
+
+  <!-- ============ Channel & Partner Plan ============ -->
+  <section class="planc-cpplan" data-reveal>
+    <p class="planc-eyebrow">Channel &amp; Partner Plan</p>
+    <div class="planc-card planc-table-scroll">
+      <div class="planc-table">
+
+        <div class="planc-gridrow planc-thead">
+          <span class="planc-th planc-th-lead">Partner / Format / Program</span>
+          <span class="planc-th">
+            <span class="planc-th-label">IDX</span>
+            <button type="button" class="planc-info" data-tip="Index vs. category average — 100 = average, higher = stronger affinity." aria-label="What does IDX mean?"><svg aria-hidden="true"><use href="#planc-ico-info"></use></svg></button>
+          </span>
+          <span class="planc-th">
+            <span class="planc-th-label">CPM/CPP</span>
+            <button type="button" class="planc-info" data-tip="Cost per thousand impressions, or cost per rating point for broadcast-style buys." aria-label="What does CPM/CPP mean?"><svg aria-hidden="true"><use href="#planc-ico-info"></use></svg></button>
+          </span>
+          <span class="planc-th">
+            <span class="planc-th-label">Aud. Reach</span>
+            <button type="button" class="planc-info" data-tip="Estimated unique audience reached within the flight window." aria-label="What does audience reach mean?"><svg aria-hidden="true"><use href="#planc-ico-info"></use></svg></button>
+          </span>
+          <span class="planc-th">
+            <span class="planc-th-label">Priority</span>
+            <button type="button" class="planc-info" data-tip="Composite score (0–100) blending index, reach, and evidence strength." aria-label="What does priority mean?"><svg aria-hidden="true"><use href="#planc-ico-info"></use></svg></button>
+          </span>
+          <span class="planc-th">Budget $</span>
+          <span class="planc-th">Budget %</span>
+          <span class="planc-th">Evidence</span>
+        </div>
+
+        <!-- ONLINE VIDEO -->
+        <div class="planc-ghead" style="--bar:var(--accent)">
+          <p class="planc-gname"><span class="planc-gbar"></span>Online Video<span class="planc-gpct">35% of plan</span></p>
+          <div class="planc-gmeta">
+            <p class="planc-grationale">Performance Enthusiasts over-index 4.4x on automotive video. Brand recall +41% vs display.</p>
+            <p class="planc-gsubtotal" data-countup>$169,750</p>
+          </div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="true" aria-controls="planc-sub-cd">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-youtube.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>Car and Driver (YouTube)</b><small>3 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">184 IDX</span></span>
+            <span class="planc-cell">$18.50</span>
+            <span class="planc-cell">520K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>94</b><span class="planc-priority-track"><i style="--w:94%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$97,000</span>
+            <span class="planc-cell">20%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-cd">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-cd">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Performance Enthusiasts over-index 4.4x on automotive video. Brand recall +41% vs display.</p>
+            </div>
+          </div>
+          <div class="planc-subrows is-open" id="planc-sub-cd">
+            <div class="planc-gridrow planc-srow">
+              <div class="planc-srow-main">
+                <span class="planc-dot"></span>
+                <div class="planc-srow-text">
+                  <span class="planc-srow-name">30s non-skip <em class="planc-tag">Pre-roll</em><small>3 prog.</small></span>
+                  <span class="planc-srow-desc">Primary brand awareness format. Premium placement.</span>
+                </div>
+              </div>
+              <span class="planc-cell"></span><span class="planc-cell"></span><span class="planc-cell"></span><span class="planc-cell"></span>
+              <span class="planc-cell planc-budget">$48,500</span>
+              <span class="planc-cell">50%</span>
+              <span class="planc-cell planc-grp">GRP 18.8</span>
+            </div>
+            <div class="planc-gridrow planc-srow">
+              <div class="planc-srow-main">
+                <span class="planc-dot"></span>
+                <div class="planc-srow-text">
+                  <span class="planc-srow-name">6s bumper <em class="planc-tag">Bumper</em></span>
+                  <span class="planc-srow-desc">Frequency driver and recall reinforcement.</span>
+                </div>
+              </div>
+              <span class="planc-cell"></span><span class="planc-cell"></span><span class="planc-cell"></span><span class="planc-cell"></span>
+              <span class="planc-cell planc-budget">$29,100</span>
+              <span class="planc-cell"></span>
+              <span class="planc-cell planc-grp">GRP 11.3</span>
+            </div>
+            <div class="planc-gridrow planc-srow">
+              <div class="planc-srow-main">
+                <span class="planc-dot"></span>
+                <div class="planc-srow-text">
+                  <span class="planc-srow-name">End card CTA <em class="planc-tag">Interactive</em></span>
+                  <span class="planc-srow-desc">Drives configurator traffic and test-drive sign-up.</span>
+                </div>
+              </div>
+              <span class="planc-cell"></span><span class="planc-cell"></span><span class="planc-cell"></span><span class="planc-cell"></span>
+              <span class="planc-cell planc-budget">$19,400</span>
+              <span class="planc-cell"></span>
+              <span class="planc-cell planc-grp">GRP 7.5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-mt">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-motortrend.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>Motor Trend+</b><small>2 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">176 IDX</span></span>
+            <span class="planc-cell">$32.00</span>
+            <span class="planc-cell">420K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>88</b><span class="planc-priority-track"><i style="--w:88%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$72,750</span>
+            <span class="planc-cell">15%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-mt">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-mt">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Performance Enthusiasts over-index 4.4x on automotive video. Brand recall +41% vs display.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-mt"></div>
+        </div>
+
+        <!-- AUDIO -->
+        <div class="planc-ghead" style="--bar:var(--ms-chart-6)">
+          <p class="planc-gname"><span class="planc-gbar"></span>Audio<span class="planc-gpct">25% of plan</span></p>
+          <div class="planc-gmeta">
+            <p class="planc-grationale">Performance Enthusiasts over-index 158 IDX on automotive podcasts. Host-read 2.1x brand recall.</p>
+            <p class="planc-gsubtotal" data-countup>$121,250</p>
+          </div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-st">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/brand-logos/spotify.svg" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>The Smoking Tire (Spotify)</b><small>2 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">168 IDX</span></span>
+            <span class="planc-cell">$42.00</span>
+            <span class="planc-cell">245K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>85</b><span class="planc-priority-track"><i style="--w:85%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$72,750</span>
+            <span class="planc-cell">15%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-st">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-st">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Performance Enthusiasts over-index 158 IDX on automotive podcasts. Host-read 2.1x brand recall.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-st"></div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-br">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-bloomberg.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>Bloomberg Radio</b><small>2 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">142 IDX</span></span>
+            <span class="planc-cell">$28.00</span>
+            <span class="planc-cell">180K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>71</b><span class="planc-priority-track"><i style="--w:71%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$48,500</span>
+            <span class="planc-cell">10%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-br">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-br">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Performance Enthusiasts over-index 158 IDX on automotive podcasts. Host-read 2.1x brand recall.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-br"></div>
+        </div>
+
+        <!-- NEWS & DISPLAY -->
+        <div class="planc-ghead" style="--bar:var(--ms-chart-6)">
+          <p class="planc-gname"><span class="planc-gbar"></span>News &amp; Display<span class="planc-gpct">25% of plan</span></p>
+          <div class="planc-gmeta">
+            <p class="planc-grationale">Finance and luxury editorial drives +34% brand recall vs programmatic. Bloomberg + WSJ reach 72% of HHI $150K+ addressable audience.</p>
+            <p class="planc-gsubtotal" data-countup>$121,250</p>
+          </div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-bm">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-bloomberg.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>Bloomberg Media</b><small>3 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">159 IDX</span></span>
+            <span class="planc-cell">$28.00</span>
+            <span class="planc-cell">290K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>82</b><span class="planc-priority-track"><i style="--w:82%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$72,750</span>
+            <span class="planc-cell">15%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-bm">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-bm">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Finance and luxury editorial drives +34% brand recall vs programmatic. Bloomberg + WSJ reach 72% of HHI $150K+ addressable audience.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-bm"></div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-wsj">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-wsj.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>WSJ Motors</b><small>2 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">138 IDX</span></span>
+            <span class="planc-cell">$32.00</span>
+            <span class="planc-cell">160K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>77</b><span class="planc-priority-track"><i style="--w:77%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$48,500</span>
+            <span class="planc-cell">10%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-wsj">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-wsj">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Finance and luxury editorial drives +34% brand recall vs programmatic. Bloomberg + WSJ reach 72% of HHI $150K+ addressable audience.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-wsj"></div>
+        </div>
+
+        <!-- SOCIAL -->
+        <div class="planc-ghead" style="--bar:var(--ms-chart-6)">
+          <p class="planc-gname"><span class="planc-gbar"></span>Social<span class="planc-gpct">15% of plan</span></p>
+          <div class="planc-gmeta">
+            <p class="planc-grationale">Aspirational professional context. LinkedIn reaches C-suite decision-makers. Capped at 15% to maintain brand premium.</p>
+            <p class="planc-gsubtotal" data-countup>$72,750</p>
+          </div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-li">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-linkedin.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>LinkedIn</b><small>3 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">142 IDX</span></span>
+            <span class="planc-cell">$32.00</span>
+            <span class="planc-cell">210K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>78</b><span class="planc-priority-track"><i style="--w:78%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$48,500</span>
+            <span class="planc-cell">10%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-li">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-li">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Aspirational professional context. LinkedIn reaches C-suite decision-makers. Capped at 15% to maintain brand premium.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-li"></div>
+        </div>
+
+        <div class="planc-partner">
+          <div class="planc-gridrow planc-prow">
+            <button type="button" class="planc-toggle" aria-expanded="false" aria-controls="planc-sub-ig">
+              <svg class="planc-chev"><use href="#planc-ico-chev"></use></svg>
+              <span class="planc-logo" data-build="pop"><img src="assets/img/plan-brand-instagram.png" alt="" width="16" height="16"></span>
+              <span class="planc-pname"><b>Instagram (Meta)</b><small>2 formats</small></span>
+            </button>
+            <span class="planc-cell"><span class="planc-idx">128 IDX</span></span>
+            <span class="planc-cell">$14.50</span>
+            <span class="planc-cell">550K</span>
+            <span class="planc-cell planc-priority" data-build="pop"><b>58</b><span class="planc-priority-track"><i style="--w:58%" data-build="bar-h"></i></span></span>
+            <span class="planc-cell planc-budget">$24,250</span>
+            <span class="planc-cell">5%</span>
+            <span class="planc-cell">
+              <button type="button" class="planc-why" aria-expanded="false" aria-controls="planc-ev-ig">Why this<svg class="planc-why-chev" aria-hidden="true"><use href="#planc-ico-chev"></use></svg></button>
+            </span>
+          </div>
+          <div class="planc-evidence" id="planc-ev-ig">
+            <div class="planc-evidence-inner">
+              <p class="planc-evidence-label">Why this partner</p>
+              <p class="planc-evidence-text">Aspirational professional context. LinkedIn reaches C-suite decision-makers. Capped at 15% to maintain brand premium.</p>
+            </div>
+          </div>
+          <div class="planc-subrows" id="planc-sub-ig"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Plan Comparison ============ -->
+
+  <!-- ============ Sources ============ -->
+
+</div>
+
+<script>
+(function () {
+  var root = document.currentScript.closest('.ms-frag');
+  if (!root) return;
+  var plancRoot = root.querySelector('.planc-root');
+  var tableScrollEl = root.querySelector('.planc-table-scroll');
+  var canvasEl = document.getElementById('canvas');
+
+  function reducedMotion() {
+    return document.body.classList.contains('ms-motion-off') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  /* Generic animated height toggle — measures the panel's own current
+     rendered height as the animation start point every time (not a
+     stored "before" state), so rapid repeated clicks mid-transition
+     never desync: each click just re-targets from wherever the panel
+     visually is right now. Settles to height:auto once open so later
+     reflows (resize, content change) stay correct with no JS re-measure. */
+  function setPanelOpen(panel, open, animate) {
+    if (!panel) return;
+    if (panel._msTe) { panel.removeEventListener('transitionend', panel._msTe); panel._msTe = null; }
+    panel.classList.toggle('is-open', open);
+
+    if (!animate) {
+      panel.style.transition = 'none';
+      panel.style.height = '';
+      panel.style.overflow = '';
+      void panel.offsetHeight;
+      panel.style.transition = '';
+      return;
+    }
+
+    var current = panel.getBoundingClientRect().height;
+    panel.style.transition = 'none';
+    panel.style.height = current + 'px';
+    panel.style.overflow = 'hidden';
+    void panel.offsetHeight; /* flush the instant start-height before animating */
+
+    var target = open ? panel.scrollHeight : 0;
+    panel.style.transition = '';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        panel.style.height = target + 'px';
+      });
+    });
+
+    var te = function (e) {
+      if (e.target !== panel || e.propertyName !== 'height') return;
+      panel.removeEventListener('transitionend', te);
+      panel._msTe = null;
+      panel.style.height = '';
+      panel.style.overflow = '';
+      panel.style.transition = '';
+    };
+    panel._msTe = te;
+    panel.addEventListener('transitionend', te);
+  }
+
+  /* Partner-level expand/collapse (nested format rows reveal with the
+     built-in stagger via the .planc-srow CSS) */
+  Array.prototype.forEach.call(root.querySelectorAll('.planc-toggle[aria-controls]'), function (btn) {
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    if (!panel) return;
+    btn.addEventListener('click', function () {
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      setPanelOpen(panel, !open, !reducedMotion());
+    });
+  });
+
+  /* "Why this" evidence disclosure — only one open at a time reads
+     cleaner in a dense table, so opening a new one closes the last. */
+  var openEvidenceBtn = null;
+  Array.prototype.forEach.call(root.querySelectorAll('.planc-why[aria-controls]'), function (btn) {
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    if (!panel) return;
+    btn.addEventListener('click', function () {
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      var animate = !reducedMotion();
+      if (!open && openEvidenceBtn && openEvidenceBtn !== btn) {
+        var prevPanel = document.getElementById(openEvidenceBtn.getAttribute('aria-controls'));
+        openEvidenceBtn.setAttribute('aria-expanded', 'false');
+        setPanelOpen(prevPanel, false, animate);
+      }
+      btn.setAttribute('aria-expanded', String(!open));
+      setPanelOpen(panel, !open, animate);
+      openEvidenceBtn = !open ? btn : null;
+    });
+  });
+
+  /* Column-header info tooltips — dynamically choose which edge they
+     grow from so they never clip the table-scroll viewport left/right. */
+  Array.prototype.forEach.call(root.querySelectorAll('.planc-info[data-tip]'), function (btn) {
+    function place() {
+      if (!tableScrollEl) return;
+      var br = btn.getBoundingClientRect();
+      var sr = tableScrollEl.getBoundingClientRect();
+      var tipW = 220;
+      var align = 'right';
+      if (br.right - tipW < sr.left + 8) {
+        align = (br.left + tipW < sr.right - 8) ? 'left' : 'center';
+      }
+      btn.setAttribute('data-align', align);
+    }
+    btn.addEventListener('mouseenter', place);
+    btn.addEventListener('focus', place);
+  });
+
+  /* Dismiss open tooltips on scroll (either axis) and on Escape */
+  var scrollTimer;
+  function armScrollDismiss() {
+    var ae = document.activeElement;
+    if (ae && ae.classList && ae.classList.contains('planc-info')) ae.blur();
+    if (plancRoot) plancRoot.classList.add('planc-scrolling');
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+      if (plancRoot) plancRoot.classList.remove('planc-scrolling');
+    }, 250);
+  }
+  if (tableScrollEl) tableScrollEl.addEventListener('scroll', armScrollDismiss, { passive: true });
+  if (canvasEl) canvasEl.addEventListener('scroll', armScrollDismiss, { passive: true });
+
+  root.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var ae = document.activeElement;
+    if (ae && ae.classList && ae.classList.contains('planc-info')) ae.blur();
+  });
+
+  /* Metric breakdown disclosure (Plan Comparison) */
+  var disc = root.querySelector('.planc-disclosure');
+  if (disc) {
+    disc.addEventListener('click', function () {
+      var expanded = disc.getAttribute('aria-expanded') === 'true';
+      var panel = document.getElementById(disc.getAttribute('aria-controls'));
+      disc.setAttribute('aria-expanded', String(!expanded));
+      if (panel) panel.hidden = expanded;
+    });
+  }
+})();
+</script>

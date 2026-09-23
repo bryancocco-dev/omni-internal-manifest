@@ -1,0 +1,299 @@
+  <nav class="chapter-nav" id="chapterNav" aria-label="Chapter navigation">
+    <button class="chapter-nav-btn" id="chapterPrev" type="button" aria-label="Previous chapter" disabled>
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 10l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="chapter-nav-meta">
+      <span class="chapter-nav-current" id="chapterCurrent">01</span>
+      <span class="chapter-nav-total" id="chapterTotal">13</span>
+    </div>
+    <button class="chapter-nav-btn" id="chapterNext" type="button" aria-label="Next chapter">
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </nav>
+
+  <!-- Truncation tooltip — singleton, body-level so position:fixed
+       coords stay viewport-relative regardless of which card's name /
+       model chip is being hovered. Populated + positioned in JS. -->
+  <div class="trunc-tooltip" id="truncTooltip" role="tooltip" aria-hidden="true"></div>
+
+  <!-- Instructions modal — opened from the rail Instructions button.
+       Single-input layout: title + large textarea for orchestrator
+       prompts. Italic placeholder describes the field's purpose. -->
+  <div class="app-modal" id="instructionsModal" role="dialog" aria-modal="true" aria-labelledby="instructionsModalTitle" aria-hidden="true">
+    <div class="app-modal-card app-modal-card-instructions" role="document">
+      <header class="app-modal-head" data-drag-handle>
+        <h2 class="app-modal-title" id="instructionsModalTitle">Additional Orchestrator Instructions</h2>
+        <div class="app-modal-head-actions">
+          <button class="app-modal-maximize" type="button" aria-label="Maximize" id="instructionsModalMaximize">
+            <svg class="app-modal-maxicon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <svg class="app-modal-restoreicon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 3 9 9 3 9"/><polyline points="15 21 15 15 21 15"/><line x1="9" y1="9" x2="3" y2="3"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+          </button>
+          <button class="app-modal-close" type="button" aria-label="Close" id="instructionsModalClose">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="app-modal-instr-body">
+        <div class="app-modal-instr-frame">
+          <div class="app-modal-instr-gutter" id="instructionsModalGutter" aria-hidden="true"></div>
+          <textarea class="app-modal-instr-input" id="instructionsModalInput" placeholder="Describe any account specific ways the orchestrator agent should manage the other agents, data sets and workflow." aria-label="Orchestrator instructions"></textarea>
+        </div>
+      </div>
+      <!-- Edge + corner resize handles. JS reads the data-resize
+           direction and adjusts the card's width / height (and
+           top / left for north / west drags) accordingly. -->
+      <span class="app-modal-resize app-modal-resize-n" data-resize="n" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-s" data-resize="s" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-e" data-resize="e" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-w" data-resize="w" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-ne" data-resize="ne" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-nw" data-resize="nw" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-se" data-resize="se" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-sw" data-resize="sw" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <!-- Image edit mode — full-takeover overlay anchored to the
+       canvas right-side area. Lives at body level so its
+       position:fixed math resolves against the viewport, not a
+       transformed canvas4-view ancestor. Spawned by clicking "Edit"
+       from a graphics-card 3-dot menu. -->
+  <div class="c4-edit-mode" id="c4EditMode" aria-hidden="true" data-visible="0">
+    <header class="c4-edit-topbar">
+      <button class="c4-edit-back" type="button" aria-label="Exit edit mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Back</span>
+      </button>
+      <div class="c4-edit-meta">
+        <span class="c4-edit-rev"><strong data-edit-rev-current>1</strong> <span class="c4-edit-rev-sep">/</span> <strong data-edit-rev-total>1</strong></span>
+        <span class="c4-edit-meta-dot">·</span>
+        <span class="c4-edit-prompt-mini" data-edit-prompt-mini></span>
+      </div>
+      <div class="c4-edit-toolbar" role="toolbar" aria-label="Edit controls">
+        <button class="c4-edit-tool" type="button" data-edit-action="undo" aria-label="Undo" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6.7 3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="redo" aria-label="Redo" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="revert" aria-label="Revert to original">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        </button>
+        <span class="c4-edit-tool-sep"></span>
+        <button class="c4-edit-tool" type="button" data-edit-action="compare" aria-label="Compare with previous revision" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="fit" aria-label="Fit / 100%">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 9 4 4 9 4"/><polyline points="20 9 20 4 15 4"/><polyline points="4 15 4 20 9 20"/><polyline points="20 15 20 20 15 20"/></svg>
+        </button>
+        <span class="c4-edit-tool-sep"></span>
+        <button class="c4-edit-tool" type="button" data-edit-action="download" aria-label="Download current revision">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="fullscreen" aria-label="Fullscreen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="c4-edit-stage">
+      <div class="c4-edit-frame" data-mode="single">
+        <img class="c4-edit-img c4-edit-img-current" alt="" draggable="false">
+        <img class="c4-edit-img c4-edit-img-prev" alt="" draggable="false">
+        <div class="c4-edit-skeleton" data-edit-skeleton aria-hidden="true"></div>
+        <div class="c4-edit-split-handle" aria-hidden="true">
+          <span class="c4-edit-split-line"></span>
+          <span class="c4-edit-split-grip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 3 12 9 6"/><polyline points="15 6 21 12 15 18"/></svg>
+          </span>
+        </div>
+        <div class="c4-edit-pins" data-edit-pins></div>
+        <div class="c4-edit-cursor-dot" data-edit-cursor aria-hidden="true"></div>
+      </div>
+      <p class="c4-edit-hint">Click the image to pin a region · Describe the edit in chat to generate the next revision</p>
+    </div>
+    <aside class="c4-edit-rail" aria-label="Revision history">
+      <button class="c4-edit-rail-resize" type="button" aria-label="Resize history panel" data-edit-rail-resize></button>
+      <header class="c4-edit-rail-head">
+        <span class="c4-edit-rail-eyebrow">History</span>
+        <span class="c4-edit-rail-count"><strong data-edit-rail-count>1</strong> revision<span data-edit-rail-plural></span></span>
+      </header>
+      <ul class="c4-edit-rail-list" data-edit-rail-list></ul>
+    </aside>
+  </div>
+
+  <!-- Knowledge Bases picker modal — opened from the rail Knowledge
+       button. Body-level so the backdrop-blur covers the entire app.
+       Reuses the same .app-modal chrome as the Agents picker. -->
+  <div class="app-modal" id="knowledgeModal" role="dialog" aria-modal="true" aria-labelledby="knowledgeModalTitle" aria-hidden="true">
+    <div class="app-modal-card app-modal-card-wide" role="document">
+      <header class="app-modal-head">
+        <h2 class="app-modal-title" id="knowledgeModalTitle">Knowledge Bases</h2>
+        <button class="app-modal-close" type="button" aria-label="Close" id="knowledgeModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </header>
+      <div class="app-modal-searchwrap">
+        <span class="app-modal-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search" aria-label="Search knowledge bases">
+        </span>
+      </div>
+      <div class="app-modal-body">
+        <ul class="app-modal-sidebar" role="tablist" aria-label="Knowledge base scope">
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Excluded</span></li>
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Included</span></li>
+          <li role="tab" class="active" aria-selected="true"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">My Knowledge Bases</span></li>
+        </ul>
+        <div class="app-modal-content">
+          <div class="app-modal-table" role="table" aria-label="Knowledge bases">
+            <div class="app-modal-thead" role="row">
+              <div class="app-modal-th app-modal-th-check" role="columnheader">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select all"></span>
+              </div>
+              <div class="app-modal-th app-modal-th-name" role="columnheader">Knowledge Base</div>
+              <div class="app-modal-th app-modal-th-desc" role="columnheader">Description</div>
+              <div class="app-modal-th app-modal-th-date" role="columnheader">Date Modified</div>
+            </div>
+            <div class="app-modal-tbody" id="knowledgeModalRows"></div>
+          </div>
+          <div class="app-modal-pagination" id="knowledgeModalPagination"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tools picker modal — opened from the rail Tools button.
+       Mirrors the Agents / Knowledge modal architecture with a
+       tools-specific dataset. -->
+  <div class="app-modal" id="toolsModal" role="dialog" aria-modal="true" aria-labelledby="toolsModalTitle" aria-hidden="true">
+    <div class="app-modal-card app-modal-card-wide" role="document">
+      <header class="app-modal-head">
+        <h2 class="app-modal-title" id="toolsModalTitle">Required Tools</h2>
+        <button class="app-modal-close" type="button" aria-label="Close" id="toolsModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </header>
+      <div class="app-modal-searchwrap">
+        <span class="app-modal-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search" aria-label="Search tools">
+        </span>
+      </div>
+      <div class="app-modal-body">
+        <ul class="app-modal-sidebar" role="tablist" aria-label="Tool scope">
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Excluded</span></li>
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Included</span></li>
+          <li role="tab" class="active" aria-selected="true"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">My Tools</span></li>
+        </ul>
+        <div class="app-modal-content">
+          <div class="app-modal-table" role="table" aria-label="Tools">
+            <div class="app-modal-thead" role="row">
+              <div class="app-modal-th app-modal-th-check" role="columnheader">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select all"></span>
+              </div>
+              <div class="app-modal-th app-modal-th-name" role="columnheader">Tool</div>
+              <div class="app-modal-th app-modal-th-desc" role="columnheader">Description</div>
+              <div class="app-modal-th app-modal-th-date" role="columnheader">Date Modified</div>
+            </div>
+            <div class="app-modal-tbody" id="toolsModalRows"></div>
+          </div>
+          <div class="app-modal-pagination" id="toolsModalPagination"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agents picker modal — opened from the rail Agents button.
+       Body-level so the backdrop-blur covers the entire app. -->
+  <div class="app-modal" id="agentsModal" role="dialog" aria-modal="true" aria-labelledby="agentsModalTitle" aria-hidden="true">
+    <div class="app-modal-card app-modal-card-wide" role="document">
+      <header class="app-modal-head">
+        <h2 class="app-modal-title" id="agentsModalTitle">Required Agents</h2>
+        <button class="app-modal-close" type="button" aria-label="Close" id="agentsModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </header>
+      <div class="app-modal-searchwrap">
+        <span class="app-modal-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search" aria-label="Search agents">
+        </span>
+      </div>
+      <div class="app-modal-body">
+        <ul class="app-modal-sidebar" role="tablist" aria-label="Agent scope">
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Excluded</span></li>
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Included</span></li>
+          <li role="tab" class="active" aria-selected="true"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">My Agents</span></li>
+        </ul>
+        <div class="app-modal-content">
+          <div class="app-modal-table" role="table" aria-label="Agents">
+            <div class="app-modal-thead" role="row">
+              <div class="app-modal-th app-modal-th-check" role="columnheader">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select all"></span>
+              </div>
+              <div class="app-modal-th app-modal-th-name" role="columnheader">Agent</div>
+              <div class="app-modal-th app-modal-th-desc" role="columnheader">Description</div>
+              <div class="app-modal-th app-modal-th-date" role="columnheader">Date Modified</div>
+            </div>
+            <div class="app-modal-tbody" id="agentsModalRows"></div>
+          </div>
+          <div class="app-modal-pagination" id="agentsModalPagination"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal — body-level so it escapes any
+       transform/filter ancestor and can blur the whole app cleanly. -->
+  <div class="delete-modal" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" aria-hidden="true">
+    <div class="delete-modal-card" role="document">
+      <div class="delete-modal-thumb" id="deleteModalThumb" aria-hidden="true"></div>
+      <h2 class="delete-modal-title" id="deleteModalTitle">Are you sure you want to delete this?</h2>
+      <p class="delete-modal-body">This item will be deleted immediately. You can't undo this action.</p>
+      <div class="delete-modal-actions">
+        <button class="delete-modal-btn delete-modal-cancel" type="button" id="deleteModalCancel">Cancel</button>
+        <button class="delete-modal-btn delete-modal-confirm" type="button" id="deleteModalConfirm">Yes, delete this <span id="deleteModalKind">Item</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span class="copy">© 2026 Omnicom Group Inc.</span>
+    <img class="omni-logo omni-logo--sm" src="omni-logo.png" alt="OMNI" />
+    <span class="links">
+      <a href="#">FAQs</a>
+      <a href="#">Code of Conduct</a>
+      <a href="#">Acceptable Use Policy</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Data Subject Access Request</a>
+    </span>
+  </div>
+
+</div>
+
+<div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Settings" aria-hidden="true">
+  <div class="settings-header">Settings</div>
+  <div class="settings-row">
+    <span class="settings-label">Theme</span>
+    <div class="settings-toggle" role="group" aria-label="Theme">
+      <button class="settings-opt active" data-theme="light">Light</button>
+      <button class="settings-opt" data-theme="dark">Dark</button>
+    </div>
+  </div>
+  <div class="settings-row">
+    <span class="settings-label">Body font</span>
+    <div class="settings-toggle" role="group" aria-label="Body font">
+      <button class="settings-opt" data-font="proxima">Proxima</button>
+      <button class="settings-opt active" data-font="inter">Inter</button>
+    </div>
+  </div>
+  <div class="settings-row">
+    <span class="settings-label">Header</span>
+    <div class="settings-toggle" role="group" aria-label="Header style">
+      <button class="settings-opt active" data-header="v1">V1</button>
+      <button class="settings-opt" data-header="v2">V2</button>
+    </div>
+  </div>
+</div>
+

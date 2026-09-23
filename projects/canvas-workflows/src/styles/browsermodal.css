@@ -1,0 +1,666 @@
+/* ==========================================================================
+   PLATFORM CHROME (PLAN.md "## PLATFORM CHROME — Templates browser, Model
+   library, session Workflows"). Shared chrome for BrowserModal.jsx — the one
+   shell all three modals (Templates/Models/Workflows) render through. Same
+   self-contained posture as styles/runpreview.css (that file's own header
+   comment explains the reasoning this one shares verbatim): imported
+   straight from BrowserModal.jsx, not main.jsx — this chrome is only ever
+   needed once a modal is actually opened. Portaled into #workflow-root, so
+   every selector below is scoped under it and every color rides a --cw-*
+   token; nothing here depends on nodes.css/app.css classes except the
+   deliberate, explicit reuse of .cw-palette-search* (BrowserModal.jsx's
+   search field) and .cw-section-label (rail/grid section headers) — both
+   global, cross-file reuse already established by this app's own BlockPicker
+   .jsx/ComboBox.jsx precedent.
+   ========================================================================== */
+
+#workflow-root .cw-bmodal-overlay {
+  position: fixed;
+  inset: 0;
+  /* One above RunPreview's 50 (see that file's own z-index comment) — the
+     two are never expected to co-occur, but if a stray path ever opens both,
+     the browse modal (a deliberate, explicit navigation) should win over an
+     artifact preview rather than being buried under it. */
+  z-index: 51;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(16, 24, 40, 0.32);
+  animation: cw-bmodal-backdrop-in var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+#workflow-root .cw-bmodal-overlay.is-leaving {
+  animation: cw-bmodal-backdrop-out var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+  pointer-events: none;
+}
+@keyframes cw-bmodal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes cw-bmodal-backdrop-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+#workflow-root .cw-bmodal-card {
+  width: min(920px, 100%);
+  height: min(660px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 18px;
+  box-shadow: var(--cw-shadow), 0 28px 72px -20px rgba(16, 24, 40, 0.38);
+  font-family: var(--cw-font);
+  color: var(--cw-text);
+  overflow: hidden;
+  animation: cw-bmodal-card-in var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+body[data-theme='dark'] #workflow-root .cw-bmodal-card {
+  box-shadow: var(--cw-shadow);
+}
+#workflow-root .cw-bmodal-overlay.is-leaving .cw-bmodal-card {
+  animation: cw-bmodal-card-out var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+}
+@keyframes cw-bmodal-card-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cw-bmodal-card-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(6px) scale(0.97); }
+}
+
+/* ---- header --------------------------------------------------------------*/
+#workflow-root .cw-bmodal-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 14px 14px 18px;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  flex-shrink: 0;
+  background: var(--cw-chrome);
+}
+#workflow-root .cw-bmodal-head-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--cw-accent) 12%, var(--cw-surface));
+  color: var(--cw-accent);
+}
+#workflow-root .cw-bmodal-head-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#workflow-root .cw-bmodal-close {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-bmodal-close:hover {
+  background: var(--cw-surface-2);
+  color: var(--cw-text);
+}
+
+/* ---- search (spans the modal, above rail+grid) ---------------------------
+   Reuses .cw-palette-search/-icon/-input/-clear VERBATIM (app.css, a global
+   stylesheet) — same cross-file reuse convention BlockPicker.jsx's own
+   search field already established for a completely different popover
+   context. The .cw-bmodal-search modifier below only adds the surrounding
+   padding this placement needs; every visual property (border, radius,
+   focus ring, placeholder color) comes free from the shared class. --------*/
+#workflow-root .cw-bmodal-search-wrap {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+#workflow-root .cw-bmodal-search.cw-palette-search {
+  margin: 0;
+  height: 34px;
+}
+
+/* ---- toolbar (category / contains filter chips) ---------------------------*/
+#workflow-root .cw-bmodal-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+#workflow-root .cw-bmodal-toolbar-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-right: 2px;
+}
+#workflow-root .cw-bmodal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: var(--cw-radius-pill);
+  background: var(--cw-surface);
+  color: var(--cw-text-2);
+  font-size: 11.5px;
+  /* 500, not 600 (Bryan: "i dont like how all of the tags and All
+     Templates column are all bolded") — a wall of semibold chips read as
+     shouting; regular-weight rows, emphasis reserved for the active one. */
+  font-weight: 400;
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-bmodal-chip:hover {
+  border-color: color-mix(in srgb, var(--cw-accent) 35%, var(--cw-border));
+  color: var(--cw-text);
+}
+#workflow-root .cw-bmodal-chip.is-active {
+  background: color-mix(in srgb, var(--cw-accent) 12%, var(--cw-surface));
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+  color: var(--cw-accent);
+  font-weight: 600;
+}
+
+/* ---- body: optional rail + main grid --------------------------------------*/
+#workflow-root .cw-bmodal-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+#workflow-root .cw-bmodal-rail {
+  width: 190px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 8px;
+  border-right: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  background: var(--cw-chrome);
+}
+#workflow-root .cw-bmodal-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  /* Bryan: "this template browser should have smooth vertical scrolling" —
+     two real causes addressed: `overscroll-behavior: contain` stops the
+     wheel from CHAINING into the canvas underneath at the scroller's ends
+     (the React Flow pane zooms on wheel, so escaped events read as the
+     whole page lurching), and `scroll-behavior: smooth` eases any
+     programmatic/anchor jumps (category clicks) instead of teleporting. */
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  padding: 16px 18px 22px;
+}
+
+/* Plain single-select category list (Templates rail) — NOT the collapsible
+   Folder tree (that's the Model Library rail's own mechanism, reused
+   verbatim from Palette.jsx/LIBRARY PASS); a flat list of categories needs
+   no collapse affordance of its own. */
+#workflow-root .cw-bmodal-rail-cat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  margin-bottom: 1px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--cw-text-2);
+  font-size: 12.5px;
+  /* Regular rows, semibold only when active — see the chip rule's own
+     de-bolding comment (same Bryan call, same fix). */
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-bmodal-rail-cat:hover {
+  background: var(--cw-surface);
+  color: var(--cw-text);
+}
+#workflow-root .cw-bmodal-rail-cat.is-active {
+  background: var(--cw-surface);
+  color: var(--cw-accent);
+  font-weight: 600;
+}
+#workflow-root .cw-bmodal-rail-count {
+  flex-shrink: 0;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  color: var(--cw-text-3);
+  font-variant-numeric: tabular-nums;
+}
+#workflow-root .cw-bmodal-rail-cat.is-active .cw-bmodal-rail-count {
+  color: var(--cw-accent);
+}
+
+/* MODEL LIBRARY REDESIGN item 3 — "rail air" (Bryan: the rail rows "feel
+   way too cramped"). Provider <Folder> groups (Palette.jsx's collapsible
+   tree, reused verbatim) sit directly inside .cw-bmodal-rail with no
+   spacing of their own today (app.css's .cw-folder carries none — that
+   file is a parallel executor's seam this pass can't touch) — so the gap
+   between one provider's rows and the next provider's header is added HERE,
+   scoped to `.cw-bmodal-rail .cw-folder`, which only ever matches inside
+   this modal (Palette.jsx's own OUTPUTS folder tree lives in the app's
+   main rail, a completely different container, so this scoped rule can
+   never bleed into it). ~14px between groups, per PLAN.md. */
+#workflow-root .cw-bmodal-rail .cw-folder + .cw-folder {
+  margin-top: 14px;
+}
+
+/* Model Library rail rows — nested inside each provider's <Folder>. Compact
+   quick-jump rows: mark + name only, richer detail lives on the real card
+   in the grid. Taller hit area (~31px) + roomier icon-text gap (9px) than
+   the cramped original — same restraint as everywhere else in this file,
+   just more room to breathe. */
+#workflow-root .cw-bmodal-rail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  min-height: 31px;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cw-text-2);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-bmodal-rail-row:hover {
+  background: var(--cw-surface);
+  color: var(--cw-text);
+}
+#workflow-root .cw-bmodal-rail-row svg {
+  flex-shrink: 0;
+  /* Nudged down from the row's own top edge so a single-line row still
+     optically centers the mark against its text (flex-start, not center,
+     is what keeps a WRAPPED two-line label — e.g. "Nano Banana" — hanging
+     cleanly off the text column instead of the icon jumping to the
+     vertical middle of both lines). */
+  margin-top: 1.5px;
+  color: var(--cw-text-3);
+}
+#workflow-root .cw-bmodal-rail-row span {
+  min-width: 0;
+}
+
+#workflow-root .cw-bmodal-main .cw-section-label {
+  margin: 0 2px 8px;
+}
+#workflow-root .cw-bmodal-main .cw-section-label:not(:first-child) {
+  margin-top: 18px;
+}
+
+/* ---- grid + cards (templates AND saved workflows share this family) ------*/
+#workflow-root .cw-bmodal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
+}
+
+/* MODEL LIBRARY REDESIGN item 2 — scoped WIDER floor for this modal's own
+   grid only (Templates/Workflows keep the shared 148px above): the meta
+   line's "provider · modality · tier" needs more room per card than a
+   template's compact thumbnail card ever did, and 3 wider, calmer cards per
+   row reads more "composed instrument card," less "cram it in" than
+   forcing a 4th column would. */
+#workflow-root .cw-bmodal-grid--models {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+#workflow-root .cw-bcard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 9px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 12px;
+  background: var(--cw-surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-bcard:hover {
+  border-color: color-mix(in srgb, var(--cw-accent) 32%, var(--cw-border));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -10px rgba(16, 24, 40, 0.28);
+}
+#workflow-root .cw-bcard:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+#workflow-root .cw-bcard-thumb {
+  width: 100%;
+  aspect-ratio: 160 / 100;
+  border-radius: 8px;
+  background: var(--cw-field);
+  overflow: hidden;
+}
+#workflow-root .cw-bcard-thumb svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#workflow-root .cw-bcard-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#workflow-root .cw-bcard-blurb {
+  margin: -4px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--cw-text-3);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#workflow-root .cw-bcard-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: auto;
+}
+
+#workflow-root .cw-bcard-kinds {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+#workflow-root .cw-bcard-kind-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+#workflow-root .cw-bcard-count {
+  flex-shrink: 0;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  color: var(--cw-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Model Library cards ---------------------------------------------- */
+#workflow-root .cw-mcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 12px;
+  background: var(--cw-surface);
+  transition: border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-mcard:hover {
+  border-color: color-mix(in srgb, var(--cw-accent) 28%, var(--cw-border));
+  box-shadow: 0 8px 20px -10px rgba(16, 24, 40, 0.24);
+}
+/* Rail "jump to" landing pulse — a provider-folder row scrolls its model's
+   real card into view and flashes this ring so the eye finds it (ModelLibrary
+   .jsx's jumpTo, 900ms, cleared after one beat — not a persistent selection
+   state). One-shot only, matches DESIGN BAR's "related signals share one
+   clock" posture by reusing the same --cw-d-3/--cw-e-spring pair every other
+   arrival animation in this app already uses. */
+#workflow-root .cw-mcard.is-highlighted {
+  border-color: var(--cw-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cw-accent) 20%, transparent), 0 8px 20px -10px rgba(16, 24, 40, 0.24);
+  animation: cw-mcard-landing var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+@keyframes cw-mcard-landing {
+  0% { transform: scale(0.98); }
+  60% { transform: scale(1.012); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-mcard.is-highlighted { animation: none; }
+}
+#workflow-root .cw-mcard-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+/* MODEL LIBRARY REDESIGN item 2 — mark rendered at a "confident size" (up
+   from the old 28px/16px pairing) since it now carries real brand color
+   (ModelLibrary.jsx passes mono={false} here only). */
+#workflow-root .cw-mcard-mark {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cw-field);
+}
+/* simple-icons ships exactly one hex per brand, tuned for light
+   backgrounds — Anthropic's (#191919) is near-black and reads as an empty
+   swatch on this modal's dark-theme card background (verified: rendered
+   near-invisible against `--cw-field` in dark theme). Rather than invent an
+   unofficial "dark variant" brand hex (exactly the hand-authored-path risk
+   PLAN.md's HOW clause rules out), this falls back to the same
+   `currentColor` treatment every OTHER context in this file already uses —
+   `.cw-mcard-mark` sets no color of its own, so it inherits the card's
+   already-theme-correct text color. Every other brand mark keeps its hex in
+   both themes; only Anthropic needed this (checked all four in dark theme
+   during this pass). Scoped to `.cw-mcard-mark` so the rail/ComboBox's own
+   mono marks (already currentColor, never had this problem) are untouched. */
+body[data-theme='dark'] #workflow-root .cw-mcard-mark svg[data-mark='anthropic'] path {
+  fill: currentColor;
+}
+#workflow-root .cw-mcard-name {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* MODEL LIBRARY REDESIGN item 2 — "compose, don't chip-wall": the old
+   three-chip row (a different ragged width per card, hence the ragged
+   card-bottom Bryan called sloppy) is now ONE quiet mono meta line —
+   provider · modality · tier — clamped to a single line so every card's
+   content shape (and therefore height) is identical regardless of how long
+   any one field's label is. */
+/* Plain inline text (NOT a flex row — see ModelLibrary.jsx's own comment on
+   this element for why): one real text run means overflow:hidden + nowrap +
+   text-overflow:ellipsis is a genuine CSS ellipsis, not a mid-character
+   clip. At this modal's widened `--models` column floor every current
+   roster row fits without truncating; this stays as the graceful fallback
+   for whatever's typed into `search` narrowing the grid, or any future
+   longer label. */
+#workflow-root .cw-mcard-meta {
+  margin: 0;
+  font-family: var(--cw-font-mono);
+  font-size: 10.5px;
+  color: var(--cw-text-3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#workflow-root .cw-mcard-meta-sep {
+  margin: 0 4px;
+  color: var(--cw-border);
+}
+/* FRONTIER — "a small accent detail, not a filled pill row" (PLAN.md): a
+   tinted word with a small leading dot glyph, nothing louder. */
+#workflow-root .cw-mcard-meta-frontier {
+  color: var(--cw-accent);
+}
+
+/* Footer: Use + its hover-only "inserts as" supplement share one row so
+   neither ever sits on top of the other (the previous absolute-positioned
+   hint used to land directly over the Use button on hover). Sits at
+   `margin-top: auto` so it always anchors the card's bottom edge — with
+   the meta line now fixed to one line, every card's footer lands at the
+   same y regardless of tag/label length, which is what makes the grid's
+   card heights genuinely uniform rather than just usually-similar. */
+#workflow-root .cw-mcard-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+/* "inserts as: Task / inserts as: Generate" (PLAN.md's own PalettePreview-
+   shape ask). Quiet, in-flow now (not absolute) — fades in on hover/focus
+   without ever overlapping the Use button beside it. */
+#workflow-root .cw-mcard-hint {
+  min-width: 0;
+  font-size: 10px;
+  color: var(--cw-text-3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-mcard:hover .cw-mcard-hint,
+#workflow-root .cw-mcard:focus-within .cw-mcard-hint {
+  opacity: 1;
+}
+#workflow-root .cw-mcard-hint b {
+  color: var(--cw-text-2);
+  font-weight: 600;
+}
+
+/* MODEL LIBRARY REDESIGN item 2 — "Use becomes a quiet bordered button...
+   visually lighter" at rest, promoted on hover (not a second hover-only
+   reveal — always present, just quieter, echoing the DESIGN BAR's
+   instrument-signal restraint). */
+#workflow-root .cw-mcard-use {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 10px;
+  border: var(--cw-hairline-w, 0.5px) solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--cw-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-mcard:hover .cw-mcard-use {
+  border-color: var(--cw-border);
+  color: var(--cw-text);
+}
+#workflow-root .cw-mcard-use:hover {
+  background: color-mix(in srgb, var(--cw-accent) 8%, var(--cw-surface));
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+  color: var(--cw-accent);
+}
+#workflow-root .cw-mcard-use:active {
+  transform: scale(0.96);
+}
+
+/* ---- empty states ----------------------------------------------------- */
+#workflow-root .cw-bmodal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 220px;
+  padding: 24px;
+  color: var(--cw-text-3);
+  font-size: 12.5px;
+  text-align: center;
+}
+
+/* Workflows' first-run affordance — "the ONLY exception to normal
+   empty-state absence rules" (PLAN.md part 3). */
+#workflow-root .cw-bmodal-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 14px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 8px;
+  background: var(--cw-surface);
+  color: var(--cw-accent);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-bmodal-empty-cta:hover {
+  background: color-mix(in srgb, var(--cw-accent) 8%, var(--cw-surface));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-bmodal-overlay,
+  #workflow-root .cw-bmodal-overlay.is-leaving,
+  #workflow-root .cw-bmodal-card,
+  #workflow-root .cw-bmodal-overlay.is-leaving .cw-bmodal-card {
+    animation: none;
+  }
+  #workflow-root .cw-bmodal-overlay { opacity: 1; }
+  #workflow-root .cw-bmodal-card { opacity: 1; transform: none; }
+  #workflow-root .cw-bcard,
+  #workflow-root .cw-bcard:hover,
+  #workflow-root .cw-mcard-hint {
+    transition: none;
+  }
+  #workflow-root .cw-bcard:hover { transform: none; }
+}

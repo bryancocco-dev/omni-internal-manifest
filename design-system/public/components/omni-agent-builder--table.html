@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+  OMNI component: table
+  Project: Agent Builder
+  Note: .ds-list — data-source table header + rows (from JS template)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — table · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ds-list" id="dsList">
+      <div class="ds-header">
+        <span></span>
+        <span>Data source</span>
+        <span>Description</span>
+        <span>Created</span>
+        <span>Updated</span>
+        <span>Instructions</span>
+      </div>
+      <div class="ds-row-wrap" data-id="survey-bank" data-enabled="false">
+        <div class="ds-row" data-id="survey-bank">
+          <button class="ds-toggle" type="button" data-on="false" aria-label="Toggle Survey Response Bank" aria-pressed="false"></button>
+          <span class="ds-name">Survey Response Bank</span>
+          <span class="ds-desc">Aggregated survey responses, all live studies</span>
+          <span class="ds-date">May 09 2025</span>
+          <span class="ds-date">Apr 17 2026</span>
+          <button class="ds-edit" type="button" data-ds-id="survey-bank" aria-label="Edit instructions">
+            <span class="ds-edit-text">Add</span>
+            <svg class="ds-edit-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+          </button>
+        </div>
+        <div class="ds-instructions">
+          <textarea class="ds-instructions-input" data-ds-id="survey-bank" placeholder="Instructions (optional) — how should the agent use Survey Response Bank? (e.g. which fields to prioritize, what to ignore, freshness window)"></textarea>
+          <div class="ds-instructions-actions">
+            <button class="ds-action ds-action--save" type="button">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+  OMNI component: dropdown_stylepill
+  Project: Graphics
+  Note: .image-style-btn — composer pill that opens the lookbook; crossfades from a swatches icon to a 16px cover thumb once a style is picked
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphics — dropdown_stylepill · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-graphics.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="image-style-selector-wrap is-active" id="imageStyleSelectorWrap">
+      <button class="image-style-btn has-style" id="imageStyleBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="imageStyleMenu">
+        <span class="image-style-thumb-wrap" aria-hidden="true">
+          <span class="image-pill-icon image-style-icon">
+            <svg viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="5" width="8" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="6" y="2.5" width="8" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>
+            </svg>
+          </span>
+          <img class="image-style-thumb" id="imageStyleThumb" alt="" src="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?w=64&h=64&q=76&auto=format&fit=crop&fm=webp&cs=tinysrgb">
+        </span>
+        <span class="image-style-label" id="imageStyleLabel">2026 Corvache Precision</span>
+        <svg class="image-style-caret" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+          <path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+</body>
+</html>

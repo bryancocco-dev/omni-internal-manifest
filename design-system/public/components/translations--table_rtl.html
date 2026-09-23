@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  OMNI component: table_rtl
+  Project: Translations
+  Note: [dir="rtl"] .scope-table — funnel-cascade board table under Arabic. Column order + cell text-align mirror via the dir attribute; the sortable-header carets and the row accent strip (default anchored to physical left:0) both flip to the reading edge — hover a row to see the strip land on the right and the wash fade toward it.
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translations — table_rtl · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/translations.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div dir="rtl" lang="ar">
+  <div class="scope-table-wrap">
+    <table class="scope-table" data-qa-scope="" aria-label="سلسلة المسار">
+      <thead><tr>
+        <th><button class="scope-sort-btn" type="button" data-col="0" data-type="text"><span>مرحلة المسار</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+        <th><button class="scope-sort-btn" type="button" data-col="1" data-type="text"><span>نطاق القيمة المتوقع</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+        <th><button class="scope-sort-btn" type="button" data-col="2" data-type="text"><span>مؤشر التحويل / الكفاءة</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+        <th><button class="scope-sort-btn" type="button" data-col="3" data-type="text"><span>مستوى البيانات / الأساس</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>١. الإنفاق الاستثماري</td><td>$٧٥٫٠&nbsp;مليون USD موحّدة</td><td>US: $٥٠٫٠&nbsp;مليون / FR: $٢٥٫٠&nbsp;مليون</td><td>مؤكَّد · P4</td></tr>
+        <tr><td>٢. مرات الظهور</td><td>١٫٢&nbsp;مليار – ١٫٥&nbsp;مليار ظهور</td><td>CPM مدمج: $٥٠٫٠٠–٦٢٫٥٠</td><td>إرشادي · مرجعي</td></tr>
+        <tr><td>٣. الوصول (المسافرون النشطون)</td><td>٥٫٤&nbsp;مليون – ٦٫٢&nbsp;مليون تم الوصول إليهم</td><td>٧٤٪ – ٨٤٪ من إجمالي المجموعة القابلة للاستهداف</td><td>مُنمذج</td></tr>
+        <tr><td>٤. التكرار</td><td>تكرار ٢٫٢x – ٢٫٨x</td><td>مثالي لبناء العلامة والثقة</td><td>مُنمذج</td></tr>
+        <tr><td>٥. النقرات / الزيارات</td><td>١٨٫٠&nbsp;مليون – ٢٤٫٠&nbsp;مليون نقرة</td><td>CTR مدمج: ١٫٥٪ – ١٫٦٪</td><td>إرشادي · مرجعي</td></tr>
+        <tr><td>٦. الطلبات المبدوءة</td><td>١٫٨&nbsp;مليون – ٢٫٢&nbsp;مليون بداية</td><td>معدل النقر إلى البدء: ١٠٫٠٪ – ١١٫٠٪</td><td>إرشادي · مرجعي</td></tr>
+        <tr><td>٧. الطلبات المكتملة</td><td>١٫١&nbsp;مليون – ١٫٣&nbsp;مليون اكتمال</td><td>معدل الإكمال: ٥٨٫٠٪ – ٦١٫٠٪</td><td>إرشادي · مرجعي</td></tr>
+        <tr><td>٨. الحسابات المعتمدة</td><td>٨٢٠&nbsp;ألف – ٩٤٠&nbsp;ألف معتمد</td><td>معدل الموافقة الائتمانية: ٥٥٫٠٪ – ٦٥٫٠٪</td><td>إرشادي</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

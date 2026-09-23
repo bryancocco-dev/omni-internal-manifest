@@ -1,0 +1,9 @@
+# .vercelignore replaces .gitignore entirely once present — name everything.
+# Working docs never ship.
+PLAN.md
+CLAUDE.md
+qa-source
+_qaboards.html
+.DS_Store
+node_modules
+.vercel

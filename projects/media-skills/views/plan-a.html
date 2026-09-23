@@ -1,0 +1,1908 @@
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     plan-a — Plan hero, parameters, variants, summary, budget
+     Prefix: plana-. Figma UW9lkO1EOMXbbDG56Dbm37 § 4771:78604 (top→
+     Budget allocation) + 4771:83818 (Plan Parameters expanded states).
+     ═══════════════════════════════════════════════════════════════ */
+
+  .plana-frag {
+    --plana-amber: #b45309;
+    --plana-yellow: #ca8a04;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  body.ms-app[data-theme="dark"] .plana-frag {
+    --plana-amber: #e7e25c;
+    --plana-yellow: #eab308;
+  }
+  .plana-frag * { box-sizing: border-box; }
+  .plana-mono {
+    font-family: var(--ms-mono);
+  }
+  .plana-eyebrow {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .plana-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0.5px solid var(--line);
+    background: transparent;
+    color: var(--text-strong);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 150ms ease;
+    font-family: inherit;
+  }
+  .plana-btn:hover { background: var(--hover-soft); }
+  .plana-btn svg { flex: none; }
+  .plana-chevron {
+    flex: none;
+    transition: transform 380ms cubic-bezier(.16,1,.3,1);
+    color: var(--text-subtle);
+  }
+  .plana-chevron.is-open { transform: rotate(180deg); }
+  body.ms-motion-off .plana-chevron,
+  body.ms-motion-off .plana-acc-body,
+  body.ms-motion-off .plana-audcard-body { transition: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .plana-chevron, .plana-acc-body, .plana-audcard-body { transition: none !important; }
+  }
+
+  /* ---------- Cover (round 6 roll-out) — copied verbatim from
+     views/aud-list.html's .audl-cover system (canvas-book-ends F39
+     FANLIGHT, sym=a19, real asset brand-assets/p49-a19.ring.svg) and
+     re-prefixed plana-cover-. See PLAN.md "System roll-out (round 6)".
+     Swiss meta-block override lives in the OUR-WORLD PASS block below,
+     same as aud-list's own two-stage structure. ---------- */
+  .plana-cover-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .plana-cover-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px 40px;
+  }
+  .plana-cover-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: 260px;
+  }
+  .plana-cover-meta-label {
+    font: 400 12px/1.5 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-subtle);
+  }
+  .plana-cover-meta-value {
+    font: 500 14px/1.4 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+    color: var(--text-strong);
+  }
+  .plana-cover-meta-aside {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .plana-cover-date {
+    font: 400 13px/1 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-strong);
+  }
+
+  .plana-cover-title {
+    margin: 48px 0 0;
+    font: 400 54px/1.05 'Helvetica Neue', 'Inter', sans-serif;
+    letter-spacing: -0.025em;
+    color: var(--text-strong);
+    max-width: 900px;
+  }
+
+  .plana-cover-panel {
+    position: relative;
+    margin-top: 32px;
+    height: 640px;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--ms-cover-field, var(--accent-soft));
+    isolation: isolate;
+  }
+
+  /* ---- F39 FANLIGHT — verbatim port, same as aud-list's own port
+     (round 4, Bryan's directive): sym=a19, 60 real path shapes, cx/cy
+     percentages + mask-size 78%/11%/11% unchanged, fill="var(--accent)"
+     inline exactly as the source's live document view renders it. Only
+     the container box (.plana-cover-panel) is ours. ---- */
+  .plana-cover-panel .cbe-parallax {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  }
+  .plana-cover-panel .cbe-f39-sym {
+    position: absolute; left: -115%; bottom: 0;
+    width: 266%; aspect-ratio: 1 / 1;
+    transform: translateY(56%);
+    background: transparent;
+    animation: planaCbeSpinTY 200s linear infinite;
+  }
+  @keyframes planaCbeSpinTY {
+    from { transform: translateY(56%) rotate(0deg); }
+    to   { transform: translateY(56%) rotate(360deg); }
+  }
+  .plana-cover-panel .cbe-inline-sym {
+    position: absolute; display: block; pointer-events: none;
+    width: 78%; height: 78%; left: 11%; top: 11%;
+  }
+  .plana-cover-panel .cbe-piece {
+    animation: planaCbeShapeBuildIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes planaCbeShapeBuildIn {
+    from { opacity: 0; filter: blur(10px); }
+    to   { opacity: 1; filter: blur(0); }
+  }
+  body.ms-motion-off .plana-cover-panel .cbe-f39-sym { animation: none; }
+  body.ms-motion-off .plana-cover-panel .cbe-piece { animation: none; opacity: 1; filter: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .plana-cover-panel .cbe-f39-sym { animation: none; }
+    .plana-cover-panel .cbe-piece { animation: none; opacity: 1; filter: none; }
+  }
+
+  .plana-cover-stamp {
+    position: absolute; left: 24px; bottom: 24px; right: 24px;
+    z-index: 2;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--text-strong);
+  }
+  .plana-cover-stamp-grid { display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
+  .plana-cover-stamp-head { display: inline-flex; align-items: stretch; margin-bottom: 8px; }
+  .plana-cover-stamp-box {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--text-strong);
+    padding: 3px 10px;
+  }
+  .plana-cover-stamp-box svg { width: 10px; height: 10px; color: currentColor; flex: none; }
+  .plana-cover-stamp-box b { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.02em; }
+  .plana-cover-stamp-city {
+    display: inline-flex; align-items: center;
+    border: 1px solid var(--text-strong); border-left: 0;
+    padding: 3px 11px;
+    font-size: 9px; letter-spacing: 0.32em;
+  }
+  .plana-cover-stamp-line { margin: 0 0 4px; font-size: 9.5px; letter-spacing: 0.1em; }
+  .plana-cover-stamp-line i { font-style: normal; color: var(--text-subtle); }
+  .plana-cover-stamp-chip {
+    display: inline-block;
+    border: 1px dashed var(--text-subtle);
+    padding: 4px 10px;
+    margin-top: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: var(--text-strong);
+  }
+  .plana-cover-stamp-tools {
+    font-size: 9px; letter-spacing: 0.1em; line-height: 1.75;
+    white-space: nowrap; padding-bottom: 2px;
+  }
+  .plana-cover-stamp-tools i { font-style: normal; color: var(--text-subtle); margin-left: 8px; }
+
+  @media (max-width: 720px) {
+    .plana-cover-meta { flex-direction: column; }
+    .plana-cover-meta-aside { align-items: flex-start; }
+    .plana-cover-title { font-size: 40px; }
+    .plana-cover-panel { height: 340px; }
+    .plana-cover-stamp-grid { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+
+  /* ---------- Accordions ---------- */
+  .plana-accordions { display: flex; flex-direction: column; gap: 16px; }
+  .plana-acc {
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .plana-acc-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 20px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+  }
+  .plana-acc-bar .plana-eyebrow {
+    color: var(--text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .plana-acc-body { display: none; flex-direction: column; gap: 24px; padding: 0 24px 20px; }
+  .plana-acc.is-open .plana-acc-body { display: flex; }
+
+  .plana-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px 32px;
+  }
+  .plana-field { display: flex; flex-direction: column; gap: 6px; }
+  .plana-field-label { font-size: 14px; font-weight: 500; color: var(--text-subtle); }
+  .plana-field-value { font-size: 14px; font-weight: 400; color: var(--text-body); }
+  .plana-field-value.plana-accent-text { color: var(--accent); }
+  .plana-filechip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--panel-bg-3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-body);
+    width: fit-content;
+  }
+  .plana-filechip svg { flex: none; color: var(--text-subtle); }
+
+  .plana-aud-label { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-subtle); }
+
+  .plana-audcard {
+    border: 0.5px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel-bg-3);
+  }
+  .plana-audcard-bar {
+    width: 100%;
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 16px;
+    background: none; border: 0; cursor: pointer; text-align: left; font-family: inherit;
+  }
+  .plana-audcard-photo {
+    width: 78px; height: 78px; border-radius: 12px; object-fit: cover; flex: none;
+  }
+  .plana-audcard-main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .plana-audcard-title-row { display: flex; align-items: center; gap: 8px; }
+  .plana-audcard-name { font-size: 16px; font-weight: 600; color: var(--text-body); }
+  .plana-aichip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+    padding: 2px 8px; border-radius: 12px;
+  }
+  .plana-audcard-blurb { font-size: 13px; line-height: 1.5; color: var(--text-subtle); max-width: 560px; }
+  .plana-audcard-stats { display: flex; gap: 24px; flex: none; align-self: center; }
+  .plana-audcard-stat { text-align: center; }
+  .plana-audcard-stat b { display: block; font-size: 18px; font-weight: 400; color: var(--text-strong); }
+  .plana-audcard-stat span { font-size: 11px; color: var(--text-subtle); }
+
+  .plana-audcard-body { display: none; flex-direction: column; gap: 16px; padding: 0 16px 16px; }
+  .plana-audcard.is-open .plana-audcard-body { display: flex; }
+
+  .plana-panel {
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .plana-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .plana-panel-title { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--text-strong); }
+  .plana-panel-title-link { color: var(--text-subtle); display: inline-flex; }
+
+  .plana-def-rows { display: flex; flex-direction: column; gap: 12px; }
+  .plana-def-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .plana-def-op { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--text-subtle); }
+  .plana-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .plana-chip svg { flex: none; }
+  .plana-chip--source { background: color-mix(in srgb, var(--accent) 16%, var(--card-bg)); color: var(--accent); }
+  .plana-chip--def { background: var(--panel-bg-3); color: var(--text-body); }
+  .plana-chip-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+
+  .plana-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .plana-cols-stack { display: flex; flex-direction: column; gap: 16px; }
+
+  .plana-bar-rows { display: flex; flex-direction: column; gap: 14px; }
+  .plana-bar-row { display: grid; grid-template-columns: 140px 1fr 30px; align-items: center; gap: 12px; }
+  .plana-bar-row-label { font-size: 13px; color: var(--text-body); }
+  .plana-bar-track { height: 6px; border-radius: 4px; background: var(--panel-bg-3); overflow: hidden; }
+  .plana-bar-fill { display: block; height: 100%; border-radius: 4px; transform-origin: left center; }
+  .plana-bar-row-value { font-size: 12px; color: var(--text-subtle); text-align: right; }
+  .plana-panel-note { display: flex; justify-content: flex-end; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-subtle); margin-bottom: 4px; }
+
+  .plana-aff-rows { display: flex; flex-direction: column; gap: 14px; }
+  .plana-aff-row { display: flex; flex-direction: column; gap: 6px; }
+  .plana-aff-label { font-size: 13px; font-weight: 400; color: var(--text-body); }
+  .plana-aff-metrics { display: grid; grid-template-columns: 40px 1fr 34px 1fr 44px; align-items: center; gap: 8px; }
+  .plana-aff-idx { font-size: 12px; font-weight: 400; color: var(--accent); text-align: right; }
+  .plana-aff-idx-label { font-size: 9px; color: var(--text-subtle); letter-spacing: 1px; }
+  .plana-aff-pct { font-size: 11px; color: var(--text-subtle); }
+  .plana-aff-reach { font-size: 11px; color: var(--text-subtle); text-align: right; }
+  .plana-aff-track { height: 4px; border-radius: 2px; background: var(--panel-bg-3); overflow: hidden; }
+  .plana-aff-fill { display: block; height: 100%; border-radius: 2px; background: var(--accent); transform-origin: left center; }
+  .plana-aff-fill--pct { background: color-mix(in srgb, var(--text-subtle) 60%, transparent); }
+
+  .plana-audcard-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+
+  /* ---------- Competitive Landscape (board node 4771:84658) ----------
+     Header: title left + "N Competitors Tracked" right (board frame
+     4771:85977). "Competitive Snapshot" panel: SIX functional tabs, each
+     a real board frame — Share of Voice (4771:85517/85990) · Spend by
+     Channel (4771:85040) · Search Pressure (4771:84988) · Partner
+     Presence (4771:84755) · Competitive Intensity (4771:84659) · Key
+     Activity (4771:84876) — content verbatim per tab, own "Source: …"
+     caption each (Key Activity's source lives per-entry instead, board-
+     exact). Opportunity & Risks Callout + Plan Implications + 4
+     recommendation blocks below come from the assembled module frame
+     4771:85972. Brand mark icons on the board were generic/mismatched
+     placeholders (stray "WSJ" glyph on "Ionara", a "B" glyph on Ampera,
+     duplicate icons on Corvache/Voltrix) — simplified throughout to
+     token-colored dots (Corvache=accent, Voltrix=chart-4, Ionara=chart-2,
+     Ampera=chart-6). The Spend by Channel tab's first row is labeled
+     "Peloton App Users" and every index cell reads "178" on the board
+     itself (an evident unfinished/placeholder row+values) — reproduced
+     verbatim rather than corrected, per no-invention policy. ---------- */
+  .plana-comp-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .plana-comp-tab {
+    display: inline-flex; align-items: center;
+    font: 500 12px/1 var(--ms-mono);
+    color: var(--text-body);
+    background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+    border: 2px solid transparent;
+    padding: 8px 12px;
+    border-radius: 36px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 180ms cubic-bezier(.16,1,.3,1), border-color 180ms cubic-bezier(.16,1,.3,1), color 180ms cubic-bezier(.16,1,.3,1);
+  }
+  .plana-comp-tab:hover { background: color-mix(in srgb, var(--text-subtle) 22%, transparent); }
+  .plana-comp-tab[data-active="true"] {
+    color: var(--text-strong);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-color: var(--accent);
+  }
+  .plana-comp-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  body.ms-motion-off .plana-comp-tab { transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .plana-comp-tab { transition: none !important; } }
+
+  .plana-comp-panelwrap { position: relative; margin-top: 16px; }
+  .plana-comp-panel { display: flex; flex-direction: column; gap: 16px; }
+  .plana-comp-panel[hidden] { display: none; }
+  .plana-comp-explainer { font-size: 12px; line-height: 1.5; color: var(--text-subtle); margin: 0; }
+
+  .plana-comp-sov-head, .plana-comp-sov-row { display: grid; grid-template-columns: 132px repeat(4, 1fr); gap: 12px; align-items: center; }
+  .plana-comp-sov-head { padding-bottom: 10px; border-bottom: 0.5px solid var(--line); margin-bottom: 6px; }
+  .plana-comp-sov-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-body); }
+  .plana-comp-sov-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .plana-comp-sov-rows { display: flex; flex-direction: column; gap: 14px; }
+  .plana-comp-sov-label { font-size: 13px; color: var(--text-body); }
+  .plana-comp-sov-cell { display: flex; flex-direction: column; gap: 5px; }
+  .plana-comp-sov-val { font-size: 12px; color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+  .plana-comp-sov-cell[data-lead="true"] .plana-comp-sov-val { color: var(--accent); font-weight: 400; }
+  .plana-comp-sov-track { height: 4px; border-radius: 2px; background: var(--panel-bg-3); overflow: hidden; }
+  .plana-comp-sov-fill { display: block; height: 100%; border-radius: 2px; background: color-mix(in srgb, var(--text-subtle) 55%, transparent); transform-origin: left center; }
+  .plana-comp-sov-cell[data-lead="true"] .plana-comp-sov-fill { background: var(--accent); }
+
+  /* Search Pressure: 3 stat cards */
+  .plana-comp-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .plana-comp-card { background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .plana-comp-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .plana-comp-card-num { font-size: 26px; font-weight: 400; color: var(--text-strong); line-height: 1; font-variant-numeric: tabular-nums; }
+  .plana-comp-trend { flex: none; margin-top: 4px; }
+  .plana-comp-card-title { font-size: 13px; font-weight: 600; color: var(--text-body); margin: 0; }
+  .plana-comp-card-sub { font-family: var(--ms-mono); font-size: 10px; letter-spacing: 0.05em; color: var(--text-subtle); }
+  .plana-comp-card-desc { font-size: 12px; line-height: 1.5; color: var(--text-subtle); margin: 0; }
+
+  /* Partner Presence + Competitive Intensity: row lists, zebra striping */
+  .plana-comp-table { display: flex; flex-direction: column; }
+  .plana-comp-row { display: grid; align-items: center; gap: 16px; padding: 12px; border-radius: 6px; }
+  .plana-comp-row:nth-child(even) { background: var(--hover-tint); }
+  .plana-comp-row--partner { grid-template-columns: minmax(0,1.2fr) minmax(0,1.2fr) minmax(0,0.8fr) minmax(0,3fr); }
+  .plana-comp-row--intensity { grid-template-columns: minmax(0,1.2fr) minmax(0,0.8fr) minmax(0,3fr); }
+  .plana-comp-row > * { min-width: 0; overflow-wrap: break-word; }
+  .plana-comp-row-ch { font-size: 13px; font-weight: 600; color: var(--text-body); }
+  .plana-comp-row-partner { font-size: 13px; color: var(--text-body); }
+  .plana-comp-row-desc { font-size: 13px; line-height: 1.5; color: var(--text-subtle); }
+  .plana-comp-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid; border-radius: 6px; padding: 3px 10px; width: fit-content;
+    font-family: var(--ms-mono);
+    font-size: 11px; font-weight: 500;
+  }
+  .plana-comp-badge[data-tone="high"] { color: var(--ms-neg); border-color: var(--ms-neg); }
+  .plana-comp-badge[data-tone="medium"] { color: var(--plana-yellow); border-color: var(--plana-yellow); }
+  .plana-comp-badge[data-tone="low"], .plana-comp-badge[data-tone="open"] { color: var(--ms-pos); border-color: var(--ms-pos); }
+
+  /* Key Activity: activity feed cards */
+  .plana-comp-activity { display: flex; flex-direction: column; gap: 12px; }
+  .plana-comp-activity-card { background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .plana-comp-activity-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .plana-comp-activity-who { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .plana-comp-activity-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .plana-comp-activity-name { font-size: 14px; font-weight: 600; color: var(--text-strong); }
+  .plana-comp-activity-tag { background: var(--panel-bg-3); color: var(--text-subtle); font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .plana-comp-activity-tag--property { background: var(--accent-soft); color: var(--accent); }
+  .plana-comp-activity-recency { font-family: var(--ms-mono); font-size: 11px; color: var(--text-subtle); text-transform: capitalize; }
+  .plana-comp-activity-desc { font-size: 13px; font-weight: 600; color: var(--text-body); margin: 0; }
+  .plana-comp-activity-source { font-size: 11px; color: var(--text-subtle); margin: 0; }
+
+  .plana-comp-callout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .plana-comp-callout { background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .plana-comp-callout-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-strong); }
+  .plana-comp-callout-title svg { flex: none; }
+  .plana-comp-callout-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .plana-comp-callout-tag { background: var(--panel-bg-3); color: var(--text-subtle); font-size: 11px; font-weight: 500; padding: 4px 8px; border-radius: 6px; }
+  .plana-comp-callout-copy { font-size: 13px; line-height: 1.5; color: var(--text-body); margin: 0; }
+
+  .plana-comp-implications-copy { font-size: 14px; line-height: 1.6; color: var(--text-body); margin: 0; }
+  .plana-comp-fit-rows { display: flex; flex-direction: column; }
+  .plana-comp-fit-row { display: grid; grid-template-columns: 108px 88px 1fr; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--line); }
+  .plana-comp-fit-row:last-child { border-bottom: 0; }
+  .plana-comp-fit-label { font-size: 13px; font-weight: 400; color: var(--text-body); }
+  .plana-comp-fit-rating { display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; width: fit-content; }
+  .plana-comp-fit-rating[data-tier="moderate"] { background: color-mix(in srgb, var(--plana-yellow) 20%, var(--card-bg)); color: var(--plana-yellow); }
+  .plana-comp-fit-rating[data-tier="strong"] { background: color-mix(in srgb, var(--ms-pos) 18%, var(--card-bg)); color: var(--ms-pos); }
+  .plana-comp-fit-copy { font-size: 13px; color: var(--text-subtle); }
+
+  .plana-comp-insights { display: flex; flex-direction: column; gap: 12px; }
+  .plana-comp-insight { position: relative; background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 8px; padding: 14px 16px 14px 20px; overflow: hidden; }
+  .plana-comp-insight::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+  .plana-comp-insight-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .plana-comp-insight-title { font-size: 13px; font-weight: 600; color: var(--text-subtle); }
+  .plana-comp-confidence { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; flex: none; }
+  .plana-comp-confidence-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+  .plana-comp-insight-copy { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-strong); margin: 0 0 8px; line-height: 1.5; }
+  .plana-comp-insight-copy svg { flex: none; margin-top: 2px; color: var(--text-subtle); }
+
+  @media (max-width: 860px) {
+    .plana-comp-sov-head, .plana-comp-sov-row { grid-template-columns: 1fr; gap: 4px; }
+    .plana-comp-cards { grid-template-columns: 1fr; }
+    .plana-comp-row--partner, .plana-comp-row--intensity { grid-template-columns: 1fr; gap: 4px; }
+    .plana-comp-callout-grid { grid-template-columns: 1fr; }
+    .plana-comp-fit-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ---------- Divider ---------- */
+  .plana-divider { height: 0.5px; background: var(--line); }
+
+  /* ---------- AI banner ---------- */
+  .plana-ai-banner {
+    background: var(--card-bg);
+    border: 1px solid var(--plana-amber);
+    border-radius: 8px;
+    padding: 16px 24px;
+    display: flex; flex-direction: column; gap: 16px;
+    position: relative;
+  }
+  .plana-ai-banner.is-dismissed { display: none; }
+  .plana-ai-banner-head { display: flex; align-items: center; justify-content: space-between; }
+  .plana-ai-banner-title { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ms-chart-6); }
+  .plana-ai-banner-close {
+    background: none; border: 0; cursor: pointer; color: var(--text-subtle);
+    font-size: 18px; line-height: 1; padding: 2px 6px; border-radius: 4px;
+  }
+  .plana-ai-banner-close:hover { background: var(--hover-soft); color: var(--text-body); }
+  .plana-ai-banner-body { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-body); }
+  .plana-ai-banner-body b { font-weight: 600; }
+
+  /* ---------- Variants ---------- */
+  .plana-section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .plana-variant-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .plana-variant-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 24px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; flex-direction: column; gap: 16px;
+    transition: border-color 150ms ease;
+  }
+  .plana-variant-card[data-selected="true"] { border-color: var(--accent); }
+  .plana-variant-top { display: flex; align-items: center; justify-content: space-between; }
+  .plana-variant-name { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--text-body); }
+  .plana-variant-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .plana-variant-pick {
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 4px;
+    visibility: hidden;
+  }
+  .plana-variant-card[data-selected="true"] .plana-variant-pick { visibility: visible; }
+  .plana-variant-metrics { display: flex; flex-direction: column; gap: 12px; }
+  .plana-variant-metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .plana-variant-metric-label { font-size: 12px; font-weight: 600; color: var(--text-subtle); }
+  .plana-variant-metric-value { font-size: 12px; color: var(--text-body); margin-top: 4px; }
+  .plana-variant-metric-value.plana-variant-reach { font-weight: 400; }
+
+  /* ---------- Summary ---------- */
+  .plana-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+  .plana-tile {
+    background: color-mix(in srgb, var(--panel-bg-3) 50%, var(--card-bg));
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .plana-tile-label { font-size: 14px; font-weight: 500; color: var(--text-subtle); }
+  .plana-tile-value { font-size: 14px; font-weight: 400; color: var(--text-body); }
+
+  .plana-budget {
+    background: var(--panel-bg-3);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .plana-budget-head { display: flex; align-items: center; justify-content: space-between; }
+  .plana-budget-label { font-size: 14px; font-weight: 600; color: var(--text-subtle); }
+  .plana-pilltoggle { display: flex; gap: 8px; }
+  .plana-pill-btn {
+    font: 500 12px/1 var(--ms-mono);
+    color: var(--text-body);
+    background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+    border: 2px solid transparent;
+    padding: 8px 12px;
+    border-radius: 36px;
+    cursor: pointer;
+    transition: background 180ms cubic-bezier(.16,1,.3,1), border-color 180ms cubic-bezier(.16,1,.3,1), color 180ms cubic-bezier(.16,1,.3,1);
+  }
+  .plana-pill-btn:hover { background: color-mix(in srgb, var(--text-subtle) 22%, transparent); }
+  .plana-pill-btn[aria-pressed="true"] { color: var(--text-strong); background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: var(--accent); }
+
+  .plana-budget-rows { display: flex; flex-direction: column; gap: 12px; }
+  .plana-budget-row { display: grid; grid-template-columns: 118px 1fr 25px; align-items: center; gap: 12px; }
+  .plana-budget-brand { display: flex; align-items: center; gap: 8px; }
+  .plana-budget-brand img { width: 16px; height: 16px; border-radius: 4px; object-fit: cover; flex: none; }
+  .plana-budget-brand-swatch { width: 16px; height: 16px; border-radius: 4px; flex: none; }
+  .plana-budget-brand-name { font-size: 14px; color: var(--text-body); white-space: nowrap; }
+  .plana-budget-track { height: 6px; border-radius: 4px; background: color-mix(in srgb, var(--text-subtle) 30%, transparent); overflow: hidden; }
+  .plana-budget-fill { display: block; height: 100%; border-radius: 4px; background: var(--accent); transform-origin: left center; }
+  .plana-budget-pct { font-size: 14px; color: var(--text-body); text-align: right; }
+
+  @media (max-width: 860px) {
+    .plana-fields-grid { grid-template-columns: 1fr; }
+    .plana-cols { grid-template-columns: 1fr; }
+    .plana-variant-grid { grid-template-columns: 1fr; }
+    .plana-tiles { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ═══ OUR-WORLD PASS (Bryan, 2026-08-05) — Swiss integration over
+     the original layout, round 6 roll-out mirroring views/aud-list.html's
+     own pass exactly. Structure/copy retained; typography, numbering,
+     hairlines, and restraint are ours. Delete this block to restore
+     the original treatment. ═══ */
+
+  /* cover meta → reference look: stacked single column, mono values
+     (same override shape as aud-list's own pass, under our prefix) */
+  .plana-cover-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex-wrap: nowrap;
+  }
+  .plana-cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .plana-cover-meta-value {
+    font: 400 13.5px/1.5 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--text-strong);
+    max-width: 46ch;
+  }
+  .plana-cover-date {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.08em;
+  }
+
+  /* module heading rows → mono uppercase eyebrows; hairline under the
+     real (non-toggle) header rows; heading gap-below < gap-above */
+  .plana-eyebrow {
+    font: 500 10px/1.6 var(--ms-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .plana-section-head { padding-bottom: 0; }
+
+  /* accordions: module-root card sits directly on the split matte
+     (data-matte="split" stays on .plana-accordions) — no border/shadow
+     of its own; calmer radius; tint-only hover, no lift */
+  /* accordions are interior CONTROLS, not module-root cards — they keep
+     their hairline so they read as dropdowns */
+  .plana-acc { border: 0.5px solid var(--line); border-radius: 8px; }
+  .plana-acc-bar:hover { background: var(--hover-tint); }
+
+  /* interior boxes: calmer radii throughout, hairlines retained */
+  .plana-audcard { border-radius: 8px; overflow: hidden; }
+  .plana-audcard-photo { border-radius: 6px; }
+  .plana-panel { border-radius: 8px; }
+  .plana-variant-card { border-radius: 8px; }
+  .plana-variant-card:hover { background: var(--hover-tint); }
+  .plana-tile { border-radius: 8px; }
+  .plana-budget { border-radius: 8px; }
+
+  /* stats: tabular numerals + mono uppercase labels under the numeral */
+  .plana-audcard-stat b { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .plana-audcard-stat span {
+    font: 500 10px/1.6 var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-subtle);
+  }
+
+  /* ═══ Launch Signals deep-link module (Gateway integration addendum) —
+     renders ONLY when the URL carries ?skill=plan&sig=1 (+ a valid
+     sigSeries); see the guarded script block placed right after the
+     cover's dims script below. Reuses .plana-section-head / .plana-eyebrow
+     verbatim for its header row; every selector below is new/additive
+     and never touches an existing one. Tokens only throughout, so it
+     sweeps all 11 themes like every other module. ═══ */
+  .plana-sig-stat { display: flex; flex-direction: column; gap: 8px; }
+  .plana-sig-label { font-size: 14px; font-weight: 500; color: var(--text-subtle); }
+  .plana-sig-value-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .plana-sig-value {
+    font-size: 32px; font-weight: 400; line-height: 1.15;
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+  }
+  .plana-sig-delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    border: 1px solid; border-radius: 6px; padding: 3px 8px 3px 6px;
+    font-family: var(--ms-mono); font-size: 11px; font-weight: 500;
+  }
+  .plana-sig-delta[data-dir="up"] {
+    color: var(--ms-pos); border-color: var(--ms-pos);
+    background: color-mix(in srgb, var(--ms-pos) 12%, transparent);
+  }
+  .plana-sig-delta[data-dir="down"] {
+    color: var(--ms-neg); border-color: var(--ms-neg);
+    background: color-mix(in srgb, var(--ms-neg) 12%, transparent);
+  }
+  .plana-sig-delta svg { flex: none; }
+  .plana-sig-chartwrap { margin-top: 22px; }
+  .plana-sig-chart { display: block; width: 100%; height: 180px; overflow: visible; }
+  .plana-sig-baseline { stroke: var(--line); stroke-width: 1; }
+  .plana-sig-area { fill: url(#planaSigGrad); stroke: none; }
+  .plana-sig-line { fill: none; stroke: var(--accent); stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+  .plana-sig-dot { fill: var(--accent); stroke: var(--ms-matte); stroke-width: 2.5; }
+  .plana-sig-kpis {
+    display: flex; flex-wrap: wrap;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 0.5px solid var(--line);
+  }
+  .plana-sig-kpi {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 0 22px;
+    border-left: 0.5px solid var(--line);
+  }
+  .plana-sig-kpi:first-child { padding-left: 0; border-left: none; }
+  .plana-sig-kpi-label {
+    font: 500 10px/1.6 var(--ms-mono);
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-subtle);
+  }
+  .plana-sig-kpi-value {
+    font-size: 15px; font-weight: 400; color: var(--text-body);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 860px) {
+    .plana-sig-kpis { flex-direction: column; gap: 14px; }
+    .plana-sig-kpi { border-left: none; padding: 0; border-top: 0.5px solid var(--line); padding-top: 12px; }
+    .plana-sig-kpi:first-child { border-top: none; padding-top: 0; }
+  }
+</style>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="plana-ico-sparkle" viewBox="0 0 8.25 8.25">
+    <path d="M4.22326 6.18192L3.23359 5.64419L2.69303 4.66133C2.67215 4.623 2.64125 4.59099 2.60359 4.56869C2.56593 4.54638 2.52292 4.53461 2.47909 4.53461C2.43506 4.53467 2.39185 4.54644 2.35394 4.56873C2.31603 4.59101 2.28481 4.62299 2.26352 4.66133L1.72296 5.64419L0.743092 6.18192C0.704647 6.20317 0.672612 6.23425 0.650309 6.27196C0.628005 6.30967 0.616244 6.35262 0.616244 6.39637C0.616244 6.44012 0.628005 6.48307 0.650309 6.52077C0.672612 6.55848 0.704647 6.58956 0.743092 6.61081L1.72296 7.14854L2.26352 8.12328C2.28481 8.16163 2.31603 8.1936 2.35394 8.21588C2.39185 8.23817 2.43506 8.24995 2.47909 8.25C2.52292 8.25 2.56593 8.23823 2.60359 8.21592C2.64125 8.19362 2.67215 8.16161 2.69303 8.12328L3.23359 7.14854L4.22326 6.61081C4.26171 6.58956 4.29374 6.55848 4.31604 6.52077C4.33835 6.48307 4.35011 6.44012 4.35011 6.39637C4.35011 6.35262 4.33835 6.30967 4.31604 6.27196C4.29374 6.23425 4.26171 6.20317 4.22326 6.18192ZM0.127114 1.59343L0.799958 1.96059L1.16904 2.62991C1.19016 2.6682 1.22124 2.70013 1.25902 2.72238C1.2968 2.74462 1.33989 2.75636 1.3838 2.75636C1.4277 2.75636 1.47079 2.74462 1.50857 2.72238C1.54635 2.70013 1.57743 2.6682 1.59855 2.62991L1.96437 1.95246L2.63721 1.58531C2.6757 1.5643 2.7078 1.53339 2.73017 1.4958C2.75253 1.45822 2.76433 1.41535 2.76433 1.37168C2.76433 1.32801 2.75253 1.28514 2.73017 1.24756C2.7078 1.20997 2.6757 1.17906 2.63721 1.15805L1.96437 0.795771L1.59528 0.126449C1.57416 0.0881627 1.54309 0.0562265 1.50531 0.0339814C1.46753 0.0117364 1.42443 0 1.38053 0C1.33663 0 1.29353 0.0117364 1.25575 0.0339814C1.21797 0.0562265 1.1869 0.0881627 1.16578 0.126449L0.799958 0.795771L0.127114 1.16292C0.0886266 1.18393 0.0565223 1.21485 0.0341603 1.25243C0.0117982 1.29001 0 1.33288 0 1.37655C0 1.42023 0.0117982 1.4631 0.0341603 1.50068C0.0565223 1.53826 0.0886266 1.56917 0.127114 1.59019V1.59343ZM8.11934 3.09535L7.08068 2.53L6.51235 1.4984C6.49147 1.46007 6.46057 1.42806 6.42291 1.40576C6.38525 1.38345 6.34224 1.37168 6.29841 1.37168C6.25494 1.37231 6.2124 1.38436 6.17512 1.40661C6.13783 1.42887 6.10713 1.46053 6.08611 1.4984L5.51452 2.53L4.47749 3.09535C4.43883 3.11639 4.4066 3.14742 4.38418 3.18516C4.36176 3.2229 4.34999 3.26596 4.35011 3.30979C4.35011 3.35339 4.36194 3.39618 4.38436 3.43364C4.40679 3.4711 4.43896 3.50184 4.47749 3.52261L5.51452 4.08796L6.08611 5.12118C6.1074 5.15953 6.13862 5.1915 6.17653 5.21378C6.21443 5.23607 6.25765 5.24785 6.30168 5.2479C6.34551 5.2479 6.38852 5.23613 6.42618 5.21382C6.46383 5.19152 6.49474 5.15951 6.51562 5.12118L7.08394 4.08796L8.12261 3.52261C8.16114 3.50184 8.19331 3.4711 8.21573 3.43364C8.23815 3.39618 8.24999 3.35339 8.24999 3.30979C8.24979 3.26563 8.23753 3.22234 8.21452 3.18457C8.19151 3.1468 8.15861 3.11596 8.11934 3.09535Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<div class="plana-frag">
+
+  <section class="plana-cover" data-reveal>
+    <div class="plana-cover-meta">
+      <div class="plana-cover-meta-row">
+        <div class="plana-cover-meta-item">
+          <span class="plana-cover-meta-label">Client</span>
+          <span class="plana-cover-meta-value">Corvache</span>
+        </div>
+        <div class="plana-cover-meta-item">
+          <span class="plana-cover-meta-label">Assignment</span>
+          <span class="plana-cover-meta-value">Media Plan</span>
+        </div>
+        <div class="plana-cover-meta-item">
+          <span class="plana-cover-meta-label">Submission Window</span>
+          <span class="plana-cover-meta-value">Mar 01 &mdash; May 24</span>
+        </div>
+        <div class="plana-cover-meta-item">
+          <span class="plana-cover-meta-label">Status</span>
+          <span class="plana-cover-meta-value">Optimized for Awareness</span>
+        </div>
+      </div>
+      <div class="plana-cover-meta-aside">
+        <span class="plana-cover-date">08.05.2026</span>
+      </div>
+    </div>
+
+    <h1 class="plana-cover-title">Media Plan Suggestions</h1>
+
+    <div class="plana-cover-panel" data-plana-panel>
+      <div class="cbe-parallax">
+        <div class="cbe-f39-sym" aria-hidden="true" data-sym="a19">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1721.367 753.619 150.633 150.631" class="cbe-inline-sym" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g id="plana-ring-src" class="cbe-ring-src">
+            <path d="M 1759.901 826.363 L 1723.635 822.551 L 1723.903 819.991 L 1760.17 823.803 L 1759.901 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.0s"/>
+            <path d="M 1760.372 822.532 L 1724.702 814.95 L 1725.237 812.432 L 1760.907 820.014 L 1760.372 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.012s"/>
+            <path d="M 1761.24 818.771 L 1726.558 807.502 L 1727.354 805.054 L 1762.036 816.323 L 1761.24 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.024s"/>
+            <path d="M 1762.496 815.122 L 1729.182 800.291 L 1730.23 797.938 L 1763.543 812.771 L 1762.496 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.036s"/>
+            <path d="M 1764.127 811.624 L 1732.546 793.391 L 1733.833 791.161 L 1765.414 809.395 L 1764.127 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.047s"/>
+            <path d="M 1766.115 808.316 L 1736.613 786.882 L 1738.126 784.799 L 1767.628 806.233 L 1766.115 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.059s"/>
+            <path d="M 1768.438 805.234 L 1741.338 780.833 L 1743.061 778.92 L 1770.161 803.321 L 1768.438 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.071s"/>
+            <path d="M 1771.07 802.411 L 1746.669 775.311 L 1748.582 773.589 L 1772.983 800.689 L 1771.07 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.083s"/>
+            <path d="M 1773.982 799.879 L 1752.548 770.377 L 1754.63 768.864 L 1776.065 798.366 L 1773.982 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.095s"/>
+            <path d="M 1777.144 797.665 L 1758.911 766.084 L 1761.14 764.797 L 1779.373 796.378 L 1777.144 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.107s"/>
+            <path d="M 1780.52 795.794 L 1765.688 762.48 L 1768.04 761.433 L 1782.872 794.747 L 1780.52 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.119s"/>
+            <path d="M 1784.073 794.286 L 1772.803 759.604 L 1775.251 758.809 L 1786.521 793.491 L 1784.073 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.131s"/>
+            <path d="M 1787.763 793.158 L 1780.181 757.488 L 1782.699 756.953 L 1790.281 792.623 L 1787.763 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.142s"/>
+            <path d="M 1791.552 792.421 L 1787.74 756.154 L 1790.3 755.885 L 1794.112 792.152 L 1791.552 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.154s"/>
+            <path d="M 1795.397 755.619 H 1797.971 V 792.085 H 1795.397 Z Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.166s"/>
+            <path d="M 1801.816 792.421 L 1799.255 792.152 L 1803.068 755.885 L 1805.627 756.154 L 1801.816 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.178s"/>
+            <path d="M 1805.604 793.158 L 1803.086 792.623 L 1810.668 756.953 L 1813.186 757.488 L 1805.604 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.19s"/>
+            <path d="M 1809.295 794.286 L 1806.847 793.491 L 1818.116 758.809 L 1820.564 759.604 L 1809.295 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.202s"/>
+            <path d="M 1812.847 795.794 L 1810.496 794.747 L 1825.328 761.433 L 1827.68 762.48 L 1812.847 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.214s"/>
+            <path d="M 1816.223 797.665 L 1813.994 796.378 L 1832.227 764.797 L 1834.456 766.084 L 1816.223 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.225s"/>
+            <path d="M 1819.385 799.879 L 1817.302 798.366 L 1838.737 768.864 L 1840.819 770.377 L 1819.385 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.237s"/>
+            <path d="M 1822.297 802.411 L 1820.384 800.688 L 1844.785 773.589 L 1846.698 775.311 L 1822.297 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.249s"/>
+            <path d="M 1824.93 805.234 L 1823.207 803.321 L 1850.307 778.92 L 1852.03 780.833 L 1824.93 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.261s"/>
+            <path d="M 1827.252 808.316 L 1825.739 806.233 L 1855.241 784.799 L 1856.754 786.882 L 1827.252 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.273s"/>
+            <path d="M 1829.24 811.624 L 1827.953 809.395 L 1859.533 791.161 L 1860.821 793.391 L 1829.24 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.285s"/>
+            <path d="M 1830.871 815.122 L 1829.824 812.77 L 1863.138 797.938 L 1864.185 800.29 L 1830.871 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.297s"/>
+            <path d="M 1832.128 818.771 L 1831.332 816.323 L 1866.014 805.055 L 1866.809 807.503 L 1832.128 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.308s"/>
+            <path d="M 1832.996 822.532 L 1832.461 820.014 L 1868.13 812.432 L 1868.665 814.95 L 1832.996 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.32s"/>
+            <path d="M 1833.466 826.363 L 1833.197 823.803 L 1869.464 819.991 L 1869.733 822.551 L 1833.466 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.332s"/>
+            <path d="M 1759.901 826.363 L 1723.635 822.551 L 1723.903 819.991 L 1760.17 823.803 L 1759.901 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.344s"/>
+            <path d="M 1760.372 822.532 L 1724.702 814.95 L 1725.237 812.432 L 1760.907 820.014 L 1760.372 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.356s"/>
+            <path d="M 1761.24 818.771 L 1726.558 807.502 L 1727.354 805.054 L 1762.036 816.323 L 1761.24 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.368s"/>
+            <path d="M 1762.496 815.122 L 1729.182 800.291 L 1730.23 797.938 L 1763.543 812.771 L 1762.496 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.38s"/>
+            <path d="M 1764.127 811.624 L 1732.546 793.391 L 1733.833 791.161 L 1765.414 809.395 L 1764.127 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.392s"/>
+            <path d="M 1766.115 808.316 L 1736.613 786.882 L 1738.126 784.799 L 1767.628 806.233 L 1766.115 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.403s"/>
+            <path d="M 1768.438 805.234 L 1741.338 780.833 L 1743.061 778.92 L 1770.161 803.321 L 1768.438 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.415s"/>
+            <path d="M 1771.07 802.411 L 1746.669 775.311 L 1748.582 773.589 L 1772.983 800.689 L 1771.07 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.427s"/>
+            <path d="M 1773.982 799.879 L 1752.548 770.377 L 1754.63 768.864 L 1776.065 798.366 L 1773.982 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.439s"/>
+            <path d="M 1777.144 797.665 L 1758.911 766.084 L 1761.14 764.797 L 1779.373 796.378 L 1777.144 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.451s"/>
+            <path d="M 1780.52 795.794 L 1765.688 762.48 L 1768.04 761.433 L 1782.872 794.747 L 1780.52 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.463s"/>
+            <path d="M 1784.073 794.286 L 1772.803 759.604 L 1775.251 758.809 L 1786.521 793.491 L 1784.073 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.475s"/>
+            <path d="M 1787.763 793.158 L 1780.181 757.488 L 1782.699 756.953 L 1790.281 792.623 L 1787.763 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.486s"/>
+            <path d="M 1791.552 792.421 L 1787.74 756.154 L 1790.3 755.885 L 1794.112 792.152 L 1791.552 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.498s"/>
+            <path d="M 1795.397 755.619 H 1797.971 V 792.085 H 1795.397 Z Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.51s"/>
+            <path d="M 1801.816 792.421 L 1799.255 792.152 L 1803.068 755.885 L 1805.627 756.154 L 1801.816 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.522s"/>
+            <path d="M 1805.604 793.158 L 1803.086 792.623 L 1810.668 756.953 L 1813.186 757.488 L 1805.604 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.534s"/>
+            <path d="M 1809.295 794.286 L 1806.847 793.491 L 1818.116 758.809 L 1820.564 759.604 L 1809.295 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.546s"/>
+            <path d="M 1812.847 795.794 L 1810.496 794.747 L 1825.328 761.433 L 1827.68 762.48 L 1812.847 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.558s"/>
+            <path d="M 1816.223 797.665 L 1813.994 796.378 L 1832.227 764.797 L 1834.456 766.084 L 1816.223 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.569s"/>
+            <path d="M 1819.385 799.879 L 1817.302 798.366 L 1838.737 768.864 L 1840.819 770.377 L 1819.385 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.581s"/>
+            <path d="M 1822.297 802.411 L 1820.384 800.688 L 1844.785 773.589 L 1846.698 775.311 L 1822.297 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.593s"/>
+            <path d="M 1824.93 805.234 L 1823.207 803.321 L 1850.307 778.92 L 1852.03 780.833 L 1824.93 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.605s"/>
+            <path d="M 1827.252 808.316 L 1825.739 806.233 L 1855.241 784.799 L 1856.754 786.882 L 1827.252 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.617s"/>
+            <path d="M 1829.24 811.624 L 1827.953 809.395 L 1859.533 791.161 L 1860.821 793.391 L 1829.24 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.629s"/>
+            <path d="M 1830.871 815.122 L 1829.824 812.77 L 1863.138 797.938 L 1864.185 800.29 L 1830.871 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.641s"/>
+            <path d="M 1832.128 818.771 L 1831.332 816.323 L 1866.014 805.055 L 1866.809 807.503 L 1832.128 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.653s"/>
+            <path d="M 1832.996 822.532 L 1832.461 820.014 L 1868.13 812.432 L 1868.665 814.95 L 1832.996 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.664s"/>
+            <path d="M 1833.466 826.363 L 1833.197 823.803 L 1869.464 819.991 L 1869.733 822.551 L 1833.466 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.676s"/>
+            <path d="M 1759.901 826.363 L 1723.635 822.551 L 1723.903 819.991 L 1760.17 823.803 L 1759.901 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.688s"/>
+            <path d="M 1760.372 822.532 L 1724.702 814.95 L 1725.237 812.432 L 1760.907 820.014 L 1760.372 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.7s"/>
+          </g><use href="#plana-ring-src" transform="rotate(90 1796.683 828.935)"/><use href="#plana-ring-src" transform="rotate(180 1796.683 828.935)"/><use href="#plana-ring-src" transform="rotate(270 1796.683 828.935)"/></svg>
+        </div>
+      </div>
+      <div class="plana-cover-stamp">
+        <div class="plana-cover-stamp-grid">
+          <div>
+            <div class="plana-cover-stamp-head">
+              <span class="plana-cover-stamp-box"><svg><use href="#plana-ico-sparkle"></use></svg><b>&copy;OMNI</b></span>
+              <span class="plana-cover-stamp-city">S&nbsp;F&nbsp;O</span>
+            </div>
+            <p class="plana-cover-stamp-line">ALGORITHMICALLY GENERATED</p>
+            <p class="plana-cover-stamp-line" data-plana-dims>DIMENSIONS: &mdash; <i>&middot; MCQT &middot; 44.68N&middot;06.80E</i></p>
+            <div class="plana-cover-stamp-chip">For Corvache</div>
+          </div>
+          <div class="plana-cover-stamp-tools">
+            <div>GRAPHICS<i>3.4</i></div>
+            <div>VIDEO<i>6.1</i></div>
+            <div>AUDIO<i>1.5</i></div>
+            <div>TEXT<i>1.8</i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    /* Stamp's own DIMENSIONS line only — the fanlight art above is the
+       ported F39/a19 component itself (verbatim markup + CSS), not
+       JS-generated, so this script's only job is reading the panel's
+       real rendered size for that line. Same script as aud-list's. */
+    var root = document.currentScript.closest('.ms-frag') || document;
+    var panel = root.querySelector('[data-plana-panel]');
+    var dimsEl = root.querySelector('[data-plana-dims]');
+    if (panel && dimsEl) {
+      var w = panel.clientWidth || 900, h = panel.clientHeight || 640;
+      dimsEl.innerHTML = 'DIMENSIONS: ' + Math.round(w) + ' × ' + Math.round(h) + ' PX <i>· MCQT · 44.68N·06.80E</i>';
+    }
+  })();
+  </script>
+
+  <script>
+  (function () {
+    /* Launch Signals deep-link module (Gateway integration addendum) —
+       renders an extra "incoming artifact" chart module at the top of
+       the plan board, directly after the cover, when the URL carries
+       ?skill=plan&sig=1&sigSeries=... . Reads location.search directly
+       (independent of ms.js/ms.state — no scaffold edits needed); every
+       exit below is a silent no-op, so with no signal params (or a
+       malformed one) this script creates nothing and the board renders
+       byte-for-byte as it does today. Inserted BEFORE ms.js wraps this
+       fragment's sections in .ms-matte + wires reveal (see the fragment
+       loader's .then() order in ms.js), so this module rides the exact
+       same blur-fade reveal + chapter-nav treatment as every other
+       module with zero extra plumbing. See PLAN.md. */
+    var qp;
+    try { qp = new URLSearchParams(location.search); } catch (e) { return; }
+    if (qp.get('skill') !== 'plan') return;
+    var sigRaw = qp.get('sig');
+    if (!sigRaw || sigRaw === '0' || sigRaw.toLowerCase() === 'false') return;
+
+    var series = (qp.get('sigSeries') || '').split(',').map(Number).filter(isFinite);
+    if (series.length < 2) return;
+
+    var root = document.currentScript.closest('.ms-frag');
+    if (!root) return;
+    var anchor = root.querySelector('.plana-accordions');
+    if (!anchor || !anchor.parentNode) return;
+
+    var label = qp.get('sigLabel') || 'Launch Signal';
+    var value = qp.get('sigValue');
+    if (!value) value = series[series.length - 1].toLocaleString('en-US');
+    var deltaRaw = (qp.get('sigDelta') || '').trim();
+    var upRaw = qp.get('sigUp');
+    var isUp = upRaw === '1' ? true : upRaw === '0' ? false : deltaRaw.charAt(0) !== '-';
+    var kpis = (qp.get('sigKpis') || '').split('|').map(function (pair) {
+      var i = pair.indexOf(':');
+      if (i === -1) return null;
+      var k = pair.slice(0, i).trim(), v = pair.slice(i + 1).trim();
+      return (k && v) ? { k: k, v: v } : null;
+    }).filter(Boolean);
+
+    /* ---------- chart geometry: smoothed area+line from sigSeries ---------- */
+    var VB_W = 1000, VB_H = 180, PAD_T = 16, PAD_B = 16;
+    var plotH = VB_H - PAD_T - PAD_B;
+    var seriesMin = Math.min.apply(null, series), seriesMax = Math.max.apply(null, series);
+    var flat = seriesMax === seriesMin, valSpan = flat ? 1 : (seriesMax - seriesMin);
+    var pts = series.map(function (v, i) {
+      var x = (i / (series.length - 1)) * VB_W;
+      var y = flat ? (PAD_T + plotH / 2) : (PAD_T + plotH - ((v - seriesMin) / valSpan) * plotH);
+      return [x, y];
+    });
+    /* Catmull-Rom -> cubic Bezier with mirrored end tangents — smooths a
+       curve THROUGH every point (not an approximation), no external lib. */
+    function smoothPath(p) {
+      var d = 'M' + p[0][0].toFixed(1) + ',' + p[0][1].toFixed(1);
+      for (var i = 0; i < p.length - 1; i++) {
+        var p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
+        var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+        var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+        d += ' C' + c1x.toFixed(1) + ',' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ',' + c2y.toFixed(1) + ' ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1);
+      }
+      return d;
+    }
+    var linePath = smoothPath(pts);
+    var lastPt = pts[pts.length - 1], firstPt = pts[0];
+    var baseline = PAD_T + plotH;
+    var areaPath = linePath + ' L' + lastPt[0].toFixed(1) + ',' + baseline.toFixed(1) +
+      ' L' + firstPt[0].toFixed(1) + ',' + baseline.toFixed(1) + ' Z';
+
+    /* ---------- build the module. Static chrome only in this innerHTML
+       (fixed copy, icons, and computed SVG numbers derived from
+       Number()-validated series values) — every URL-derived STRING
+       (label, value, delta, kpi key/value) is written via textContent
+       below, never concatenated into markup. ---------- */
+    var sec = document.createElement('section');
+    sec.className = 'plana-sig';
+    sec.id = 'planaSignalModule';
+    sec.setAttribute('data-reveal', '');
+    sec.innerHTML =
+      '<div class="plana-section-head"><span class="plana-eyebrow">From Gateway &mdash; Launch Signals</span></div>' +
+      '<div class="plana-sig-stat">' +
+        '<span class="plana-sig-label"></span>' +
+        '<div class="plana-sig-value-row"><span class="plana-sig-value" data-countup></span></div>' +
+      '</div>' +
+      '<div class="plana-sig-chartwrap">' +
+        '<svg class="plana-sig-chart" viewBox="0 0 ' + VB_W + ' ' + VB_H + '" preserveAspectRatio="none" aria-hidden="true">' +
+          '<defs><linearGradient id="planaSigGrad" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0%" style="stop-color:var(--accent);stop-opacity:0.30"></stop>' +
+            '<stop offset="100%" style="stop-color:var(--accent);stop-opacity:0"></stop>' +
+          '</linearGradient></defs>' +
+          '<line class="plana-sig-baseline" x1="0" y1="' + baseline.toFixed(1) + '" x2="' + VB_W + '" y2="' + baseline.toFixed(1) + '"></line>' +
+          '<path class="plana-sig-area" data-build="fade" d="' + areaPath + '"></path>' +
+          '<path class="plana-sig-line" data-build="draw" pathLength="1" d="' + linePath + '"></path>' +
+          '<circle class="plana-sig-dot" data-build="pop" style="--build-d:700ms" cx="' + lastPt[0].toFixed(1) + '" cy="' + lastPt[1].toFixed(1) + '" r="5"></circle>' +
+        '</svg>' +
+      '</div>' +
+      '<div class="plana-sig-kpis"></div>';
+
+    sec.querySelector('.plana-sig-label').textContent = label;
+    sec.querySelector('.plana-sig-value').textContent = value;
+
+    if (deltaRaw) {
+      var chip = document.createElement('span');
+      chip.className = 'plana-sig-delta';
+      chip.setAttribute('data-dir', isUp ? 'up' : 'down');
+      chip.innerHTML = (isUp
+        ? '<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 9 5 6 7 7.5 10 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.5 3H10V6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
+        : '<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 3 5 6 7 4.5 10 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.5 9H10V5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
+      ) + '<span></span>';
+      chip.querySelector('span').textContent = deltaRaw;
+      sec.querySelector('.plana-sig-value-row').appendChild(chip);
+    }
+
+    var kpiHost = sec.querySelector('.plana-sig-kpis');
+    if (kpis.length) {
+      kpis.forEach(function (item) {
+        var row = document.createElement('div');
+        row.className = 'plana-sig-kpi';
+        row.setAttribute('data-reveal', '');
+        var lab = document.createElement('span');
+        lab.className = 'plana-sig-kpi-label';
+        lab.textContent = item.k;
+        var val = document.createElement('span');
+        val.className = 'plana-sig-kpi-value';
+        val.setAttribute('data-countup', '');
+        val.textContent = item.v;
+        row.appendChild(lab);
+        row.appendChild(val);
+        kpiHost.appendChild(row);
+      });
+    } else {
+      kpiHost.remove();
+    }
+
+    /* Placement: below the front cover, above Plan Parameters — the cover
+       keeps its title-page moment and the incoming chart leads the plan body. */
+    anchor.parentNode.insertBefore(sec, anchor);
+
+    /* ?sigScroll=1 — an embedding host (Gateway v2's canvas tab) wants the
+       board to OPEN on this module rather than the cover. Cross-origin, so
+       it can't scroll us; we do it. Two earlier attempts left the canvas
+       blank: #canvas owns scroll-behavior:smooth AND ms.js runs a lerp
+       hijacker that re-drives scrollTop from its own target — a bare
+       scrollTop/scrollIntoView gets overtaken and lands at the end. Go
+       through MS_scrollToEl, which cancels the rAF and re-seeds the lerp.
+       Reveal is IntersectionObserver-driven, so force-show everything above
+       us first: otherwise those sections sit at opacity 0 and the jump
+       reads as a blank page. */
+    if (qp.get('sigScroll') === '1') {
+      var settle = function () {
+        var all = document.querySelectorAll('#canvas [data-reveal]:not(.is-visible)');
+        Array.prototype.forEach.call(all, function (e) {
+          if (e.compareDocumentPosition(sec) & Node.DOCUMENT_POSITION_FOLLOWING) e.classList.add('is-visible');
+        });
+        sec.classList.add('is-visible');
+        if (window.MS_scrollToEl) window.MS_scrollToEl(sec, 14);
+        else sec.scrollIntoView({ block: 'start' });
+      };
+      setTimeout(settle, 260);
+      setTimeout(settle, 900);   /* re-assert after the shell's own reveal pass */
+    }
+
+    /* Consumers embedding this board (Gateway v2's canvas tab) can't scroll
+       us themselves — different origin — so honour ?sigScroll=1 by bringing
+       the module into view ourselves. Deferred past the shell's fragment
+       reveal so we measure a settled layout, and we walk up to the real
+       scroll container rather than assuming window scroll. */
+  })();
+  </script>
+
+  <section class="plana-accordions" data-reveal data-matte="split">
+
+    <div class="plana-acc" id="planaParamsAcc">
+      <button type="button" class="plana-acc-bar" data-plana-toggle="acc" aria-expanded="false" aria-controls="planaParamsBody">
+        <svg class="plana-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="plana-eyebrow">Plan Parameters (7)</span>
+      </button>
+      <div class="plana-acc-body" id="planaParamsBody">
+        <div class="plana-fields-grid">
+          <div class="plana-field"><span class="plana-field-label">Budget</span><span class="plana-field-value">$18,000</span></div>
+          <div class="plana-field"><span class="plana-field-label">Optimization KPI(s)</span><span class="plana-field-value plana-accent-text plana-mono">AWARENESS</span></div>
+          <div class="plana-field"><span class="plana-field-label">Flight Window</span><span class="plana-field-value">01 MAR - 24 MAY 2026</span></div>
+          <div class="plana-field"><span class="plana-field-label">Markets</span><span class="plana-field-value">US, EMEA</span></div>
+          <div class="plana-field"><span class="plana-field-label">Frequency Target</span><span class="plana-field-value">3.4x</span></div>
+          <div class="plana-field">
+            <span class="plana-field-label">Brief</span>
+            <span class="plana-filechip">
+              <svg width="13" height="15" viewBox="0 0 13 15" fill="none" aria-hidden="true"><path d="M1.5 1.5h6.8L11.5 4.7v8.8a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 1.5v3.5h3.5" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+              MarketBrief123.pdf
+            </span>
+          </div>
+        </div>
+
+        <span class="plana-aud-label">Audience</span>
+
+        <div class="plana-audcard" id="planaAudCard">
+          <button type="button" class="plana-audcard-bar" data-plana-toggle="audcard" aria-expanded="false" aria-controls="planaAudCardBody">
+            <svg class="plana-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <img class="plana-audcard-photo" src="assets/img/plan-audience-performance.png" alt="Performance Enthusiasts audience" />
+            <div class="plana-audcard-main">
+              <div class="plana-audcard-title-row">
+                <span class="plana-audcard-name">Performance Enthusiasts</span>
+                <span class="plana-aichip">✦ AI</span>
+              </div>
+              <p class="plana-audcard-blurb">High-income, brand-loyal drivers who prioritise performance credentials and prestige engineering. Primary consideration audience for Corvache model launches and loyalty campaigns.</p>
+            </div>
+            <div class="plana-audcard-stats">
+              <div class="plana-audcard-stat"><b>2.1M</b><span>People</span></div>
+              <div class="plana-audcard-stat"><b>889K</b><span>Households</span></div>
+            </div>
+          </button>
+
+          <div class="plana-audcard-body" id="planaAudCardBody">
+            <div class="plana-panel">
+              <div class="plana-panel-head">
+                <span class="plana-panel-title">Audience Definition</span>
+                <span class="plana-panel-title-link" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4h6v6M12 4L4 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+              <div class="plana-def-rows">
+                <div class="plana-def-row">
+                  <span class="plana-chip plana-chip--source"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-6)"></span>Comscore</span>
+                  <span class="plana-chip plana-chip--source"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-2)"></span>Acxiom</span>
+                  <span class="plana-chip plana-chip--source"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-3)"></span>Corvache Data</span>
+                </div>
+                <div class="plana-def-row">
+                  <span class="plana-chip plana-chip--def"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-6)"></span>Luxury Auto Intentions ▾</span>
+                  <span class="plana-def-op">AND</span>
+                  <span class="plana-chip plana-chip--def"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-2)"></span>Tech Savvy ▾</span>
+                  <span class="plana-def-op">AND</span>
+                </div>
+                <div class="plana-def-row">
+                  <span class="plana-chip plana-chip--def"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-3)"></span>Mid-High Income ▾</span>
+                  <span class="plana-def-op">OR</span>
+                  <span class="plana-chip plana-chip--def"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-3)"></span>Existing US Corvache Customers ▾</span>
+                </div>
+                <div class="plana-def-row">
+                  <span class="plana-def-op">INCLUDE</span>
+                  <span class="plana-chip plana-chip--def"><span class="plana-chip-dot" data-build="pop" style="background:var(--ms-chart-2)"></span>Read 2026 EV Safety Reports ▾</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="plana-cols">
+              <div class="plana-panel">
+                <div class="plana-panel-head"><span class="plana-panel-title">Media Consumption</span></div>
+                <div class="plana-panel-note">Index vs Gen. Pop.</div>
+                <div class="plana-bar-rows" id="planaMediaConsumption"></div>
+                <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+              </div>
+
+              <div class="plana-cols-stack">
+                <div class="plana-panel">
+                  <div class="plana-panel-head"><span class="plana-panel-title">Partner Affinity ⓘ</span></div>
+                  <div class="plana-aff-rows" id="planaPartnerAffinity"></div>
+                  <p class="ms-source">Source: Axciom</p>
+                </div>
+                <div class="plana-panel">
+                  <div class="plana-panel-head"><span class="plana-panel-title">Channel Affinity ⓘ</span></div>
+                  <div class="plana-aff-rows" id="planaChannelAffinity"></div>
+                  <p class="ms-source">Source: Axciom</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="plana-audcard-actions">
+              <button type="button" class="plana-btn">Chat with Synthetic Persona ↗</button>
+              <button type="button" class="plana-btn">✦ Check across secondary audiences</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="plana-acc" id="planaCompAcc">
+      <button type="button" class="plana-acc-bar" data-plana-toggle="acc" aria-expanded="false" aria-controls="planaCompBody">
+        <svg class="plana-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="plana-eyebrow">Competitive Landscape</span>
+        <span class="plana-eyebrow" style="flex:none">3 Competitors Tracked</span>
+      </button>
+      <div class="plana-acc-body" id="planaCompBody">
+
+        <div class="plana-panel">
+          <div class="plana-panel-head"><span class="plana-panel-title">Competitive Snapshot</span></div>
+
+          <div class="plana-comp-tabs" role="tablist" aria-label="Competitive landscape view" id="planaCompTabs">
+            <button type="button" class="plana-comp-tab" data-active="true" data-comp-tab="sov" role="tab" aria-selected="true" aria-controls="planaCompPanel-sov" id="planaCompTab-sov" tabindex="0">Share of Voice</button>
+            <button type="button" class="plana-comp-tab" data-comp-tab="spend" role="tab" aria-selected="false" aria-controls="planaCompPanel-spend" id="planaCompTab-spend" tabindex="-1">Spend by Channel</button>
+            <button type="button" class="plana-comp-tab" data-comp-tab="search" role="tab" aria-selected="false" aria-controls="planaCompPanel-search" id="planaCompTab-search" tabindex="-1">Search Pressure</button>
+            <button type="button" class="plana-comp-tab" data-comp-tab="partner" role="tab" aria-selected="false" aria-controls="planaCompPanel-partner" id="planaCompTab-partner" tabindex="-1">Partner Presence</button>
+            <button type="button" class="plana-comp-tab" data-comp-tab="intensity" role="tab" aria-selected="false" aria-controls="planaCompPanel-intensity" id="planaCompTab-intensity" tabindex="-1">Competitive Intensity</button>
+            <button type="button" class="plana-comp-tab" data-comp-tab="activity" role="tab" aria-selected="false" aria-controls="planaCompPanel-activity" id="planaCompTab-activity" tabindex="-1">Key Activity</button>
+          </div>
+
+          <div class="plana-comp-panelwrap" id="planaCompPanelWrap">
+
+            <div class="plana-comp-panel" data-panel="sov" role="tabpanel" id="planaCompPanel-sov" aria-labelledby="planaCompTab-sov">
+              <div class="plana-comp-sov-head">
+                <span></span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--accent)"></span>Corvache</span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--ms-chart-4)"></span>Voltrix</span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--ms-chart-2)"></span>Ionara</span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--ms-chart-6)"></span>Ampera</span>
+              </div>
+              <div class="plana-comp-sov-rows" id="planaCompSov"></div>
+              <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+            </div>
+
+            <div class="plana-comp-panel" data-panel="spend" role="tabpanel" id="planaCompPanel-spend" aria-labelledby="planaCompTab-spend" hidden>
+              <p class="plana-comp-explainer">Estimated spend indexed to category average (100 = average). Distinct from share of voice - a brand can lead SOV while spending less efficiently.</p>
+              <div class="plana-comp-sov-head">
+                <span></span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--accent)"></span>Corvache</span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--ms-chart-4)"></span>Voltrix</span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--ms-chart-2)"></span>Ionara</span>
+                <span class="plana-comp-sov-brand"><span class="plana-comp-sov-dot" style="background:var(--ms-chart-6)"></span>Ampera</span>
+              </div>
+              <div class="plana-comp-sov-rows" id="planaCompSpend"></div>
+              <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+            </div>
+
+            <div class="plana-comp-panel" data-panel="search" role="tabpanel" id="planaCompPanel-search" aria-labelledby="planaCompTab-search" hidden>
+              <p class="plana-comp-explainer">Search pressure is concentrated in non-branded, comparison-intent queries - consistent with Voltrix&rsquo;s recent query expansion (see Key Activity)</p>
+              <div class="plana-comp-cards" id="planaCompSearch"></div>
+              <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+            </div>
+
+            <div class="plana-comp-panel" data-panel="partner" role="tabpanel" id="planaCompPanel-partner" aria-labelledby="planaCompTab-partner" hidden>
+              <div class="plana-comp-table" id="planaCompPartner"></div>
+              <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+            </div>
+
+            <div class="plana-comp-panel" data-panel="intensity" role="tabpanel" id="planaCompPanel-intensity" aria-labelledby="planaCompTab-intensity" hidden>
+              <div class="plana-comp-table" id="planaCompIntensity"></div>
+              <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+            </div>
+
+            <div class="plana-comp-panel" data-panel="activity" role="tabpanel" id="planaCompPanel-activity" aria-labelledby="planaCompTab-activity" hidden>
+              <div class="plana-comp-activity" id="planaCompActivity"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div>
+          <div class="plana-panel-head" style="margin-bottom:12px"><span class="plana-panel-title">Opportunity &amp; Risks Callout</span></div>
+          <div class="plana-comp-callout-grid">
+            <div class="plana-comp-callout">
+              <span class="plana-comp-callout-title" style="color:var(--ms-pos)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12h12M2.5 12 2 6l3 2.2L8 4l3 4.2 3-2.2-.5 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>White Space</span>
+              <div class="plana-comp-callout-tags"><span class="plana-comp-callout-tag">Streaming Audio</span><span class="plana-comp-callout-tag">Sports / Tentpole</span></div>
+              <p class="plana-comp-callout-copy">Competitors are largely absent from streaming audio and Q4 sports inventory - open runway for share gains</p>
+            </div>
+            <div class="plana-comp-callout">
+              <span class="plana-comp-callout-title" style="color:var(--ms-chart-4)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12 6 7l3 2.5L14 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 3H14v3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Overcrowded Channels</span>
+              <div class="plana-comp-callout-tags"><span class="plana-comp-callout-tag">Paid Search</span><span class="plana-comp-callout-tag">Connected TV</span></div>
+              <p class="plana-comp-callout-copy">All three competitors are active here; incremental spend faces rising CPC&rsquo;s and share-of-voice ceiling.</p>
+            </div>
+            <div class="plana-comp-callout">
+              <span class="plana-comp-callout-title" style="color:var(--ms-neg)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.2 14.5 13.5h-13L8 2.2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6.5v3.2M8 11.6v.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Defensive Needs</span>
+              <div class="plana-comp-callout-tags"><span class="plana-comp-callout-tag">Paid Search - Branded</span></div>
+              <p class="plana-comp-callout-copy">Voltrix is now bidding on comparison-intent terms; branded search coverage should be protected.</p>
+            </div>
+            <div class="plana-comp-callout">
+              <span class="plana-comp-callout-title" style="color:var(--ms-chart-2)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3.5" width="12" height="10.5" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M2 6.5h12M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Seasonal / Tentpole Risk</span>
+              <div class="plana-comp-callout-tags"><span class="plana-comp-callout-tag">Q4 Holiday Window</span></div>
+              <p class="plana-comp-callout-copy">No competitor tentpole activity detected yet - windows to lock inventory before category spend accelerates.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="plana-panel-head" style="margin-bottom:12px"><span class="plana-panel-title">Plan Implications</span></div>
+          <p class="plana-comp-implications-copy">The clearest realistic win sits in streaming audio and sports/tentpole CTV: Corvache already leads share in streaming audio, competitors show no presence in Q4 sports inventory, and the Performance Enthusiasts audience over-indexes on both. Category benchmarks confirm the category as a whole under-invests in streaming audio relative to norm, leaving room to build before rivals catch up.</p>
+          <div class="plana-comp-fit-rows">
+            <div class="plana-comp-fit-row"><span class="plana-comp-fit-label">Channel Fit</span><span class="plana-comp-fit-rating" data-tier="moderate">Moderate</span><span class="plana-comp-fit-copy">Streaming audio inventory is readily available; sports CTV inventory is limited and may need early lock-in.</span></div>
+            <div class="plana-comp-fit-row"><span class="plana-comp-fit-label">Budget Fit</span><span class="plana-comp-fit-rating" data-tier="strong">Strong</span><span class="plana-comp-fit-copy">Current budget covers sustained streaming audio + sports CTV without pulling from branded search defense.</span></div>
+            <div class="plana-comp-fit-row"><span class="plana-comp-fit-label">Partner Fit</span><span class="plana-comp-fit-rating" data-tier="strong">Strong</span><span class="plana-comp-fit-copy">No competitor presence on ESPN App or Peloton &mdash; a clean path to exclusive-feeling placements.</span></div>
+            <div class="plana-comp-fit-row"><span class="plana-comp-fit-label">Audience Fit</span><span class="plana-comp-fit-rating" data-tier="strong">Strong</span><span class="plana-comp-fit-copy">Performance Enthusiasts already over-index on podcast and CTV sports consumption.</span></div>
+          </div>
+          <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+
+          <div class="plana-comp-insights">
+            <div class="plana-comp-insight">
+              <div class="plana-comp-insight-head">
+                <span class="plana-comp-insight-title">Recommended Channel Shift</span>
+                <span class="plana-comp-confidence"><span class="plana-comp-confidence-dot" style="background:var(--ms-pos)"></span>High Confidence</span>
+              </div>
+              <p class="plana-comp-insight-copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4.5 13 8l-4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Competitors are over-invested in paid search; recommend shifting incremental dollars to upper/mid-funnel channels where there is more white space.</p>
+              <p class="ms-source">Source: Google</p>
+            </div>
+            <div class="plana-comp-insight">
+              <div class="plana-comp-insight-head">
+                <span class="plana-comp-insight-title">Partner / Tactic Opportunity</span>
+                <span class="plana-comp-confidence"><span class="plana-comp-confidence-dot" style="background:var(--plana-yellow)"></span>Directional</span>
+              </div>
+              <p class="plana-comp-insight-copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4.5 13 8l-4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Competitor share of voice is high in CTV, but the client has an opportunity to differentiate through sports and tentpole inventory.</p>
+              <p class="ms-source">Source: Google</p>
+            </div>
+            <div class="plana-comp-insight">
+              <div class="plana-comp-insight-head">
+                <span class="plana-comp-insight-title">Budget Implication</span>
+                <span class="plana-comp-confidence"><span class="plana-comp-confidence-dot" style="background:var(--plana-yellow)"></span>Directional</span>
+              </div>
+              <p class="plana-comp-insight-copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4.5 13 8l-4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Search demand is constrained; additional spend may hit diminishing returns unless paired with demand-generation channels.</p>
+              <p class="ms-source">Source: Google</p>
+            </div>
+            <div class="plana-comp-insight">
+              <div class="plana-comp-insight-head">
+                <span class="plana-comp-insight-title">Caveat / Data Source</span>
+                <span class="plana-comp-confidence"><span class="plana-comp-confidence-dot" style="background:var(--ms-chart-2)"></span>Client-Reported</span>
+              </div>
+              <p class="plana-comp-insight-copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4.5 13 8l-4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Search demand is constrained; additional spend may hit diminishing returns unless paired with demand-generation channels.</p>
+              <p class="ms-source">Source: Google</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="plana-ai-banner" data-reveal id="planaAiBanner">
+    <div class="plana-ai-banner-head">
+      <span class="plana-ai-banner-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 1.5 5v6L8 14.5 14.5 11V5L8 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 5.5v3.2M8 10.8v.1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        AI-Generated Projections
+      </span>
+      <button type="button" class="plana-ai-banner-close" aria-label="Dismiss" data-plana-dismiss-banner>×</button>
+    </div>
+    <p class="plana-ai-banner-body">This output pulls from approved data sources, but the projections and estimates shown are generated by an AI model and may not reflect real-world outcomes exactly. <b>Use your own expert judgment before making any decisions based on this data.</b></p>
+  </section>
+
+  <section class="plana-variants" data-reveal>
+    <div class="plana-section-head">
+      <span class="plana-eyebrow" style="flex:1">Media Plan Variants</span>
+    </div>
+    <div class="plana-variant-grid" id="planaVariantGrid">
+      <button type="button" class="plana-variant-card" data-reveal data-variant="a" data-selected="true" data-reach="67,8%" data-budget="$18,000" data-cpm="$6.20" data-impressions="5.84MM" data-freq="3.4x" data-channels="5 selected" data-reach-color="var(--ms-chart-1)">
+        <div class="plana-variant-top">
+          <span class="plana-variant-name"><span class="plana-variant-dot" style="background:var(--ms-chart-1)"></span>A - Effectiveness-First</span>
+          <span class="plana-variant-pick plana-mono">AI Pick</span>
+        </div>
+        <div class="plana-variant-metrics">
+          <div class="plana-variant-metrics-row">
+            <div><div class="plana-variant-metric-label">Est. Reach</div><div class="plana-variant-metric-value plana-variant-reach" data-countup style="color:var(--ms-chart-1)">67,8%</div></div>
+            <div><div class="plana-variant-metric-label">Budget</div><div class="plana-variant-metric-value" data-countup>$18,000</div></div>
+            <div><div class="plana-variant-metric-label">Avg. CPM</div><div class="plana-variant-metric-value" data-countup>$6.20</div></div>
+          </div>
+          <div class="plana-variant-metrics-row">
+            <div><div class="plana-variant-metric-label">Impressions</div><div class="plana-variant-metric-value" data-countup>5.84MM</div></div>
+            <div><div class="plana-variant-metric-label">Avg. Freq.</div><div class="plana-variant-metric-value" data-countup>3.4x</div></div>
+            <div><div class="plana-variant-metric-label">Channels</div><div class="plana-variant-metric-value" data-countup>5 selected</div></div>
+          </div>
+        </div>
+      </button>
+
+      <button type="button" class="plana-variant-card" data-reveal data-variant="b" data-selected="false" data-reach="58,4%" data-budget="$18,000" data-cpm="$7.10" data-impressions="4.22MM" data-freq="4.4x" data-channels="3 selected" data-reach-color="var(--ms-chart-4)">
+        <div class="plana-variant-top">
+          <span class="plana-variant-name"><span class="plana-variant-dot" style="background:var(--ms-chart-4)"></span>B - Efficiency &amp; Conversion</span>
+          <span class="plana-variant-pick plana-mono">AI Pick</span>
+        </div>
+        <div class="plana-variant-metrics">
+          <div class="plana-variant-metrics-row">
+            <div><div class="plana-variant-metric-label">Est. Reach</div><div class="plana-variant-metric-value plana-variant-reach" data-countup style="color:var(--ms-chart-4)">58,4%</div></div>
+            <div><div class="plana-variant-metric-label">Budget</div><div class="plana-variant-metric-value" data-countup>$18,000</div></div>
+            <div><div class="plana-variant-metric-label">Avg. CPM</div><div class="plana-variant-metric-value" data-countup>$7.10</div></div>
+          </div>
+          <div class="plana-variant-metrics-row">
+            <div><div class="plana-variant-metric-label">Impressions</div><div class="plana-variant-metric-value" data-countup>4.22MM</div></div>
+            <div><div class="plana-variant-metric-label">Avg. Freq.</div><div class="plana-variant-metric-value" data-countup>4.4x</div></div>
+            <div><div class="plana-variant-metric-label">Channels</div><div class="plana-variant-metric-value" data-countup>3 selected</div></div>
+          </div>
+        </div>
+      </button>
+
+      <button type="button" class="plana-variant-card" data-reveal data-variant="c" data-selected="false" data-reach="74,2%" data-budget="$18,000" data-cpm="$5.40" data-impressions="7.10MM" data-freq="2.6x" data-channels="7 selected" data-reach-color="var(--ms-chart-5)">
+        <div class="plana-variant-top">
+          <span class="plana-variant-name"><span class="plana-variant-dot" style="background:var(--ms-chart-5)"></span>C - MMM-Constrained</span>
+          <span class="plana-variant-pick plana-mono">AI Pick</span>
+        </div>
+        <div class="plana-variant-metrics">
+          <div class="plana-variant-metrics-row">
+            <div><div class="plana-variant-metric-label">Est. Reach</div><div class="plana-variant-metric-value plana-variant-reach" data-countup style="color:var(--ms-chart-5)">74,2%</div></div>
+            <div><div class="plana-variant-metric-label">Budget</div><div class="plana-variant-metric-value" data-countup>$18,000</div></div>
+            <div><div class="plana-variant-metric-label">Avg. CPM</div><div class="plana-variant-metric-value" data-countup>$5.40</div></div>
+          </div>
+          <div class="plana-variant-metrics-row">
+            <div><div class="plana-variant-metric-label">Impressions</div><div class="plana-variant-metric-value" data-countup>7.10MM</div></div>
+            <div><div class="plana-variant-metric-label">Avg. Freq.</div><div class="plana-variant-metric-value" data-countup>2.6x</div></div>
+            <div><div class="plana-variant-metric-label">Channels</div><div class="plana-variant-metric-value" data-countup>7 selected</div></div>
+          </div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <section class="plana-summary" data-reveal>
+    <div class="plana-section-head">
+      <span class="plana-eyebrow" id="planaSummaryLabel">Plan Summary | Plan A - Effectiveness-First</span>
+      <button type="button" class="plana-btn">✦ Generate executive summary</button>
+    </div>
+
+    <div class="plana-tiles">
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Total budget</span><span class="plana-tile-value" data-plana-tile="budget">$18,000</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Impressions</span><span class="plana-tile-value" data-plana-tile="impressions">5.84MM</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Avg. CPM</span><span class="plana-tile-value" data-plana-tile="cpm">$6.20</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Avg. frequency</span><span class="plana-tile-value" data-plana-tile="freq">3.4x</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Cumulative reach</span><span class="plana-tile-value" data-countup>67.8%</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Reach w/ decay</span><span class="plana-tile-value" data-countup>51.4%</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Est. revenue</span><span class="plana-tile-value" data-countup>$112,400</span></div>
+      <div class="plana-tile" data-reveal><span class="plana-tile-label">Optimizing for</span><span class="plana-tile-value">Awareness</span></div>
+    </div>
+
+    <div class="plana-budget">
+      <div class="plana-budget-head">
+        <span class="plana-budget-label">Budget allocation</span>
+        <div class="plana-pilltoggle" role="group" aria-label="Budget allocation view">
+          <button type="button" class="plana-pill-btn" aria-pressed="true" data-plana-budgetview="partner">Partner</button>
+          <button type="button" class="plana-pill-btn" aria-pressed="false" data-plana-budgetview="channel">Channel</button>
+        </div>
+      </div>
+      <div class="plana-budget-rows" id="planaBudgetRows"></div>
+      <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var root = document.currentScript.closest('.ms-frag');
+  if (!root) return;
+
+  /* ---------- Accordion toggles (Plan Parameters + Competitive Landscape
+     + the nested Audience card) — buttery expand/collapse: height is
+     measured (scrollHeight) and animated to px, then settles to auto;
+     content fades/slides in ~40ms behind the height; opening is a touch
+     slower than closing. A generation token on the body element makes
+     rapid/double-clicks interrupt cleanly — every async step re-checks
+     it before touching styles, so a stale timer can never stomp a newer
+     animation. Respects body.ms-motion-off + prefers-reduced-motion. ---------- */
+  function msReduceMotion() {
+    return document.body.classList.contains('ms-motion-off') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  function msAnimateAccordion(body, opening) {
+    var gen = (body._msGen = (body._msGen || 0) + 1);
+    if (body._msDone) { body.removeEventListener('transitionend', body._msDone); body._msDone = null; }
+
+    if (msReduceMotion()) {
+      body.style.cssText = '';
+      if (!opening) body.style.display = 'none';
+      return;
+    }
+
+    var startH = body.getBoundingClientRect().height;
+
+    if (opening) {
+      body.style.transition = 'none';
+      body.style.overflow = 'hidden';
+      body.style.display = 'flex';
+      body.style.height = startH + 'px';
+      body.style.opacity = startH > 0 ? (body.style.opacity || '1') : '0';
+      body.style.transform = startH > 0 ? (body.style.transform || 'none') : 'translateY(-6px)';
+      void body.offsetHeight; /* force reflow so the 0-height frame paints before animating */
+      var target = body.scrollHeight;
+      requestAnimationFrame(function () {
+        if (body._msGen !== gen) return;
+        body.style.transition = 'height 420ms cubic-bezier(.16,1,.3,1)';
+        body.style.height = target + 'px';
+      });
+      setTimeout(function () {
+        if (body._msGen !== gen) return;
+        body.style.transition = 'height 420ms cubic-bezier(.16,1,.3,1), opacity 320ms cubic-bezier(.16,1,.3,1), transform 320ms cubic-bezier(.16,1,.3,1)';
+        body.style.opacity = '1';
+        body.style.transform = 'translateY(0)';
+      }, 40);
+      body._msDone = function (e) {
+        if (body._msGen !== gen || e.target !== body || e.propertyName !== 'height') return;
+        body.style.height = 'auto';
+        body.style.overflow = '';
+        body.style.transition = '';
+        body.style.transform = '';
+        body.removeEventListener('transitionend', body._msDone);
+        body._msDone = null;
+      };
+      body.addEventListener('transitionend', body._msDone);
+    } else {
+      body.style.transition = 'none';
+      body.style.overflow = 'hidden';
+      body.style.height = startH + 'px';
+      body.style.opacity = '1';
+      body.style.transform = 'translateY(0)';
+      void body.offsetHeight;
+      requestAnimationFrame(function () {
+        if (body._msGen !== gen) return;
+        body.style.transition = 'height 340ms cubic-bezier(.4,0,1,1), opacity 240ms ease, transform 240ms ease';
+        body.style.height = '0px';
+        body.style.opacity = '0';
+        body.style.transform = 'translateY(-6px)';
+      });
+      body._msDone = function (e) {
+        if (body._msGen !== gen || e.target !== body || e.propertyName !== 'height') return;
+        body.style.display = 'none';
+        body.style.transition = '';
+        body.style.overflow = '';
+        body.removeEventListener('transitionend', body._msDone);
+        body._msDone = null;
+      };
+      body.addEventListener('transitionend', body._msDone);
+    }
+  }
+
+  Array.prototype.forEach.call(root.querySelectorAll('[data-plana-toggle]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var host = btn.closest('.plana-acc, .plana-audcard');
+      if (!host) return;
+      var body = host.querySelector(':scope > .plana-acc-body, :scope > .plana-audcard-body');
+      var opening = !host.classList.contains('is-open');
+      host.classList.toggle('is-open', opening);
+      var chev = btn.querySelector('.plana-chevron');
+      if (chev) chev.classList.toggle('is-open', opening);
+      btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      if (body) msAnimateAccordion(body, opening);
+    });
+  });
+
+  /* ---------- AI banner dismiss ---------- */
+  var banner = root.querySelector('#planaAiBanner');
+  var dismissBtn = root.querySelector('[data-plana-dismiss-banner]');
+  if (dismissBtn && banner) {
+    dismissBtn.addEventListener('click', function () {
+      /* the runtime wraps this section in its own .ms-matte — collapse and
+         remove THAT, otherwise an empty matte is left holding the space */
+      var unit = banner.closest('.ms-matte') || banner;
+      if (msReduceMotion()) { unit.remove(); return; }
+      var h = unit.getBoundingClientRect().height;
+      unit.style.overflow = 'hidden';
+      unit.style.height = h + 'px';
+      unit.style.transition = 'height 320ms cubic-bezier(.16,1,.3,1), opacity 200ms ease, margin 320ms cubic-bezier(.16,1,.3,1)';
+      void unit.offsetHeight;
+      unit.style.height = '0px';
+      unit.style.opacity = '0';
+      unit.style.marginTop = '0px';
+      unit.style.marginBottom = '0px';
+      setTimeout(function () { unit.remove(); }, 340);
+    });
+  }
+
+  /* ---------- Media Consumption bars ---------- */
+  var MEDIA_CONSUMPTION = [
+    { label: 'Connected TV',    idx: 173, fill: 69.6, color: 'var(--ms-chart-3)' },
+    { label: 'Streaming Audio', idx: 173, fill: 38.8, color: 'var(--ms-chart-1)' },
+    { label: 'Social',          idx: 173, fill: 56.6, color: 'var(--ms-chart-4)' },
+    { label: 'Podcast',         idx: 173, fill: 42.5, color: 'var(--ms-chart-5)' },
+    { label: 'Digital Display', idx: 173, fill: 42.5, color: 'var(--plana-yellow)' },
+    { label: 'DOOH',            idx: 173, fill: 32.0, color: 'var(--ms-chart-6)' }
+  ];
+  var mcHost = root.querySelector('#planaMediaConsumption');
+  if (mcHost) {
+    MEDIA_CONSUMPTION.forEach(function (row) {
+      var el = document.createElement('div');
+      el.className = 'plana-bar-row';
+      el.innerHTML =
+        '<span class="plana-bar-row-label">' + row.label + '</span>' +
+        '<span class="plana-bar-track"><span class="plana-bar-fill" data-build="bar-h" style="width:' + row.fill + '%;background:' + row.color + '"></span></span>' +
+        '<span class="plana-bar-row-value plana-mono">' + row.idx + '</span>';
+      mcHost.appendChild(el);
+    });
+  }
+
+  /* ---------- Partner / Channel Affinity lists ---------- */
+  var AFFINITY_ROWS = [
+    { label: null, idx: 178, pct: 41, reach: '861K' },
+    { label: null, idx: 210, pct: 12, reach: '252K' },
+    { label: null, idx: 165, pct: 38, reach: '798K' },
+    { label: null, idx: 143, pct: 52, reach: '1.1M' }
+  ];
+  var PARTNER_LABELS = ['Peloton App Users', 'Delta SkyMiles Members', 'Bloomberg Subscribers', 'Whole Foods Shoppers'];
+  var CHANNEL_LABELS = ['Watches TV Nightly', 'Heavy Financial News Reader', 'Streams Live Sports Weekly', 'Uses Voice Assistant Daily'];
+  var MAX_IDX = 210;
+
+  function renderAffinity(hostId, labels) {
+    var host = root.querySelector(hostId);
+    if (!host) return;
+    labels.forEach(function (label, i) {
+      var row = AFFINITY_ROWS[i];
+      var el = document.createElement('div');
+      el.className = 'plana-aff-row';
+      el.innerHTML =
+        '<span class="plana-aff-label">' + label + '</span>' +
+        '<div class="plana-aff-metrics">' +
+          '<span class="plana-aff-idx plana-mono">' + row.idx + '</span>' +
+          '<div><div class="plana-aff-track"><div class="plana-aff-fill" data-build="bar-h" style="width:' + (row.idx / MAX_IDX * 100) + '%"></div></div><div class="plana-aff-idx-label">IDX</div></div>' +
+          '<span class="plana-aff-pct plana-mono">' + row.pct + '%</span>' +
+          '<div class="plana-aff-track"><div class="plana-aff-fill plana-aff-fill--pct" style="width:' + row.pct + '%"></div></div>' +
+          '<span class="plana-aff-reach plana-mono">' + row.reach + '</span>' +
+        '</div>';
+      host.appendChild(el);
+    });
+  }
+  renderAffinity('#planaPartnerAffinity', PARTNER_LABELS);
+  renderAffinity('#planaChannelAffinity', CHANNEL_LABELS);
+
+  /* ---------- Competitive Landscape: Competitive Snapshot, 6 tabs ----------
+     Share of Voice (board 4771:85990) — channel rows × 4 brand columns.
+     Cells are board text EXCEPT where the board left placeholders, which
+     Bryan explicitly authorised repairing (2026-08-06):
+       · SOV Ionara read a bare "178" for Connected TV / Paid Search →
+         now 18% / 21%, the values that make those rows total 100% across
+         the four brands (every other SOV row already totals ~100).
+       · Spend by Channel had "Peloton App Users" as row 1 (a partner
+         name leaked in from the affinity list) and "178" in all 20 cells
+         → row 1 is Connected TV (completing the same channel set as SOV)
+         and cells carry indices consistent with each brand's SOV
+         position. Bars scale off a fixed 200 ceiling. ---------- */
+  var COMP_SOV = [
+    { channel: 'Connected TV',    cells: ['28%', '41%', '18%', '13%'], lead: 1 },
+    { channel: 'Paid Search',     cells: ['22%', '46%', '21%', '11%'], lead: 1 },
+    { channel: 'Social',          cells: ['33%', '24%', '48%', '14%'], lead: 2 },
+    { channel: 'DOOH',            cells: ['19%', '20%', '16%', '49%'], lead: 3 },
+    { channel: 'Streaming Audio', cells: ['37%', '18%', '13%', '30%'], lead: 0 }
+  ];
+  var COMP_SPEND = [
+    { channel: 'Connected TV',    cells: ['112', '164', '72', '52'],  lead: 1 },
+    { channel: 'Paid Search',     cells: ['88',  '184', '84', '44'],  lead: 1 },
+    { channel: 'Social',          cells: ['132', '96',  '192', '56'], lead: 2 },
+    { channel: 'DOOH',            cells: ['76',  '80',  '64', '196'], lead: 3 },
+    { channel: 'Streaming Audio', cells: ['148', '72',  '52', '120'], lead: 0 }
+  ];
+  function renderCompMatrix(host, rows, fixedMax) {
+    if (!host) return;
+    rows.forEach(function (row) {
+      var vals = row.cells.map(function (c) { return parseInt(c, 10); });
+      var max = fixedMax || Math.max.apply(null, vals);
+      var cellsHtml = row.cells.map(function (c, i) {
+        var pct = max ? (vals[i] / max * 100) : 0;
+        return '<div class="plana-comp-sov-cell"' + (i === row.lead ? ' data-lead="true"' : '') + '>' +
+          '<span class="plana-comp-sov-val plana-mono">' + c + '</span>' +
+          '<span class="plana-comp-sov-track"><span class="plana-comp-sov-fill" data-build="bar-h" style="width:' + pct + '%"></span></span>' +
+        '</div>';
+      }).join('');
+      var el = document.createElement('div');
+      el.className = 'plana-comp-sov-row';
+      el.innerHTML = '<span class="plana-comp-sov-label">' + row.channel + '</span>' + cellsHtml;
+      host.appendChild(el);
+    });
+  }
+  renderCompMatrix(root.querySelector('#planaCompSov'), COMP_SOV);
+  renderCompMatrix(root.querySelector('#planaCompSpend'), COMP_SPEND, 200);
+
+  /* ---------- Search Pressure: 3 stat cards (board 4771:84988) ---------- */
+  var COMP_SEARCH = [
+    { num: '68%', title: 'Branded Term Auction Overlap', sub: '+9 pts vs. last quater', trend: 'up',
+      desc: 'Share of Corvache branded-search auctions where at least one competitor also bids.' },
+    { num: '134', title: 'Category CPC Index', sub: 'vs. 6-month average of 100', trend: 'up',
+      desc: 'Rising cost-per-click across non-branded EV category terms.' },
+    { num: '52%', title: 'Non-Brand Query Overlap', sub: 'steady for 3 months', trend: 'flat',
+      desc: 'Non-branded, comparison-intent queries where 2+ competitors appear alongside Corvache.' }
+  ];
+  var TREND_ICON = {
+    up: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="color:var(--ms-neg)"><path d="M2.5 11.5 6.3 7.4l2.3 2.1L13.5 4.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4.5h3.5V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    flat: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="color:var(--text-subtle)"><path d="M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
+  };
+  var searchHost = root.querySelector('#planaCompSearch');
+  if (searchHost) {
+    COMP_SEARCH.forEach(function (card) {
+      var el = document.createElement('div');
+      el.className = 'plana-comp-card';
+      el.innerHTML =
+        '<div class="plana-comp-card-top"><span class="plana-comp-card-num" data-countup>' + card.num + '</span><span class="plana-comp-trend" data-build="pop">' + TREND_ICON[card.trend] + '</span></div>' +
+        '<div><p class="plana-comp-card-title">' + card.title + '</p><span class="plana-comp-card-sub">' + card.sub + '</span></div>' +
+        '<p class="plana-comp-card-desc">' + card.desc + '</p>';
+      searchHost.appendChild(el);
+    });
+  }
+
+  /* ---------- Partner Presence rows (board 4771:84755) ---------- */
+  var COMP_PARTNER = [
+    { ch: 'Connected TV',      partner: 'Hulu',        competitor: 'Voltrix', desc: 'Voltrix running its launch spot inside Hulu original programming.' },
+    { ch: 'CTV/Sports',        partner: 'ESPN App',     competitor: null,      desc: 'No competitor presence detected - open inventory ahead of Q4 sports tentpoles.' },
+    { ch: 'Streaming Radio',   partner: 'iHeartRadio',  competitor: 'Ampera',  desc: 'Ampera running host-read sports on drive-time programming' },
+    { ch: 'Connected Fitness', partner: 'Peloton',      competitor: null,      desc: 'No competitors presence - aligns with the Performance Enthusiasts audience’s partner affinity.' },
+    { ch: 'DOOH/Navigation',   partner: 'Waze',         competitor: 'Ampera',  desc: 'Ampera sponsoring destinatior pins near dealership clusters.' }
+  ];
+  var partnerHost = root.querySelector('#planaCompPartner');
+  if (partnerHost) {
+    COMP_PARTNER.forEach(function (row) {
+      var thirdCol = row.competitor
+        ? '<span class="plana-comp-row-partner" style="font-weight:600">' + row.competitor + '</span>'
+        : '<span class="plana-comp-badge" data-tone="open">Open</span>';
+      var el = document.createElement('div');
+      el.className = 'plana-comp-row plana-comp-row--partner';
+      el.innerHTML =
+        '<span class="plana-comp-row-ch">' + row.ch + '</span>' +
+        '<span class="plana-comp-row-partner">' + row.partner + '</span>' +
+        thirdCol +
+        '<span class="plana-comp-row-desc">' + row.desc + '</span>';
+      partnerHost.appendChild(el);
+    });
+  }
+
+  /* ---------- Competitive Intensity rows (board 4771:84659) ---------- */
+  var COMP_INTENSITY = [
+    { ch: 'Paid Search',       level: 'High',   desc: '3 of 3 competitors bidding on branded + category terms' },
+    { ch: 'Connected TV',      level: 'High',   desc: 'Voltrix launch campaign running through Q4' },
+    { ch: 'DOOH',              level: 'Medium', desc: 'Ampera concentrated in top-10 metros only' },
+    { ch: 'Streaming Audio',   level: 'Low',    desc: 'Only Ampera present; Corvache already leads share' },
+    { ch: 'Sports / Tentpole', level: 'Low',    desc: 'Only Ampera present; Corvache already leads share' }
+  ];
+  var intensityHost = root.querySelector('#planaCompIntensity');
+  if (intensityHost) {
+    COMP_INTENSITY.forEach(function (row) {
+      var el = document.createElement('div');
+      el.className = 'plana-comp-row plana-comp-row--intensity';
+      el.innerHTML =
+        '<span class="plana-comp-row-ch">' + row.ch + '</span>' +
+        '<span class="plana-comp-badge" data-tone="' + row.level.toLowerCase() + '">' + row.level + '</span>' +
+        '<span class="plana-comp-row-desc">' + row.desc + '</span>';
+      intensityHost.appendChild(el);
+    });
+  }
+
+  /* ---------- Key Activity feed (board 4771:84876) — no aggregate
+     module source; each entry carries its own, board-exact. ---------- */
+  var COMP_ACTIVITY = [
+    { who: 'Voltrix', color: 'var(--ms-chart-4)', tags: ['Paid Search'], recency: 'Last 14 days',
+      desc: 'Expanded bidding to include “best luxury EV” and comparison-intent queries.', source: 'Source: Competitive Search Data' },
+    { who: 'Ampera', color: 'var(--ms-chart-6)', tags: ['DOOH', 'Waze'], recency: 'last 30 days',
+      desc: 'New placements concentrated in NYC, LA, Chicago transit hubs, sponsoring destination pins near dealership clusters.', source: 'Source: Media Radar' },
+    { who: 'Voltrix', color: 'var(--ms-chart-4)', tags: ['Connected TV', 'Hulu'], recency: 'ongoing',
+      desc: 'Sustained: 30 launch spot in primetime CTV inventory since early July.', source: 'Source: Media Radar' },
+    { who: 'Ionara', color: 'var(--ms-chart-2)', tags: ['Social'], recency: 'last 7 days',
+      desc: 'Increased creative frequency around a financing-offer promotion.', source: 'Source: Client / Team Knowledge' }
+  ];
+  var activityHost = root.querySelector('#planaCompActivity');
+  if (activityHost) {
+    COMP_ACTIVITY.forEach(function (item) {
+      var tagsHtml = item.tags.map(function (t, i) {
+        return '<span class="plana-comp-activity-tag' + (i === 1 ? ' plana-comp-activity-tag--property' : '') + '">' + t + '</span>';
+      }).join('');
+      var el = document.createElement('div');
+      el.className = 'plana-comp-activity-card';
+      el.innerHTML =
+        '<div class="plana-comp-activity-head">' +
+          '<div class="plana-comp-activity-who"><span class="plana-comp-activity-dot" data-build="pop" style="background:' + item.color + '"></span><span class="plana-comp-activity-name">' + item.who + '</span>' + tagsHtml + '</div>' +
+          '<span class="plana-comp-activity-recency">' + item.recency + '</span>' +
+        '</div>' +
+        '<p class="plana-comp-activity-desc">' + item.desc + '</p>' +
+        '<p class="plana-comp-activity-source">' + item.source + '</p>';
+      activityHost.appendChild(el);
+    });
+  }
+
+  /* ---------- Competitive Snapshot: tab switching — crossfade panels
+     (~250ms), animate the wrapper height between differently-sized
+     panels, roving-tabindex keyboard nav (arrow/home/end, automatic
+     activation), generation-token guarded so rapid clicks never desync.
+     Respects body.ms-motion-off + prefers-reduced-motion. ---------- */
+  (function () {
+    var tabsHost = root.querySelector('#planaCompTabs');
+    var wrap = root.querySelector('#planaCompPanelWrap');
+    if (!tabsHost || !wrap) return;
+    var tabs = Array.prototype.slice.call(tabsHost.querySelectorAll('.plana-comp-tab'));
+    var panels = {};
+    Array.prototype.forEach.call(wrap.querySelectorAll('.plana-comp-panel'), function (p) {
+      panels[p.getAttribute('data-panel')] = p;
+    });
+    var activeKey = 'sov';
+
+    function setActiveTab(key) {
+      tabs.forEach(function (t) {
+        var is = t.getAttribute('data-comp-tab') === key;
+        t.setAttribute('data-active', is ? 'true' : 'false');
+        t.setAttribute('aria-selected', is ? 'true' : 'false');
+        t.tabIndex = is ? 0 : -1;
+      });
+    }
+
+    /* Cleanup always resolves against whichever panel(s) are ACTUALLY
+       visible in the DOM at the moment it runs — never a captured
+       closure reference. Rapid clicks bump the generation token and
+       every earlier callback bails out before touching styles, but the
+       one callback that DOES win must still be able to hide whatever
+       got left on-screen by those abandoned in-flight switches, not just
+       the single panel that was active when IT was queued. Without this
+       an interrupted third+ click can leave two panels stacked. */
+    function hideAllExcept(keepEl) {
+      Object.keys(panels).forEach(function (k) {
+        var p = panels[k];
+        if (p !== keepEl && !p.hidden) {
+          p.hidden = true;
+          p.style.cssText = '';
+        }
+      });
+    }
+
+    function switchTo(key, opts) {
+      opts = opts || {};
+      if (key === activeKey || !panels[key]) return;
+      var toEl = panels[key];
+      var fromEl = panels[activeKey];
+      activeKey = key;
+      setActiveTab(key);
+
+      if (msReduceMotion()) {
+        hideAllExcept(toEl);
+        toEl.hidden = false;
+        toEl.style.cssText = '';
+        wrap.style.height = '';
+        return;
+      }
+
+      var gen = (wrap._msGen = (wrap._msGen || 0) + 1);
+      var startH = wrap.getBoundingClientRect().height;
+      wrap.style.overflow = 'hidden';
+      wrap.style.height = startH + 'px';
+
+      if (fromEl && !fromEl.hidden) {
+        fromEl.style.transition = 'opacity 150ms ease, filter 150ms ease, transform 150ms ease';
+        fromEl.style.opacity = '0';
+        fromEl.style.filter = 'blur(3px)';
+        fromEl.style.transform = 'translateY(4px)';
+      }
+
+      setTimeout(function () {
+        if (wrap._msGen !== gen) return;
+        hideAllExcept(toEl);
+
+        toEl.hidden = false;
+        toEl.style.transition = 'none';
+        toEl.style.opacity = '0';
+        toEl.style.filter = 'blur(3px)';
+        toEl.style.transform = 'translateY(4px)';
+        void toEl.offsetHeight;
+        var targetH = toEl.scrollHeight;
+
+        wrap.style.transition = 'height 280ms cubic-bezier(.16,1,.3,1)';
+        wrap.style.height = targetH + 'px';
+
+        requestAnimationFrame(function () {
+          if (wrap._msGen !== gen) return;
+          toEl.style.transition = 'opacity 220ms ease, filter 220ms ease, transform 220ms cubic-bezier(.16,1,.3,1)';
+          toEl.style.opacity = '1';
+          toEl.style.filter = 'blur(0)';
+          toEl.style.transform = 'translateY(0)';
+        });
+
+        setTimeout(function () {
+          if (wrap._msGen !== gen) return;
+          wrap.style.height = '';
+          wrap.style.overflow = '';
+          wrap.style.transition = '';
+          toEl.style.cssText = '';
+        }, 300);
+      }, 150);
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () { switchTo(t.getAttribute('data-comp-tab')); });
+    });
+
+    tabsHost.addEventListener('keydown', function (e) {
+      var idx = tabs.indexOf(document.activeElement);
+      if (idx === -1) return;
+      var next = null;
+      if (e.key === 'ArrowRight') next = tabs[(idx + 1) % tabs.length];
+      else if (e.key === 'ArrowLeft') next = tabs[(idx - 1 + tabs.length) % tabs.length];
+      else if (e.key === 'Home') next = tabs[0];
+      else if (e.key === 'End') next = tabs[tabs.length - 1];
+      if (next) {
+        e.preventDefault();
+        next.focus();
+        switchTo(next.getAttribute('data-comp-tab'));
+      }
+    });
+  })();
+
+  /* ---------- Budget allocation: Partner / Channel toggle ---------- */
+  var BUDGET_PARTNER = [
+    { name: 'Youtube',        pct: 19, img: 'assets/img/plan-brand-youtube.png' },
+    { name: 'Motor Trend+',   pct: 10, img: 'assets/img/plan-brand-motortrend.png' },
+    { name: 'Bloomberg',      pct: 16, img: 'assets/img/plan-brand-bloomberg.png' },
+    { name: 'Wall St. Journal', pct: 11, img: 'assets/img/plan-brand-wsj.png' },
+    { name: 'Linkedin',       pct: 11, img: 'assets/img/plan-brand-linkedin.png' },
+    { name: 'Instagram',      pct: 7,  img: 'assets/img/plan-brand-instagram.png' },
+    { name: 'Spotify',        pct: 12, img: 'assets/brand-logos/spotify.svg' },
+    { name: 'Apple Podcast',  pct: 8,  img: 'assets/img/plan-brand-applepodcast.png' }
+  ];
+  var BUDGET_CHANNEL = [
+    { name: 'Online Video',     pct: 29, color: 'var(--ms-chart-1)' },
+    { name: 'Audio',            pct: 20, color: 'var(--ms-chart-5)' },
+    { name: 'News & Display',   pct: 27, color: 'var(--ms-chart-6)' },
+    { name: 'Social',           pct: 18, color: 'var(--ms-chart-2)' }
+  ];
+
+  var budgetHost = root.querySelector('#planaBudgetRows');
+  function renderBudget(view) {
+    if (!budgetHost) return;
+    budgetHost.innerHTML = '';
+    var rows = view === 'channel' ? BUDGET_CHANNEL : BUDGET_PARTNER;
+    var max = Math.max.apply(null, rows.map(function (r) { return r.pct; }));
+    rows.forEach(function (row) {
+      var el = document.createElement('div');
+      el.className = 'plana-budget-row';
+      var brandHtml = row.img
+        ? '<img src="' + row.img + '" alt="" />'
+        : '<span class="plana-budget-brand-swatch" style="background:' + row.color + '"></span>';
+      el.innerHTML =
+        '<span class="plana-budget-brand">' + brandHtml + '<span class="plana-budget-brand-name">' + row.name + '</span></span>' +
+        '<span class="plana-budget-track"><span class="plana-budget-fill" data-build="bar-h" style="width:' + (row.pct / max * 100) + '%' + (row.color ? ';background:' + row.color : '') + '"></span></span>' +
+        '<span class="plana-budget-pct plana-mono">' + row.pct + '%</span>';
+      budgetHost.appendChild(el);
+    });
+  }
+  renderBudget('partner');
+
+  Array.prototype.forEach.call(root.querySelectorAll('[data-plana-budgetview]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var view = btn.getAttribute('data-plana-budgetview');
+      Array.prototype.forEach.call(root.querySelectorAll('[data-plana-budgetview]'), function (b) {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      renderBudget(view);
+    });
+  });
+
+  /* ---------- Variant selection → ring + summary label + summary tiles ---------- */
+  var variantCards = root.querySelectorAll('.plana-variant-card');
+  var summaryLabel = root.querySelector('#planaSummaryLabel');
+  var VARIANT_NAMES = {
+    a: 'Plan A - Effectiveness-First',
+    b: 'Plan B - Efficiency & Conversion',
+    c: 'Plan C - MMM-Constrained'
+  };
+  Array.prototype.forEach.call(variantCards, function (card) {
+    card.addEventListener('click', function () {
+      Array.prototype.forEach.call(variantCards, function (c) { c.setAttribute('data-selected', c === card ? 'true' : 'false'); });
+      var v = card.getAttribute('data-variant');
+      if (summaryLabel) summaryLabel.textContent = 'Plan Summary | ' + VARIANT_NAMES[v];
+      var map = {
+        budget: card.getAttribute('data-budget'),
+        impressions: card.getAttribute('data-impressions'),
+        cpm: card.getAttribute('data-cpm'),
+        freq: card.getAttribute('data-freq')
+      };
+      Object.keys(map).forEach(function (key) {
+        var tile = root.querySelector('[data-plana-tile="' + key + '"]');
+        if (tile) tile.textContent = map[key];
+      });
+    });
+  });
+})();
+</script>

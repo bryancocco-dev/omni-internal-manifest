@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  OMNI component: overlay_workflowtakeover
+  Project: Workflows
+  Note: .workflow-overlay — full-canvas mode-switch overlay (fade-in/eased-fade-out, visibility-not-display so React Flow gets a real first measurement) that the 5th rail icon opens; #workflow-root is the React mount point — its content (toolbar, block palette, node cards, canvas, edges) is 100% runtime and not present in static markup
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workflows — overlay_workflowtakeover · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-workflows.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="workflow-overlay is-open" style="position:relative;inset:auto;height:320px;">
+      <div id="workflow-root" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-subtle);font:13px/1.5 var(--font-mono, monospace);text-align:center;padding:24px;border:1px dashed var(--line);box-sizing:border-box;">
+        React Flow builder mounts here at runtime — toolbar, block palette,<br/>node cards, canvas &amp; edges are rendered by src/main.jsx, not static HTML.
+      </div>
+    </div>
+</body>
+</html>

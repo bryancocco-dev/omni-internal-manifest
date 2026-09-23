@@ -1,0 +1,82 @@
+<!doctype html>
+<!--
+  OMNI component: siderail
+  Project: Brief
+  Note: .side-rail — vertical rail with back button, CANVAS title, and 4 rail tools (Agents / Knowledge / Tools / Instructions)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — siderail · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div style="display:inline-grid;grid-template-columns:var(--rail-w,80px);grid-template-rows:1fr;height:540px;vertical-align:top">
+    <div class="side-rail">
+      <button class="rail-back" id="backToHub" title="Back to Internal Manifest" aria-label="Back to Internal Manifest">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="rail-title">CANVAS</div>
+      <div class="rail-tools" role="group" aria-label="Workspace tools">
+        <button class="rail-tool rail-tool-agents" type="button" aria-label="Agents" data-tip="rich">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect class="rail-tool-bot-body" x="4" y="7" width="16" height="12" rx="2.5"/>
+            <circle class="rail-tool-bot-eye rail-tool-bot-eye-l" cx="9" cy="13" r="1.4" fill="currentColor" stroke="none"/>
+            <circle class="rail-tool-bot-eye rail-tool-bot-eye-r" cx="15" cy="13" r="1.4" fill="currentColor" stroke="none"/>
+            <line class="rail-tool-bot-antenna" x1="12" y1="3.5" x2="12" y2="7"/>
+            <circle class="rail-tool-bot-antenna-tip" cx="12" cy="3.5" r="1" fill="currentColor" stroke="none"/>
+            <path class="rail-tool-bot-bolt rail-tool-bot-bolt-l" d="M5.5 2.5 L4 4.5 L5 4.5 L3.5 6.5" stroke-width="0.9"/>
+            <path class="rail-tool-bot-bolt rail-tool-bot-bolt-r" d="M18.5 2.5 L20 4.5 L19 4.5 L20.5 6.5" stroke-width="0.9"/>
+          </svg>
+          <span class="rail-tool-tip" id="agentsRailTip" aria-hidden="true">
+            <span class="rail-tool-tip-title">Agents</span>
+            <span class="rail-tool-tip-body"><strong data-tip-x>0</strong> of <strong data-tip-y>0</strong> workspace agents are available in this Canvas</span>
+          </span>
+        </button>
+        <button class="rail-tool rail-tool-knowledge" type="button" aria-label="Knowledge base" data-tip="rich">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse class="rail-tool-kb-incoming" cx="12" cy="5.5" rx="8" ry="2.5"/>
+            <ellipse class="rail-tool-kb-top" cx="12" cy="5.5" rx="8" ry="2.5"/>
+            <path class="rail-tool-kb-mid" d="M4 5.5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/>
+            <path class="rail-tool-kb-bot" d="M4 11.5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/>
+            <ellipse class="rail-tool-kb-outgoing" cx="12" cy="17.5" rx="8" ry="2.5"/>
+          </svg>
+          <span class="rail-tool-tip" id="knowledgeRailTip" aria-hidden="true">
+            <span class="rail-tool-tip-title">Knowledge Bases</span>
+            <span class="rail-tool-tip-body"><strong data-tip-x>0</strong> of <strong data-tip-y>0</strong> knowledge bases are available in this Canvas</span>
+          </span>
+        </button>
+        <button class="rail-tool rail-tool-tools" type="button" aria-label="Tools" data-tip="rich">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <g class="rail-tool-tb-lid">
+              <path class="rail-tool-tb-handle" d="M9 6.5V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v1.5"/>
+              <path class="rail-tool-tb-top" d="M3 11.5 L3 8 A1.5 1.5 0 0 1 4.5 6.5 L19.5 6.5 A1.5 1.5 0 0 1 21 8 L21 11.5 Z"/>
+            </g>
+            <path class="rail-tool-tb-body" d="M3 11.5 L21 11.5 L21 18 A1.5 1.5 0 0 1 19.5 19.5 L4.5 19.5 A1.5 1.5 0 0 1 3 18 Z"/>
+            <rect class="rail-tool-tb-clasp" x="10" y="13.5" width="4" height="2.5" rx="0.5"/>
+          </svg>
+          <span class="rail-tool-tip" id="toolsRailTip" aria-hidden="true">
+            <span class="rail-tool-tip-title">Required Tools</span>
+            <span class="rail-tool-tip-body"><strong data-tip-x>0</strong> of <strong data-tip-y>0</strong> tools are available in this Canvas</span>
+          </span>
+        </button>
+        <button class="rail-tool rail-tool-instructions" type="button" aria-label="Instructions" data-tooltip="Instructions">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="4" width="12" height="17" rx="1.5"/>
+            <path d="M9 3.5h6v3H9z"/>
+            <line class="rail-tool-ins-line rail-tool-ins-line-1" x1="9" y1="11" x2="15" y2="11"/>
+            <line class="rail-tool-ins-line rail-tool-ins-line-2" x1="9" y1="14" x2="15" y2="14"/>
+            <line class="rail-tool-ins-line rail-tool-ins-line-3" x1="9" y1="17" x2="13" y2="17"/>
+          </svg>
+        </button>
+      </div>
+    </div></div>
+</body>
+</html>

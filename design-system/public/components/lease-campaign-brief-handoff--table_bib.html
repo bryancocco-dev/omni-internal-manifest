@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+  OMNI component: table_bib
+  Project: Brief
+  Note: .bib-table — source-inventory bibliography table (relevance pips, tags, links)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — table_bib · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="bib-table-wrap">
+            <table class="bib-table" aria-label="Source inventory">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Source</th>
+                  <th>Type</th>
+                  <th>Relevance</th>
+                  <th>Key Coverage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="bib-n">01</td>
+                  <td class="bib-source"><a href="https://www.jdpower.com/business/press-releases/2024-north-america-rental-car-satisfaction-study" target="_blank" rel="noopener">J.D. Power 2024 North America Rental Car Satisfaction Study (PDF)</a></td>
+                  <td class="bib-tag">Research</td>
+                  <td class="bib-rel critical"><span class="bib-rel-pip">Critical</span></td>
+                  <td class="bib-coverage">National #1 (736); Enterprise #2 (729); trust as key loyalty driver; vehicle complexity issues</td>
+                </tr>
+                <tr>
+                  <td class="bib-n">05</td>
+                  <td class="bib-source"><a href="https://www.enterprisemobility.com/content/dam/emo/global/pdfs/esg/enterprise-mobility-esg-report-fy24.pdf" target="_blank" rel="noopener">Enterprise Mobility ESG Report FY24 (PDF)</a></td>
+                  <td class="bib-tag">Official</td>
+                  <td class="bib-rel high"><span class="bib-rel-pip">High</span></td>
+                  <td class="bib-coverage">Scale data, sustainability strategy, EV pilot programs, fleet size</td>
+                </tr>
+                <tr>
+                  <td class="bib-n">19</td>
+                  <td class="bib-source"><a href="https://www.acrarental.org/news" target="_blank" rel="noopener">ACRA — American Car Rental Association Briefs</a></td>
+                  <td class="bib-tag">Industry</td>
+                  <td class="bib-rel medium"><span class="bib-rel-pip">Medium</span></td>
+                  <td class="bib-coverage">Regulatory pressure on transaction fees; insurance product disclosure</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+</body>
+</html>

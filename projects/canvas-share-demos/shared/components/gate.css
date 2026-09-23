@@ -1,0 +1,231 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Access gate — the invitation ritual. The real document renders BEHIND a
+   heavy frost (a tease, not a blank wall); an Omni-branded, theme-aware card
+   floats over it. Email → verifying → the gate dissolves and the canvas
+   resolves into focus.
+
+   Card language is ripped from copy-request-access's gateway (same restraint,
+   same weight) — but that gate is fully OPAQUE; the frost + reveal
+   choreography here is new, and uses this project's motion curves.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── the frost: the canvas behind, blurred + pushed back ─────────────────── */
+body.is-gated .doc {
+  filter: blur(18px) saturate(0.92);
+  transform: scale(1.045);
+  transform-origin: center 38%;
+  pointer-events: none;
+  user-select: none;
+  will-change: filter, transform;
+}
+/* Chrome that lives outside .doc must not stay sharp over the frost. */
+body.is-gated .doc-rail,
+body.is-gated .comments-panel { opacity: 0; pointer-events: none; }
+
+/* The reveal: blur/scale resolve, chrome fades back in. Slower + softer than a
+   UI transition — this is the hero moment. */
+body.is-unlocking .doc {
+  filter: blur(0) saturate(1);
+  transform: none;
+  transition:
+    filter 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+body.is-unlocking .doc-rail,
+body.is-unlocking .comments-panel {
+  opacity: 1;
+  transition: opacity 700ms ease 420ms;
+}
+
+/* ── scrim + card ───────────────────────────────────────────────────────── */
+.doc-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  /* Dim, not black — the document must read through it. */
+  background:
+    radial-gradient(120% 90% at 50% 42%, transparent 8%, color-mix(in srgb, var(--doc-page-bg) 62%, transparent) 100%),
+    color-mix(in srgb, var(--doc-page-bg) 58%, transparent);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  transition: opacity 620ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.doc-gate.is-leaving { opacity: 0; pointer-events: none; }
+
+.doc-gate__card {
+  width: min(430px, 100%);
+  padding: 38px 38px 30px;
+  text-align: center;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 30px 80px -12px rgba(15, 23, 42, 0.35),
+    0 12px 32px -8px rgba(15, 23, 42, 0.20);
+  position: relative;
+  overflow: hidden;
+  animation: docGateIn 620ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+.doc-gate.is-leaving .doc-gate__card {
+  transform: translateY(-6px) scale(0.97);
+  opacity: 0;
+  transition: transform 520ms cubic-bezier(0.4, 0, 0.2, 1), opacity 420ms ease;
+}
+@keyframes docGateIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.975); }
+  to { opacity: 1; transform: none; }
+}
+
+.doc-gate__logo {
+  height: 20px;
+  width: auto;
+  display: block;
+  margin: 0 auto 26px;
+  filter: brightness(0);
+}
+[data-theme='dark'] .doc-gate__logo { filter: brightness(0) invert(1); }
+
+.doc-gate__lede {
+  margin: 0 0 22px;
+  font-family: var(--doc-font-body);
+  font-size: 16.5px;
+  line-height: 1.45;
+  letter-spacing: -0.2px;
+  color: var(--doc-ink-strong);
+}
+.doc-gate__lede strong { font-weight: 600; color: var(--doc-accent); }
+
+/* File identity chip — grounds the invite in a real artifact. */
+.doc-gate__file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 22px;
+  text-align: left;
+  background: var(--doc-nested-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-medium);
+}
+.doc-gate__file-glyph {
+  flex: none;
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--omni-radius-small);
+  background: var(--doc-accent-soft);
+  color: var(--doc-accent);
+}
+.doc-gate__file-glyph svg { width: 17px; height: 17px; }
+.doc-gate__file-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.doc-gate__file-title {
+  font-family: var(--doc-font-body);
+  font-size: 13.5px; font-weight: 600;
+  color: var(--doc-ink-strong);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.doc-gate__file-sub {
+  font-family: var(--doc-font-mono);
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+}
+
+/* ── form ───────────────────────────────────────────────────────────────── */
+.doc-gate__form { display: flex; gap: 8px; }
+.doc-gate__input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-medium);
+  background: transparent;
+  font-family: var(--doc-font-body);
+  font-size: 14px;
+  color: var(--doc-ink-strong);
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.doc-gate__input::placeholder { color: var(--doc-ink-subtle); }
+.doc-gate__input:focus {
+  border-color: var(--doc-accent);
+  box-shadow: 0 0 0 3px var(--doc-accent-soft);
+}
+.doc-gate__input:disabled { opacity: 0.6; }
+
+.doc-gate__btn {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  height: 44px;
+  padding: 0 22px;
+  border: none;
+  border-radius: var(--omni-radius-medium);
+  background: var(--doc-accent);
+  color: var(--omni-text-on-bright-bg, #fff);
+  font-family: var(--doc-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.05px;
+  cursor: pointer;
+  transition: filter 160ms ease, box-shadow 160ms ease, width 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.doc-gate__btn:hover { filter: brightness(1.06); }
+.doc-gate__btn:disabled { cursor: default; }
+
+/* Verifying — the button morphs to a quiet label and a shimmer sweeps it.
+   No spinner. */
+.doc-gate__card.is-verifying .doc-gate__btn { filter: none; }
+.doc-gate__btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.42) 50%, transparent 70%);
+}
+.doc-gate__card.is-verifying .doc-gate__btn::after {
+  animation: docGateShimmer 900ms ease-in-out infinite;
+}
+@keyframes docGateShimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+/* Progress hairline across the card's base — fills over the verify window. */
+.doc-gate__progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: transparent;
+}
+.doc-gate__progress::before {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--doc-accent);
+  border-radius: 0 2px 2px 0;
+}
+.doc-gate__card.is-verifying .doc-gate__progress::before {
+  width: 100%;
+  transition: width 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.doc-gate__foot {
+  margin: 18px 0 0;
+  font-family: var(--doc-font-body);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--doc-ink-subtle);
+}
+.doc-gate__error { color: #dc2626; }
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-gated .doc { filter: blur(10px); transform: none; }
+  .doc-gate__card { animation: none; }
+  .doc-gate__card.is-verifying .doc-gate__btn::after { animation: none; }
+}

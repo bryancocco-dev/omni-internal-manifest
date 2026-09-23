@@ -1,0 +1,219 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Contents rail — the left-edge counterpart of the comments rail, ported
+   from the OMNI+ Canvas rail-handle + rail-panel mechanism (lease-campaign
+   canvas_3), restructured as ONE container: the panel itself. Its right
+   border IS the resting hairline (nothing slides over it — the hairline is
+   part of the container), the chevron pill is a child riding that edge, and
+   the chapter list already lives inside. Opening slides the whole container
+   out from the page edge.
+
+   Chapter rows carry the canonical .nav-row / .rn-num styling (mono index →
+   accent when active). Appears once the reader is past the cover; the
+   closed rail idle-fades when the reader stops scrolling (never while open).
+   ───────────────────────────────────────────────────────────────────────── */
+
+.doc-toc {
+  --toc-panel-w: 280px;
+  --toc-line-x: 46px; /* where the resting edge sits — mirrors the comments rail */
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 40;
+  pointer-events: none;
+  /* Hidden until the reader is past the cover — same rise + focus-pull
+     signature as everything else. */
+  opacity: 0;
+  filter: blur(6px);
+  translate: -10px 0;
+  transition:
+    opacity 560ms var(--omni-transition-easing-smooth, ease),
+    filter 640ms var(--omni-transition-easing-smooth, ease),
+    translate 560ms var(--omni-transition-easing-smooth, ease);
+}
+.doc-toc.is-shown {
+  opacity: 1;
+  filter: blur(0);
+  translate: 0 0;
+}
+.doc-toc.is-shown .doc-toc__handle { pointer-events: auto; }
+.doc-toc.is-shown.is-open .doc-toc__list { pointer-events: auto; }
+
+/* Idle: the closed rail settles away when the reader stops scrolling and
+   returns on scroll / reach. Never while the panel is open. */
+.doc-toc.is-shown.is-idle:not(.is-open) {
+  opacity: 0;
+  filter: blur(4px);
+  translate: -4px 0;
+  transition:
+    opacity 900ms var(--omni-transition-easing-smooth, ease),
+    filter 900ms var(--omni-transition-easing-smooth, ease),
+    translate 900ms var(--omni-transition-easing-smooth, ease);
+}
+.doc-toc.is-shown.is-idle:not(.is-open) .doc-toc__handle { pointer-events: none; }
+
+/* Self-preserving: hides when the content column crowds the rail. */
+.doc-toc.is-crowded:not(.is-open) { opacity: 0; filter: blur(6px); }
+.doc-toc.is-crowded:not(.is-open) .doc-toc__handle { pointer-events: none; }
+
+/* ── the container — resting, only its right-border hairline (at
+   --toc-line-x) and the handle are on-page; the body sits off-screen in
+   page-bg so the visible gutter strip is indistinguishable from the page.
+   Opening translates the whole thing to 0. ── */
+.doc-toc__panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--toc-panel-w);
+  background: var(--doc-page-bg);
+  border-right: 1px solid var(--doc-rule);
+  transform: translateX(calc(var(--toc-line-x) - var(--toc-panel-w)));
+  transition:
+    transform 480ms cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 480ms cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  pointer-events: none;
+  /* The handle protrudes past the edge — never clip it; the LIST scrolls. */
+  overflow: visible;
+}
+.doc-toc.is-open .doc-toc__panel {
+  transform: none;
+  box-shadow: 12px 0 40px rgba(15, 23, 42, 0.08);
+}
+
+/* ── the handle — 14×44 chevron pill straddling the container's edge
+   (ported spec: grows + fills accent on hover, chevron rotates 180° when
+   open). A child of the panel, so it rides the slide for free. ── */
+.doc-toc__handle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 14px;
+  height: 44px;
+  background: var(--doc-page-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--doc-accent);
+  cursor: pointer;
+  z-index: 2;
+  padding: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    height 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.doc-toc__handle:hover {
+  background: var(--doc-accent);
+  color: #fff;
+  border-color: var(--doc-accent);
+  height: 60px;
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--doc-accent) 22%, transparent),
+    0 8px 20px color-mix(in srgb, var(--doc-accent) 16%, transparent);
+}
+.doc-toc__handle:active { transform: translate(50%, -50%) scale(0.94); }
+.doc-toc__handle:focus,
+.doc-toc__handle:focus-visible { outline: none; }
+.doc-toc__handle svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  display: block;
+  transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.doc-toc.is-open .doc-toc__handle svg { transform: rotate(180deg); }
+
+/* ── the contents — already inside the container; they fade as the slide
+   reveals them so nothing peeks through the resting gutter strip. ── */
+.doc-toc__list {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 96px 20px 24px;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms ease;
+}
+.doc-toc.is-open .doc-toc__list {
+  opacity: 1;
+  transition: opacity 320ms ease 120ms;
+}
+
+.doc-toc__label {
+  font-family: var(--doc-font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+  margin: 0 10px 10px;
+}
+
+/* Chapter rows — the canonical rail-nav row: 14px label, soft hover wash,
+   accent + 700 when active, mono section-number prefix. */
+.doc-toc__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  min-height: 36px;
+  border-radius: 6px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--doc-ink-body);
+  font-family: var(--doc-font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  user-select: none;
+  flex-shrink: 0;
+  transition: color 240ms ease, background 240ms ease;
+}
+.doc-toc__item:hover { background: var(--doc-nested-bg); }
+.doc-toc__item:focus,
+.doc-toc__item:focus-visible { outline: none; }
+.doc-toc__item.is-active { color: var(--doc-accent); font-weight: 700; }
+
+.doc-toc__num {
+  font-family: var(--doc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--doc-ink-subtle);
+  font-weight: 500;
+  margin-right: 2px;
+  font-variant-numeric: tabular-nums;
+  transition: color 240ms ease;
+}
+.doc-toc__item.is-active .doc-toc__num { color: var(--doc-accent); }
+
+.doc-toc__text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1200px) {
+  .doc-toc { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-toc,
+  .doc-toc__handle,
+  .doc-toc__handle svg,
+  .doc-toc__panel,
+  .doc-toc__list,
+  .doc-toc__item,
+  .doc-toc__num { transition: none; }
+  .doc-toc { filter: none; }
+}

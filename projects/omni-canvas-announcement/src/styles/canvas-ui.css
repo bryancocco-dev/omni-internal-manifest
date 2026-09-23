@@ -1,0 +1,1535 @@
+/* ------------------------------------------------------------------
+   CANVAS UI — the virtual world is much larger than the 938×800
+   stage so a camera can pan/zoom over it per vignette.
+------------------------------------------------------------------ */
+
+.canvas-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1880px;
+  height: 1150px;
+  transform-origin: 0 0;
+  will-change: transform;
+  opacity: 0;
+}
+
+/* The shell paints the real app surfaces (white panels, hairlines) so
+   the establishing shot reads as the full Canvas. The fixed stage-bg
+   wash shows through the page gaps as the camera flies around. */
+.canvas-shell {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 60px 1fr 56px;   /* header · main · footer */
+  grid-template-columns: 84px 1fr;
+  background: var(--omni-card-bg);
+  /* The app is a card floating on the page wash. A hairline ring +
+     soft drop shadow give every edge a clear separation from the
+     background — important when the camera frames a canvas edge.
+     (Scales with the camera zoom, so the closer you get to an edge,
+     the more pronounced the separation.) */
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(24, 31, 64, 0.05),
+    0 0 60px rgba(24, 31, 64, 0.07),
+    0 36px 90px -20px rgba(24, 31, 64, 0.22);
+}
+
+/* ---- Top header (real .topnav: white, cell borders) ------------ */
+.cs-header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border-bottom: 0.5px solid var(--omni-line);
+  background: var(--omni-card-bg);
+  font-size: 14px;
+}
+/* floating hamburger circle (real #navMenuBtn) */
+.cs-menu-btn {
+  align-self: center;
+  flex: 0 0 36px;
+  width: 36px; height: 36px;
+  margin: 0 12px 0 14px;
+  border-radius: 50%;
+  background: var(--omni-card-bg);
+  color: var(--omni-brand-500);
+  border: 0.5px solid var(--omni-line);
+  box-shadow: 0 1px 1px rgba(15,18,24,0.04), 0 3px 6px rgba(15,18,24,0.06), 0 8px 20px rgba(15,18,24,0.06);
+  display: grid; place-items: center;
+}
+.cs-omni-cell {
+  flex: 0 0 80px;
+  border-right: 0.5px solid var(--omni-line);
+  display: grid; place-items: center;
+}
+.cs-logo {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--omni-text-strong);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.cs-logo-star { font-weight: 400; font-size: 14px; font-style: normal; }
+.cs-home-cell {
+  flex: 0 0 44px;
+  border-right: 0.5px solid var(--omni-line);
+  display: grid; place-items: center;
+  color: var(--omni-text-body);
+}
+.cs-workspace {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-right: 0.5px solid var(--omni-line);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.05px;
+  color: var(--omni-text-body);
+  white-space: nowrap;
+}
+.cs-caret { font-style: normal; color: var(--omni-text-subtle); font-size: 13px; }
+.cs-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+.cs-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 100%;
+  padding: 0 18px;
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.05px;
+  color: var(--omni-text-subtle);
+  white-space: nowrap;
+  border-right: 0.5px solid var(--omni-line);
+}
+.cs-tab.active { background: #eaebf1; color: var(--omni-brand-500); font-weight: 500; }
+/* tab icons — exact real colors + dark glyph */
+.cs-tab-dot {
+  width: 24px; height: 24px; border-radius: 7px; flex-shrink: 0;
+  display: grid; place-items: center;
+}
+.cs-tab-dot svg { width: 15px; height: 15px; display: block; }
+.cs-tab-add {
+  width: 32px; height: 32px;
+  align-self: center;         /* fixed-size box in a stretch row — center it */
+  margin-left: 10px;
+  display: grid; place-items: center;
+  color: var(--omni-text-subtle);
+  font-size: 22px;
+  line-height: 1;
+  border-radius: 8px;
+}
+.cs-spacer { flex: 1; }
+.cs-avatar {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 15px;
+  color: var(--omni-text-body);
+  white-space: nowrap;
+}
+.cs-avatar .pill {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5a97f, #9d6c47);
+  color: #fff; font-size: 12px; font-weight: 700; letter-spacing: -0.2px;
+  display: grid; place-items: center;
+}
+
+/* ---- Footer (real .footer) ------------------------------------- */
+.cs-footer {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 24px;
+  padding: 14px 24px;
+  background: var(--omni-card-bg);
+  border-top: 0.5px solid var(--omni-line);
+  color: var(--omni-text-subtle);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+.cs-footer-copy { flex: 0 0 auto; }
+.cs-footer-logo {
+  flex: 0 0 auto;
+  margin: 0 auto;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--omni-text-strong);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.cs-footer-links { flex: 0 1 auto; display: flex; column-gap: 18px; justify-content: flex-end; }
+.cs-footer-links a { color: var(--omni-text-subtle); text-decoration: none; white-space: nowrap; }
+
+/* ---- Left rail ------------------------------------------------- */
+.cs-rail {
+  grid-column: 1;
+  grid-row: 2;
+  position: relative;
+  z-index: 6; /* so the Agents tooltip paints over the chat panel */
+  border-right: 0.5px solid var(--omni-line);
+  background: var(--omni-card-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 22px;
+}
+/* Real .side-rail is white with full-width tool rows pinned to the
+   bottom (top hairline divider) and a plain top-pinned back arrow. */
+.cs-rail {
+  align-items: stretch;     /* tools fill the rail width */
+  padding: 0;
+}
+.cs-rail-collapse {
+  width: 32px; height: 32px;
+  margin: 20px auto 0;
+  display: grid; place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--omni-text-body);
+  font-size: 17px;
+}
+.cs-rail-tag {
+  font-family: var(--omni-font-sans);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--omni-text-strong);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  align-self: center;
+  margin: 30px 0;
+}
+.cs-rail-spacer { flex: 1; }
+.cs-rail-tools {
+  display: flex; flex-direction: column;
+  border-top: 0.5px solid var(--omni-line);
+  padding-bottom: 12px;
+}
+.cs-rail-tool {
+  position: relative;
+  width: 100%; height: 60px;
+  display: grid; place-items: center;
+  color: var(--omni-text-subtle);
+}
+.cs-rail-tool svg { width: 28px; height: 28px; }
+.cs-rail-tool.active { background: rgba(24, 88, 238, 0.08); color: var(--omni-brand-500); }
+.cs-rail-tip {
+  position: absolute;
+  left: calc(100% + 14px);
+  top: -6px;
+  width: 300px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 14px;
+  box-shadow: 0 22px 50px -18px rgba(24, 31, 64, 0.30);
+  padding: 16px 18px;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+.cs-rail-tip-title {
+  display: block;
+  font-family: var(--omni-font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--omni-text-strong);
+  margin-bottom: 6px;
+}
+.cs-rail-tip-body {
+  font-family: var(--omni-font-sans);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--omni-text-body);
+}
+.cs-rail-tip-body b { color: var(--omni-brand-500); font-weight: 600; }
+
+/* ---- Main: chat panel + canvas --------------------------------- */
+.cs-main {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 700px 1fr;
+  position: relative;
+}
+.cs-chat {
+  position: relative;
+  background: #ffffff;                       /* real .chat is white, not grey */
+  border-right: 0.5px solid var(--omni-line);
+}
+.cs-chat-group {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cs-chat-spacer { flex: 1; }
+
+.cs-canvas-side {
+  position: relative;
+  overflow: hidden;                           /* pane content scrolls under the glass */
+  background: #F5F7FA;                        /* real #canvas bg */
+  color: var(--omni-text-subtle);
+  display: grid;
+  grid-template-rows: 56px 1fr;
+}
+/* Frosted canvas sub-header (real .canvas-header). Positioned above
+   the pane-level scroller so content passes UNDER the glass and the
+   backdrop blur actually has pixels to frost. */
+.cs-canvas-top {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  background: rgba(245, 247, 250, 0.65);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 0.5px solid var(--omni-line);
+  font-size: 14px;
+}
+.cs-canvas-crumb { display: flex; flex-direction: column; gap: 2px; line-height: 1.3; }
+.cs-canvas-eyebrow {
+  font-family: var(--omni-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.cs-canvas-name { font-weight: 600; font-size: 16px; letter-spacing: -0.1px; color: var(--omni-text-body); display: inline-flex; align-items: center; gap: 6px; }
+/* Crumb caret is a real chevron glyph (matches the reference), not a
+   text char — flex-centered so it can't drift off the headline's
+   vertical center, and rotates cleanly about its own middle. */
+.cs-crumb-caret { display: inline-flex; align-items: center; margin-top: 2px; color: var(--omni-text-subtle); }
+.cs-crumb-caret svg { display: block; }
+.cs-presence {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--omni-font-mono); font-size: 13px; letter-spacing: 0.04em; color: var(--omni-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+.cs-presence-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+.cs-canvas-share {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 0 16px;
+  height: 36px;
+  background: var(--omni-brand-500);
+  color: #fff;
+  border-radius: 9px;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.05px;
+}
+.cs-canvas-stage {
+  position: relative;
+  overflow: hidden;
+}
+.cs-canvas-hero {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.cs-hero-logo {
+  width: 296px;
+  height: auto;
+  display: block;
+  overflow: visible;
+  transform-origin: 50% 50%;
+}
+.vig-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Hidden until its vignette reveals it — so injected persona/agents
+     content doesn't show during the establishing shot. */
+  opacity: 0;
+}
+
+/* ---- Scroll canvas — flat chrome-free surface for the generation
+   stack. Sized far beyond any framing so no shell, footer, or wash
+   ever enters the shot once the camera is on it. ------------------ */
+.scroll-canvas {
+  position: absolute;
+  left: -1200px;
+  top: -400px;
+  width: 4200px;
+  height: 3800px;
+  background: #F5F7FA;
+  opacity: 0;              /* revealed by graphics-gen as the camera flies in */
+  z-index: 8;              /* above ALL shell chrome (rail is z6) */
+  pointer-events: none;
+}
+.scroll-stack {
+  /* World coords: x 792, y 260 (plane-local +1200/+400). */
+  position: absolute;
+  left: 1992px;
+  top: 660px;
+  width: 1080px;
+}
+.scroll-sec { position: relative; width: 1080px; }
+#scroll-s1 { height: 840px; }
+#scroll-s2 { height: 760px; margin-top: 80px; }
+#scroll-s3 { height: 600px; margin-top: 80px; }
+
+/* ---- Canvas Assistant greeting (chat column top) --------------- */
+.cs-greeting { padding: 30px 36px 0; }
+.cs-greeting-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.cs-greeting-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--omni-brand-50);
+  color: var(--omni-brand-500);
+  border: 0.5px solid color-mix(in srgb, var(--omni-brand-500) 25%, transparent);
+}
+.cs-greeting-name { font-weight: 600; font-size: 16px; color: var(--omni-text-strong); }
+.cs-greeting-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--omni-text-subtle); }
+.cs-greeting-time { font-family: var(--omni-font-mono); font-size: 13px; color: var(--omni-text-subtle); }
+.cs-greeting-prompt { margin: 0; font-size: 19px; color: var(--omni-text-body); }
+
+/* ------------------------------------------------------------------
+   CHAT HAT — chat-aux-panel + composer.
+   Specs pulled from /TINKER/omni-canvas/index.html (real Canvas).
+   Sized up ~1.7× to read at the world's scale; proportions kept.
+------------------------------------------------------------------ */
+
+/* Chat hat — anchored near the bottom of the chat column, with the
+   greeting pushed to the top by the flex spacer (matches the real app:
+   the hat's pop-open pushes the greeting up). */
+.chat-hat-stack {
+  margin: 0 36px 32px;
+}
+
+/* ---- Canvas Assistant intro (ported from chat-hat.vercel.app) ---- */
+.ch-intro-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ch-intro-msg .msg-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ch-intro-msg .msg-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ch-intro-msg .msg-avatar.av-canvas-assistant {
+  background: var(--omni-brand-50);
+  color: var(--omni-brand-500);
+  border: 0.5px solid color-mix(in srgb, var(--omni-brand-500) 25%, transparent);
+}
+.ch-intro-msg .msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+.ch-intro-msg .msg-name {
+  font-weight: 600;
+  color: var(--omni-text-strong);
+}
+.ch-intro-msg .msg-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--omni-text-subtle);
+}
+.ch-intro-msg .msg-time {
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  color: var(--omni-text-subtle);
+}
+.ch-intro-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.ch-intro-notice {
+  position: relative;
+  padding: 6px 0 30px;
+  background: transparent;
+  border: 0;
+  border-bottom: 0.5px solid var(--omni-line);
+  margin: 0 0 4px;
+}
+.ch-intro-heading {
+  margin: 0 0 16px;
+  font-family: var(--omni-font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--omni-text-strong);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.ch-intro-paragraph {
+  margin: 0;
+  font-family: var(--omni-font-sans);
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--omni-text-body);
+}
+.ch-intro-prompt {
+  margin: 22px 0 0;
+  font-family: var(--omni-font-sans);
+  font-size: 19px;
+  color: var(--omni-text-body);
+}
+
+/* ---- chat-aux-panel (top half) ------------------------------ */
+.chat-aux-panel {
+  position: relative;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+}
+/* Diagonal sheen that sweeps across the panel during the first-reveal
+   intro (driven by GSAP in chat-hat.js). Clipped to the panel. */
+.ch-fr-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    color-mix(in srgb, var(--omni-brand-500) 8%,  transparent) 44%,
+    color-mix(in srgb, var(--omni-brand-500) 22%, transparent) 50%,
+    color-mix(in srgb, var(--omni-brand-500) 8%,  transparent) 56%,
+    transparent 70%
+  );
+  background-size: 240% 100%;
+  background-position: 130% 0;
+}
+.chat-aux-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 26px 14px;
+  user-select: none;
+}
+.chat-aux-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--omni-font-mono);
+  font-size: 14px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--omni-text-strong);
+}
+.chat-aux-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--omni-brand-500);
+  box-shadow: 0 0 0 3px rgba(24, 88, 238, 0.16);
+  flex-shrink: 0;
+}
+.chat-aux-toggle {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 0;
+  color: var(--omni-text-body);
+  cursor: pointer;
+  padding: 0;
+}
+.chat-aux-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+.chat-aux-body {
+  overflow: hidden;
+  /* Collapsed by default — the chat hat only opens during its own
+     vignette (the camera zoom-in). GSAP animates max-height open. */
+  max-height: 0;
+}
+.chat-aux-body-inner {
+  padding: 6px 26px 26px;
+}
+.chat-aux-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.chat-aux-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 18px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line-solid);
+  border-radius: 12px;
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform-origin: center;
+}
+.chat-aux-chip-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  color: var(--omni-text-subtle);
+  font-family: var(--omni-font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ---- composer (bottom half) --------------------------------- */
+.composer-wrap {
+  padding: 0;
+  flex-shrink: 0;
+}
+.composer {
+  background: var(--omni-canvas-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 0 0 24px 24px;
+  min-height: 185px;
+  padding: 24px 26px 14px;   /* actions row hugs the hat's bottom edge */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.composer-textarea {
+  flex: 1;
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--omni-text-subtle);
+  padding: 6px 0;
+}
+.composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.composer-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.round-btn {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.round-btn.ghost {
+  background: transparent;
+  color: var(--omni-text-subtle);
+}
+.round-btn.send {
+  background: var(--omni-brand-500);
+  color: #fff;
+}
+
+/* ---- Model selector — pill button (ported from chat-hat.vercel.app,
+   scaled ~1.4× to read at the world's size). Transparent outlined pill
+   that warms on hover/expand; caret rotates 180° when open. ---------- */
+.model-selector-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.model-selector-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 17px;
+  background: transparent;
+  border: 0.5px solid var(--omni-line);
+  border-radius: 10px;
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.model-selector-pill.is-open {
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.20);
+  color: var(--omni-text-strong);
+}
+.model-selector-pill .model-caret {
+  display: inline-flex;
+  align-items: center;
+  color: var(--omni-text-subtle);
+}
+
+/* ---- Persona magazine spread (vignette 2 — persona generation) ----
+   Mirrors the lease-campaign canvas_3 persona library: a sticky
+   PERSONAS selector, a full-bleed duotone portrait hero with an
+   editorial headline + identity chip + mono meta tags, and a
+   DEMOGRAPHICS hairline grid. Fills the canvas-side edge to edge. */
+.persona-spread {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  color: var(--omni-text-body);
+  --p-pad-x: 56px;
+}
+
+/* PERSONAS selector bar */
+.ps-selector {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 26px;
+  padding: 14px 26px 0;
+  height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--omni-line);
+}
+.psl-label {
+  font-family: var(--omni-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  padding-bottom: 14px;
+}
+.psl-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 2px 12px;
+  /* Reset native button chrome — only the active underline shows. */
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--omni-text-subtle);
+}
+.psl-tab .psl-name { font-size: 15px; font-weight: 500; letter-spacing: -0.1px; line-height: 1; }
+.psl-tab .psl-sub {
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+.psl-tab.is-active { color: var(--omni-text-strong); border-bottom-color: var(--omni-text-strong); }
+.psl-tab.is-active .psl-name { color: var(--omni-brand-500); font-weight: 600; }
+.psl-spacer { flex: 1; }
+.psl-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  margin-bottom: 12px;
+  padding: 0 18px;
+  border-radius: 9px;
+  background: var(--omni-brand-500);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+}
+
+/* HERO — full-bleed duotone portrait */
+.ps-hero {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  /* Transparent so the navy fades IN via the skeleton loader, rather
+     than being a solid fill from the first frame. */
+  background: transparent;
+  color: #f4f1ea;
+  isolation: isolate;
+}
+.ph-portrait { position: absolute; inset: 0; z-index: 0; overflow: hidden; margin: 0; }
+.ph-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 22%;
+  /* Reference treatment (lease-campaign canvas_3): keep the warm
+     rust/terracotta of the source — only a slight desaturate + a
+     gentle navy multiply darkens it, it does NOT cool it to blue. */
+  filter: saturate(0.85) contrast(1.05);
+}
+.ph-portrait::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(18,30,70,0.34) 0%, rgba(8,14,40,0.44) 60%, rgba(6,10,30,0.58) 100%),
+    linear-gradient(180deg, rgba(20,40,90,0.44) 0%, rgba(20,40,90,0.28) 100%);
+  background-blend-mode: multiply;
+  mix-blend-mode: multiply;
+}
+/* Skeleton loader — the navy placeholder that fades in and shimmers
+   while the portrait "generates", then crossfades to the resolved
+   photo. The sweep band is GSAP-driven (scrub-safe for MP4 capture),
+   not a CSS @keyframes animation. */
+.ph-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  /* Light-theme skeleton: a soft neutral grey with its own faint dark
+     grid baked in (the cream .ph-grid is invisible on light, so the
+     wireframe still reads while loading). */
+  background:
+    repeating-linear-gradient(90deg, rgba(15,23,42,0.05) 0 1px, transparent 1px 20%),
+    repeating-linear-gradient(0deg,  rgba(15,23,42,0.05) 0 1px, transparent 1px 20%),
+    linear-gradient(180deg, #eef1f7 0%, #e7ebf3 55%, #dfe4ee 100%);
+}
+.ph-skeleton-band {
+  position: absolute;
+  inset: -25% -60%;
+  background: linear-gradient(105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.25) 47%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.25) 53%,
+    transparent 60%);
+}
+/* Faint 5×5 grid over the skeleton + photo. */
+.ph-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(244,241,234,0.10) 0 1px, transparent 1px 20%),
+    repeating-linear-gradient(0deg,  rgba(244,241,234,0.10) 0 1px, transparent 1px 20%);
+}
+/* Mono meta tag rows (3-col grid). */
+.ph-tags {
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0 var(--p-pad-x);
+  font-family: var(--omni-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.80);
+}
+.ph-tags span:nth-child(2) { text-align: center; }
+.ph-tags span:nth-child(3) { text-align: right; }
+.ph-tags--top { top: 26px; }
+.ph-tags--mid { bottom: 26px; }
+/* Generation status badge (top-right of the hero). */
+.ph-badge {
+  position: absolute;
+  top: 22px;
+  right: var(--p-pad-x);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: rgba(10, 12, 30, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(244, 241, 234, 0.20);
+  font-family: var(--omni-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f4f1ea;
+}
+.ph-badge-spark { font-size: 13px; color: #8fb4ff; }
+.ph-badge-labels { position: relative; display: inline-grid; }
+.ph-badge-lbl { grid-area: 1 / 1; white-space: nowrap; }
+/* Editorial headline. */
+.ph-title {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 23%;
+  z-index: 2;
+  margin: 0;
+  padding: 0 var(--p-pad-x);
+  text-align: center;
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 76px;
+  line-height: 0.96;
+  letter-spacing: -0.024em;
+  text-transform: uppercase;
+  color: #f4f1ea;
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.35);
+}
+.ph-title em {
+  font-family: var(--omni-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: -1px;
+  font-size: 1.12em;
+  color: #f4f1ea;
+}
+/* Identity chip. */
+.ph-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 13%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 10px 18px;
+  background: rgba(10, 10, 10, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f4f1ea;
+  white-space: nowrap;
+}
+
+/* DEMOGRAPHICS hairline grid. */
+.ps-demos {
+  flex: 0 0 auto;
+  background: #ffffff;
+}
+.pd-head {
+  display: flex;
+  align-items: center;
+  padding: 30px var(--p-pad-x) 18px;
+}
+.pd-num {
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--omni-text-subtle);
+  display: inline-flex;
+  align-items: center;
+}
+.pd-num::after {
+  content: '';
+  width: 1px;
+  height: 14px;
+  background: var(--omni-line);
+  margin: 0 20px;
+}
+.pd-label {
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--omni-text-strong);
+}
+.pd-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 36px;
+  row-gap: 32px;
+  padding: 4px var(--p-pad-x) 40px;
+}
+.pd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 15px;
+  border-top: 1px solid var(--omni-line);
+}
+.pd-card-label {
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.pd-card-value {
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+  color: var(--omni-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Rail + Agents tooltip (vignette 3, phase 1) ---------------
+   The phantom user clicks the Agents tool in the left rail to spawn
+   the Required Agents overlay. */
+.am-rail {
+  position: absolute;
+  left: 44px;
+  top: 200px;
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px -28px rgba(24, 31, 64, 0.24);
+  opacity: 0;
+}
+.am-rail-tool {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: var(--omni-text-subtle);
+}
+.am-rail-tool svg { width: 28px; height: 28px; }
+.am-rail-tool.active {
+  background: var(--omni-brand-50);
+  color: var(--omni-brand-500);
+}
+
+.am-tip {
+  position: absolute;
+  left: 156px;
+  top: 206px;
+  width: 320px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 16px;
+  box-shadow: 0 22px 50px -18px rgba(24, 31, 64, 0.30);
+  padding: 18px 20px;
+  opacity: 0;
+  z-index: 6;
+}
+.am-tip-title {
+  display: block;
+  font-family: var(--omni-font-sans);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--omni-text-strong);
+  margin-bottom: 6px;
+}
+.am-tip-body {
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--omni-text-body);
+}
+.am-tip-body b { color: var(--omni-brand-500); font-weight: 600; }
+
+/* ---- Required Agents modal (vignette 3, phase 2) ---------------
+   Stylized version of the rail "Agents" overlay: toggle agents on
+   and off via square checkboxes. Ported from omni-canvas, scaled up. */
+.agents-modal {
+  position: absolute;
+  top: 110px;
+  left: 230px;
+  width: 760px;
+  height: 612px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 20px;
+  box-shadow: 0 50px 100px -30px rgba(24, 31, 64, 0.35),
+              0 12px 32px -12px rgba(24, 31, 64, 0.20);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+}
+.am-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 26px;
+  border-bottom: 0.5px solid var(--omni-line);
+}
+.am-title {
+  font-family: var(--omni-font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--omni-text-strong);
+}
+.am-count {
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--omni-text-subtle);
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--omni-brand-50);
+  color: var(--omni-brand-500);
+}
+.am-count b { font-weight: 600; }
+.am-spacer { flex: 1; }
+.am-close {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--omni-text-subtle);
+}
+.am-search {
+  margin: 18px 26px 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 50px;
+  padding: 0 16px;
+  border: 1px solid var(--omni-brand-500);
+  border-radius: 12px;
+  color: var(--omni-text-subtle);
+  font-size: 16px;
+  box-shadow: 0 0 0 3px rgba(24, 88, 238, 0.10);
+}
+.am-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  min-height: 0;
+}
+.am-sidebar {
+  border-right: 0.5px solid var(--omni-line);
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.am-side-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  font-family: var(--omni-font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--omni-text-body);
+}
+.am-side-item .am-side-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--omni-brand-500);
+  opacity: 0;
+  flex-shrink: 0;
+}
+.am-side-item.active {
+  color: var(--omni-brand-500);
+  font-weight: 600;
+}
+.am-side-item.active .am-side-dot { opacity: 1; }
+
+/* Table */
+.am-table { padding: 0; overflow: hidden; }
+.am-thead, .am-row {
+  display: grid;
+  grid-template-columns: 48px 1.5fr 2.6fr 1.3fr;
+  column-gap: 20px;
+  align-items: center;
+  padding: 0 24px;
+}
+.am-thead {
+  height: 50px;
+  border-bottom: 0.5px solid var(--omni-line);
+}
+.am-th {
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.am-row {
+  height: 76px;
+  opacity: 0;
+}
+.am-row + .am-row { border-top: 0.5px solid var(--omni-line); }
+.am-row-name {
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--omni-text-strong);
+  letter-spacing: -0.1px;
+}
+.am-row-desc {
+  font-family: var(--omni-font-sans);
+  font-size: 14px;
+  color: var(--omni-text-subtle);
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.am-row-date {
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  color: var(--omni-text-subtle);
+}
+
+/* Square checkbox — GSAP-driven (scrub-safe) */
+.am-check {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 1.6px solid var(--omni-text-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.am-check-fill {
+  position: absolute;
+  inset: -1px;
+  background: var(--omni-brand-500);
+  border-radius: 6px;
+  transform: scale(0);
+  transform-origin: center;
+}
+.am-check-mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.am-check-mark path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Model selector dropdown (vignette 4) ------------------------
+   Ported verbatim from chat-hat.vercel.app and scaled ~1.4×. Card
+   springs up from bottom-right; active row carries an accent check. */
+.model-selector-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 360px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 1px rgba(15, 18, 24, 0.04),
+    0 8px 20px rgba(15, 18, 24, 0.06),
+    0 32px 64px rgba(15, 18, 24, 0.10);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transform-origin: bottom right;
+  z-index: 60;
+  text-align: left;
+  /* Default CLOSED — hidden everywhere until the feature-flex vignette
+     explicitly opens it. Without this the menu sits open over the chat
+     hat during the other vignettes. */
+  opacity: 0;
+  transform: translateY(6px) scale(0.97);
+  pointer-events: none;
+}
+.model-selector-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 13px 15px;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  letter-spacing: -0.05px;
+  font-weight: 400;
+  text-align: left;
+}
+.model-selector-menu-item.is-hover {
+  background: var(--omni-hover-soft);
+  color: var(--omni-text-strong);
+}
+.model-selector-menu-item.active {
+  color: var(--omni-text-strong);
+  font-weight: 500;
+}
+.msm-label { flex: 1; }
+.msm-check {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  color: var(--omni-brand-500);
+  opacity: 0;
+}
+.model-selector-menu-item.active .msm-check { opacity: 1; }
+
+/* ---- Bookend (OMNI logo) ------------------------------------ */
+.bookend {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 30;
+  overflow: visible;
+}
+.bookend-logo {
+  width: 520px;
+  height: auto;
+  display: block;
+  overflow: visible;
+  transform-origin: 50% 50%;
+}
+
+/* ---- PROMPT BEAT (story interstitial) — the familiar chat box
+   (hat + composer) floating alone on the scroll canvas. ----------- */
+.xpb-box {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: 824px;
+  opacity: 0;
+  pointer-events: none;
+  /* the box floats on the near-white plane — soft lift so it reads */
+  filter: drop-shadow(0 24px 60px rgba(24, 31, 64, 0.16))
+          drop-shadow(0 4px 14px rgba(24, 31, 64, 0.07));
+}
+.xpb-hat {
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+}
+.xpb-hat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 26px 12px;
+}
+.xpb-hat-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--omni-font-mono);
+  font-size: 14px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--omni-text-strong);
+}
+.xpb-hat-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--omni-brand-500);
+  box-shadow: 0 0 0 3px rgba(24, 88, 238, 0.16);
+  flex-shrink: 0;
+}
+.xpb-hat-chevron { color: var(--omni-text-body); display: inline-flex; }
+.xpb-hat-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 26px 22px;
+}
+.xpb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 13px 0 12px;
+  border: 0.5px solid var(--omni-line);
+  border-radius: 10px;
+  background: var(--omni-card-bg);
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  white-space: nowrap;
+}
+.xpb-pill-icon { display: inline-flex; width: 17px; height: 17px; color: var(--omni-text-subtle); }
+.xpb-pill-icon svg { width: 100%; height: 100%; display: block; }
+.xpb-pill-caret { display: inline-flex; color: var(--omni-text-subtle); }
+.xpb-pill--accent {
+  color: var(--omni-brand-500);
+  border-color: color-mix(in srgb, var(--omni-brand-500) 30%, var(--omni-line));
+}
+.xpb-pill--accent .xpb-pill-icon { color: var(--omni-brand-500); }
+.xpb-pill-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--omni-brand-500);
+  color: #ffffff;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.xpb-comp {
+  background: #ffffff;
+  border-top: 0.5px solid var(--omni-line);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 0 0 24px 24px;
+  min-height: 185px;
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.xpb-ta {
+  font-family: var(--omni-font-sans);
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--omni-text-body);
+}
+.xpb-text { white-space: pre-wrap; }
+.xpb-caret {
+  display: inline-block;
+  width: 2.5px;
+  height: 24px;
+  margin-left: 3px;
+  vertical-align: -4px;
+  background: var(--omni-brand-500);
+  opacity: 0;
+}
+.xpb-row { display: flex; align-items: center; gap: 12px; }
+.xpb-add {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  color: var(--omni-text-subtle);
+}
+.xpb-spacer { flex: 1; }
+.xpb-model {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 17px;
+  border: 0.5px solid var(--omni-line);
+  border-radius: 10px;
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  white-space: nowrap;
+}
+.xpb-model svg { color: var(--omni-text-subtle); }
+.xpb-send {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--omni-brand-500);
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.xpb-send svg { width: 22px; height: 22px; }
+
+.xpb-att-sub {
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--omni-text-subtle);
+  white-space: nowrap;
+}
+
+/* ---- prompt-beat attachment chips (previous output as context) --- */
+.xpb-atts { display: flex; gap: 10px; margin-bottom: 14px; }
+.xpb-att {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 14px 0 7px;
+  background: var(--omni-canvas-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 12px;
+}
+.xpb-att-thumb { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; display: block; }
+.xpb-att-label {
+  font-family: var(--omni-font-sans);
+  font-size: 14px; font-weight: 500; letter-spacing: -0.05px;
+  color: var(--omni-text-body); white-space: nowrap;
+}
+.xpb-att-sub {
+  font-family: var(--omni-font-mono);
+  font-size: 11px; letter-spacing: 0.05em;
+  color: var(--omni-text-subtle); white-space: nowrap;
+}
+
+.xpb-pill-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}

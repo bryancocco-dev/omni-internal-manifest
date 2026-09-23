@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  OMNI component: modal_gate_sent
+  Project: Access
+  Note: .qa-gate-card (sent) — "Request sent" waiting state with pulsing status dot, between request and auto-approve
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access — modal_gate_sent · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/copy-request-access.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="qa-gate" style="position:static;background:transparent;padding:24px;">
+  <div class="qa-gate-card">
+    <img class="qa-gate-logo" src="/_assets/copy-request-access/omni-logo.png" alt="OMNI">
+    <div class="qa-gate-art">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10.5 13.5"/><path d="M21 3l-6.8 18-3.7-7.5L3 9.8 21 3z"/></svg>
+    </div>
+    <h1>Request sent</h1>
+    <p>The owner of "<b>Outcomes Forecast</b>" has been notified. You'll be able to open it as soon as they approve.</p>
+    <div class="qa-gate-wait"><span class="qa-gate-dot"></span>Waiting for approval…</div>
+  </div>
+</div>
+</body>
+</html>

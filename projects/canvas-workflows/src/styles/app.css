@@ -1,0 +1,3064 @@
+/* Seam B — App core
+ *
+ * Overlay-root layout, header bar, palette, and the compiled panel. Node
+ * visuals live in C's nodes.css; edge/canvas-chrome theming (React Flow's
+ * Background/Controls/MiniMap classes, the OmniEdge path) lives in D's
+ * flow.css. Everything here is scoped under #workflow-root so it can never
+ * leak into the surrounding OMNI+ Canvas shell.
+ *
+ * The `--cw-*` custom property roster itself (theme-mapped, THEMES PHASE)
+ * now lives in ./cw-tokens.css, loaded before this file — this block is
+ * layout-only.
+ */
+
+#workflow-root {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  color: var(--cw-text);
+}
+
+#workflow-root,
+#workflow-root *,
+#workflow-root *::before,
+#workflow-root *::after {
+  box-sizing: border-box;
+}
+
+/* Zero-specificity reset (:where) — the previous `#workflow-root button`
+   form carried (1,0,1) and silently beat every class-level `color:` on
+   buttons (segmented active ink, the Apply button...): Bryan's black-on-
+   accent reports all traced here. :where keeps the UA-default reset while
+   letting any component declaration win. */
+:where(#workflow-root button) {
+  font-family: inherit;
+  color: inherit;
+}
+
+.cw-app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--cw-canvas-bg);
+  overflow: hidden;
+  /* Anchors the frosted header overlay below. */
+  position: relative;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.cw-header {
+  /* Frosted glass (Bryan) — floats OVER the workspace like the canvas
+     briefs' own header: the shell's --canvas-header-bg is the per-theme
+     translucent tint (white 0.72 in Omni Light, cream for Hermès, dark for
+     Nike/RR...), and the canvas runs full-bleed beneath so nodes pan under
+     the glass. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 7;
+  /* Taller, canvas-grade header (Bryan) — matches the shell's own header
+     presence rather than a slim toolbar strip. */
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background: var(--canvas-header-bg, rgba(255, 255, 255, 0.72));
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+/* Canvas-style header cluster (Bryan): eyebrow over title-with-caret, like
+   the brief headers (BUILD SUBMARINES / Roblox Racing...). The old toolbar
+   buttons live in the title's dropdown now. */
+.cw-header-left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cw-header-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* Matched to canvas-graphics' canvas lockup (Bryan): Fira Code mono
+     eyebrow, 10px, wide-tracked caps, subtle ink. */
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cw-text-3);
+  white-space: nowrap;
+}
+
+.cw-header-titlebtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cw-text);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cw-header-titlebtn svg {
+  color: var(--cw-text-3);
+  transition: rotate var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-header-titlebtn svg.is-open {
+  rotate: 180deg;
+}
+
+.cw-header-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 224px;
+  padding: 6px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 12px;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.06),
+    0 16px 40px -12px rgba(16, 24, 40, 0.18);
+  animation: cw-menu-in var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+
+@keyframes cw-menu-in {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+    scale: 0.98;
+  }
+}
+
+.cw-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 13px;
+  color: var(--cw-text-2);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-menu-item svg {
+  color: var(--cw-text-3);
+}
+
+.cw-menu-item:hover {
+  background: var(--cw-field);
+  color: var(--cw-text);
+}
+
+.cw-menu-item--danger:hover {
+  background: color-mix(in srgb, var(--cw-danger) 8%, var(--cw-surface));
+  color: var(--cw-danger);
+}
+
+.cw-menu-item--danger:hover svg {
+  color: var(--cw-danger);
+}
+
+/* CONTEXT & CLIPBOARD — Skip's disabled-with-tooltip row (logic/params;
+   NodeCommandMenu, src/nodes/shared.jsx) needs a real disabled treatment —
+   no menu row here has ever been disabled-but-visible before this. Native
+   `title` carries the WHY on hover, matching ToolbarButton's own
+   disabledLabel swap in spirit (a menu row has no separate tooltip chrome
+   of its own to reuse). */
+.cw-menu-item:disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* CONTEXT & CLIPBOARD — "Comfy parity keycaps shown in the overflow menu
+   rows" (item 1). Pushes a trailing `.cw-rail-kbd` (flow.css's existing
+   keycap language, reused verbatim per the dispatch brief rather than
+   forking a menu-specific variant) to the row's own right edge; harmless
+   on every OTHER `.cw-menu-item` consumer (App.jsx's title dropdown) since
+   none of those rows contain a kbd child to begin with. */
+.cw-menu-item .cw-rail-kbd {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.cw-menu-divider {
+  height: var(--cw-hairline-w, 0.5px);
+  background: var(--cw-border);
+  margin: 5px 4px;
+}
+
+/* E1 item 3 — "mock" becomes a tiny outlined badge instead of plain mono
+   text. */
+.cw-header-tag {
+  display: inline-block;
+  font-family: var(--cw-font-mono);
+  font-size: 9.5px;
+  line-height: 1;
+  color: var(--cw-text-3);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.cw-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.cw-btn-quiet {
+  height: 28px;
+  padding: 0 12px;
+  /* E1 item 3 — Tidy up carries a leading icon; inline-flex keeps text-only
+     buttons (Load from instructions / Clear) visually identical (one
+     centered child) while giving the icon+label pair proper gap/alignment. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--cw-text);
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* MOTION PHASE item 6 — chrome physics: hover-lift, then press overrides it
+   (same specificity, declared after — see :active below). */
+.cw-btn-quiet:hover {
+  border-color: color-mix(in srgb, var(--cw-border) 85%, var(--cw-text) 15%);
+  background: var(--cw-surface-2);
+  transform: translateY(-1px);
+}
+
+.cw-btn-quiet:active {
+  transform: scale(0.97);
+}
+
+/* E1 item 3 — Clear hovers to a danger tint instead of the neutral hover
+   above. Same specificity as `.cw-btn-quiet:hover` (one class + one
+   pseudo-class); declared after it so source order wins the tie. */
+/* Share + presence — the shell's own topnav pattern (index.html .share-btn /
+   .presence), rebuilt on --cw-* tokens: accent-filled primary Share, and a
+   live dot + collaborator count whose facepile reveals on hover of the whole
+   actions cluster (so you can move the pointer into the tiles). */
+.cw-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--cw-accent);
+  color: var(--cw-on-accent);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-share-btn svg {
+  color: var(--cw-on-accent);
+}
+
+.cw-share-btn:hover {
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--cw-accent) 22%, transparent),
+    0 6px 18px color-mix(in srgb, var(--cw-accent) 14%, transparent);
+  transform: translateY(-1px);
+}
+
+.cw-share-btn:active {
+  transform: scale(0.97);
+}
+
+.cw-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  transition: gap 220ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-presence-stack {
+  display: inline-flex;
+  align-items: center;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition:
+    width 220ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity 220ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Reveal the facepile while hovering anywhere in the header's action cluster
+   (presence OR Share OR Run) — same behavior as the shell's .actions:hover. */
+/* Facepile reveal is scoped to the SHARE side of the cluster (Bryan):
+   hovering Run — or the hairline — must not slide the collaborators out.
+   :has() lets the earlier .cw-presence react to the later Share button. */
+.cw-run-cluster:has(> .cw-presence:hover, > .cw-share-btn:hover) .cw-presence {
+  gap: 10px;
+}
+
+.cw-run-cluster:has(> .cw-presence:hover, > .cw-share-btn:hover) .cw-presence-stack {
+  width: 56px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cw-pa {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid var(--cw-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cw-pa + .cw-pa {
+  margin-left: -8px;
+}
+
+.cw-pa--bc {
+  background: var(--cw-accent);
+  color: var(--cw-on-accent);
+}
+
+.cw-presence-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--cw-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--cw-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.cw-presence-count::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  /* F14 (QA FINDINGS LEDGER, DESIGN BAR token compliance) — named exception
+     idiom, same as --cw-on-accent below: no --cw-success token exists yet,
+     so this references one anyway with the current value as its fallback,
+     rather than a bare hex with no semantic name at all. */
+  background: var(--cw-success, #22c55e);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-presence,
+  .cw-presence-stack,
+  .cw-share-btn {
+    transition: none;
+  }
+}
+
+.cw-btn-quiet--danger:hover {
+  background: color-mix(in srgb, var(--cw-danger) 8%, var(--cw-surface));
+  border-color: color-mix(in srgb, var(--cw-danger) 30%, var(--cw-border));
+  color: var(--cw-danger);
+}
+
+/* ------------------------------------------------------------- body grid */
+
+.cw-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  /* Palette hide/reveal (Bryan): the panel animates its OWN width and the
+     auto track follows it — transitioning grid-template-columns itself is a
+     trap (px↔fr track lists interpolate discretely, not smoothly). The var
+     still exists as the single source of truth so anything anchored to the
+     palette edge (e.g. the chat hat's left offset) can ride the same value. */
+  grid-template-columns: auto 1fr;
+}
+
+#workflow-root {
+  --cw-palette-w: 248px;
+}
+
+#workflow-root:has(.cw-palette.is-collapsed) {
+  --cw-palette-w: 0px;
+}
+
+/* ------------------------------------------------------------- palette */
+
+.cw-palette {
+  min-width: 0;
+  width: var(--cw-palette-w, 248px);
+  border-right: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  /* Bryan: the blocks panel is WHITE (the wings tint stays on the header +
+     compiled panel). */
+  background: var(--cw-surface);
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Clears the frosted header floating above (44px + breathing room). */
+  padding: 74px 12px 20px;
+  position: relative;
+  z-index: 2;
+  /* width for its own collapse; opacity+transform so FOCUS MODE eases in
+     BOTH directions — declaring those only inside .cw-focus-mode replaced
+     this whole shorthand at toggle-on, which is exactly why entering focus
+     used to pop while leaving it slid correctly (Bryan caught it). */
+  transition:
+    width 320ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-3, 420ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-palette.is-collapsed {
+  overflow: hidden;
+  padding: 0;
+  border-right: none;
+}
+
+/* Head row — structural collapse control, part of the panel itself. */
+
+
+
+
+
+
+/* Content fades + drifts left as the column narrows; strip does the reverse. */
+.cw-palette-inner {
+  transition:
+    opacity 200ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    translate 260ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-palette.is-collapsed .cw-palette-head,
+.cw-palette.is-collapsed .cw-palette-inner {
+  opacity: 0;
+  translate: -14px 0;
+  pointer-events: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-palette,
+  .cw-palette-inner,
+  .cw-palette-strip,
+  .cw-palette-switch-thumb {
+    transition: none;
+  }
+}
+
+/* PALETTE TYPE-AHEAD ROUND (PLAN.md "### A — PALETTE TYPE-AHEAD"): "need a
+   type ahead search for these tabs." A single quiet field pinned above the
+   Blocks|Templates switch (Palette.jsx's PaletteSearch), now the true first
+   child of .cw-palette-inner. De-boxed like E1's rows: one hairline field
+   rather than a card, so it reads as panel chrome, not a box stacked on the
+   panel. */
+.cw-palette-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 9px;
+  /* Sits UNDER the Blocks|Templates switch now (Bryan), so the breathing
+     room moves to the top of the field and the list keeps its own rhythm
+     below. */
+  margin: 10px 2px 12px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 8px;
+  background: var(--cw-field);
+  transition: border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-palette-search:focus-within {
+  border-color: var(--cw-accent);
+}
+
+.cw-palette-search-icon {
+  flex: 0 0 auto;
+  color: var(--cw-text-3);
+}
+
+.cw-palette-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--cw-text);
+}
+
+.cw-palette-search-input::placeholder {
+  color: var(--cw-text-3);
+}
+
+.cw-palette-search-input:focus {
+  outline: none;
+}
+
+.cw-palette-search-clear {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-palette-search-clear svg {
+  width: 11px;
+  height: 11px;
+}
+
+.cw-palette-search-clear:hover,
+.cw-palette-search-clear:focus-visible {
+  color: var(--cw-accent);
+}
+
+.cw-palette-search-clear:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-palette-search,
+  .cw-palette-search-clear {
+    transition: none;
+  }
+}
+
+/* TEMPLATES PHASE (TP1) — Blocks|Templates switch. Sat as the first child of
+   .cw-palette-inner originally; ANDREW ROUND's search field (above) now
+   takes that slot and the switch sits directly under it — both still fade/
+   slide with the rest of the panel's content on collapse. Same sliding-thumb
+   technique as nodes.css's .cw-segmented (container paints the idle track,
+   each button normally paints over it with --cw-surface-3, the active one
+   goes transparent to reveal the accent thumb underneath) — reimplemented
+   here with palette-scoped class names rather than imported, since nodes.css
+   is another seam's file. */
+.cw-palette-switch {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  padding: 2px;
+  gap: 2px;
+  margin: 0 2px 0;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 8px;
+  background: var(--cw-surface);
+  position: relative;
+  /* ANDREW ROUND — eases the search-live dim (below) both ways; declared
+     here rather than on .is-dimmed alone, so REMOVING the class fades back
+     in instead of snapping straight to full opacity. */
+  transition: opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Dims while a query is live — results have already replaced both tabs'
+   content, so the switch briefly stops being "the" navigation and just
+   marks which tab search will hand back once the query clears. */
+.cw-palette-switch.is-dimmed {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-palette-switch {
+    transition: none;
+  }
+}
+
+.cw-palette-switch-thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc((100% - 4px - (var(--cw-seg-n, 1) - 1) * 2px) / var(--cw-seg-n, 1));
+  background: var(--cw-accent);
+  border-radius: 6px;
+  translate: calc(var(--cw-seg-i, 0) * (100% + 2px)) 0;
+  transition: translate var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cw-palette-switch-btn {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--cw-surface-3);
+  color: var(--cw-text-3);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.cw-palette-switch-btn.is-active {
+  /* The thumb paints the fill; this only carries the ink color. */
+  background: transparent;
+  color: var(--cw-on-accent);
+}
+
+/* E1 item 2 — hairline BETWEEN sections only (never per-row): the section
+   gets its own top rule + padding instead of the label carrying the gap, so
+   the divider sits clear of the previous section's last row. */
+.cw-palette-section + .cw-palette-section {
+  /* Tightened (Bryan) — the hairline carries the break; big top+bottom
+     padding double-counted with the last row's own margin. */
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+.cw-section-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 2px 6px;
+}
+
+/* PLATFORM CHROME (PLAN.md "### 1 — Templates browser modal") — "palette
+   Templates tab gains a quiet 'Browse all ↗' link at its top." Right-aligned
+   quiet text link, same de-boxed voice as the rest of E1's palette chrome
+   (no border/background at rest). */
+.cw-palette-browse-all {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+  margin: 0 2px 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.cw-palette-browse-all:hover {
+  color: var(--cw-accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-palette-browse-all {
+    transition: none;
+  }
+}
+
+.cw-palette-row {
+  /* Rows are divs (see Palette.jsx — buttons can't start a native drag), so
+     the UA button defaults have to be restated here. */
+  -webkit-user-select: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  /* Tightened (Bryan) — the two-line rows carried 8px pad + 6px margin each,
+     which stacked into ~22px optical gaps between blocks. */
+  padding: 5px 10px;
+  margin-bottom: 2px;
+  /* E1 item 2 — de-boxed: rows lose border/background/shadow at rest,
+     transparent until hover. */
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: grab;
+  text-align: left;
+  /* MOTION PHASE item 6 — chrome physics: hover-raise, tile pop (below);
+     keep this consistent with node icon-tiles' own hover pop (M2,
+     nodes.css) — same scale/rotate values, per PLAN.md's explicit note.
+     Motion (transform) is untouched by E1 — only the static background
+     swap changed (var(--cw-surface-2) -> var(--cw-surface) pill, no more
+     border-color/box-shadow to transition). */
+  transition:
+    transform var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-palette-row:hover {
+  /* PALETTE HOVER PHASE (Bryan: "can you give these hover states.") — this
+     used to read var(--cw-surface): the SAME white the palette itself now
+     sits on (E1 moved .cw-palette to white; the "wings" chrome tint stayed
+     on the header/panel only), so the pill was structurally invisible.
+     var(--cw-field) is one step off white and actually reads. Templates
+     rows share .cw-palette-row (TemplateList.jsx), so this one fix lights
+     up both lists. Radius-8 and the -1px lift are unchanged; both already
+     transition via the base rule's `transition:` above. */
+  background: var(--cw-field);
+  transform: translateY(-1px);
+}
+
+.cw-palette-row:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: -2px;
+}
+
+.cw-palette-row:active {
+  cursor: grabbing;
+  transform: translateY(0) scale(0.98);
+}
+
+.cw-palette-row:hover .cw-tile {
+  transform: scale(1.08) rotate(2deg);
+}
+
+/* PALETTE HOVER PHASE — title picks up the accent so the row reads as
+   targeted, not just lifted; transition lives on .cw-row-label itself
+   (below) so it eases back on mouse-out too. */
+.cw-palette-row:hover .cw-row-label {
+  color: var(--cw-accent);
+}
+
+.cw-palette-row.is-single {
+  /* E1 item 2 — OUTPUTS single-line rows: 34px tall, content centered via
+     the base rule's align-items:center. */
+  padding: 0 10px;
+  min-height: 34px;
+}
+
+.cw-tile {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Bryan (2026-08-11): glyphs on solid accent tiles are WHITE — supersedes
+     the earlier pixel-sample reading of shot-1. Routed through the on-accent
+     ink token so brand/dark accents keep accessible contrast automatically. */
+  color: var(--cw-on-accent, #ffffff);
+  transition: transform var(--cw-d-1, 140ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+.cw-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cw-row-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cw-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* PALETTE HOVER PHASE — eases the accent swap above both ways. */
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-row-caption {
+  font-size: 11px;
+  color: var(--cw-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* TEMPLATES PHASE (TP1) — TemplateList.jsx rows. Reuses .cw-palette-row/
+   .cw-row-text/.cw-row-label as-is (same de-boxed hover-pill treatment as
+   block rows, per spec) and only adds what's template-specific: the blurb
+   clamps to 2 lines instead of .cw-row-caption's single-line ellipsis, and a
+   trailing node-count chip needs top-aligned text but a vertically-centered
+   badge. */
+.cw-template-row {
+  align-items: flex-start;
+}
+
+.cw-template-blurb {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cw-template-size {
+  flex: 0 0 auto;
+  align-self: center;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--cw-text-3);
+  background: var(--cw-field);
+  border-radius: var(--cw-radius-pill);
+  padding: 3px 7px;
+  line-height: 1.3;
+  /* PALETTE HOVER PHASE — transitions the accent tint below, both ways. */
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Row hover: the size chip flips to the accent-tinted treatment — mirrors
+   the issues-popover Auto fix button's tint language (.cw-issues-autofix)
+   so "this row is targeted" reads the same vocabulary everywhere. */
+.cw-palette-row:hover .cw-template-size {
+  background: color-mix(in srgb, var(--cw-accent) 10%, var(--cw-surface));
+  color: var(--cw-accent);
+}
+
+/* FILES TAB (PLAN.md "## FILES TAB — the palette learns your history") —
+   rows reuse .cw-palette-row/.cw-tile/.cw-row-text/.cw-row-label wholesale
+   ("Hover state = the palette's existing row hover family," per spec) and
+   only add what's files-specific below: one consistent, never kind-colored
+   glyph tile (a saved project isn't a "kind" the way a block is — see the
+   DESIGN BAR's "kind color as small honest signals... never floods"), and a
+   mono meta line where a template row would carry a blurb or size chip. */
+.cw-file-tile {
+  background: var(--cw-surface-3);
+  color: var(--cw-text-3);
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Row hover: the tile tints toward the accent (same "this row is targeted"
+   vocabulary .cw-template-size's own hover rule uses above) instead of
+   staying visually inert while everything else on the row lights up. */
+.cw-palette-row:hover .cw-file-tile {
+  background: color-mix(in srgb, var(--cw-accent) 14%, var(--cw-surface-3));
+  color: var(--cw-accent);
+}
+
+/* FILES ON THE CANVAS (Bryan: "files was supposed to be for files added to
+   the canvas not recent projects") — a canvas-file row is a RECORD, not a
+   control: no pointer affordance. When the attachment carries real pixels
+   (an uploaded image's object-URL, a run asset's photo) they become the
+   tile itself, clipped to the tile's own 7px radius. */
+.cw-canvasfile-row {
+  cursor: default;
+}
+/* …and none of the shared row-hover "you can click this" choreography
+   (pill tint, tile wiggle, accent label/tile) — the row stays visually at
+   rest. Same-specificity overrides, later in source, so they win the tie
+   against the .cw-palette-row:hover family above. */
+.cw-canvasfile-row:hover {
+  background: transparent;
+}
+.cw-canvasfile-row:hover .cw-tile {
+  transform: none;
+}
+.cw-canvasfile-row:hover .cw-row-label {
+  color: inherit;
+}
+.cw-canvasfile-row:hover .cw-file-tile {
+  background: var(--cw-surface-3);
+  color: var(--cw-text-3);
+}
+.cw-file-tile .cw-file-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+}
+
+/* SIMPLIFIED META (Bryan: "can you simplify this in files tab") — one
+   short mono line now, "9 nodes · Aug 18": the deliverables count is gone
+   from FileRow (Palette.jsx), and with it the old two-sub-line
+   stack/wrap workaround the long "deliverables" word used to need —
+   .cw-row-caption's own single-line nowrap+ellipsis handles this fine. */
+.cw-file-meta {
+  font-family: var(--cw-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* :active press — PLAN's spec for this phase asks for a subtle scale(0.99)
+   here, "matches chips" (nodes.css .cw-card-chip:active is scale(0.96)).
+   Not added: .cw-palette-row:active already owns this pseudo-class via the
+   (larger, explicitly Bryan-requested) "pickup card" affordance further
+   down this file — background/radius/shadow + scale(1.02), covering both
+   lists already since Templates rows are draggable too (TemplateList.jsx).
+   A second, opposite-direction scale on the same selector would fight that
+   rule instead of refining it, so it's left alone here rather than silently
+   overwritten — flagging for Bryan to confirm which press feel he wants. */
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-palette-row,
+  .cw-row-label,
+  .cw-template-size {
+    transition: none;
+  }
+}
+
+/* CANVAS TABS PHASE item 1 — the old .cw-palette-footer rule set (footer
+   explainer under the palette rows) lived here; removed entirely. That
+   copy's slot — canvas_2's zero-node card — was since redesigned (see
+   PLAN.md "## INSTRUCTIONS CARD REDESIGN"); its content/styles now live in
+   src/components/InstructionsCard.jsx + src/styles/instructions.css, not
+   in this file. */
+
+/* MOTION PHASE item 3 — Palette.jsx's custom `setDragImage` target: a small
+   tilted card ghost instead of the browser's default drag snapshot. Built
+   and attached off-screen for one frame at dragstart, then removed — never
+   part of the regular render tree, so no animation is needed here (nothing
+   ever transitions; it exists only to be screenshotted by the browser). */
+/* Drag ghost — the entire palette row, lifted into a card: real icon tile,
+   label AND caption travel with the cursor. Shadow-free on purpose — the
+   drag image is rasterised once, and a soft shadow bakes in as a grey smear
+   (the "weird drop shadow"). The card's border + tilt carry the lift. */
+.cw-drag-ghost {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-top: 3px solid var(--cw-ghost-accent, var(--cw-accent));
+  border-radius: 14px;
+  font-family: var(--cw-font);
+  color: var(--cw-text);
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.cw-drag-ghost-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cw-drag-ghost .cw-tile {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cw-on-accent, #fff);
+}
+
+.cw-drag-ghost-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cw-drag-ghost-label {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cw-drag-ghost-caption {
+  font-size: 11px;
+  color: var(--cw-text-3);
+  white-space: nowrap;
+}
+
+
+
+/* --------------------------------------------------------- canvas column */
+
+.cw-canvas-wrap {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  /* Nodes dragged (or fit) past the column edge must clip here, never paint
+     over the palette/compiled panel — the columns share one stacking context. */
+  overflow: hidden;
+  z-index: 1;
+  /* F1 (QA FINDINGS LEDGER) — RF's elevateNodesOnSelect (default true, left
+     on: keeps the "picked-up card rises above its neighbors" drag z-feel)
+     puts a selected node's own z-index at 1000, dwarfing .cw-panel's 6. On
+     paper that's still safe — this element is ALREADY a stacking context
+     (position + a non-auto z-index), which per spec caps every descendant's
+     z-index, RF's 1000 included, from ever escaping past whatever THIS
+     element itself resolves to among ITS OWN siblings — verified with
+     elementFromPoint hit-testing across the full node/panel overlap band,
+     at rest and mid-drag/mid-pan (screencast-frame + fromSurface:false
+     capture — .cw-panel wins every sample; a plain default-mode
+     Page.captureScreenshot taken WHILE synthetic input is actively firing
+     is the one capture path that lies here, painting the live frame
+     unblurred — a headless-CDP capture artifact, not the real composited
+     output). isolation:isolate makes that containment explicit rather than
+     incidental (zero behavior change, since the context already existed) —
+     cheap insurance against a future edit weakening the implicit form,
+     without touching elevateNodesOnSelect or .cw-panel's z-index. */
+  isolation: isolate;
+}
+
+.cw-canvas-wrap .react-flow {
+  background: var(--cw-canvas-bg);
+}
+
+/* Sits to the right of the bottom-left Controls rail (D's flow.css: 15px
+   panel inset, 32px buttons ≈ 47px right edge) so the two never overlap. */
+.cw-issues-wrap {
+  position: absolute;
+  /* Rail moved to the top-left, so the pill takes the corner proper. */
+  left: 16px;
+  /* CANVAS-NATIVE DELIVERABLES — back to its plain resting offset. F10
+     (QA FINDINGS LEDGER) once lifted this to clear the filmstrip dock's own
+     real measured height (--cw-filmstrip-h, published by the now-deleted
+     Filmstrip.jsx); with that dock gone for good (PLAN.md "## CANVAS-NATIVE
+     DELIVERABLES" part 4: "the --cw-filmstrip-h pill-lift plumbing (issues
+     pill returns to its resting offset)"), there's nothing left to clear. */
+  bottom: 16px;
+  z-index: 6;
+}
+
+.cw-issues-wrap.is-leaving .cw-issues-pill {
+  /* presence machine reuses the old leave animation below */
+}
+
+.cw-issues-pill {
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 14px;
+  /* R1 — was var(--cw-danger) with var(--cw-on-accent) ink: --cw-danger
+     lightens in dark for popover-text legibility (F13), but this pill
+     paints its OWN solid background and needs the opposite (a fill dark
+     enough for white ink to clear AA). --cw-danger-fill / -on-danger-fill
+     are the dedicated split, held at the light value in both themes. */
+  background: var(--cw-danger-fill);
+  color: var(--cw-on-danger-fill, #fff);
+  border-radius: var(--cw-radius-pill);
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: var(--cw-shadow-pill);
+  /* MOTION PHASE item 6 — spring slide-up entrance. FlowCanvas.jsx holds
+     this element mounted through its own local timer (kept in step with
+     --cw-d-2/240ms by hand — JS can't read a custom property's ms value
+     back out) so `.is-leaving` below gets to finish before unmount. */
+  animation: cw-pill-in var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+.cw-issues-pill.is-leaving {
+  animation: cw-pill-out var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+  pointer-events: none;
+}
+
+@keyframes cw-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cw-pill-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+}
+
+/* Count "pop" — the span itself is keyed on its own count text in
+   FlowCanvas.jsx, so a change (2 Issues -> 3 Issues) remounts just this
+   span and replays the keyframe below, without touching the pill's own
+   entrance state. */
+.cw-issues-count {
+  display: inline-block;
+  animation: cw-count-pop var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+@keyframes cw-count-pop {
+  from {
+    transform: scale(1.35);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.cw-issues-pill .cw-issues-dismiss {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  border-radius: var(--cw-radius-pill);
+  /* ISSUES POPOVER V2 item 1 — content is now a drawn SVG cross (FlowCanvas.
+     jsx's CrossIcon), not a text "×" glyph (it sat low in the circle at this
+     size, Bryan: "the x is optically misaligned"); color still feeds the
+     icon's stroke="currentColor". font-size/line-height dropped — nothing
+     left in here that's text.
+     F14 — tokenized instead of a bare hex; R1 — now var(--cw-on-danger-fill)
+     to match this pill's own text color just above (same fill, same ink). */
+  color: var(--cw-on-danger-fill, #fff);
+  cursor: pointer;
+}
+
+.cw-issues-pill .cw-issues-dismiss:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ------------------------------------------------------------ compiled panel */
+
+.cw-panel {
+  /* Frosted glass (Bryan) — same treatment as the header: the panel floats
+     over the workspace and the canvas runs full-bleed beneath it, so nodes
+     pan under the glass. Sits below the header's z-index so the header still
+     paints over its top edge. */
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 288px;
+  z-index: 6;
+  min-width: 0;
+  border-left: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  background: var(--canvas-header-bg, rgba(255, 255, 255, 0.72));
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  overflow-y: auto;
+  /* Clears the frosted header floating above. */
+  padding: 80px 16px 16px;
+}
+
+/* E1 item 4 — "Compiled output" head: overline treatment. Column layout +
+   `order` puts the mono tag ABOVE the h2 as a small kicker/eyebrow without
+   touching CompiledPanel.jsx's DOM order (h2 stays first in the markup). */
+.cw-panel-headrow {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 14px;
+}
+
+.cw-panel-headrow h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cw-text);
+  margin: 0;
+}
+
+.cw-mono-tag {
+  order: -1;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  color: var(--cw-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.cw-apply-btn {
+  display: block;
+  position: relative; /* anchors the .is-applied::after ring pulse */
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--cw-accent);
+  color: var(--cw-on-accent);
+  font-size: 13.5px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--cw-radius-sub);
+  cursor: pointer;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-apply-btn:hover {
+  background: color-mix(in srgb, var(--cw-accent) 85%, black);
+}
+
+/* MOTION PHASE item 6 — label slide-swap: CompiledPanel.jsx keys this span
+   on `applied`, so flipping it mounts a fresh element and replays the
+   slide-in below (the old label just leaves the same tick — no exit needed,
+   the swap already reads as one clean shift either direction). No clip
+   wrapper on purpose: the travel is a few px within the button's own
+   padding, and a wrapper with overflow:hidden here would also clip the
+   ring-pulse ::after below, which needs to expand OUTSIDE the button. */
+.cw-apply-btn-label {
+  display: inline-block;
+  animation: cw-apply-label-in var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+@keyframes cw-apply-label-in {
+  from {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* One accent ring pulse on success — `.is-applied` is set for the same
+   1.5s window CompiledPanel.jsx already holds the "Applied ✓" label up,
+   well past this 600ms one-shot. */
+.cw-apply-btn.is-applied::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--cw-accent) 45%, transparent);
+  animation: cw-apply-ring-pulse 600ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+  pointer-events: none;
+}
+
+@keyframes cw-apply-ring-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--cw-accent) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 12px color-mix(in srgb, var(--cw-accent) 0%, transparent);
+  }
+}
+
+/* FQ-C item 2 (PLAN.md "### FQ-C — OPEN ASKS") — "Copy prompt"/"Copy
+   workflow": two quiet text buttons under Apply to session, panel voice
+   (same text-only treatment as this file's other in-panel quiet actions —
+   no fill, no border, a hairline-quiet label that only picks up color on
+   hover/success). Their label spans reuse .cw-apply-btn-label above verbatim
+   for the Copied-swap motion, so no second keyframe lives here. */
+.cw-panel-copy-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.cw-panel-copy-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+.cw-panel-copy-btn:hover {
+  color: var(--cw-accent);
+}
+
+.cw-panel-copy-btn:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.cw-hairline {
+  height: var(--cw-hairline-w, 0.5px);
+  background: var(--cw-border-soft);
+  margin: 14px 0;
+}
+
+/* COMPILED PANEL TRUTH PASS (PLAN.md), Fix 3 — a big broken flow (e.g.
+   ?flow=global) can throw dozens of issue rows, which used to shove the
+   count sections below the fold with no way to reach them short of
+   scrolling the whole panel past the wall of warnings. Capping this box and
+   scrolling INSIDE it keeps SUBAGENTS/KNOWLEDGE BASES/TOOLS/SKILLS/FILES
+   always reachable. Chromeless (scrollbar-width:none + the ::-webkit- rule
+   below) matches .cw-palette's own scroll treatment elsewhere in this file —
+   the panel's OWN thin thumb (further down) stays the only visible
+   scrollbar on this surface. */
+.cw-issues {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.cw-issues::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+
+.cw-issue-none {
+  padding: 10px 12px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--cw-text-3);
+}
+
+/* E1 item 4 — warnings become quiet rows: a small dot instead of a filled
+   amber slab, separated by hairlines instead of a gap+background. */
+/* These rows are <button> jump-links (click one, the canvas glides to the
+   offending card) — so they need the full UA button reset, or Chrome paints
+   its grey buttonface behind every issue and the panel reads as broken. */
+.cw-issue-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 10px 8px 10px 6px;
+  margin: 0;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+  color: var(--cw-text);
+  background: transparent;
+  border: none;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 0;
+  cursor: pointer;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+.cw-issue-row:hover {
+  color: var(--cw-accent);
+}
+
+.cw-issue-row:hover .cw-issue-dot {
+  background: var(--cw-accent);
+}
+
+.cw-issue-row:first-child {
+  border-top: none;
+}
+
+.cw-issue-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--cw-warn-text);
+}
+
+/* E1 item 4 — caps section heads: 8px-taller rhythm + a hairline above each
+   (uniform across all four count sections, including the first — reads as
+   one continuous list of labeled sections under the issues block). */
+.cw-count-section {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+.cw-section-label--row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cw-count-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  font-weight: 600;
+  color: var(--cw-text-3);
+}
+
+.cw-dash {
+  font-size: 13px;
+  color: var(--cw-text-3);
+  margin-top: 4px;
+}
+
+.cw-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.cw-chip {
+  padding: 5px 12px;
+  /* E1 item 4 — hairline border instead of the solid default. */
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: var(--cw-radius-pill);
+  font-size: 11.5px;
+  color: var(--cw-text);
+  background: var(--cw-surface);
+  white-space: nowrap;
+  /* MOTION PHASE item 6 — each chip is already keyed on its own name
+     (CompiledPanel.jsx), so a newly-appearing one mounts fresh and plays
+     this pop; existing chips are untouched (React reconciles them in
+     place, no remount, no replay). */
+  animation: cw-chip-pop var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+@keyframes cw-chip-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---- prefers-reduced-motion ------------------------------------------------
+   Global rule (PLAN.md "MOTION PHASE" -> "Global rules"): every entrance
+   collapses to a fast fade. Scoped to the entrances/one-shot flourishes this
+   file introduces (apply-button label + ring pulse, issues pill in/out +
+   count pop, compiled-panel chip pop-in) — toolbar-button hover-lift/press-
+   scale and the palette row hover-raise/tile-pop are deliberately left
+   alone: instant, non-looping tap/hover feedback, not the ambient-loop/
+   entrance motion this rule targets. ---------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .cw-apply-btn-label {
+    animation: none;
+  }
+  .cw-apply-btn.is-applied::after {
+    animation: none;
+  }
+
+  .cw-issues-pill {
+    animation: cw-pill-fade var(--cw-d-1, 140ms) linear;
+  }
+  .cw-issues-pill.is-leaving {
+    animation: cw-pill-fade-out var(--cw-d-1, 140ms) linear forwards;
+  }
+  .cw-issues-count {
+    animation: none;
+  }
+  @keyframes cw-pill-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes cw-pill-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .cw-chip {
+    animation: none;
+  }
+}
+
+/* ---- Scrolling panels (Bryan: "smooth scrolling") ----------------------
+   Three parts, all native — no wheel hijacking, which would fight the
+   momentum a trackpad already provides and make it feel worse:
+   1. scroll-behavior: smooth — animates programmatic/keyboard scrolls
+      (Page Up/Down, arrow keys, focus jumps) instead of teleporting;
+   2. overscroll-behavior: contain — hitting either end stops there rather
+      than chaining the scroll to the page behind the overlay;
+   3. a slim, self-effacing scrollbar (the default chunky grey bar is what
+      reads as "unfinished" in a floating panel), thickening on hover so it
+      stays grabbable. */
+#workflow-root .cw-palette,
+#workflow-root .cw-panel {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--cw-text-3) 28%, transparent) transparent;
+}
+
+#workflow-root .cw-palette::-webkit-scrollbar,
+#workflow-root .cw-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+#workflow-root .cw-palette::-webkit-scrollbar-track,
+#workflow-root .cw-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#workflow-root .cw-palette::-webkit-scrollbar-thumb,
+#workflow-root .cw-panel::-webkit-scrollbar-thumb {
+  /* Border-as-inset keeps the visible thumb 4px wide while leaving a 10px
+     hit target — thin to look at, still easy to grab. */
+  background-color: color-mix(in srgb, var(--cw-text-3) 26%, transparent);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+  transition: background-color 160ms var(--cw-e-out, ease);
+}
+
+#workflow-root .cw-palette:hover::-webkit-scrollbar-thumb,
+#workflow-root .cw-panel:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--cw-text-3) 45%, transparent);
+}
+
+#workflow-root .cw-palette::-webkit-scrollbar-thumb:active,
+#workflow-root .cw-panel::-webkit-scrollbar-thumb:active {
+  background-color: color-mix(in srgb, var(--cw-accent) 60%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-palette,
+  #workflow-root .cw-panel {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---- Panel handles (Bryan) — the shell's own .rail-handle pill, reused
+   verbatim for both builder panels so hiding either one reads identically to
+   hiding the shell's nav. 14x44 pill straddling the panel's hairline, accent
+   fill on hover which also grows it to 60px, chevron flipping with state.
+   Both panels can hide at once — that's the point: full-bleed canvas. ---- */
+.cw-panel-handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cw-canvas-bg);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 8px;
+  color: var(--cw-accent);
+  cursor: pointer;
+  /* Above the frosted panel AND its scrollbar/shadow — the pill is the one
+     control that must never be buried by the surface it governs. */
+  z-index: 14;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+  transition:
+    left 480ms cubic-bezier(0.32, 0.72, 0, 1),
+    right 480ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    height 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cw-panel-handle:hover {
+  background: var(--cw-accent);
+  color: var(--cw-on-accent);
+  border-color: var(--cw-accent);
+  height: 60px;
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--cw-accent) 22%, transparent),
+    0 8px 20px color-mix(in srgb, var(--cw-accent) 16%, transparent);
+}
+
+.cw-panel-handle:active { transform: translate(-50%, -50%) scale(0.94); }
+.cw-panel-handle:focus,
+.cw-panel-handle:focus-visible { outline: none; }
+
+.cw-panel-handle svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  transition: rotate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Left (palette): the pill sits on the panel's right hairline, so it rides
+   the panel's own width. Chevron points LEFT while open (click = hide). */
+.cw-panel-handle--left {
+  left: var(--cw-palette-w, 248px);
+}
+.cw-panel-handle--left[aria-expanded='true'] svg { rotate: 180deg; }
+.cw-panel-handle--left[aria-expanded='false'] svg { rotate: 0deg; }
+
+/* Right (compiled output): mirrored — `right` is set inline by the component
+   so it tracks the collapse. Chevron points RIGHT while open. Collapsed, the
+   pill must stay FULLY inside the frame (Bryan) — it un-straddles (no 50%
+   shift) and rests 8px in from the edge instead of hanging half off-screen. */
+.cw-panel-handle--right {
+  transform: translate(50%, -50%);
+}
+.cw-panel-handle--right:active { transform: translate(50%, -50%) scale(0.94); }
+/* Collapsed: the panel leaves an 8px sliver (above), and the pill straddles
+   the sliver's hairline — right:8px + the 50% shift keeps every pixel of the
+   pill inside the frame. */
+.cw-panel-handle--right[aria-expanded='false'] svg { rotate: 180deg; }
+
+/* Bottom (deliverables shelf — SHELF DOCKING FIX, DeliverablesShelf.jsx):
+   horizontal variant of the same pill. Swapped anatomy (wide/short instead
+   of tall/narrow) so hover grows it sideways instead of vertically, and
+   centered on the shelf's own top edge instead of tracking a moving side
+   edge. `bottom` is set inline by the component — the shelf's own measured
+   open height, clamped so a closed shelf's straddle never dips into the
+   footer below it (that file's own header comment) — everything else here
+   is static. Repeats the base rule's transition list (swapping `height` for
+   `width`, its own hover-grow axis) rather than adding just `bottom`: the
+   shorthand REPLACES, it doesn't merge, so a bare `transition: bottom ...`
+   here would silently kill this pill's own hover/active color+shape fades. */
+.cw-panel-handle--bottom {
+  top: auto;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  width: 44px;
+  height: 14px;
+  transition:
+    bottom 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    width 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cw-panel-handle--bottom:hover {
+  width: 60px;
+  height: 14px;
+}
+.cw-panel-handle--bottom:active { transform: translate(-50%, 50%) scale(0.94); }
+/* Chevron points the direction the NEXT click moves things (the vertical
+   pills' own convention above) — up = "opens upward" while closed, down =
+   "collapses back down" while open. */
+.cw-panel-handle--bottom[aria-expanded='false'] svg { rotate: -90deg; }
+.cw-panel-handle--bottom[aria-expanded='true'] svg { rotate: 90deg; }
+
+
+
+/* Panels slide away rather than resizing their contents — the text inside
+   should never reflow mid-transition. */
+.cw-panel {
+  transition:
+    transform 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-panel.is-collapsed {
+  /* Tuck, don't vanish (Bryan): a 38px sliver stays on screen — enough that
+     the parked panel and its pill are unmistakably there, rather than a
+     hairline hugging the frame edge. */
+  transform: translateX(calc(100% - 38px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-panel-handle,
+  .cw-panel-handle svg,
+  .cw-panel {
+    transition: none;
+  }
+}
+
+
+/* ---- Rename + confirm (Bryan) --------------------------------------------
+   Rename swaps an input over the header title; Clear routes through a real
+   confirmation rather than nuking the canvas on a single click. Both use the
+   card/hairline/token language already established. */
+.cw-rename-wrap {
+  position: absolute;
+  top: 20px;
+  left: 18px;
+  z-index: 12;
+}
+
+.cw-rename-input {
+  width: 260px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--cw-text);
+  background: var(--cw-surface);
+  border: 1px solid var(--cw-accent);
+  border-radius: 8px;
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cw-accent) 18%, transparent);
+}
+
+.cw-confirm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--cw-text) 22%, transparent);
+  backdrop-filter: blur(2px);
+  animation: cw-confirm-fade var(--cw-d-2, 240ms) var(--cw-e-out, ease) both;
+}
+
+@keyframes cw-confirm-fade { from { opacity: 0 } }
+
+.cw-confirm-card {
+  width: min(380px, calc(100% - 48px));
+  padding: 22px 22px 18px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, .06), 0 24px 60px -20px rgba(16, 24, 40, .3);
+  animation: cw-confirm-rise var(--cw-d-3, 420ms) var(--cw-e-spring, ease) both;
+}
+
+@keyframes cw-confirm-rise { from { opacity: 0; translate: 0 8px; scale: .97 } }
+
+.cw-confirm-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cw-text);
+}
+
+.cw-confirm-body {
+  margin: 0 0 18px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--cw-text-3);
+}
+
+.cw-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cw-confirm-go {
+  color: var(--cw-danger);
+  border-color: color-mix(in srgb, var(--cw-danger) 30%, var(--cw-border));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-confirm-overlay,
+  .cw-confirm-card { animation: none }
+}
+
+/* SAVE PANEL (PLAN.md "## SAVE PANEL — saving a workflow is a moment, not a
+   rename") — "Save workflow" opens this instead of the bare .cw-rename-wrap
+   input above. Same backdrop (.cw-confirm-overlay, unchanged) + same card
+   language (hairline border, spring rise) as .cw-confirm-card, just its own
+   width/padding since a name + description field stack needs more room than
+   a one-line confirm question. */
+.cw-save-card {
+  width: min(360px, calc(100% - 48px));
+  padding: 20px 20px 18px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, .06), 0 24px 60px -20px rgba(16, 24, 40, .3);
+  animation: cw-confirm-rise var(--cw-d-3, 420ms) var(--cw-e-spring, ease) both;
+}
+
+.cw-save-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.cw-save-header .cw-confirm-title {
+  margin: 0;
+}
+
+.cw-save-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  color: var(--cw-accent);
+  background: var(--cw-accent-soft);
+  border-radius: 7px;
+}
+
+.cw-save-field {
+  display: block;
+  margin: 0 0 14px;
+}
+
+.cw-save-label {
+  display: block;
+  margin: 0 0 6px 1px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cw-save-label-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--cw-text-3);
+}
+
+.cw-save-input {
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 0 11px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--cw-text);
+  background: var(--cw-field);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 8px;
+  outline: none;
+  transition:
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-save-input::placeholder {
+  color: var(--cw-text-3);
+}
+
+.cw-save-input:focus {
+  border-color: var(--cw-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cw-accent) 18%, transparent);
+}
+
+.cw-save-destination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 18px;
+  font-size: 11.5px;
+  color: var(--cw-text-3);
+}
+
+.cw-save-destination svg {
+  flex: 0 0 auto;
+}
+
+/* Save button — reuses .cw-apply-btn/.cw-apply-btn-label/.is-applied
+   VERBATIM (CompiledPanel.jsx's "Applied ✓" label-swap + accent ring-pulse —
+   DESIGN BAR: "reuse, don't invent"). .cw-save-go only overrides the sizing
+   so it sits inline in a Cancel/Save button row instead of the panel's own
+   full-width block — background/ink/hover-darken/ring-pulse all still come
+   from .cw-apply-btn's own rules since the element carries both classes. */
+.cw-save-go {
+  display: inline-flex;
+  width: auto;
+  min-width: 92px;
+  height: 30px;
+  padding: 0 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-save-card { animation: none }
+}
+
+/* Pickup affordance (Bryan: "a container surrounds the block while the user
+   is clicking it") — pressing a palette row lifts it into a card before the
+   drag image ever appears, so the gesture starts as a card, not a list row. */
+.cw-palette-row:active {
+  background: var(--cw-surface);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 10px 22px -10px rgba(16, 24, 40, 0.22);
+  transform: scale(1.02);
+}
+
+
+/* ---- Entrance choreography (Bryan: "a really beautiful build into the
+   space") ------------------------------------------------------------------
+   The app mounts fresh each time the overlay opens, so mount animations run
+   exactly once per entrance: the frosted header settles down from the top,
+   the palette breathes in from the left, the compiled panel mirrors from the
+   right, the handles arrive last. The canvas's own node cascade + edge
+   draw-on (motion phase) start underneath, so the whole space assembles in
+   about half a second, back to front. `backwards` fill only — rest state
+   stays owned by the plain rules. */
+.cw-header {
+  animation: cw-enter-down 380ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 40ms backwards;
+}
+
+.cw-palette {
+  animation: cw-enter-left 400ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 90ms backwards;
+}
+
+.cw-panel {
+  animation: cw-enter-right 400ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 140ms backwards;
+}
+
+.cw-panel-handle {
+  animation: cw-enter-fade 300ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 300ms backwards;
+}
+
+@keyframes cw-enter-down {
+  from { opacity: 0; translate: 0 -12px; }
+}
+
+@keyframes cw-enter-left {
+  from { opacity: 0; translate: -16px 0; }
+}
+
+@keyframes cw-enter-right {
+  from { opacity: 0; translate: 16px 0; }
+}
+
+@keyframes cw-enter-fade {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-header,
+  .cw-palette,
+  .cw-panel,
+  .cw-panel-handle {
+    animation: none;
+  }
+}
+
+
+/* Palette attention pulse — fired when a manifest door points here. */
+.cw-palette.is-pulsing {
+  animation: cw-palette-pulse 900ms var(--cw-e-out, ease) both;
+}
+
+@keyframes cw-palette-pulse {
+  0% { box-shadow: inset -3px 0 0 transparent; }
+  25% { box-shadow: inset -3px 0 0 var(--cw-accent); }
+  100% { box-shadow: inset -3px 0 0 transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-palette.is-pulsing { animation: none; }
+}
+
+
+/* Trigger row once a trigger exists — present but inert. */
+.cw-palette-row.is-disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.cw-palette-row.is-disabled:hover {
+  background: transparent;
+  transform: none;
+}
+
+.cw-palette-row.is-disabled:hover .cw-tile {
+  scale: 1;
+  rotate: 0deg;
+}
+
+/* PALETTE HOVER PHASE — an inert row shouldn't look "targeted" either. */
+.cw-palette-row.is-disabled:hover .cw-row-label {
+  color: var(--cw-text);
+}
+
+
+/* Palette scrolls chromeless (Bryan) — no visible bar, wheel/trackpad and
+   keyboard scrolling unchanged. The compiled panel keeps its slim thumb. */
+#workflow-root .cw-palette {
+  scrollbar-width: none;
+}
+
+#workflow-root .cw-palette::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+
+
+/* Collapsed compiled panel: surface only — content fades so cropped text
+   never peeks through the 38px sliver; the pill stays (it lives outside the
+   panel). */
+.cw-panel > * {
+  transition: opacity 260ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 160ms;
+}
+
+.cw-panel.is-collapsed > * {
+  opacity: 0;
+  transition: opacity 180ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+  pointer-events: none;
+}
+
+
+/* OUTPUTS rows only (Bryan): single-line rows sit denser than the two-line
+   ACTIONS/LOGIC rows, so they get their own breathing room. :has() scopes it
+   to the section whose rows are single-line — no markup change needed. */
+.cw-palette-section:has(.cw-palette-row.is-single) .cw-palette-row.is-single {
+  margin-bottom: 8px;
+}
+
+
+/* Source row while its block is being dragged out. */
+.cw-palette-row.is-drag-source {
+  opacity: 0.35;
+}
+
+/* The ghost is a live cursor-follower (manual drag preview — Palette.jsx).
+   Real element = real rendering: the tilt and a soft lift shadow are back,
+   and it must never intercept the pointer. */
+.cw-drag-ghost {
+  /* Straight, not tilted (Bryan). */
+  transform: none;
+  z-index: 9999;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.08),
+    0 14px 32px -12px rgba(16, 24, 40, 0.28);
+  will-change: left, top;
+}
+
+
+/* ---- Issues error overlay (Bryan) --------------------------------------- */
+.cw-issues-pill-main {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.cw-issues-pill-main .cw-issues-count {
+  white-space: nowrap;
+}
+
+.cw-issues-popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  /* ISSUES POPOVER V2 (PLAN.md "### 4") — widened 340->380px: rows now carry
+     a subject line, a wrapping hint sentence, AND a Fix button abreast of
+     both — the extra width keeps the hint from wrapping too aggressively
+     next to the button. */
+  width: 380px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 14px;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.06),
+    0 20px 48px -16px rgba(16, 24, 40, 0.25);
+  padding: 6px;
+  animation: cw-menu-in var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+
+.cw-issues-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 8px 12px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cw-text-3);
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+.cw-issues-autofix {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--cw-accent);
+  background: color-mix(in srgb, var(--cw-accent) 8%, var(--cw-surface));
+  border: var(--cw-hairline-w, 0.5px) solid color-mix(in srgb, var(--cw-accent) 28%, transparent);
+  border-radius: 7px;
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+.cw-issues-autofix:hover {
+  background: color-mix(in srgb, var(--cw-accent) 14%, var(--cw-surface));
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+}
+
+.cw-issues-popover-list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding-top: 4px;
+}
+
+/* ISSUES POPOVER V2 (PLAN.md "### 4") — row anatomy rebuilt: a kind-colored
+   mark, a subject+hint copy column, and a per-row Fix button. The row is now
+   a DIV (role="button", FlowCanvas.jsx) rather than a <button> — it wraps a
+   real nested <button> for Fix, and buttons can't nest — so the UA button
+   reset this rule used to lean on (border/background/font/text-align/color)
+   is restated explicitly here, same reasoning as .cw-palette-row's own
+   comment ("Rows are divs ... so the UA button defaults have to be
+   restated"). */
+.cw-issues-popover-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--cw-text-2);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+.cw-issues-popover-row:hover {
+  background: var(--cw-field);
+}
+
+.cw-issues-popover-row:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: -2px;
+}
+
+/* The kind-colored popover mark was retired 2026-08-14 (Bryan) — the
+   subject line carries the issue color itself now. */
+.cw-issues-popover-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cw-issues-popover-subject {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  /* Bryan (2026-08-14): the headline IS the issue signal now — the pill's
+     own danger red, both themes, instead of a kind-colored dot beside
+     neutral text. The hint below stays quiet --cw-text-3. */
+  color: var(--cw-danger);
+}
+
+.cw-issues-popover-hint {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--cw-text-3);
+}
+
+/* Per-row Fix — quieter than .cw-issues-autofix at rest (a plain hairline,
+   text-only accent) since several of these can stack in one popover; hover
+   picks up the SAME tint recipe as Auto fix's own hover ("the Auto fix tint
+   language", PLAN.md) so both read as one family of action. */
+.cw-issues-popover-fix {
+  flex-shrink: 0;
+  align-self: flex-start;
+  height: 24px;
+  padding: 0 10px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cw-accent);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+.cw-issues-popover-fix:hover {
+  background: color-mix(in srgb, var(--cw-accent) 14%, var(--cw-surface));
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+}
+
+.cw-issues-popover-fix:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-issues-popover { animation: none; }
+}
+
+
+/* ---- Palette tab swap (Bryan: "add a nice effect to the way the templates
+   and blocks build in when you tab back and forth") ----------------------
+   Two layers of motion, deliberately different axes so they read as depth
+   rather than one big lurch: the LIST slides horizontally from the side its
+   tab sits on (Blocks left, Templates right), while its section labels and
+   rows rise and fade in a top-to-bottom cascade over the top of it. The
+   whole thing is done in ~420ms worst case — long enough to register, short
+   enough that a fast tab-tab-tab never feels like it's queueing.
+
+   Delay math: each section carries its index as `--i` (set inline in
+   Palette.jsx / TemplateList.jsx) and each child carries its position within
+   that section as `--r` (the nth-child rules below), so the cascade runs
+   continuously down the panel instead of restarting per group. */
+#workflow-root .cw-palette-swap {
+  animation: cw-swap-slide var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+#workflow-root .cw-palette-swap--blocks {
+  --cw-swap-from: -14px;
+}
+
+#workflow-root .cw-palette-swap--templates {
+  --cw-swap-from: 14px;
+}
+
+/* FILES TAB — the third segment sits to the right of Templates too (Blocks
+   is the only leftmost button), so its content enters from the same side —
+   extends the existing two-value scheme rather than inventing new physics
+   for a third tab. Covers BOTH a plain tab-switch into Files and a live
+   Files-scoped search re-key (Palette.jsx sets this class in either case). */
+#workflow-root .cw-palette-swap--files {
+  --cw-swap-from: 14px;
+}
+
+/* LIBRARY PASS — `.cw-section-label` is now ALSO nested inside every
+   `.cw-folder-head` (its typography, below — folder headers reuse it
+   rather than forking a near-identical rule), so this selector stays
+   scoped to a DIRECT child of `.cw-palette-section` on purpose: that's
+   exactly where search's own flat rendering (Palette.jsx, untouched by this
+   phase) puts its bare label, and nowhere a folder-nested one ever sits —
+   without the `>` this would ALSO match that nested span and double-
+   animate it underneath its own already-animating `.cw-folder-head`. */
+#workflow-root .cw-palette-swap .cw-palette-section > .cw-section-label,
+#workflow-root .cw-palette-swap .cw-palette-row,
+#workflow-root .cw-palette-swap .cw-folder-head {
+  animation: cw-swap-row-in var(--cw-d-3, 420ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+  animation-delay: calc(var(--i, 0) * 46ms + var(--r, 0) * 14ms);
+}
+
+/* Position within the section (label is child 1, rows follow) — still live
+   for search's flat rendering (its rows really are direct nth-children of
+   `.cw-palette-section`, unchanged). LIBRARY PASS's folder tree sets `--r`
+   inline per row/header instead (Palette.jsx's Folder/BlocksFolderTree,
+   TemplateList.jsx) since a folder's rows live behind a collapsible Reveal
+   now, not at a fixed nth-child position — these rules simply don't match
+   anything there, harmlessly. Capped at 14 — past that the delay would
+   out-run the swap and late rows would visibly trail; anything deeper just
+   lands with the last stagger step. */
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(1) { --r: 0; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(2) { --r: 1; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(3) { --r: 2; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(4) { --r: 3; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(5) { --r: 4; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(6) { --r: 5; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(7) { --r: 6; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(8) { --r: 7; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(9) { --r: 8; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(10) { --r: 9; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(11) { --r: 10; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(12) { --r: 11; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(13) { --r: 12; }
+#workflow-root .cw-palette-swap .cw-palette-section > *:nth-child(14) { --r: 13; }
+
+@keyframes cw-swap-slide {
+  from { opacity: 0; transform: translateX(var(--cw-swap-from, 0)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes cw-swap-row-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-palette-swap,
+  #workflow-root .cw-palette-swap .cw-palette-section > .cw-section-label,
+  #workflow-root .cw-palette-swap .cw-palette-row,
+  #workflow-root .cw-palette-swap .cw-folder-head {
+    animation: cw-swap-fade var(--cw-d-1, 140ms) linear both;
+    animation-delay: 0ms;
+  }
+
+  @keyframes cw-swap-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* ANDREW ROUND type-ahead — search results ride the exact swap cascade
+   above for free (the selectors there target the base .cw-palette-swap/
+   .cw-section-label/.cw-palette-row classes, which this variant carries
+   too). The only thing worth overriding is direction: Blocks/Templates
+   slide in from whichever side their tab sits on, but search isn't "a tab"
+   with a side — it replaces both, so it only fades + cascades its rows,
+   same as the reduced-motion fallback above does for everyone. */
+#workflow-root .cw-palette-swap--search {
+  --cw-swap-from: 0px;
+}
+
+/* The palette's quiet voice for a dead-end query — text only, no card, so
+   it doesn't read as an error state (E1: no filled slabs). */
+.cw-palette-empty {
+  padding: 18px 4px 6px;
+  font-size: 12px;
+  color: var(--cw-text-3);
+}
+
+/* ---------------------------------------------------------- GHOST + PICKER
+   PLAN.md "## GHOST + PICKER — the node-side + opens a block picker". Same
+   menu language as .cw-header-menu above (surface/radius/shadow, the
+   cw-menu-in spring entrance, .cw-menu-item's row treatment) — reused as a
+   position:fixed popover instead of position:absolute since BlockPicker.jsx
+   portals it to #workflow-root and places it from a getBoundingClientRect
+   screen point (the .cw-comment-card-portal precedent — escapes React
+   Flow's pan/zoom transform + .cw-app's overflow:hidden clip). Width/
+   max-height here MUST stay in sync with BlockPicker.jsx's own POPOVER_W /
+   POPOVER_MAX_H constants — the JS clamps against them before the popover
+   ever paints a frame.
+
+   COMFY ROUND (CP0+) — the popover is now a flex COLUMN: an optional FROM
+   chip + the always-on search field as fixed-height children, then
+   .cw-picker-list taking the rest (flex:1) and doing the scrolling itself —
+   `max-height` here still caps the WHOLE popover exactly as before, it just
+   no longer scrolls as one big block, so a short (searched-down) result set
+   still shrinks the popover to fit instead of leaving dead space. */
+#workflow-root .cw-block-picker {
+  position: fixed;
+  z-index: 30;
+  width: 216px;
+  max-height: 340px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 12px;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.06),
+    0 16px 40px -12px rgba(16, 24, 40, 0.18);
+  animation: cw-menu-in var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+
+/* CP0+ item 2 — the "FROM 02 · out" head chip (wire-drop only). Mono meta
+   text on a quiet field pill, same instrument-voice pairing CardEyebrow
+   (nodes.css) uses for its own "NN · KIND" tag — duplicated as a literal
+   font stack rather than imported, same cross-seam reasoning as this file's
+   other small duplicated tables (src/nodes is seam C). */
+.cw-picker-head {
+  padding: 2px 2px 8px;
+}
+
+.cw-picker-head-chip {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: var(--cw-field);
+  color: var(--cw-text-2);
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* CP0+ item 1 — the search field reuses .cw-palette-search's own rules
+   (app.css, shared/global) verbatim; this second class only retunes the
+   margin for the popover's own tighter 6px padding + optional head chip
+   above it (Palette.jsx's version assumes it's the panel's own top child). */
+.cw-picker-search {
+  margin: 2px 0 6px;
+}
+
+/* The scrollable body — everything the old single-block overflow used to
+   cover, now scoped to just the rows so the search field/head chip above
+   stay pinned in view while a long result list scrolls under them. */
+.cw-picker-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Hairline BETWEEN sections only — same "never per-row" rule the palette's
+   own .cw-palette-section + .cw-palette-section already follows. */
+.cw-picker-section + .cw-picker-section {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+/* "reuse the palette row's tile-less compact look" — a bare, kind-tinted
+   icon (no .cw-tile background square) + a single label line: this is a
+   menu, not a second palette. CP0+ item 3 adds an OPTIONAL second line (the
+   palette blurb) only while search is open — see .cw-picker-item-caption. */
+.cw-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--cw-text-2);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-picker-item svg {
+  flex: 0 0 auto;
+}
+
+.cw-picker-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cw-picker-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cw-picker-item-caption {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--cw-text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Keyboard highlight reads IDENTICAL to mouse hover — arrow-key nav and
+   hovering are the same "this is the one Enter/click picks" signal, just
+   two different inputs pointing at it (CP0+ item 1). */
+.cw-picker-item:hover,
+.cw-picker-item:focus-visible,
+.cw-picker-item.is-highlighted {
+  background: var(--cw-field);
+  color: var(--cw-text);
+}
+
+.cw-picker-item:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: -2px;
+}
+
+/* Dead-end query — same quiet, card-less voice as the palette's own
+   .cw-palette-empty (reused verbatim below), just tightened for the
+   picker's narrower column. */
+.cw-picker-empty {
+  padding: 14px 4px 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Reuses cw-pill-fade (defined above, .cw-issues-pill) rather than a new
+     keyframe — same "entrance collapses to a fast fade" rule as every other
+     presence-animated element in this file. */
+  #workflow-root .cw-block-picker {
+    animation: cw-pill-fade var(--cw-d-1, 140ms) linear;
+  }
+}
+
+
+/* ---- Compiled-panel yield (integrated-sweep FAIL B3/D3) --------------------
+   Same point-by-point ghosting the minimap already does (flow.css
+   .cw-minimap-yield), applied by FlowCanvas's shared surface-yield effect
+   when the cursor rests on a BURIED INTERACTIVE control — a paused human's
+   Continue button, a node toolbar's trash — under the panel's 288px dock.
+   The panel drops out of the pointer's way and dims enough to make the
+   control beneath legible through the glass; its own controls stay fully
+   live at every point where nothing interactive is buried. */
+#workflow-root .cw-panel.cw-panel-yield {
+  pointer-events: none;
+  opacity: 0.3;
+  transition: opacity var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+/* F8 — the palette's own yield, added to FlowCanvas.jsx's SURFACES array
+   alongside the panel above; identical treatment (drop out of the pointer's
+   way, dim enough that the buried control reads as reachable). */
+#workflow-root .cw-palette.cw-palette-yield {
+  pointer-events: none;
+  opacity: 0.3;
+  transition: opacity var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+/* F11 (QA FINDINGS LEDGER) — minimap auto-frost. flow.css keeps the minimap
+   fully chromeless at rest (border:none/box-shadow:none/background:transparent
+   — Bryan's own call, "no card, no mask wash"); FlowCanvas.jsx's own
+   intersection check (the minimapFrosted effect, next to minimapVisible) adds
+   this class ONLY while a real node is actually sitting behind the map's own
+   rect right now. `background`/`backdrop-filter` set directly on
+   .react-flow__minimap here outrank flow.css's plain-class rule on
+   specificity (one extra class) regardless of stylesheet load order, so this
+   never has to touch that file. Same 72%-surface glass idiom `.cw-panel`
+   already uses (`--canvas-header-bg`) — one consistent "frosted glass"
+   material across the app rather than a bespoke tint — at a lighter blur (8
+   vs the panel's 12) since this is a small corner accent, not a full dock.
+   Transition covers both directions equally (fade in when content arrives
+   under it, fade back to fully chromeless the instant it's clear) — a
+   material appearing/disappearing, never a hard toggle. */
+#workflow-root .react-flow__minimap {
+  transition:
+    background-color var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    backdrop-filter var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+#workflow-root .react-flow__minimap.cw-minimap-frosted {
+  background: var(--canvas-header-bg, rgba(255, 255, 255, 0.72));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--cw-radius-sub, 10px);
+}
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .react-flow__minimap {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   LIBRARY PASS — "## LIBRARY PASS — folders + hover previews in the
+   palette" (Bryan, on Comfy's node library: "can we do the thing that comfy
+   does where your nodes can be nested in folder, and you see a preview of
+   the node on hover"). Two pieces: the folder tree (Palette.jsx's Folder/
+   FolderReveal/BlocksFolderTree, TemplateList.jsx's own category rendering)
+   and the hover-preview popover (PalettePreview.jsx). DESIGN BAR: every
+   value below is a --cw-* token or one of the already-documented literal
+   exceptions (the popover shadow pair, matching .cw-header-menu/
+   .cw-block-picker verbatim).
+   ========================================================================== */
+
+/* ---- Folder tree --------------------------------------------------------
+   Folder header reuses `.cw-section-label`'s own typography (nested here as
+   `.cw-folder-label`) so a folder's REST state reads identically to the
+   plain label it replaces — only the chevron + click affordance are new.
+   Collapse is the Reveal-style grid-rows technique (nodes/Reveal.jsx's own
+   header comment explains the mechanism: a single `fr` track animates to
+   an UNKNOWN height with zero JS measurement) reimplemented locally
+   (Palette.jsx's FolderReveal) since that file lives in seam C's read-only
+   grant for this pass — same idea, no shared keyframes, just a transition,
+   so nothing here duplicates an @keyframes rule that already exists. ------ */
+.cw-folder-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 3px 2px;
+  margin: 0 0 3px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-folder-head:hover {
+  background: var(--cw-field);
+}
+
+.cw-folder-head:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: -2px;
+}
+
+/* Zeroes `.cw-section-label`'s own margin — `.cw-folder-head` above already
+   owns the spacing the old bare label used to carry, so nesting it inside
+   the button doesn't change a folder's rest-state rhythm. */
+.cw-folder-head .cw-folder-label {
+  margin: 0;
+}
+
+.cw-folder-chevron {
+  flex: 0 0 auto;
+  color: var(--cw-label);
+  transition:
+    rotate var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* PLAN.md, verbatim: "chevron (CaretRight 10, rotates 90° open, --cw-d-1)". */
+.cw-folder-chevron.is-open {
+  rotate: 90deg;
+}
+
+.cw-folder-head:hover .cw-folder-chevron {
+  color: var(--cw-text-2);
+}
+
+.cw-folder-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-folder-body.is-open {
+  grid-template-rows: 1fr;
+}
+
+.cw-folder-body-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Same asymmetric open/close pair as nodes.css's `.cw-reveal-content` (that
+   file's own comment: "content arrives AFTER the box has started breathing
+   open... leaves FAST, before the box finishes closing") — reused as a
+   value-for-value match, not an import (see the folder tree's own header
+   comment above for why this file can't reach that class). */
+.cw-folder-body-content {
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+
+.cw-folder-body-content.is-open {
+  opacity: 1;
+  transition: opacity 220ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 60ms;
+}
+
+/* OUTPUTS' real nesting — "sub-folders indented 14px" (PLAN.md, verbatim). */
+.cw-folder--sub {
+  padding-left: 14px;
+}
+
+.cw-folder--sub .cw-folder-head {
+  margin-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* `.cw-folder-body-content.is-open` is named explicitly — it redeclares
+     its OWN `transition` (a different duration/delay than the base rule,
+     same asymmetric-open/close idiom as nodes.css's `.cw-reveal-content.
+     is-open`), so it's higher specificity (0,2,0) than the plain
+     `.cw-folder-body-content` selector (0,1,0) here and would otherwise
+     keep animating regardless of this block — same fix, same reasoning,
+     as `.cw-palette-preview.is-open` just above. */
+  .cw-folder-head,
+  .cw-folder-chevron,
+  .cw-folder-body,
+  .cw-folder-body-content,
+  .cw-folder-body-content.is-open {
+    transition: none;
+  }
+}
+
+/* ---- Bookmark flag -------------------------------------------------------
+   "hover any block/template row -> a small bookmark flag... fades in
+   right-aligned; click toggles" (PLAN.md). Always occupies its reserved
+   18px slot (never display:none) so hovering a row never shifts its
+   neighbors — DESIGN BAR item 4, "no layout jump on untouched siblings."
+   CSS-only reveal (opacity), matching this file's established E1/PALETTE
+   HOVER PHASE convention of hover affordances with no JS hover state. ---- */
+.cw-bookmark-flag {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--cw-text-3);
+  opacity: 0;
+  transition:
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.cw-palette-row:hover .cw-bookmark-flag,
+.cw-bookmark-flag.is-active {
+  opacity: 1;
+}
+
+.cw-bookmark-flag:hover {
+  color: var(--cw-accent);
+  background: color-mix(in srgb, var(--cw-accent) 10%, var(--cw-surface));
+}
+
+.cw-bookmark-flag.is-active {
+  color: var(--cw-accent);
+}
+
+.cw-bookmark-flag:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-bookmark-flag {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   LIBRARY PASS — hover preview card (PalettePreview.jsx, "### 2 — Hover
+   preview"). Portaled to #workflow-root, position:fixed, JS-computed
+   left/top — same "escape RF's pan/zoom transform + .cw-app's overflow
+   clip" reasoning as BlockPicker.jsx's own `.cw-block-picker` (that file's
+   header comment); shadow pair matches that popover/`.cw-header-menu`
+   verbatim, one consistent "floating card" material across the app.
+   Presence is transition-driven (opacity/scale/translate via `.is-open`),
+   not the `cw-menu-in` keyframe those other popovers fire once — this
+   component's host re-anchors the SAME element as the hovered row changes
+   (walking rows must never remount it, PLAN.md's own verify item), and a
+   transition — unlike a fire-once `animation` — naturally supports the
+   symmetric close-fade that re-anchoring requires. `pointer-events:none`:
+   this is a read-only inspector card (role="tooltip"), never an
+   interactive target itself.
+   ========================================================================== */
+#workflow-root .cw-palette-preview {
+  position: fixed;
+  z-index: 30;
+  width: 250px;
+  padding: 14px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 12px;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.06),
+    0 16px 40px -12px rgba(16, 24, 40, 0.18);
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.98;
+  translate: -4px 0;
+  transition:
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    scale var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    translate var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-palette-preview.is-open {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+  transition:
+    opacity var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    scale var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    translate var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* "Reduced-motion: instant appear/disappear" (PLAN.md, verbatim). The
+     `.is-open` variant has to be named explicitly, matching specificity
+     with its own rule above (1 id + 2 classes) — the same convention
+     nodes.css's own reduced-motion block already uses for `.cw-reveal-
+     content.is-open` (that rule's comment: "transitions off, instant
+     mount/unmount"), because the plain media-query selector alone (1 id +
+     1 class) is LOWER specificity and would lose to `.is-open`'s own
+     `transition:` declaration regardless of source order or the media
+     query wrapping it. */
+  #workflow-root .cw-palette-preview,
+  #workflow-root .cw-palette-preview.is-open {
+    transition: none;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+.cw-palette-preview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cw-palette-preview-body--template {
+  gap: 8px;
+}
+
+.cw-preview-section-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cw-preview-blurb {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--cw-text-2);
+}
+
+/* ---- Mini node facsimile --------------------------------------------------
+   A compact, STATIC echo of a real node card's own anatomy (nodes.css: the
+   top kind-band, the glyph tile, the eyebrow+title head) — not the real
+   node component (PLAN.md: "node components need RF context; do NOT mount
+   them"), just enough of its chrome to be instantly recognizable as "this
+   block," at a fraction of the size. -------------------------------------- */
+.cw-preview-facsimile {
+  position: relative;
+  overflow: hidden;
+  padding: 10px 10px 9px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 10px;
+  background: var(--cw-surface);
+}
+
+/* Mirrors nodes.css's own `.cw-node` top band (`background-image: linear-
+   gradient(var(--accent), var(--accent))`, 2.5px, no-repeat) as a real
+   element instead — this card sits OUTSIDE any `.cw-node`, so there's no
+   shared rule to inherit, only the same value transcribed. */
+.cw-preview-facsimile-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: var(--accent, var(--cw-accent));
+}
+
+.cw-preview-facsimile-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.cw-preview-facsimile-glyph {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent, var(--cw-accent)) 12%, var(--cw-surface));
+  color: var(--accent, var(--cw-accent));
+}
+
+.cw-preview-facsimile-eyebrow {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cw-label);
+}
+
+.cw-preview-facsimile-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cw-preview-facsimile-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.cw-preview-facsimile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cw-preview-facsimile-field-label {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cw-preview-facsimile-field-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 10.5px;
+  color: var(--cw-text-3);
+  background: var(--cw-field);
+}
+
+/* ---- Ports table -----------------------------------------------------
+   "rows 'IN · flow' / 'OUT · flow' with kind-colored 5px port dots;
+   logic/human list their REAL named handles" (PLAN.md, verbatim). Named
+   rows (the branch handles) pick up the caps/bold treatment nodes.css's
+   own `.cw-handle-row-label` uses on the real card; a plain flow port
+   stays quiet lowercase text — literally the spec's own example casing. */
+.cw-preview-ports {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cw-preview-port-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+/* Square, not circle — "dots→squares" (DESIGN BAR item 2), matching
+   nodes/shared.jsx's own `.cw-dot` proportions (3px/1px radius here scaled
+   to the spec's literal 5px). */
+.cw-preview-port-dot {
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 1.5px;
+}
+
+.cw-preview-port-io {
+  flex: 0 0 auto;
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cw-label);
+}
+
+.cw-preview-port-sep {
+  color: var(--cw-border);
+}
+
+.cw-preview-port-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--cw-text-3);
+}
+
+.cw-preview-port-label.is-named {
+  color: var(--cw-text);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 10.5px;
+}
+
+.cw-preview-ports-empty {
+  margin: 0;
+  font-size: 11px;
+  color: var(--cw-text-3);
+}
+
+/* ---- Template variant ------------------------------------------------
+   "name, blurb, 'N blocks' + a kind-dot strip... and the port line" —
+   reuses `.cw-template-size` (already styled, TemplateList.jsx) verbatim
+   for the "N blocks" chip rather than a second near-identical rule. ----- */
+.cw-preview-template-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cw-preview-template-name {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cw-preview-kind-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cw-preview-kind-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.cw-preview-port-line {
+  margin: 0;
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  color: var(--cw-text-3);
+  letter-spacing: 0.01em;
+}

@@ -1,0 +1,24 @@
+  @media (prefers-reduced-motion: reduce) {
+    .pt-progress-dot { animation: none; opacity: 1; }
+    .pt-think-core svg, .pt-think-track { animation: none; }
+    .pt-progress-shimmer span { animation: none; background: var(--panel-bg-3); }
+    .pt-layout-thumb.is-generating { animation: none; background: var(--panel-bg-3); }
+    .pt-banner-frame { animation: none; }
+    .pt-banner-frame, .pt-banner-frame:hover { transform: none; }
+    .pt-banner-frame-edit { transition: none; }
+    .pt-banner-card, .pt-unit-check, .pt-unit-tools, .pt-unit-tool { transition: none !important; } /* AQ — the reveals land instantly */
+    .pt-unit-edit > svg { transition: none !important; } .pt-unit-edit:hover > svg { transform: none; }
+    .painter-sheet-view { animation: none !important; }
+    .pt-editor, .pt-editor-topbar, .pt-editor-stage, .pt-editor-controls { transition: none !important; }
+    .pt-editor-film-frame, .pt-editor-swatch, .pt-editor-swap-thumb, .pt-editor-back, .pt-editor-layout-btn svg { transition: none !important; }
+    .pt-editor-rail-btn, .pt-editor-drawer, .pt-editor-studio-title, .pt-editor-addtocanvas-btn, .pt-editor-swatch-row { transition: none !important; }
+    .pt-motion, .pt-motion-topbar, .pt-motion-stage, .pt-motion-timeline { transition: none !important; }
+    .pt-motion-banner .pt-banner-media img,
+    .pt-motion-banner .pt-banner-headline,
+    .pt-motion-banner .pt-banner-cta { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .pt-motion-playpause, .pt-motion-frame-btn, .pt-motion-pauseicon { display: none !important; }
+    .pt-motion-scrub-fill { animation: none !important; transform: scaleX(0) !important; }
+    .pt-create-screen, .pt-create-inner { transition: none !important; }
+    .pt-create-inner { opacity: 1 !important; transform: none !important; }
+  }
+</style>

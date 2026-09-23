@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+  OMNI component: siderail
+  Project: Agent Builder
+  Note: .section-nav — builder tablist + Version History item + Agent Fidelity meter
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — siderail · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<aside class="section-nav" id="sectionNav">
+      <button class="rail-back" id="backBtn" title="Back" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <ul class="nav-list" role="tablist">
+        <li class="nav-item active" data-section="description" role="tab">Description</li>
+        <li class="nav-item" data-section="instructions" role="tab">Instructions</li>
+        <li class="nav-item" data-section="expected-output" role="tab">Expected Output</li>
+        <li class="nav-item" data-section="goals" role="tab">Goals</li>
+        <li class="nav-item" data-section="tools" role="tab">Tools</li>
+        <li class="nav-item" data-section="attachments" role="tab">Attachments</li>
+        <li class="nav-item" data-section="data-sources" role="tab">Data Sources</li>
+        <li class="nav-item" data-section="expert-settings" role="tab">Expert Settings</li>
+        <li class="nav-divider" aria-hidden="true"></li>
+        <li class="nav-item" data-modal-target="version-history" data-no-status role="button"><i class="bx bx-history nav-item-icon" aria-hidden="true"></i>Version History</li>
+      </ul>
+      <div class="fidelity" aria-live="polite">
+        <div class="fidelity-top">
+          <span class="fidelity-label">Agent Fidelity</span>
+          <span class="fidelity-num"><span id="fidelityPct">0</span>%</span>
+        </div>
+        <div class="fidelity-bar"><div class="fidelity-fill" id="fidelityFill"></div></div>
+        <span class="fidelity-status" id="fidelityStatus">Draft</span>
+      </div>
+    </aside>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<!--
+  OMNI component: header
+  Project: Share Demos
+  Note: .doc-header — sticky viewer header for a published read-only canvas: co-brand lockup, doc title, Read-only status, Download + Share actions
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share Demos — header · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-share-demos.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="doc-header">
+    <div class="doc-header__inner">
+      <span class="doc-header__brand">
+        <img class="doc-header__logo is-theme-trigger" src="omni-logo.svg" alt="OMNI+" role="button" tabindex="0" title="Themes">
+        <span class="doc-header__cobrand-slot"><span class="doc-cobrand is-in">
+      <span class="doc-cobrand__x" aria-hidden="true">×</span>
+      <span class="doc-cobrand__mark" style="--m:url('corvache.svg')"></span>
+      <span class="doc-cobrand__name">Corvache</span></span></span>
+        <span class="doc-header__divider"></span>
+        <span class="doc-header__context">
+          <span class="doc-header__title">Progress 2026</span>
+          <span class="doc-header__status">Read-only</span>
+        </span>
+      </span>
+      <span class="doc-header__actions">
+        <button class="doc-header__download" type="button" title="Download full report">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8m0 0L4.5 7m3.5 3.5L11.5 7M2.5 13.5h11"></path></svg>
+          Download
+        </button>
+        <button class="doc-header__btn" type="button">
+          Share
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11.5 5.5L6 8.5M11.5 10.5L6 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path><circle cx="12.5" cy="4" r="1.6" stroke="currentColor" stroke-width="1.2"></circle><circle cx="3.5" cy="8" r="1.6" stroke="currentColor" stroke-width="1.2"></circle><circle cx="12.5" cy="12" r="1.6" stroke="currentColor" stroke-width="1.2"></circle></svg>
+        </button>
+      </span>
+    </div></div>
+</body>
+</html>

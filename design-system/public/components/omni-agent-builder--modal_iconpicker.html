@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  OMNI component: modal_iconpicker
+  Project: Agent Builder
+  Note: .icon-picker-modal — BoxIcons search grid (grid populated with sample .icon-picker-item buttons)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — modal_iconpicker · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="icon-picker-modal show" id="iconPickerModal" role="dialog" aria-modal="true" aria-label="Choose an icon" style="position:static;display:block;opacity:1;visibility:visible">
+  <div class="icon-picker-backdrop" id="iconPickerBackdrop"></div>
+  <div class="icon-picker-card">
+    <div class="icon-picker-head">
+      <i class="bx bx-search"></i>
+      <input class="icon-picker-search" id="iconPickerSearch" type="text" placeholder="Search icons…" autocomplete="off" />
+      <button class="icon-picker-close" id="iconPickerClose" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="icon-picker-grid" id="iconPickerGrid">
+      <button class="icon-picker-item selected" type="button" data-icon="bx-bot" aria-label="bx-bot"><i class="bx bx-bot"></i></button>
+      <button class="icon-picker-item" type="button" data-icon="bx-brain" aria-label="bx-brain"><i class="bx bx-brain"></i></button>
+      <button class="icon-picker-item" type="button" data-icon="bx-chip" aria-label="bx-chip"><i class="bx bx-chip"></i></button>
+      <button class="icon-picker-item" type="button" data-icon="bx-rocket" aria-label="bx-rocket"><i class="bx bx-rocket"></i></button>
+      <button class="icon-picker-item" type="button" data-icon="bx-star" aria-label="bx-star"><i class="bx bx-star"></i></button>
+      <button class="icon-picker-item" type="button" data-icon="bx-palette" aria-label="bx-palette"><i class="bx bx-palette"></i></button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+  OMNI component: modal_compare
+  Project: Manifest
+  Note: .omni-compare-card — Light-vs-Full comparison overlay: two bordered panels flanking a shared center label spine, equal-weight CTAs
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manifest — modal_compare · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-manifest.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="app-modal omni-info-modal open" id="omniCompareModal" role="dialog" aria-modal="true" aria-labelledby="omniCompareTitle" style="position:static;visibility:visible;pointer-events:auto">
+    <div class="app-modal-card app-modal-card-wide omni-compare-card" role="document" style="max-height:none">
+      <header class="app-modal-head omni-compare-head">
+        <div class="omni-compare-headtext">
+          <h2 class="app-modal-title" id="omniCompareTitle">Two speeds, one canvas</h2>
+          <p class="omni-compare-subline">Both are the same OMNI+ canvas underneath. Pick the one that fits the work in front of you. Switch whenever you like &mdash; your files and conversation travel with you.</p>
+        </div>
+        <button class="app-modal-close" type="button" aria-label="Close" id="omniCompareModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </header>
+      <div class="omni-compare-body">
+        <div class="omni-compare-spine-grid" id="omniCompareSpineGrid">
+          <div class="omni-compare-panel omni-compare-panel--light">
+            <div class="omni-compare-prow omni-compare-prow--head">
+              <span class="omni-compare-panel-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                  <path class="omni-bolt-fill" d="M213.84,118.63a6,6,0,0,0-3.73-4.25L150.88,92.17l15-75a6,6,0,0,0-10.27-5.27l-112,120a6,6,0,0,0,2.28,9.71l59.23,22.21-15,75a6,6,0,0,0,3.14,6.52A6.07,6.07,0,0,0,96,246a6,6,0,0,0,4.39-1.91l112-120A6,6,0,0,0,213.84,118.63ZM106,220.46l11.85-59.28a6,6,0,0,0-3.77-6.8l-55.6-20.85,91.46-98L138.12,94.82a6,6,0,0,0,3.77,6.8l55.6,20.85Z"/>
+                </svg>
+              </span>
+              <h3 class="omni-compare-panel-title">Light Canvas</h3>
+            </div>
+            <div class="omni-compare-prow omni-compare-prow--lead">Built for speed. A focused conversation that keeps up with your thinking.</div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Instant. Carries nothing it doesn't need.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Fast back-and-forth with your agent.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Reads your briefs, decks and sheets.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Travels light. Making is studio work.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">One focused agent. Switch anytime.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Keeps a light running summary.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Quick answers, drafts, reading through things.</span></div>
+            <div class="omni-compare-prow omni-compare-prow--cta">
+              <button class="omni-compare-cta" type="button" id="omniCompareChooseLight">Choose Light Canvas</button>
+            </div>
+          </div>
+          <div class="omni-compare-spine" aria-hidden="true">
+            <div class="omni-compare-srow"></div>
+            <div class="omni-compare-srow"></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Speed</span></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Chat</span></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Documents</span></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Graphics &amp; Styles</span></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Agents</span></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Memory</span></div>
+            <div class="omni-compare-srow"><span class="omni-compare-srow-label">Best for</span></div>
+            <div class="omni-compare-srow"></div>
+          </div>
+          <div class="omni-compare-panel omni-compare-panel--full">
+            <div class="omni-compare-prow omni-compare-prow--head">
+              <span class="omni-compare-panel-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 256 256" fill="none" aria-hidden="true">
+                  <rect class="omni-layout-frame" x="32" y="48" width="192" height="160" rx="8" fill="none" stroke="currentColor" stroke-width="12"/>
+                  <rect class="omni-layout-hbar" x="38" y="98" width="180" height="12" fill="currentColor"/>
+                  <rect class="omni-layout-vbar" x="98" y="110" width="12" height="92" fill="currentColor"/>
+                </svg>
+              </span>
+              <h3 class="omni-compare-panel-title">Full Canvas</h3>
+            </div>
+            <div class="omni-compare-prow omni-compare-prow--lead">Built for making. Everything lands on a canvas you keep working.</div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">A touch more deliberate — the studio's all on.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">The same conversation, with a canvas beside it.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Reads them — and writes new ones.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Graphics, styles, lookbooks, photo shoots.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">A team working together, with skills.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Keeps the whole record, on the canvas.</span></div>
+            <div class="omni-compare-prow"><span class="omni-compare-bullet" aria-hidden="true"></span><span class="omni-compare-prow-text">Work you'll keep, show, and build on.</span></div>
+            <div class="omni-compare-prow omni-compare-prow--cta">
+              <button class="omni-compare-cta" type="button" id="omniCompareChooseFull">Open Full Canvas</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

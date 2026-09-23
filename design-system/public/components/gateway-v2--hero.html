@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  OMNI component: hero
+  Project: Gateway
+  Note: .gw-hero — full-bleed two-up gateway hero band (image stack + live canvas chart cell); the hero swaps its two cells via ?hero= deep links, no visible switcher
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gateway — hero · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/gateway-v2.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<section class="gw-hero cfg-stack-chart"><div class="gw-grid">
+  <div class="gw-cell gw-cell-img" data-gw-stack="" role="button" tabindex="0" aria-label="Image stack — 16 files, opens the matched set">
+    <button class="ov-more cust-kebab" type="button" data-ctx="hero-lead" aria-label="Customize" aria-haspopup="menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button><div class="gw-photos"><img class="gw-photo" src="./assets/gw-desert-gt.jpg" alt="Image stack — latest graphics"><img class="gw-photo on" src="./assets/gw-alpine-4k.jpg" alt=""><img class="gw-photo" src="./assets/gw-teaser-4k.jpg" alt=""></div>
+    <div class="gw-imghead">
+      <div class="eyebrow">Image Gallery · 34 Files</div>
+      <h2>The <em>Launch</em><br>Collection</h2>
+    </div>
+  </div>
+  <div class="gw-cell gw-cell-chart" data-gw-canvas="Launch Signals — Wk 6" role="button" tabindex="0" aria-label="Launch signals chart — opens the canvas">
+    <div class="gw-chart-top">
+      <div class="gw-chart-head"><span class="gw-chart-lbl">Waitlist — rolling 7-day</span></div>
+      <div class="gw-chart-nav">
+        <button type="button" class="gw-chart-arrow gw-chart-arrow--prev" aria-label="Previous chart"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2L3 5L6.5 8"></path></svg></button>
+        <button type="button" class="gw-chart-arrow gw-chart-arrow--next" aria-label="Next chart"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2L7 5L3.5 8"></path></svg></button>
+      </div>
+      <span class="gw-chip"><i></i>From canvas</span><button class="ov-more cust-kebab" type="button" data-ctx="hero-third" aria-label="Customize" aria-haspopup="menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
+    </div>
+    <div class="gw-num-row">
+      <span class="gw-num">18,402</span>
+      <span class="gw-delta"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8L8 2M3.5 2H8v4.5"></path></svg>+21.4%</span>
+    </div>
+    <div class="gw-plot" data-ctype="area">
+  <svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" x2="1000" y1="75.0" y2="75.0" style="stroke:var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"></line><line x1="0" x2="1000" y1="150.0" y2="150.0" style="stroke:var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"></line><line x1="0" x2="1000" y1="225.0" y2="225.0" style="stroke:var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+    <path class="gw-area-path" d="M4.0,245.7C22.4,242.6 77.5,233.6 114.2,227.5C151.0,221.5 187.7,211.4 224.4,209.4C261.2,207.4 297.9,219.5 334.7,215.4C371.4,211.4 408.1,194.3 444.9,185.2C481.6,176.2 518.4,170.1 555.1,161.0C591.9,152.0 628.6,139.9 665.3,130.8C702.1,121.8 738.8,117.7 775.6,106.7C812.3,95.6 849.0,79.5 885.8,64.3C922.5,49.2 977.6,24.1 996.0,16.0L996,300L4,300Z"></path>
+    <path class="gw-line-path" d="M4.0,245.7C22.4,242.6 77.5,233.6 114.2,227.5C151.0,221.5 187.7,211.4 224.4,209.4C261.2,207.4 297.9,219.5 334.7,215.4C371.4,211.4 408.1,194.3 444.9,185.2C481.6,176.2 518.4,170.1 555.1,161.0C591.9,152.0 628.6,139.9 665.3,130.8C702.1,121.8 738.8,117.7 775.6,106.7C812.3,95.6 849.0,79.5 885.8,64.3C922.5,49.2 977.6,24.1 996.0,16.0" pathLength="1" fill="none" style="stroke:var(--accent)" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+    <path class="gw-pulse-path" d="M4.0,245.7C22.4,242.6 77.5,233.6 114.2,227.5C151.0,221.5 187.7,211.4 224.4,209.4C261.2,207.4 297.9,219.5 334.7,215.4C371.4,211.4 408.1,194.3 444.9,185.2C481.6,176.2 518.4,170.1 555.1,161.0C591.9,152.0 628.6,139.9 665.3,130.8C702.1,121.8 738.8,117.7 775.6,106.7C812.3,95.6 849.0,79.5 885.8,64.3C922.5,49.2 977.6,24.1 996.0,16.0" pathLength="1" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+  </svg>
+  <span class="gw-enddot" style="left:99.60%;top:5.33%"></span></div>
+    <div class="gw-axis"><span class="gw-axis-a">Mar 1</span><span class="gw-axis-b">May 24, 2026</span></div>
+    <div class="gw-kpis"><div class="gw-kpi"><span class="k">Config rate</span><span class="v">64%</span></div><div class="gw-kpi"><span class="k">Test drives</span><span class="v">1,204</span></div><div class="gw-kpi"><span class="k">Pre-orders</span><span class="v">2,418</span></div></div>
+  </div></div></section>
+</body>
+</html>

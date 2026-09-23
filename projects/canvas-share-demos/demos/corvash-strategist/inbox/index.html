@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inbox - devon.reyes@corvache.com - Outlook</title>
+<meta name="description" content="Demo set-dressing: the client's inbox where the OMNI share invitation arrives." />
+<!-- The OMNI notification email is a themed artifact — it rides the same
+     tokens + persisted workspace theme as the canvas itself (Corvache default).
+     The Outlook chrome around it stays deliberately un-themed. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/tokens/tokens.css" />
+<style>
+/* ───────────────────────────────────────────────────────────────────────────
+   Outlook-web set dressing — the demo's opening scene. Devon Reyes's inbox
+   at Corvache; the OMNI sharing notification is selected and its Open button
+   drives into the shared canvas (../?gate=1 → the access-gate ritual).
+   Static prop except for hovers + Open. Icons: Phosphor light (inlined).
+   ─────────────────────────────────────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --blue: #0f6cbd;            /* Fluent UI accent for the Outlook chrome */
+  --omni-blue: #1858ee;       /* OMNI accent — only inside the email body */
+  --chrome: #f5f5f5;
+  --hover: #eaeaea;
+  --selected: #e8f1fb;
+  --line: #e1e1e1;
+  --ink: #242424;
+  --ink-2: #616161;
+  --ink-3: #8a8a8a;
+  --unread: #0f6cbd;
+}
+html, body { height: 100%; }
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--chrome);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+svg.ph { width: 20px; height: 20px; display: block; flex: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+/* ── top bar ── */
+.topbar {
+  height: 48px;
+  background: var(--chrome);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 16px 0 6px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.topbar__waffle {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; color: var(--ink-2);
+}
+.topbar__waffle:hover { background: var(--hover); }
+.topbar__app { font-size: 16px; font-weight: 600; color: var(--ink); margin-right: 20px; }
+.topbar__search {
+  flex: 0 1 468px;
+  margin: 0 auto;
+  height: 32px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--ink-3);
+}
+.topbar__search .ph { width: 15px; height: 15px; }
+.topbar__right { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.topbar__icon {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; color: var(--ink-2);
+}
+.topbar__icon:hover { background: var(--hover); }
+.topbar__icon .ph { width: 18px; height: 18px; }
+.topbar__me {
+  width: 30px; height: 30px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: #7719aa;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── shell ── */
+.shell { flex: 1; display: flex; min-height: 0; }
+
+/* app rail */
+.rail {
+  width: 48px;
+  background: var(--chrome);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  gap: 4px;
+  flex: none;
+}
+.rail__btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  color: var(--ink-2);
+  position: relative;
+}
+.rail__btn:hover { background: var(--hover); }
+.rail__btn.is-active { color: var(--blue); }
+.rail__btn.is-active::before {
+  content: '';
+  position: absolute;
+  left: -4px; top: 10px; bottom: 10px;
+  width: 3px; border-radius: 2px;
+  background: var(--blue);
+}
+
+/* folder pane */
+.folders {
+  width: 232px;
+  background: var(--chrome);
+  border-right: 1px solid var(--line);
+  padding: 12px 8px;
+  overflow-y: auto;
+  flex: none;
+}
+.folders__new {
+  display: flex; align-items: center; gap: 10px;
+  height: 36px;
+  padding: 0 16px;
+  margin: 0 4px 14px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.folders__new .ph { width: 16px; height: 16px; }
+.folders__group {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.folders__group .ph { width: 12px; height: 12px; }
+.folder {
+  display: flex; align-items: center; gap: 10px;
+  height: 32px;
+  padding: 0 8px 0 26px;
+  border-radius: 4px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.folder:hover { background: var(--hover); }
+.folder .ph { width: 17px; height: 17px; color: var(--ink-2); }
+.folder.is-active { background: var(--selected); font-weight: 600; }
+.folder.is-active .ph { color: var(--blue); }
+.folder__count { margin-left: auto; font-size: 12px; color: var(--blue); font-weight: 600; }
+
+/* message list */
+.list {
+  width: 360px;
+  background: #fff;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  min-height: 0;
+}
+.list__head {
+  padding: 14px 16px 0;
+  flex: none;
+}
+.list__title { font-size: 17px; font-weight: 700; }
+.list__tabs { display: flex; align-items: center; gap: 18px; margin-top: 10px; border-bottom: 1px solid var(--line); }
+.list__tab {
+  padding: 6px 2px 8px;
+  font-size: 14px;
+  color: var(--ink-2);
+  position: relative;
+}
+.list__tab.is-active { color: var(--blue); font-weight: 600; }
+.list__tab.is-active::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 3px; border-radius: 2px;
+  background: var(--blue);
+}
+.list__filter { margin-left: auto; color: var(--ink-2); padding: 4px; border-radius: 4px; }
+.list__filter:hover { background: var(--hover); }
+.list__filter .ph { width: 16px; height: 16px; }
+.list__scroll { flex: 1; overflow-y: auto; }
+.list__daygroup {
+  padding: 10px 16px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.msg {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px 12px 13px;
+  border-bottom: 1px solid #f0f0f0;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+.msg:hover { background: #fafafa; }
+.msg.is-selected { background: var(--selected); border-left-color: var(--blue); }
+.msg__top { display: flex; align-items: baseline; gap: 8px; }
+.msg__from { font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg__time { margin-left: auto; font-size: 12px; color: var(--ink-3); flex: none; }
+.msg__subject { margin-top: 1px; font-size: 13.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg__preview { margin-top: 1px; font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg.is-unread .msg__from { font-weight: 700; }
+.msg.is-unread .msg__subject { font-weight: 700; color: var(--unread); }
+.msg.is-unread .msg__time { color: var(--unread); font-weight: 600; }
+
+/* reading pane */
+.reading {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.reading__subjectbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.reading__subject { font-size: 19px; font-weight: 700; min-width: 0; }
+.reading__actions { margin-left: auto; display: flex; gap: 2px; }
+.reading__actions button {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; color: var(--ink-2);
+}
+.reading__actions button:hover { background: var(--hover); }
+.reading__actions .ph { width: 17px; height: 17px; }
+.reading__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  flex: none;
+}
+.reading__avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #0a0a0a;
+  display: flex; align-items: center; justify-content: center;
+  flex: none;
+}
+.reading__avatar img { width: 26px; filter: brightness(0) invert(1); display: block; }
+.reading__who { min-width: 0; }
+.reading__sender { font-size: 14px; font-weight: 600; }
+.reading__sender span { font-weight: 400; color: var(--ink-2); }
+.reading__to { font-size: 12.5px; color: var(--ink-2); margin-top: 1px; }
+.reading__stamp { margin-left: auto; font-size: 12.5px; color: var(--ink-2); flex: none; align-self: flex-start; padding-top: 3px; }
+
+/* ── the OMNI notification email — a themed artifact inside the un-themed
+   Outlook chrome. It mirrors the canvas cover: the hero image with the thin
+   display title composed on it, then the co-brand lockup, all painted with
+   the live --doc-* theme tokens (Corvache by default). ── */
+.reading__body { flex: 1; overflow-y: auto; padding: 8px 24px 48px; }
+/* The card is a size container: every internal measure is set in cqw against
+   its own width (designed at a 560px reference), so the whole artifact scales
+   as one piece — small pane, small email; big display, big email. Scoped
+   entirely to this page. */
+.mail {
+  /* Capped small on purpose: on a large reading pane the card stays a calm
+     640px object surrounded by whitespace — the elegance is the restraint,
+     not the size. cqw internals scale DOWN gracefully below the cap. */
+  width: min(640px, 92%);
+  margin: clamp(20px, 3.5vh, 44px) auto 0;
+  container-type: inline-size;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--doc-page-bg, #fff);
+  /* No stroke — a whisper of shadow keeps the edge on light themes. */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 32px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+
+/* Mini slide-cover — same grammar as the doc hero: full-bleed image, scrim
+   weighted to the type corner, mono eyebrow, thin 300-weight display title. */
+.mail__cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 8.5;
+  text-decoration: none;
+  overflow: hidden;
+}
+.mail__cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+}
+.mail__cover-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(6, 8, 11, 0.82) 0%, rgba(6, 8, 11, 0.42) 30%, transparent 62%),
+    linear-gradient(to right, rgba(6, 8, 11, 0.38) 0%, transparent 46%);
+}
+.mail__cover-eyebrow {
+  position: absolute;
+  left: 5cqw;
+  bottom: 10.6cqw;
+  font-family: var(--doc-font-mono, "Fira Code", monospace);
+  font-size: clamp(7.5px, 1.45cqw, 9.5px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+.mail__cover-title {
+  position: absolute;
+  left: 4.65cqw;
+  bottom: 3.1cqw;
+  font-family: var(--doc-font-display, Inter, sans-serif);
+  font-weight: 300;
+  font-size: clamp(26px, 6.4cqw, 41px);
+  line-height: 1;
+  letter-spacing: calc(var(--doc-display-tracking, -1.4px) * 0.55);
+  color: #fff;
+}
+
+.mail__inner { padding: 5.3cqw 7cqw 4.6cqw; }
+
+/* Co-brand lockup — the same OMNI × <brand> grammar as the doc header/intro,
+   at email scale. Brand pieces are filled (or hidden) by the theme script. */
+/* CANONICAL LOCKUP PROPORTIONS — the header lockup is the reference; every
+   surface carrying the OMNI × brand motif uses the same ratio table,
+   em-scaled off the brand mark size M = 1em:
+     OMNI 0.773M (+0.045M seat) · × 0.59M light @ 0.5, 0.727M before /
+     0.455M after · mark 1M (apple +0.045M) · name 0.795M/700. */
+.mail__lockup {
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(15px, 3cqw, 19px); /* = M, the brand-mark size */
+  gap: 0.455em;
+  margin-bottom: 3.4cqw;
+}
+.mail__omni { height: 0.773em; width: auto; display: block; filter: brightness(0); translate: 0 0.045em; }
+[data-theme='dark'] .mail__omni { filter: brightness(0) invert(1); }
+.mail__x {
+  font-family: var(--doc-font-body, Inter, sans-serif);
+  font-size: 0.59em;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--doc-ink-subtle, #8a8a8a);
+  opacity: 0.5;
+  margin-left: 0.272em;
+}
+.mail__brandmark {
+  height: 1em;
+  aspect-ratio: 1;
+  background-color: var(--doc-accent, #1858ee);
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
+}
+/* Per-brand optical nudge, same ratio as the header lockup. */
+[data-brand='apple'] .mail__brandmark { translate: 0 0.045em; }
+.mail__brandname {
+  font-family: var(--doc-font-display, Inter, sans-serif);
+  font-size: 0.795em;
+  font-weight: 700;
+  letter-spacing: var(--doc-heading-tracking, -0.3px);
+  color: var(--doc-ink-strong, #0a0a0a);
+}
+/* Wordmark variant — real logotype as an alpha mask in the same ink; 0.72em
+   of the name's own font-size = the cap band the text occupied (same ratio
+   as the doc header's 12.5/17.5). aspect-ratio + --wm-scale arrive inline. */
+.mail__brandname.is-wm {
+  display: inline-block;
+  height: calc(0.72em * var(--wm-scale, 1));
+  background: currentColor;
+  -webkit-mask: var(--m) left center / contain no-repeat;
+  mask: var(--m) left center / contain no-repeat;
+}
+.mail__x[hidden], .mail__brandmark[hidden], .mail__brandname[hidden] { display: none; }
+
+.mail__lede {
+  font-family: var(--doc-font-body, Inter, sans-serif);
+  font-size: clamp(14px, 2.6cqw, 16.5px);
+  color: var(--doc-ink, #242424);
+}
+.mail__lede strong { font-weight: 700; color: var(--doc-ink-strong, #0a0a0a); }
+.mail__meta {
+  margin-top: 1.3cqw;
+  font-family: var(--doc-font-mono, "Fira Code", monospace);
+  font-size: clamp(8px, 1.5cqw, 9.5px);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle, #8a8a8a);
+}
+.mail__open {
+  display: inline-block;
+  margin-top: 4cqw;
+  background: var(--doc-accent, #1858ee);
+  color: #fff;
+  font-family: var(--doc-font-body, Inter, sans-serif);
+  font-size: clamp(13px, 2.2cqw, 14px);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 1.8cqw 7.5cqw;
+  border-radius: 8px;
+  transition: box-shadow 200ms ease, transform 120ms ease, filter 200ms ease;
+}
+.mail__open:hover {
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--doc-accent, #1858ee) 38%, transparent);
+  filter: brightness(1.04);
+}
+.mail__open:active { transform: scale(0.98); }
+.mail__foot {
+  margin-top: 4.2cqw;
+  padding-top: 2.9cqw;
+  border-top: 1px solid var(--doc-rule, #efefef);
+  font-family: var(--doc-font-body, Inter, sans-serif);
+  font-size: clamp(10px, 1.8cqw, 11.5px);
+  line-height: 1.6;
+  color: var(--doc-ink-subtle, #8a8a8a);
+}
+.mail__foot a { color: var(--doc-ink-subtle, #8a8a8a); }
+
+/* ── entrance — the frame builds in quickly and quietly: chrome first
+   (top bar, rail, folders), then the list, then the reading pane, with
+   the themed email landing last on the same blur-resolve signature the
+   canvas uses. Fast and restrained: it's Outlook, not the show. ── */
+@media (prefers-reduced-motion: no-preference) {
+  .topbar {
+    opacity: 0;
+    transform: translateY(-8px);
+    animation: obIn 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 40ms forwards;
+  }
+  .rail {
+    opacity: 0;
+    transform: translateX(-6px);
+    animation: obIn 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 140ms forwards;
+  }
+  .folders {
+    opacity: 0;
+    transform: translateX(-6px);
+    animation: obIn 460ms cubic-bezier(0.22, 0.61, 0.36, 1) 200ms forwards;
+  }
+  .list {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: obIn 500ms cubic-bezier(0.22, 0.61, 0.36, 1) 280ms forwards;
+  }
+  .reading__subjectbar,
+  .reading__meta {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: obIn 480ms cubic-bezier(0.22, 0.61, 0.36, 1) 380ms forwards;
+  }
+  .mail {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(9px);
+    animation: obMailIn 680ms cubic-bezier(0.22, 0.61, 0.36, 1) 480ms forwards;
+  }
+}
+@keyframes obIn {
+  to { opacity: 1; transform: none; }
+}
+@keyframes obMailIn {
+  55% { opacity: 1; }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="topbar__waffle" aria-label="App launcher"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M70,60A10,10,0,1,1,60,50,10,10,0,0,1,70,60Zm58-10a10,10,0,1,0,10,10A10,10,0,0,0,128,50Zm68,20a10,10,0,1,0-10-10A10,10,0,0,0,196,70ZM60,118a10,10,0,1,0,10,10A10,10,0,0,0,60,118Zm68,0a10,10,0,1,0,10,10A10,10,0,0,0,128,118Zm68,0a10,10,0,1,0,10,10A10,10,0,0,0,196,118ZM60,186a10,10,0,1,0,10,10A10,10,0,0,0,60,186Zm68,0a10,10,0,1,0,10,10A10,10,0,0,0,128,186Zm68,0a10,10,0,1,0,10,10A10,10,0,0,0,196,186Z"/></svg></button>
+  <span class="topbar__app">Outlook</span>
+  <div class="topbar__search">
+    <svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M228.24,219.76l-51.38-51.38a86.15,86.15,0,1,0-8.48,8.48l51.38,51.38a6,6,0,0,0,8.48-8.48ZM38,112a74,74,0,1,1,74,74A74.09,74.09,0,0,1,38,112Z"/></svg>
+    Search
+  </div>
+  <div class="topbar__right">
+    <button class="topbar__icon" aria-label="Settings"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M128,82a46,46,0,1,0,46,46A46.06,46.06,0,0,0,128,82Zm0,80a34,34,0,1,1,34-34A34,34,0,0,1,128,162ZM214,130.84c.06-1.89.06-3.79,0-5.68L229.33,106a6,6,0,0,0,1.11-5.29A105.34,105.34,0,0,0,219.76,74.9a6,6,0,0,0-4.53-3l-24.45-2.71q-1.93-2.07-4-4l-2.72-24.46a6,6,0,0,0-3-4.53,105.65,105.65,0,0,0-25.77-10.66A6,6,0,0,0,150,26.68l-19.2,15.37c-1.89-.06-3.79-.06-5.68,0L106,26.67a6,6,0,0,0-5.29-1.11A105.34,105.34,0,0,0,74.9,36.24a6,6,0,0,0-3,4.53L69.23,65.22q-2.07,1.94-4,4L40.76,72a6,6,0,0,0-4.53,3,105.65,105.65,0,0,0-10.66,25.77A6,6,0,0,0,26.68,106l15.37,19.2c-.06,1.89-.06,3.79,0,5.68L26.67,150.05a6,6,0,0,0-1.11,5.29A105.34,105.34,0,0,0,36.24,181.1a6,6,0,0,0,4.53,3l24.45,2.71q1.94,2.07,4,4L72,215.24a6,6,0,0,0,3,4.53,105.65,105.65,0,0,0,25.77,10.66,6,6,0,0,0,5.29-1.11L125.16,214c1.89.06,3.79.06,5.68,0l19.21,15.38a6,6,0,0,0,3.75,1.31,6.2,6.2,0,0,0,1.54-.2,105.34,105.34,0,0,0,25.76-10.68,6,6,0,0,0,3-4.53l2.71-24.45q2.07-1.93,4-4l24.46-2.72a6,6,0,0,0,4.53-3,105.49,105.49,0,0,0,10.66-25.77,6,6,0,0,0-1.11-5.29Zm-3.1,41.63-23.64,2.63a6,6,0,0,0-3.82,2,75.14,75.14,0,0,1-6.31,6.31,6,6,0,0,0-2,3.82l-2.63,23.63A94.28,94.28,0,0,1,155.14,218l-18.57-14.86a6,6,0,0,0-3.75-1.31h-.36a78.07,78.07,0,0,1-8.92,0,6,6,0,0,0-4.11,1.3L100.87,218a94.13,94.13,0,0,1-17.34-7.17L80.9,187.21a6,6,0,0,0-2-3.82,75.14,75.14,0,0,1-6.31-6.31,6,6,0,0,0-3.82-2l-23.63-2.63A94.28,94.28,0,0,1,38,155.14l14.86-18.57a6,6,0,0,0,1.3-4.11,78.07,78.07,0,0,1,0-8.92,6,6,0,0,0-1.3-4.11L38,100.87a94.13,94.13,0,0,1,7.17-17.34L68.79,80.9a6,6,0,0,0,3.82-2,75.14,75.14,0,0,1,6.31-6.31,6,6,0,0,0,2-3.82l2.63-23.63A94.28,94.28,0,0,1,100.86,38l18.57,14.86a6,6,0,0,0,4.11,1.3,78.07,78.07,0,0,1,8.92,0,6,6,0,0,0,4.11-1.3L155.13,38a94.13,94.13,0,0,1,17.34,7.17l2.63,23.64a6,6,0,0,0,2,3.82,75.14,75.14,0,0,1,6.31,6.31,6,6,0,0,0,3.82,2l23.63,2.63A94.28,94.28,0,0,1,218,100.86l-14.86,18.57a6,6,0,0,0-1.3,4.11,78.07,78.07,0,0,1,0,8.92,6,6,0,0,0,1.3,4.11L218,155.13A94.13,94.13,0,0,1,210.85,172.47Z"/></svg></button>
+    <button class="topbar__icon" aria-label="Help"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M138,180a10,10,0,1,1-10-10A10,10,0,0,1,138,180ZM128,74c-21,0-38,15.25-38,34v4a6,6,0,0,0,12,0v-4c0-12.13,11.66-22,26-22s26,9.87,26,22-11.66,22-26,22a6,6,0,0,0-6,6v8a6,6,0,0,0,12,0v-2.42c18.11-2.58,32-16.66,32-33.58C166,89.25,149,74,128,74Zm102,54A102,102,0,1,1,128,26,102.12,102.12,0,0,1,230,128Zm-12,0a90,90,0,1,0-90,90A90.1,90.1,0,0,0,218,128Z"/></svg></button>
+    <span class="topbar__me" title="Devon Reyes">DR</span>
+  </div>
+</header>
+
+<div class="shell">
+  <!-- app rail -->
+  <nav class="rail" aria-label="Apps">
+    <button class="rail__btn is-active" aria-label="Mail"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M224,50H32a6,6,0,0,0-6,6V192a14,14,0,0,0,14,14H216a14,14,0,0,0,14-14V56A6,6,0,0,0,224,50ZM208.58,62,128,135.86,47.42,62ZM216,194H40a2,2,0,0,1-2-2V69.64l86,78.78a6,6,0,0,0,8.1,0L218,69.64V192A2,2,0,0,1,216,194Z"/></svg></button>
+    <button class="rail__btn" aria-label="Calendar"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M208,34H182V24a6,6,0,0,0-12,0V34H86V24a6,6,0,0,0-12,0V34H48A14,14,0,0,0,34,48V208a14,14,0,0,0,14,14H208a14,14,0,0,0,14-14V48A14,14,0,0,0,208,34ZM48,46H74V56a6,6,0,0,0,12,0V46h84V56a6,6,0,0,0,12,0V46h26a2,2,0,0,1,2,2V82H46V48A2,2,0,0,1,48,46ZM208,210H48a2,2,0,0,1-2-2V94H210V208A2,2,0,0,1,208,210Z"/></svg></button>
+    <button class="rail__btn" aria-label="People"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M243.6,148.8a6,6,0,0,1-8.4-1.2A53.58,53.58,0,0,0,192,126a6,6,0,0,1,0-12,26,26,0,1,0-25.18-32.5,6,6,0,0,1-11.62-3,38,38,0,1,1,59.91,39.63A65.69,65.69,0,0,1,244.8,140.4,6,6,0,0,1,243.6,148.8ZM189.19,213a6,6,0,0,1-2.19,8.2,5.9,5.9,0,0,1-3,.81,6,6,0,0,1-5.2-3,59,59,0,0,0-101.62,0,6,6,0,1,1-10.38-6A70.1,70.1,0,0,1,103,182.55a46,46,0,1,1,50.1,0A70.1,70.1,0,0,1,189.19,213ZM128,178a34,34,0,1,0-34-34A34,34,0,0,0,128,178ZM70,120a6,6,0,0,0-6-6A26,26,0,1,1,89.18,81.49a6,6,0,1,0,11.62-3,38,38,0,1,0-59.91,39.63A65.69,65.69,0,0,0,11.2,140.4a6,6,0,1,0,9.6,7.2A53.58,53.58,0,0,1,64,126,6,6,0,0,0,70,120Z"/></svg></button>
+    <button class="rail__btn" aria-label="Files"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M216,74H130L101.73,52.8a14,14,0,0,0-8.4-2.8H40A14,14,0,0,0,26,64V200a14,14,0,0,0,14,14H216.89A13.12,13.12,0,0,0,230,200.89V88A14,14,0,0,0,216,74Zm2,126.89a1.11,1.11,0,0,1-1.11,1.11H40a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H93.33a2,2,0,0,1,1.2.4L124.4,84.8A6,6,0,0,0,128,86h88a2,2,0,0,1,2,2Z"/></svg></button>
+  </nav>
+
+  <!-- folder pane -->
+  <aside class="folders">
+    <button class="folders__new"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M225.91,74.79,181.22,30.1a14,14,0,0,0-19.8,0L38.1,153.41a13.94,13.94,0,0,0-4.1,9.9V208a14,14,0,0,0,14,14H216a6,6,0,0,0,0-12H110.49L225.91,94.59A14,14,0,0,0,225.91,74.79ZM93.52,210H48a2,2,0,0,1-2-2V163.31a2,2,0,0,1,.59-1.41L136,72.49,183.52,120ZM217.42,86.1,192,111.52,144.49,64,169.9,38.59a2,2,0,0,1,2.83,0l44.69,44.68A2,2,0,0,1,217.42,86.1Z"/></svg>New mail</button>
+    <div class="folders__group"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M212.24,100.24l-80,80a6,6,0,0,1-8.48,0l-80-80a6,6,0,0,1,8.48-8.48L128,167.51l75.76-75.75a6,6,0,0,1,8.48,8.48Z"/></svg>Favorites</div>
+    <div class="folder is-active"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M208,34H48A14,14,0,0,0,34,48V208a14,14,0,0,0,14,14H208a14,14,0,0,0,14-14V48A14,14,0,0,0,208,34ZM48,46H208a2,2,0,0,1,2,2V154H179.31a13.94,13.94,0,0,0-9.9,4.1L150.1,177.41a2,2,0,0,1-1.41.59H107.31a2,2,0,0,1-1.41-.58L86.59,158.1a13.94,13.94,0,0,0-9.9-4.1H46V48A2,2,0,0,1,48,46ZM208,210H48a2,2,0,0,1-2-2V166H76.69a2,2,0,0,1,1.41.58L97.41,185.9a13.94,13.94,0,0,0,9.9,4.1h41.38a13.94,13.94,0,0,0,9.9-4.1l19.31-19.31a2,2,0,0,1,1.41-.59H210v42A2,2,0,0,1,208,210Z"/></svg>Inbox<span class="folder__count">4</span></div>
+    <div class="folder"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M225.88,30.12a13.83,13.83,0,0,0-13.7-3.58l-.11,0L20.14,84.77A14,14,0,0,0,18,110.85l85.56,41.64L145.12,238a13.87,13.87,0,0,0,12.61,8c.4,0,.81,0,1.21-.05a13.9,13.9,0,0,0,12.29-10.09l58.2-191.93,0-.11A13.83,13.83,0,0,0,225.88,30.12Zm-8,10.4L159.73,232.43l0,.11a2,2,0,0,1-3.76.26l-40.68-83.58,49-49a6,6,0,1,0-8.49-8.49l-49,49L23.15,100a2,2,0,0,1,.31-3.74l.11,0L215.48,38.08a1.94,1.94,0,0,1,1.92.52A2,2,0,0,1,217.92,40.52Z"/></svg>Sent Items</div>
+    <div class="folder"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M212.24,83.76l-56-56A6,6,0,0,0,152,26H56A14,14,0,0,0,42,40V216a14,14,0,0,0,14,14H200a14,14,0,0,0,14-14V88A6,6,0,0,0,212.24,83.76ZM158,46.48,193.52,82H158ZM200,218H56a2,2,0,0,1-2-2V40a2,2,0,0,1,2-2h90V88a6,6,0,0,0,6,6h50V216A2,2,0,0,1,200,218Zm-34-82a6,6,0,0,1-6,6H96a6,6,0,0,1,0-12h64A6,6,0,0,1,166,136Zm0,32a6,6,0,0,1-6,6H96a6,6,0,0,1,0-12h64A6,6,0,0,1,166,168Z"/></svg>Drafts<span class="folder__count">2</span></div>
+    <div class="folders__group" style="margin-top:14px"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M212.24,100.24l-80,80a6,6,0,0,1-8.48,0l-80-80a6,6,0,0,1,8.48-8.48L128,167.51l75.76-75.75a6,6,0,0,1,8.48,8.48Z"/></svg>Folders</div>
+    <div class="folder"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M122,136V80a6,6,0,0,1,12,0v56a6,6,0,0,1-12,0ZM230,91.55v72.9a13.92,13.92,0,0,1-4.1,9.9L174.35,225.9a13.92,13.92,0,0,1-9.9,4.1H91.55a13.92,13.92,0,0,1-9.9-4.1L30.1,174.35a13.92,13.92,0,0,1-4.1-9.9V91.55a13.92,13.92,0,0,1,4.1-9.9L81.65,30.1a13.92,13.92,0,0,1,9.9-4.1h72.9a13.92,13.92,0,0,1,9.9,4.1L225.9,81.65A13.92,13.92,0,0,1,230,91.55Zm-12,0a2,2,0,0,0-.59-1.42L165.87,38.59a2,2,0,0,0-1.42-.59H91.55a2,2,0,0,0-1.41.59L38.58,90.13A2,2,0,0,0,38,91.55v72.9a2,2,0,0,0,.59,1.42l51.54,51.54a2,2,0,0,0,1.42.59h72.9a2,2,0,0,0,1.41-.59l51.56-51.54a2,2,0,0,0,.58-1.42ZM128,162a10,10,0,1,0,10,10A10,10,0,0,0,128,162Z"/></svg>Junk Email</div>
+    <div class="folder"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M224,50H32A14,14,0,0,0,18,64V88a14,14,0,0,0,14,14h2v90a14,14,0,0,0,14,14H208a14,14,0,0,0,14-14V102h2a14,14,0,0,0,14-14V64A14,14,0,0,0,224,50ZM210,192a2,2,0,0,1-2,2H48a2,2,0,0,1-2-2V102H210ZM226,88a2,2,0,0,1-2,2H32a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H224a2,2,0,0,1,2,2ZM98,136a6,6,0,0,1,6-6h48a6,6,0,0,1,0,12H104A6,6,0,0,1,98,136Z"/></svg>Archive</div>
+    <div class="folder"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M216,50H174V40a22,22,0,0,0-22-22H104A22,22,0,0,0,82,40V50H40a6,6,0,0,0,0,12H50V208a14,14,0,0,0,14,14H192a14,14,0,0,0,14-14V62h10a6,6,0,0,0,0-12ZM94,40a10,10,0,0,1,10-10h48a10,10,0,0,1,10,10V50H94ZM194,208a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V62H194ZM110,104v64a6,6,0,0,1-12,0V104a6,6,0,0,1,12,0Zm48,0v64a6,6,0,0,1-12,0V104a6,6,0,0,1,12,0Z"/></svg>Deleted Items</div>
+    <div class="folder"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M216,74H130L101.73,52.8a14,14,0,0,0-8.4-2.8H40A14,14,0,0,0,26,64V200a14,14,0,0,0,14,14H216.89A13.12,13.12,0,0,0,230,200.89V88A14,14,0,0,0,216,74Zm2,126.89a1.11,1.11,0,0,1-1.11,1.11H40a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H93.33a2,2,0,0,1,1.2.4L124.4,84.8A6,6,0,0,0,128,86h88a2,2,0,0,1,2,2Z"/></svg>Corvache — Board</div>
+  </aside>
+
+  <!-- message list -->
+  <section class="list" aria-label="Message list">
+    <div class="list__head">
+      <div class="list__title">Inbox</div>
+      <div class="list__tabs">
+        <span class="list__tab is-active">Focused</span>
+        <span class="list__tab">Other</span>
+        <button class="list__filter" aria-label="Filter"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M198,136a6,6,0,0,1-6,6H64a6,6,0,0,1,0-12H192A6,6,0,0,1,198,136Zm34-54H24a6,6,0,0,0,0,12H232a6,6,0,0,0,0-12Zm-80,96H104a6,6,0,0,0,0,12h48a6,6,0,0,0,0-12Z"/></svg></button>
+      </div>
+    </div>
+    <div class="list__scroll">
+      <div class="list__daygroup">Today</div>
+      <button class="msg is-selected">
+        <span class="msg__top"><span class="msg__from">OMNI</span><span class="msg__time">9:24 AM</span></span>
+        <span class="msg__subject">Bryan Cocco shared “Progress 2026” with you</span>
+        <span class="msg__preview">Bryan Cocco has shared a file with you — open it in OMNI Canvas. No account needed…</span>
+      </button>
+      <button class="msg is-unread">
+        <span class="msg__top"><span class="msg__from">Priya Anand</span><span class="msg__time">8:51 AM</span></span>
+        <span class="msg__subject">Re: board pre-read timing</span>
+        <span class="msg__preview">Can we get the deck 48 hours before the session this time? Finance wants a pass at the…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Jessie Harte</span><span class="msg__time">8:12 AM</span></span>
+        <span class="msg__subject">Q3 board session — draft agenda</span>
+        <span class="msg__preview">Attaching the running order. Slot 4 is still soft pending the annual review — will firm up…</span>
+      </button>
+      <button class="msg is-unread">
+        <span class="msg__top"><span class="msg__from">S&amp;P Global Mobility</span><span class="msg__time">7:30 AM</span></span>
+        <span class="msg__subject">July digest: Premium EV loyalty benchmarks</span>
+        <span class="msg__preview">This month: 12-month retention across the premium EV set, deposit-holder behavior, and…</span>
+      </button>
+      <div class="list__daygroup">Yesterday</div>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Nick Zinner</span><span class="msg__time">Wed 6:47 PM</span></span>
+        <span class="msg__subject">Media-mix model doc</span>
+        <span class="msg__preview">As promised — the flights model behind the 3–5× range, with the method notes Priya asked…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Ray Okafor</span><span class="msg__time">Wed 2:15 PM</span></span>
+        <span class="msg__subject">Grand Tours — rights flow sketch</span>
+        <span class="msg__preview">First pass at the submission flow with usage rights in the upload step. Legal will want to see…</span>
+      </button>
+      <div class="list__daygroup">Tuesday</div>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Amara Boone</span><span class="msg__time">Tue 4:03 PM</span></span>
+        <span class="msg__subject">Configurator refresh notes</span>
+        <span class="msg__preview">Return-visit option spend keeps climbing — worth a look before we lock the Q3 roadmap…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Jessie Harte</span><span class="msg__time">Tue 11:26 AM</span></span>
+        <span class="msg__subject">Fwd: board calendar hold — Sept 3</span>
+        <span class="msg__preview">Holding the full morning. If the annual review lands well we'll want the extra half hour for…</span>
+      </button>
+      <div class="list__daygroup">Monday</div>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Liam Fitzgerald</span><span class="msg__time">Mon 5:32 PM</span></span>
+        <span class="msg__subject">Retainer renewal — updated SOW</span>
+        <span class="msg__preview">Clean copy attached with the measurement language we agreed. Legal has the redline; nothing…</span>
+      </button>
+      <button class="msg is-unread">
+        <span class="msg__top"><span class="msg__from">Diego Alvarez</span><span class="msg__time">Mon 2:19 PM</span></span>
+        <span class="msg__subject">Order book weekly — W28</span>
+        <span class="msg__preview">Deposits steady, Zurich and Munich leading. Option take-rate on the interior packs is up again…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Hannah Bergstrom</span><span class="msg__time">Mon 9:47 AM</span></span>
+        <span class="msg__subject">Zurich delivery event — guest list v2</span>
+        <span class="msg__preview">Second pass attached. We're at 64 confirmed including eight early deposit holders — venue caps…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Corvache IT</span><span class="msg__time">Mon 8:02 AM</span></span>
+        <span class="msg__subject">Scheduled maintenance: configurator platform</span>
+        <span class="msg__preview">Saturday 02:00–06:00 CET. The configurator and order-book dashboards will be read-only during…</span>
+      </button>
+      <div class="list__daygroup">Last week</div>
+      <button class="msg is-unread">
+        <span class="msg__top"><span class="msg__from">Nadia Haddad</span><span class="msg__time">Fri 7/3</span></span>
+        <span class="msg__subject">Culture briefing: quiet luxury, one year on</span>
+        <span class="msg__preview">The signal has matured — restraint is now table stakes in the premium set. Three implications…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Anika Rao</span><span class="msg__time">Fri 7/3</span></span>
+        <span class="msg__subject">Listening report — June rollup</span>
+        <span class="msg__preview">Sentiment holding after the spring repositioning. The silence-story language keeps showing up…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Priya Anand</span><span class="msg__time">Thu 7/2</span></span>
+        <span class="msg__subject">Measurement footnotes — draft language</span>
+        <span class="msg__preview">Draft of the modeled-vs-measured footnote for anything board-facing. Blunter than marketing…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Sofia Marchetti</span><span class="msg__time">Wed 7/1</span></span>
+        <span class="msg__subject">Data pipeline handover notes</span>
+        <span class="msg__preview">Everything the analytics dashboard reads is documented here, including the demand-desk export…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Theo Van Dyk</span><span class="msg__time">Tue 6/30</span></span>
+        <span class="msg__subject">Security training — action required</span>
+        <span class="msg__preview">Annual refresher closes Friday. Ten minutes, mostly phishing scenarios — the link is in the…</span>
+      </button>
+      <div class="list__daygroup">Two weeks ago</div>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Marco Narvaez</span><span class="msg__time">Mon 6/29</span></span>
+        <span class="msg__subject">Intro: foresight team</span>
+        <span class="msg__preview">Following up from Cannes — connecting you with our foresight leads ahead of the 2027 planning…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Nick Zinner</span><span class="msg__time">Fri 6/26</span></span>
+        <span class="msg__subject">Flight plan — H2 brand media</span>
+        <span class="msg__preview">Holding at 2025 levels per the scope discussion. Reallocation draft goes to email and CRM, not…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Ray Okafor</span><span class="msg__time">Thu 6/25</span></span>
+        <span class="msg__subject">Owner shoot — Dolomites recce photos</span>
+        <span class="msg__preview">Scouting frames from the pass. If Grand Tours gets the green light this is the opening stretch…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Mara Lindqvist</span><span class="msg__time">Wed 6/24</span></span>
+        <span class="msg__subject">Annual review — working session recap</span>
+        <span class="msg__preview">Notes from Tuesday attached. We're aligned on the through-line: the order book is the story, the…</span>
+      </button>
+      <div class="list__daygroup">June</div>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Corvache People Ops</span><span class="msg__time">6/22/2026</span></span>
+        <span class="msg__subject">Summer hours start July 1</span>
+        <span class="msg__preview">Fridays end at 2 PM through August. Delivery-event staffing is exempt on event weeks — see the…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Jessie Harte</span><span class="msg__time">6/19/2026</span></span>
+        <span class="msg__subject">Board minutes — June session</span>
+        <span class="msg__preview">Approved and filed. Two follow-ups landed with us: the retention deep-dive and the media-return…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Devon Reyes</span><span class="msg__time">6/18/2026</span></span>
+        <span class="msg__subject">Re: Munich pop-up — final numbers</span>
+        <span class="msg__preview">Worth every franc. 214 drive-experience requests in nine days and the guest book reads like a…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">S&amp;P Global Mobility</span><span class="msg__time">6/15/2026</span></span>
+        <span class="msg__subject">June digest: EV order-to-delivery times</span>
+        <span class="msg__preview">Lead times across the premium set are stabilizing. Where brands are winning: transparency at the…</span>
+      </button>
+      <button class="msg">
+        <span class="msg__top"><span class="msg__from">Anika Rao</span><span class="msg__time">6/12/2026</span></span>
+        <span class="msg__subject">Listening report — May rollup</span>
+        <span class="msg__preview">First full month post-repositioning. Owner language is shifting from specs to feel — early but…</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- reading pane -->
+  <main class="reading">
+    <div class="reading__subjectbar">
+      <h1 class="reading__subject">Bryan Cocco shared “Progress 2026” with you</h1>
+      <span class="reading__actions">
+        <button aria-label="Reply"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M230,200a6,6,0,0,1-12,0,90.1,90.1,0,0,0-90-90H46.49l37.75,37.76a6,6,0,1,1-8.48,8.48l-48-48a6,6,0,0,1,0-8.48l48-48a6,6,0,0,1,8.48,8.48L46.49,98H128A102.12,102.12,0,0,1,230,200Z"/></svg></button>
+        <button aria-label="Forward"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M228.24,108.24l-48,48a6,6,0,0,1-8.48-8.48L209.51,110H128a90.1,90.1,0,0,0-90,90,6,6,0,0,1-12,0A102.12,102.12,0,0,1,128,98h81.51L171.76,60.24a6,6,0,0,1,8.48-8.48l48,48A6,6,0,0,1,228.24,108.24Z"/></svg></button>
+        <button aria-label="More actions"><svg class="ph" viewBox="0 0 256 256" fill="currentColor"><path d="M138,128a10,10,0,1,1-10-10A10,10,0,0,1,138,128ZM60,118a10,10,0,1,0,10,10A10,10,0,0,0,60,118Zm136,0a10,10,0,1,0,10,10A10,10,0,0,0,196,118Z"/></svg></button>
+      </span>
+    </div>
+    <div class="reading__meta">
+      <span class="reading__avatar"><img src="../../../shared/assets/omni-logo.svg" alt="OMNI" /></span>
+      <span class="reading__who">
+        <div class="reading__sender">OMNI <span>&lt;no-reply@share.omni.ai&gt;</span></div>
+        <div class="reading__to">To: Devon Reyes</div>
+      </span>
+      <span class="reading__stamp">Thu 7/9/2026 9:24 AM</span>
+    </div>
+    <div class="reading__body">
+      <div class="mail">
+        <a class="mail__cover" href="../" aria-label="Open Progress 2026">
+          <img class="mail__cover-img" src="../../../shared/assets/corvache-hero-photo-2x.jpg" alt="" />
+          <span class="mail__cover-scrim" aria-hidden="true"></span>
+          <span class="mail__cover-eyebrow">Annual Review &amp; Forward Brief</span>
+          <span class="mail__cover-title">Progress 2026</span>
+        </a>
+        <div class="mail__inner">
+          <div class="mail__lockup" aria-hidden="true">
+            <img class="mail__omni" src="../../../shared/assets/omni-logo.svg" alt="OMNI+" />
+            <span class="mail__x" hidden>×</span>
+            <span class="mail__brandmark" hidden></span>
+            <span class="mail__brandname" hidden></span>
+          </div>
+          <p class="mail__lede"><strong>Bryan Cocco</strong> has shared a file with you</p>
+          <p class="mail__meta">Shared Canvas · Read-Only</p>
+          <a class="mail__open" href="../">Open</a>
+          <p class="mail__foot">
+            You’re receiving this because bryan.cocco@omc.com shared “Progress 2026”
+            with devon.reyes@corvache.com via OMNI Canvas.<br />
+            <a href="#" onclick="return false">Privacy Statement</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  /* Theme the email artifact with the SAME persisted workspace theme the
+     canvas uses (Corvache default): initTheme paints the --doc-* palette onto
+     <body> (the Outlook chrome ignores it; only .mail consumes it), and the
+     lockup's brand half comes from the active theme. */
+  import { initTheme, getActiveBrand } from '../../../shared/components/themes.js';
+  initTheme();
+
+  const brand = getActiveBrand();
+  if (brand) {
+    const x = document.querySelector('.mail__x');
+    const mark = document.querySelector('.mail__brandmark');
+    const name = document.querySelector('.mail__brandname');
+    x.hidden = false;
+    mark.hidden = false;
+    name.hidden = false;
+    mark.style.setProperty('--m', `url('${brand.logoUrl}')`);
+    // Real wordmark artwork where the brand has one; text for Corvache.
+    if (brand.wordmarkUrl) {
+      name.classList.add('is-wm');
+      name.style.setProperty('--m', `url('${brand.wordmarkUrl}')`);
+      name.style.aspectRatio = brand.wmAr;
+      name.style.setProperty('--wm-scale', brand.wmScale);
+      name.setAttribute('role', 'img');
+      name.setAttribute('aria-label', brand.name);
+      name.textContent = '';
+    } else {
+      name.textContent = brand.name;
+    }
+    // The email's cover preview mirrors the canvas: brand themes carry their
+    // own hero backdrop, Corvache keeps the doc's render.
+    if (brand.heroUrl) document.querySelector('.mail__cover-img').src = brand.heroUrl;
+  }
+
+  // Button ink: dark text on bright accents (Corvache amber, Spotify green),
+  // white on deep ones — relative luminance decides.
+  const accent = getComputedStyle(document.body).getPropertyValue('--doc-accent').trim();
+  const hex = accent.replace('#', '');
+  if (/^[0-9a-f]{6}$/i.test(hex)) {
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    document.querySelector('.mail__open').style.color = lum > 0.55 ? '#0a0a0a' : '#fff';
+  }
+</script>
+
+</body>
+</html>

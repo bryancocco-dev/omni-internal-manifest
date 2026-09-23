@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+  OMNI component: panelswitch
+  Project: Brief
+  Note: .panel-switch — segmented Menu / Chat / Canvas switcher (responsive panel toggle), one .active
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — panelswitch · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="panel-switch" id="panelSwitch" role="tablist" aria-label="Switch between navigation, chat, and canvas" style="position:static;display:flex;opacity:1;pointer-events:auto">
+        <button type="button" class="psw psw-nav" data-panel="nav" role="tab" aria-label="Open navigation panel"><span class="psw-label">Menu</span></button>
+        <button type="button" class="psw" data-panel="chat" role="tab" aria-label="Show chat panel"><span class="psw-label">Chat</span></button>
+        <button type="button" class="psw active" data-panel="canvas" role="tab" aria-label="Show canvas panel" aria-selected="true"><span class="psw-label">Canvas</span></button>
+      </div>
+</body>
+</html>

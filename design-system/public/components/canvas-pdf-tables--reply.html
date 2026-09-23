@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  OMNI component: reply
+  Project: PDF Tables
+  Note: .reply — drafted stakeholder-reply card: reply-bar (recipient + Copy button) over a plain-prose reply-body with strong emphasis and an ordered list; "copy to clipboard" pattern for send-as-is drafts
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — reply · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="reply">
+          <div class="reply-bar">
+            <span class="reply-to">To — Sofia Brandt</span>
+            <button class="btn btn--ghost" type="button" id="copyBtn">Copy</button>
+          </div>
+          <div class="reply-body" id="replyBody">
+            <p>Hi Sofia — good catch, and it's a real gap rather than a settings problem.</p>
+            <p>
+              The short version: the canvas can let a wide table overflow because it has horizontal scroll,
+              and the PDF has no such escape. Right now the export keeps the screen's column grid and divides
+              a fixed page width between eleven columns, so columns end up narrower than their own headers.
+              That's what's producing the overlaps (<strong>GEOGRAPHYSAMPLE</strong>, <strong>SecondaryNielsen</strong>),
+              the broken values (<strong>$18K</strong> printing as <strong>$18-</strong> / <strong>K</strong>), and the
+              very tall rows — NOTES gets the leftover width, so one sentence becomes fourteen lines.
+            </p>
+            <p>What I'd recommend instead of shrinking type: let the export change the table's shape, in this order, stopping as soon as it fits.</p>
+            <ol>
+              <li><strong>Measure before drawing.</strong> Real column widths from content, header labels wrapping to two lines, currency and dates marked unbreakable, the header row repeating on every page, and rows never split across a page break.</li>
+              <li><strong>Demote long text.</strong> Any column averaging more than ~48 characters isn't really a column, it's an annotation — it prints full-width under its own row, keeping its label. This alone fixes the tall rows.</li>
+              <li><strong>Rotate that table's pages to landscape</strong> if the remaining columns still don't fit. A PDF can mix orientations, so only the wide table turns.</li>
+              <li><strong>Continue the columns in groups</strong> for the truly huge ones, repeating the identity columns so every row stays identifiable — the standard wide-financial-table treatment.</li>
+            </ol>
+            <p>
+              Four things it should never do, no matter what: overlap text, break a value mid-token, go below
+              8pt, or silently drop a column.
+            </p>
+            <p>
+              I've built a page that shows your Research Source Inventory at each step, with the widths
+              genuinely measured, plus a working Export button so you can pull a real fixed PDF and compare
+              it against the current one. Happy to walk through it live if that's easier.
+            </p>
+          </div>
+        </div>
+</body>
+</html>

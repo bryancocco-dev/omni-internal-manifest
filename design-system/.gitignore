@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+.vercel
+dist/
+dist-storybook/
+storybook-static/
+.cache/
+.env
+.env.local
+.env.*.local
+*.log

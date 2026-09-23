@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  OMNI component: card_persona
+  Project: Media
+  Note: .persona-hero — magazine-spread persona cover (portrait + tags + title + subtitle)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — card_persona · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<section class="persona-hero is-active" data-persona-hero="casual">
+            <figure class="ph-portrait">
+              <img src="persona/portrait-mei-v2.png" alt="Side profile of a young woman with a long dark braid, wearing a sheer white shirt, photographed in motion against a vivid orange-red backdrop." loading="lazy">
+              <figcaption class="ph-portrait-caption">Mei, 27 — Brooklyn, NY</figcaption>
+            </figure>
+            <div class="ph-grid" aria-hidden="true"></div>
+            <div class="ph-tags ph-tags--top">
+              <span>OMNI — Persona Library</span>
+              <span>@omni.research</span>
+              <span>© 2026</span>
+            </div>
+            <div class="ph-tags ph-tags--mid">
+              <span>Low Intent</span>
+              <span>PR&#8209;001</span>
+              <span class="ph-coord"><span class="ph-coord-val" data-target="40.6782" data-decimals="4">40.6782</span>° N · <span class="ph-coord-val" data-target="73.9442" data-decimals="4">73.9442</span>° W</span>
+            </div>
+            <h1 class="ph-title">The <em>Casual</em><br>Car Enthusiast</h1>
+            <p class="ph-subtitle">Mei, 27 — Brooklyn, NY</p>
+            <p class="ph-subtitle ph-subtitle--alt">A broad, low&#8209;intent admirer of the automotive world who follows trends, designs, and new launches — but isn't actively shopping.</p>
+          </section>
+</body>
+</html>

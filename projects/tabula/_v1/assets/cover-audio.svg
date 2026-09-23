@@ -1,0 +1,325 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* §18.5/§19 spirit, DELIBERATE §14 EXCEPTION: this tile's subject is audio
+       PLAYBACK, so it does not sit on the 5s/9s/15s tempo ladder — a live EQ
+       genuinely dances at ~1s-ish rates, not 9s. The bar dance below runs at
+       FAST sub-second periods (0.9-1.3s) instead of §14's tiers; the sine
+       drift stays on the SLOW 15s ambient tier as before. */
+
+    /* THE BAR DANCE: each band is its own live-EQ voice — staggered scaleY,
+       sine token cubic-bezier(0.45,0,0.55,1), 0%/100% identical at zero
+       velocity so pause/resume never jerks. transform-box:fill-box +
+       transform-origin:center scales every bar in a band about its own
+       vertical center (same anchor as before). Periods vary slightly per
+       band (0.9/1.0/1.1/1.2/1.3s) with uncoordinated negative delays so nb
+       the bands drift in and out of phase with each other — organic, not a
+       synced pulse. */
+    .band-dance {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .band-dance.bd1 { animation: barDanceFast 0.9s cubic-bezier(0.45, 0, 0.55, 1) -0.15s infinite; }
+    .band-dance.bd0 { animation: barDanceFast 1.1s cubic-bezier(0.45, 0, 0.55, 1) -0.55s infinite; }
+    .band-dance.bd4 { animation: barDanceFast 1.0s cubic-bezier(0.45, 0, 0.55, 1) -0.30s infinite; }
+    .band-dance.bd3 { animation: barDanceFast 1.2s cubic-bezier(0.45, 0, 0.55, 1) -0.75s infinite; }
+    .band-dance.bd2 { animation: barDanceFast 1.3s cubic-bezier(0.45, 0, 0.55, 1) -0.05s infinite; }
+    @keyframes barDanceFast {
+      0%, 100% { transform: scaleY(1); }
+      25%      { transform: scaleY(1.45); }
+      75%      { transform: scaleY(0.5); }
+    }
+
+    /* THE PLAYHEAD IS PER-BAR NOW (Bryan: the wash read as a blob, not
+       individual bars lighting up). .ph-travel no longer paints a visible
+       rect — it now drives two narrow rects living inside the phMask mask
+       (defs), each ~3 bars wide (40px) with a tight ≤6px feather per edge.
+       Same seamless twin-copy technique as before: two copies exactly one
+       full travel-distance (933.3px) apart on the shared timeline, so as one
+       exits right the other arrives left with an invisible handoff; the
+       -2.5s delay phases the rest frame to sit mid-waveform (center x=540,
+       lighting bars 526.7/540.0/553.3). Only the PAYLOAD changed — from a
+       painted tint to a mask-luminance window — the travel math is
+       untouched. linear, 5s, exempt from the zero-velocity rule. */
+    .ph-travel {
+      animation: playheadTravel 5s linear infinite;
+      animation-delay: -2.5s;
+    }
+    @keyframes playheadTravel {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(933.3px); }
+    }
+
+    /* SLOW 15s ambient: the faint background sine drifts by exactly one wavelength
+       (279px, measured from the curve's own formula) — numerically 0 -> 279 but the
+       periodic curve renders pixel-identical at both ends, so the loop is seamless;
+       the path is pre-extended (-300..1104) so no edge is ever exposed mid-drift.
+       Linear (continuous traveler), exempt from the zero-velocity rule. */
+    .sine-drift {
+      transform-origin: 0px 0px;
+      animation: sineDrift 15s linear infinite;
+    }
+    @keyframes sineDrift {
+      from { transform: translateX(0); }
+      to   { transform: translateX(279px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .band-dance, .ph-travel { animation: none; }
+      .sine-drift { animation: none; }
+    }
+
+    /* light ("blueprint on paper") palette — dark above stays default/unmodified */
+    @media (prefers-color-scheme: light) {
+      .lp-bg { fill: url(#bgL); }
+      .lp-ambient { fill: url(#ambientGlowL); }
+      .lp-dot { fill: #64748b; opacity: 0.10; }
+      .lp-line1 { stroke: #64748b; }
+      .lp-line2 { stroke: #8b95a3; }
+      .lp-glow-u { opacity: 0.35; }
+    }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#1a1c20"/>
+      <stop offset="55%" stop-color="#101114"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </radialGradient>
+    <radialGradient id="bgL" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f5f7fa"/>
+      <stop offset="100%" stop-color="#eef1f5"/>
+    </radialGradient>
+    <radialGradient id="ambientGlow" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#6172f3" stop-opacity="0.14"/>
+      <stop offset="60%" stop-color="#6172f3" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#6172f3" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientGlowL" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#6172f3" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#6172f3" stop-opacity="0.035"/>
+      <stop offset="100%" stop-color="#6172f3" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#202226"/>
+      <stop offset="100%" stop-color="#121316"/>
+    </linearGradient>
+    <linearGradient id="nodeFillL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f2f4f7"/>
+    </linearGradient>
+    <!-- narrow traveling reveal window for the per-bar playhead: 40px (~3 bars at
+         the 13.3px pitch) with a 6px feather each side (< half a bar) — luminance
+         mask, not a painted wash. -->
+    <linearGradient id="phMaskGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#000000"/>
+      <stop offset="15%" stop-color="#ffffff"/>
+      <stop offset="85%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <mask id="phMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1085" height="716">
+      <rect x="0" y="0" width="1085" height="716" fill="#000000"/>
+      <g transform="translate(73.35,0)">
+        <rect class="ph-travel" x="-20" y="286" width="40" height="144" fill="url(#phMaskGrad)"/>
+      </g>
+      <g transform="translate(-859.95,0)">
+        <rect class="ph-travel" x="-20" y="286" width="40" height="144" fill="url(#phMaskGrad)"/>
+      </g>
+    </mask>
+    <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle class="lp-dot" cx="2" cy="2" r="1" fill="#8a97a8" opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect class="lp-bg" width="1085" height="716" fill="url(#bg)"/>
+  <rect width="1085" height="716" fill="url(#dots)"/>
+  <rect class="lp-ambient" width="1085" height="716" fill="url(#ambientGlow)"/>
+
+  <!-- faint continuous sine curve, running behind the bars — pre-extended well past
+       both frame edges (one full wavelength of margin) so the phase-drift animation
+       never exposes a gap; same wavelength/amplitude formula as the square source,
+       just resampled across the wider frame -->
+  <path class="lp-line1 sine-drift" d="M -300.0,301.8 L -290.7,294.5 L -281.4,290.0 L -272.1,288.5 L -262.8,290.0 L -253.5,294.5 L -244.2,301.8 L -234.9,311.5 L -225.6,323.3 L -216.3,336.5 L -207.0,350.7 L -197.7,365.3 L -188.4,379.5 L -179.1,392.8 L -169.8,404.5 L -160.5,414.2 L -151.2,421.5 L -141.9,426.0 L -132.6,427.5 L -123.3,426.0 L -114.0,421.5 L -104.7,414.2 L -95.4,404.5 L -86.1,392.7 L -76.8,379.5 L -67.5,365.3 L -58.2,350.7 L -48.9,336.5 L -39.6,323.2 L -30.3,311.5 L -21.0,301.8 L -11.7,294.5 L -2.4,290.0 L 6.9,288.5 L 16.2,290.0 L 25.5,294.5 L 34.8,301.8 L 44.1,311.5 L 53.4,323.3 L 62.7,336.5 L 72.0,350.7 L 81.3,365.3 L 90.6,379.5 L 99.9,392.8 L 109.2,404.5 L 118.5,414.2 L 127.8,421.5 L 137.1,426.0 L 146.4,427.5 L 155.7,426.0 L 165.0,421.5 L 174.3,414.2 L 183.6,404.5 L 192.9,392.7 L 202.2,379.5 L 211.5,365.3 L 220.8,350.7 L 230.1,336.5 L 239.4,323.2 L 248.7,311.5 L 258.0,301.8 L 267.3,294.5 L 276.6,290.0 L 285.9,288.5 L 295.2,290.0 L 304.5,294.5 L 313.8,301.8 L 323.1,311.5 L 332.4,323.3 L 341.7,336.5 L 351.0,350.7 L 360.3,365.3 L 369.6,379.5 L 378.9,392.8 L 388.2,404.5 L 397.5,414.2 L 406.8,421.5 L 416.1,426.0 L 425.4,427.5 L 434.7,426.0 L 444.0,421.5 L 453.3,414.2 L 462.6,404.5 L 471.9,392.7 L 481.2,379.5 L 490.5,365.3 L 499.8,350.7 L 509.1,336.5 L 518.4,323.2 L 527.7,311.5 L 537.0,301.8 L 546.3,294.5 L 555.6,290.0 L 564.9,288.5 L 574.2,290.0 L 583.5,294.5 L 592.8,301.8 L 602.1,311.5 L 611.4,323.3 L 620.7,336.5 L 630.0,350.7 L 639.3,365.3 L 648.6,379.5 L 657.9,392.7 L 667.2,404.5 L 676.5,414.2 L 685.8,421.5 L 695.1,426.0 L 704.4,427.5 L 713.7,426.0 L 723.0,421.5 L 732.3,414.2 L 741.6,404.5 L 750.9,392.8 L 760.2,379.5 L 769.5,365.3 L 778.8,350.7 L 788.1,336.5 L 797.4,323.3 L 806.7,311.5 L 816.0,301.8 L 825.3,294.5 L 834.6,290.0 L 843.9,288.5 L 853.2,290.0 L 862.5,294.5 L 871.8,301.8 L 881.1,311.5 L 890.4,323.2 L 899.7,336.5 L 909.0,350.7 L 918.3,365.3 L 927.6,379.5 L 936.9,392.7 L 946.2,404.5 L 955.5,414.2 L 964.8,421.5 L 974.1,426.0 L 983.4,427.5 L 992.7,426.0 L 1002.0,421.5 L 1011.3,414.2 L 1020.6,404.5 L 1029.9,392.8 L 1039.2,379.5 L 1048.5,365.3 L 1057.8,350.7 L 1067.1,336.5 L 1076.4,323.3 L 1085.7,311.5 L 1095.0,301.8 L 1104.3,294.5"
+        fill="none" stroke="#48525f" stroke-width="2" opacity="0.32"/>
+
+  <!-- baseline -->
+  <line class="lp-line2" x1="107" y1="358" x2="973" y2="358" stroke="#3a4350" stroke-width="1.5" opacity="0.25"/>
+
+  <!-- ~63 hairline bars, tops/bottoms tracing a sine envelope, grouped into 5 bands;
+       spread wider (140..940, matching the workflow/canvas comfort span) instead of
+       stretching the original 40 bars. All steel-colored now — the former fixed
+       purple cluster (x=513.3-553.3) is folded into bd4 below so the waveform stays
+       unbroken; color there comes only from the playhead window passing over it. -->
+  <g stroke-linecap="round" stroke-width="3">
+    <g class="band-dance bd1 lp-line1" stroke="#48525f">
+      <line x1="126.7" y1="296.0" x2="126.7" y2="420.0"/>
+      <line x1="140.0" y1="296.0" x2="140.0" y2="420.0"/>
+      <line x1="153.3" y1="305.1" x2="153.3" y2="410.9"/>
+      <line x1="166.7" y1="305.5" x2="166.7" y2="410.5"/>
+      <line x1="180.0" y1="302.6" x2="180.0" y2="413.4"/>
+      <line x1="193.3" y1="300.3" x2="193.3" y2="415.7"/>
+      <line x1="206.7" y1="296.0" x2="206.7" y2="420.0"/>
+      <line x1="220.0" y1="310.5" x2="220.0" y2="405.5"/>
+      <line x1="233.3" y1="331.9" x2="233.3" y2="384.1"/>
+      <line x1="246.7" y1="322.5" x2="246.7" y2="393.5"/>
+      <line x1="260.0" y1="327.4" x2="260.0" y2="388.6"/>
+      <line x1="273.3" y1="336.1" x2="273.3" y2="379.9"/>
+      <line x1="286.7" y1="345.1" x2="286.7" y2="370.9"/>
+      <line x1="300.0" y1="348.0" x2="300.0" y2="368.0"/>
+    </g>
+    <g class="band-dance bd0 lp-line1" stroke="#48525f">
+      <line x1="313.3" y1="341.0" x2="313.3" y2="375.0"/>
+      <line x1="326.7" y1="326.7" x2="326.7" y2="389.3"/>
+      <line x1="340.0" y1="339.6" x2="340.0" y2="376.4"/>
+      <line x1="353.3" y1="332.8" x2="353.3" y2="383.2"/>
+      <line x1="366.7" y1="321.6" x2="366.7" y2="394.4"/>
+      <line x1="380.0" y1="308.2" x2="380.0" y2="407.8"/>
+      <line x1="393.3" y1="296.0" x2="393.3" y2="420.0"/>
+      <line x1="406.7" y1="305.9" x2="406.7" y2="410.1"/>
+      <line x1="420.0" y1="311.0" x2="420.0" y2="405.0"/>
+      <line x1="433.3" y1="296.0" x2="433.3" y2="420.0"/>
+      <line x1="446.7" y1="297.5" x2="446.7" y2="418.5"/>
+      <line x1="460.0" y1="307.2" x2="460.0" y2="408.8"/>
+    </g>
+    <g class="band-dance bd4 lp-line1" stroke="#48525f">
+      <line x1="473.3" y1="321.1" x2="473.3" y2="394.9"/>
+      <line x1="486.7" y1="337.7" x2="486.7" y2="378.3"/>
+      <line x1="500.0" y1="324.9" x2="500.0" y2="391.1"/>
+      <line x1="513.3" y1="328.4" x2="513.3" y2="387.6"/>
+      <line x1="526.7" y1="348.0" x2="526.7" y2="368.0"/>
+      <line x1="540.0" y1="348.0" x2="540.0" y2="368.0"/>
+      <line x1="553.3" y1="346.0" x2="553.3" y2="370.0"/>
+      <line x1="566.7" y1="335.7" x2="566.7" y2="380.3"/>
+      <line x1="580.0" y1="323.7" x2="580.0" y2="392.3"/>
+      <line x1="593.3" y1="337.5" x2="593.3" y2="378.5"/>
+      <line x1="606.7" y1="328.2" x2="606.7" y2="387.8"/>
+      <line x1="620.0" y1="300.3" x2="620.0" y2="415.7"/>
+    </g>
+    <g class="band-dance bd3 lp-line1" stroke="#48525f">
+      <line x1="633.3" y1="299.6" x2="633.3" y2="416.4"/>
+      <line x1="646.7" y1="299.4" x2="646.7" y2="416.6"/>
+      <line x1="660.0" y1="304.1" x2="660.0" y2="411.9"/>
+      <line x1="673.3" y1="308.3" x2="673.3" y2="407.7"/>
+      <line x1="686.7" y1="296.0" x2="686.7" y2="420.0"/>
+      <line x1="700.0" y1="301.9" x2="700.0" y2="414.1"/>
+      <line x1="713.3" y1="328.7" x2="713.3" y2="387.3"/>
+      <line x1="726.7" y1="329.0" x2="726.7" y2="387.0"/>
+      <line x1="740.0" y1="332.7" x2="740.0" y2="383.3"/>
+      <line x1="753.3" y1="333.2" x2="753.3" y2="382.8"/>
+      <line x1="766.7" y1="337.2" x2="766.7" y2="378.8"/>
+      <line x1="780.0" y1="348.0" x2="780.0" y2="368.0"/>
+    </g>
+    <g class="band-dance bd2 lp-line1" stroke="#48525f">
+      <line x1="793.3" y1="348.0" x2="793.3" y2="368.0"/>
+      <line x1="806.7" y1="328.4" x2="806.7" y2="387.6"/>
+      <line x1="820.0" y1="332.4" x2="820.0" y2="383.6"/>
+      <line x1="833.3" y1="328.5" x2="833.3" y2="387.5"/>
+      <line x1="846.7" y1="325.6" x2="846.7" y2="390.4"/>
+      <line x1="860.0" y1="315.6" x2="860.0" y2="400.4"/>
+      <line x1="873.3" y1="296.0" x2="873.3" y2="420.0"/>
+      <line x1="886.7" y1="296.9" x2="886.7" y2="419.1"/>
+      <line x1="900.0" y1="310.9" x2="900.0" y2="405.1"/>
+      <line x1="913.3" y1="299.9" x2="913.3" y2="416.1"/>
+      <line x1="926.7" y1="300.6" x2="926.7" y2="415.4"/>
+      <line x1="940.0" y1="302.2" x2="940.0" y2="413.8"/>
+      <line x1="953.3" y1="302.2" x2="953.3" y2="413.8"/>
+    </g>
+  </g>
+
+  <!-- THE PLAYHEAD IS PER-BAR: a full indigo duplicate of the bar set, carrying
+       the SAME band-dance classes (bd0-bd4, same delays) so it dances in
+       perfect sync with the steel originals underneath — only visible through
+       the narrow traveling mask window (mask="url(#phMask)", see defs), which
+       sweeps L->R crisply lighting ~3 bars at a time, no wash. wake-glow lives
+       here now (moved off the old glow rect): the lit bars bloom brighter on
+       hover, same "it's alive" cue as every other tile. -->
+  <g class="wake-glow lp-glow-u" opacity="0.65" mask="url(#phMask)">
+    <g stroke-linecap="round" stroke-width="3">
+      <g class="band-dance bd1" stroke="#6172f3">
+        <line x1="126.7" y1="296.0" x2="126.7" y2="420.0"/>
+        <line x1="140.0" y1="296.0" x2="140.0" y2="420.0"/>
+        <line x1="153.3" y1="305.1" x2="153.3" y2="410.9"/>
+        <line x1="166.7" y1="305.5" x2="166.7" y2="410.5"/>
+        <line x1="180.0" y1="302.6" x2="180.0" y2="413.4"/>
+        <line x1="193.3" y1="300.3" x2="193.3" y2="415.7"/>
+        <line x1="206.7" y1="296.0" x2="206.7" y2="420.0"/>
+        <line x1="220.0" y1="310.5" x2="220.0" y2="405.5"/>
+        <line x1="233.3" y1="331.9" x2="233.3" y2="384.1"/>
+        <line x1="246.7" y1="322.5" x2="246.7" y2="393.5"/>
+        <line x1="260.0" y1="327.4" x2="260.0" y2="388.6"/>
+        <line x1="273.3" y1="336.1" x2="273.3" y2="379.9"/>
+        <line x1="286.7" y1="345.1" x2="286.7" y2="370.9"/>
+        <line x1="300.0" y1="348.0" x2="300.0" y2="368.0"/>
+      </g>
+      <g class="band-dance bd0" stroke="#6172f3">
+        <line x1="313.3" y1="341.0" x2="313.3" y2="375.0"/>
+        <line x1="326.7" y1="326.7" x2="326.7" y2="389.3"/>
+        <line x1="340.0" y1="339.6" x2="340.0" y2="376.4"/>
+        <line x1="353.3" y1="332.8" x2="353.3" y2="383.2"/>
+        <line x1="366.7" y1="321.6" x2="366.7" y2="394.4"/>
+        <line x1="380.0" y1="308.2" x2="380.0" y2="407.8"/>
+        <line x1="393.3" y1="296.0" x2="393.3" y2="420.0"/>
+        <line x1="406.7" y1="305.9" x2="406.7" y2="410.1"/>
+        <line x1="420.0" y1="311.0" x2="420.0" y2="405.0"/>
+        <line x1="433.3" y1="296.0" x2="433.3" y2="420.0"/>
+        <line x1="446.7" y1="297.5" x2="446.7" y2="418.5"/>
+        <line x1="460.0" y1="307.2" x2="460.0" y2="408.8"/>
+      </g>
+      <g class="band-dance bd4" stroke="#6172f3">
+        <line x1="473.3" y1="321.1" x2="473.3" y2="394.9"/>
+        <line x1="486.7" y1="337.7" x2="486.7" y2="378.3"/>
+        <line x1="500.0" y1="324.9" x2="500.0" y2="391.1"/>
+        <line x1="513.3" y1="328.4" x2="513.3" y2="387.6"/>
+        <line x1="526.7" y1="348.0" x2="526.7" y2="368.0"/>
+        <line x1="540.0" y1="348.0" x2="540.0" y2="368.0"/>
+        <line x1="553.3" y1="346.0" x2="553.3" y2="370.0"/>
+        <line x1="566.7" y1="335.7" x2="566.7" y2="380.3"/>
+        <line x1="580.0" y1="323.7" x2="580.0" y2="392.3"/>
+        <line x1="593.3" y1="337.5" x2="593.3" y2="378.5"/>
+        <line x1="606.7" y1="328.2" x2="606.7" y2="387.8"/>
+        <line x1="620.0" y1="300.3" x2="620.0" y2="415.7"/>
+      </g>
+      <g class="band-dance bd3" stroke="#6172f3">
+        <line x1="633.3" y1="299.6" x2="633.3" y2="416.4"/>
+        <line x1="646.7" y1="299.4" x2="646.7" y2="416.6"/>
+        <line x1="660.0" y1="304.1" x2="660.0" y2="411.9"/>
+        <line x1="673.3" y1="308.3" x2="673.3" y2="407.7"/>
+        <line x1="686.7" y1="296.0" x2="686.7" y2="420.0"/>
+        <line x1="700.0" y1="301.9" x2="700.0" y2="414.1"/>
+        <line x1="713.3" y1="328.7" x2="713.3" y2="387.3"/>
+        <line x1="726.7" y1="329.0" x2="726.7" y2="387.0"/>
+        <line x1="740.0" y1="332.7" x2="740.0" y2="383.3"/>
+        <line x1="753.3" y1="333.2" x2="753.3" y2="382.8"/>
+        <line x1="766.7" y1="337.2" x2="766.7" y2="378.8"/>
+        <line x1="780.0" y1="348.0" x2="780.0" y2="368.0"/>
+      </g>
+      <g class="band-dance bd2" stroke="#6172f3">
+        <line x1="793.3" y1="348.0" x2="793.3" y2="368.0"/>
+        <line x1="806.7" y1="328.4" x2="806.7" y2="387.6"/>
+        <line x1="820.0" y1="332.4" x2="820.0" y2="383.6"/>
+        <line x1="833.3" y1="328.5" x2="833.3" y2="387.5"/>
+        <line x1="846.7" y1="325.6" x2="846.7" y2="390.4"/>
+        <line x1="860.0" y1="315.6" x2="860.0" y2="400.4"/>
+        <line x1="873.3" y1="296.0" x2="873.3" y2="420.0"/>
+        <line x1="886.7" y1="296.9" x2="886.7" y2="419.1"/>
+        <line x1="900.0" y1="310.9" x2="900.0" y2="405.1"/>
+        <line x1="913.3" y1="299.9" x2="913.3" y2="416.1"/>
+        <line x1="926.7" y1="300.6" x2="926.7" y2="415.4"/>
+        <line x1="940.0" y1="302.2" x2="940.0" y2="413.8"/>
+        <line x1="953.3" y1="302.2" x2="953.3" y2="413.8"/>
+      </g>
+    </g>
+  </g>
+</svg>

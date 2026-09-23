@@ -1,0 +1,512 @@
+  /* ═══ FILES PANE (#ptFilesOverlay) — the Text/Canvas picker behind
+     the composer's "Choose ad copy from your files". Shares every bit
+     of the gallery overlay's chrome (.pt-env-overlay / -head / -sub /
+     -body / -foot and the whole search-wrap) so the two pickers are
+     literally the same surface; only the BODY differs — rows instead
+     of a mosaic.
+
+     Row anatomy is gateway-concourse's own file-row language, ported
+     verbatim: 56px row, 8px radius, one soft grey hover wash and
+     nothing else (no lift, no border), a 32px/9px-radius white icon
+     tile with a hairline and an accent glyph that scales 1.07 on row
+     hover, a 14px/400 ellipsizing name, and a 13px tabular-nums date.
+     See that project's .trow / .ftile / .c-name / .c-date. ═══ */
+  /* The pane is only as wide as the canvas column behind it, which
+     varies a lot (and gets genuinely narrow at tablet widths), so the
+     row grid answers to the PANE's width, not the viewport's — hence a
+     container query rather than a media query. Same technique
+     .pt-banner already uses for its own size classes. */
+  .pt-env-body:has(.ptf-list) { container-type: inline-size; }
+  .ptf-list { display: flex; flex-direction: column; }
+  .ptf-head, .ptf-row {
+    display: grid;
+    /* 96px fits "Sep 01, 2026" at 13px tabular-nums with no wrap. */
+    grid-template-columns: minmax(0, 1fr) 84px 96px;
+    align-items: center;
+    gap: 12px;
+  }
+  .ptf-head {
+    /* Right padding on both head and row reserves the pick-check's own
+       lane, so a date never runs under it. */
+    padding: 2px 42px 10px 12px;
+    border-bottom: 0.5px solid var(--line);
+    margin-bottom: 4px;
+  }
+  /* Narrow pane: the Type column goes first (the icon tile already
+     says Text vs Canvas), then the date, before the name is ever
+     squeezed — the name is the only column you cannot infer. */
+  @container (max-width: 480px) {
+    .ptf-head, .ptf-row { grid-template-columns: minmax(0, 1fr) 96px; }
+    .ptf-kind, .ptf-th-kind { display: none; }
+  }
+  /* Below ~350px the name itself would be down to a few characters —
+     the date is the one that yields then. */
+  @container (max-width: 350px) {
+    .ptf-head, .ptf-row { grid-template-columns: minmax(0, 1fr); }
+    .ptf-date, .ptf-th-date { display: none; }
+  }
+  .ptf-head .ptf-th {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .ptf-row {
+    position: relative;
+    height: 56px;
+    border-radius: 8px;
+    padding: 0 42px 0 12px;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ptf-row:hover { background: var(--hover-soft); }
+  .ptf-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .ptf-row.is-picked { background: var(--accent-soft); }
+  .ptf-name { display: flex; align-items: center; gap: 13px; min-width: 0; padding-right: 18px; }
+  .ptf-tile {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+    background: var(--card-bg);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--line-solid);
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ptf-row:hover .ptf-tile { transform: scale(1.07); }
+  .ptf-tile svg { display: block; }
+  .ptf-nm {
+    font-size: 14px; font-weight: 400;
+    color: var(--text-strong);
+    letter-spacing: -0.1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ptf-kind { font-size: 13px; color: var(--text-subtle); }
+  .ptf-date { font-size: 13px; color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+  /* Pick state — a check that occupies its slot at all times so a row
+     never reflows as it toggles. */
+  .ptf-check {
+    position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid var(--line-solid);
+    background: var(--card-bg);
+    display: flex; align-items: center; justify-content: center;
+    color: transparent;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+  }
+  .ptf-row.is-picked .ptf-check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-button);
+  }
+  .ptf-check svg { display: block; }
+  .ptf-empty { padding: 40px 12px; font-size: 13px; color: var(--text-subtle); text-align: center; }
+
+  .pt-env-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 24px; border-top: 1px solid var(--line); flex: 0 0 auto; }
+  .pt-env-count { font-size: 12px; color: var(--text-subtle); }
+  .pt-env-foot-actions { display: flex; align-items: center; gap: 14px; }
+  .pt-env-confirm:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+  .pt-env-clear {
+    background: none; border: 0; font: inherit; font-size: 12px; color: var(--text-subtle);
+    text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+  }
+  .pt-env-clear:hover { color: var(--text-body); }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-env-overlay, .pt-env-frame, .pt-env-frame img, .pt-env-frame video,
+    .pt-env-search-wrap, .pt-env-search-wrap input.pt-env-search { transition: none !important; }
+    .pt-env-frame { opacity: 1; transform: none; }
+    .pt-env-frame img, .pt-env-frame video { opacity: 1; filter: none; }
+  }
+
+  /* --- Skills overlay (#ptSkillsOverlay) — the searchable/filterable
+     catalog behind the hat's new "See all skills" text link. Head
+     chrome (title/count/Back) is a literal reuse of the env overlay's
+     own .pt-env-head/.pt-env-title-wrap/.pt-env-title/.pt-env-count-
+     tag/.pt-editor-back classes (see the markup) — only the toolbar
+     (search + filter chips) and card grid below are new, ported from
+     Tabula's own skills-toolbar/filter-pill/skill-card anatomy
+     (/TINKER/tabula/index.html), retinted onto this shell's tokens. */
+  .pt-skills-toolbar {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 14px 24px 0; flex: 0 0 auto;
+  }
+  .pt-skills-search {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 13px;
+    border: 1px solid var(--line-solid);
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--text-subtle);
+    cursor: text;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .pt-skills-search:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .pt-skills-search-icon { width: 15px; height: 15px; flex: 0 0 auto; display: flex; }
+  .pt-skills-search-icon svg { width: 100%; height: 100%; display: block; }
+  .pt-skills-search-input {
+    flex: 1; min-width: 0; border: 0; background: transparent; outline: 0;
+    font-family: var(--font-sans); font-size: 13.5px; letter-spacing: -0.05px;
+    color: var(--text-strong);
+  }
+  .pt-skills-search-input::placeholder { color: var(--text-subtle); }
+  .pt-skills-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pt-skills-filter {
+    display: inline-flex; align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--card-bg);
+    border: 1px solid var(--line-solid);
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    color: var(--text-body);
+    letter-spacing: -0.05px;
+    cursor: pointer; white-space: nowrap;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .pt-skills-filter:hover { border-color: var(--text-strong); color: var(--text-strong); }
+  .pt-skills-filter.is-active { background: var(--text-strong); border-color: var(--text-strong); color: var(--text-button); }
+  .pt-skills-body { flex: 1; overflow-y: auto; padding: 16px 24px 28px; }
+  .pt-skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+  }
+  .pt-skill-card {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 15px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card-bg);
+    text-align: left; cursor: pointer;
+    opacity: 0; transform: translateY(6px);
+    transition:
+      opacity 320ms cubic-bezier(0.16,1,0.3,1), transform 320ms cubic-bezier(0.16,1,0.3,1),
+      box-shadow 220ms ease, border-color 200ms ease;
+  }
+  .pt-skill-card.is-in { opacity: 1; transform: translateY(0); }
+  .pt-skill-card.is-filtered-out { display: none; }
+  .pt-skill-card:hover { border-color: rgba(15,23,42,0.18); box-shadow: 0 10px 24px rgba(15,23,42,0.12); }
+  body[data-theme="dark"] .pt-skill-card:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 10px 24px rgba(0,0,0,0.4); }
+  .pt-skill-head { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+  /* v1 icon-tile formula, ported from Tabula's own .skill-quiet/
+     .card-compact .skill-icon-tile: white square + accent-blue glyph
+     (Bryan's tabula ruling — every icon tile is white with a blue
+     glyph, not the tinted-per-card alternation an earlier tabula
+     iteration used) so it reads correctly against this shell's own
+     --card-bg too, light or dark. */
+  .pt-skill-icon {
+    width: 34px; height: 34px; flex: 0 0 auto;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    background: #ffffff;
+    border: 0.5px solid var(--line-solid);
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+    color: var(--accent);
+  }
+  body[data-theme="dark"] .pt-skill-icon { border-color: rgba(255,255,255,0.16); box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+  .pt-skill-icon svg { width: 17px; height: 17px; display: block; }
+  .pt-skill-head-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+  .pt-skill-tags { display: flex; flex-wrap: nowrap; overflow: hidden; gap: 5px; }
+  /* Fira Code chip tag — ported from Tabula's .skill-card .chip. */
+  .pt-skill-tag {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px; font-weight: 400; letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    background: rgba(15,23,42,0.035);
+    border: 0.5px solid var(--line-solid);
+    border-radius: 5px;
+    padding: 2px 6px 1.5px;
+    white-space: nowrap;
+  }
+  body[data-theme="dark"] .pt-skill-tag { background: rgba(255,255,255,0.045); }
+  .pt-skill-title {
+    display: flex; align-items: center;
+    font-family: 'Inter', var(--font-sans);
+    font-size: 14.5px; font-weight: 600; letter-spacing: -0.1px;
+    color: var(--text-strong);
+  }
+  .pt-skill-desc { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-subtle); }
+  .pt-skills-empty {
+    display: none;
+    padding: 40px 0; text-align: center;
+    font-size: 13px; color: var(--text-subtle);
+  }
+  .pt-skills-empty.is-shown { display: block; }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-skills-overlay, .pt-skill-card { transition: none !important; }
+    .pt-skill-card { opacity: 1; transform: none; }
+  }
+
+  /* --- Concept sheet header --- */
+  /* P12 (9/1): the sheet's own deliberate max content width — 1240px
+     centered with 40px side padding, replacing the old ad-hoc 1400px/
+     32px pair. Every section below left-aligns to this same edge. */
+  /* Tail padding (was a flat 64px) so the LAST section — Selects, and
+     a short one — can still scroll to the top of the canvas when the
+     rail nav sends you there. Without it the scroller runs out first
+     and the section parks halfway down, which then reads as the wrong
+     rail item being lit. */
+  /* AB — the sheet takes Studio's frame: #ptMediaTopbar (§Y) is the
+     bar (title + Package), so the view itself carries no more padding
+     or centering of its own — .pt-sheet-body's four tracks (rail,
+     drawer, stage, History) reach the canvas column's true edges, and
+     the STAGE column (.pt-sheet-main) is the one that insets its own
+     content. See .pt-sheet-body below for the frame. */
+  .painter-sheet-view { padding: 0; max-width: none; margin: 0; }
+  /* P12 — "a hairline separating the top from the banners": one
+     full-width rule under the header actions, 32px above the first
+     concept section. */
+  .pt-sheet-hr {
+    /* 9/10 (Bryan: "looks darker than the other hairlines") — the same
+       half-pixel of the same token every other rule on the sheet is. */
+    height: 0.5px; background: var(--line-solid, rgba(15, 23, 42, 0.10)); flex-shrink: 0;
+    /* 9/10 (Bryan: "the hairline below the design and copy buttons
+       should run full width"): edge to edge across the whole canvas
+       pane, not just the 1160px column — the rule overshoots the sheet
+       view by a viewport either side and #canvas (overflow-x: hidden)
+       trims it at the pane's own edges. */
+    margin: 0 -100vw 32px;
+  }
+  /* 9/10 — the eyebrow (campaign · launch · N possible units) is
+     gone from the sheet (Bryan: "remove this text"). The markup stays
+     so syncUnitCount's counter keeps its target; nothing shows. */
+  .pt-sheet-eyebrow { display: none !important; }
+  .pt-sheet-eyebrow-was {
+    display: block;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11.5px; letter-spacing: 0.02em;
+    color: var(--text-subtle); margin-bottom: 8px; /* 8px floor, was 6 */
+  }
+  /* How many distinct units the current settings COULD produce, as
+     against the nine actually laid out — the headroom the menus are
+     buying you. Reads as metadata, so it stays in the eyebrow's voice
+     and only the number itself takes the accent. */
+  .pt-eyebrow-sep { margin: 0 6px; opacity: 0.55; }
+  .pt-unit-count { color: var(--text-subtle); }
+  .pt-unit-count-num {
+    display: inline-block;
+    color: var(--accent); font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  /* A quick lift on change — enough to catch the eye mid-menu without
+     becoming a thing you wait for. Keyed off a class the JS re-arms so
+     repeated changes each get their own beat. */
+  .pt-unit-count-num.is-bumped { animation: pt-count-bump 420ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes pt-count-bump {
+    0%   { transform: translateY(0) scale(1); }
+    35%  { transform: translateY(-2px) scale(1.14); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-unit-count-num.is-bumped { animation: none; }
+  }
+  .pt-sheet-title { margin: 0; font-size: 26px; font-weight: 700; color: var(--text-strong); letter-spacing: -0.01em; }
+  /* W.1 (9/10) — the title switcher (.pt-board-switch/-pop/-glyph) is
+     gone; boards switch from the HISTORY rail now (~L23978). The
+     chat trail's own link below is unchanged. */
+  .pt-msg-board-link {
+    padding: 0; margin: 0; border: 0; background: none; cursor: pointer;
+    font: inherit; color: var(--accent); font-weight: 600; text-decoration: none;
+  }
+  .pt-msg-board-link:hover { text-decoration: underline; }
+  .pt-sheet-actions { position: relative; }
+  .pt-styleguide-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; margin-top: 4px;
+    background: var(--panel-bg-general);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-body);
+    cursor: pointer;
+  }
+  .pt-styleguide-chip:hover { border-color: rgba(15,23,42,0.22); }
+  .pt-styleguide-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg,#C29049,#966C2F); flex-shrink: 0; }
+  .pt-styleguide-pop {
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 40;
+    width: 288px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.16);
+    padding: 8px;
+    opacity: 0; transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-styleguide-pop.is-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  /* ── Variety menus (Templates / Colorway / Swap image). They borrow
+     .pt-styleguide-pop's shell so the header's popovers are one family,
+     and their bodies borrow Studio's own swatch and thumb components
+     (.pt-editor-swatch / .pt-editor-swap-thumb) so a colorway looks
+     the same wherever it is picked. ── */
+  /* Groups read by LABEL AND RULE, not by enclosure. The enclosure
+     version hung its label above the pill, and the row scrolls
+     horizontally — which forces vertical clipping too, so every label
+     was being cut in half. Setting them inline on the chips' own axis
+     removes the thing that overflowed rather than papering over it,
+     and drops a ring around each set that made three ordinary chips
+     look like a heavier object than they are. */
+  /* Each set is a column: its label on a row of its own, flush left
+     with the first chip beneath it. Label-to-chips gap is the file's
+     8px floor — flex gap, not a margin, so it can't drift out of
+     rhythm the way a stacked margin pair does. */
+  .pt-tool-group { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  /* More air between chips in a set than the old 6px — with the count
+     badge no longer a pill fighting them for elbow room, the row can
+     afford it without growing the axis past what H's width budget
+     allows (see the chip-count trim below, and the separator trim
+     past this group). */
+  .pt-tool-group-chips { display: flex; align-items: center; gap: 8px; }
+  .pt-tool-group-label {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-subtle);
+    white-space: nowrap;
+    padding-left: 2px; /* optical: a chip's border sits a hair left of its own text */
+  }
+  /* A hairline between sets, as a border rather than a flex item — the
+     groups are columns now, so a ::before inside one would stack above
+     its label instead of standing between two of them. Tightened from
+     14/6 to 2/0 (the flex gap on .pt-sheet-actions already opens 6px
+     ahead of the border): three bands plus a wider inter-chip gap has
+     to fit inside the canvas column at 1440 (see .pt-sheet-actions
+     below) — the hairline itself still reads as a clear break at this
+     width off the flex gap alone, it doesn't also need its own margin
+     stacked on top to do that job. */
+  .pt-tool-group + .pt-tool-group {
+    border-left: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.10));
+    padding-left: 14px; margin-left: 8px; /* 9/10: 22px of air either side of the hairline — the row has the room now */
+  }
+  /* A band that wrapped to a new row (marked by markToolbarRows) has
+     nothing to its left to be separated from. */
+  .pt-tool-group.is-row-start { border-left: 0; padding-left: 0; }
+  .pt-tool-group.pt-tool-group--production { margin-left: auto; }
+  .pt-variety-chip svg { width: 14px; height: 14px; flex-shrink: 0; }
+  /* A count used to be a filled accent pill — the loudest thing in a
+     row that's otherwise all outline chips, on every chip that has one.
+     Same demotion .pt-cta-row-count already uses for the body-copy
+     counter (a17b564): mono against the label's sans, quiet against
+     its color, structural rather than badge-shaped. No enclosure, no
+     accent — the label + the number IS the read. */
+  .pt-variety-count {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10.5px; font-weight: 500;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    margin-left: 0;
+  }
+  .pt-variety-count:empty { display: none; }
+  /* V1 (PLAN.md §V) — Sizes' own chip is a value readout, not a
+     category word, so its whole label goes mono (× not x), matching
+     the house rule for sizes everywhere else in the file; "ships"
+     stays a plain word so the number that follows it is the only
+     thing competing with the board size for attention. */
+  .pt-sizes-chip-board { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-weight: 500; }
+  .pt-sizes-chip-ships { color: var(--text-subtle); }
+  .pt-variety-pop { width: 260px; padding: 12px; }
+  .pt-variety-pop-wide { width: 360px; } /* 9/9: room for the picker's one-baseline value + name rows */
+  /* AI.1 — unused now that Templates' two-column menu has split into
+     Layouts and Style (each its own pane of the band's tray since §AT,
+     .pt-band-tray in the sheet CSS) rather than this modifier. */
+  .pt-variety-pop-cols { width: 580px; }
+  .pt-variety-pop-title {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-subtle);
+    margin-bottom: 12px;
+  }
+  .pt-variety-swatches { gap: 12px; }
+  .pt-variety-imgs { gap: 8px; max-height: 264px; overflow-y: auto; }
+  .pt-variety-imgs::-webkit-scrollbar { width: 6px; }
+  .pt-variety-imgs::-webkit-scrollbar-thumb { background: var(--line-solid); border-radius: 6px; }
+  /* Layout rows — a name plus the same mini diagram the settings pill
+     uses, ticked rather than switched (these are a SET, not one-of). */
+  .pt-variety-layouts { display: flex; flex-direction: column; gap: 2px; }
+  .pt-variety-row {
+    display: grid; grid-template-columns: 26px 1fr 16px;
+    align-items: center; column-gap: 10px;
+    padding: 8px; border: 0; border-radius: 8px;
+    background: transparent; color: var(--text-body);
+    font: inherit; font-size: 12.5px; text-align: left;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .pt-variety-row:hover { background: var(--hover-soft); }
+  .pt-variety-row.is-active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .pt-variety-row-icon { display: inline-flex; align-items: center; justify-content: center; color: var(--text-subtle); }
+  .pt-variety-row.is-active .pt-variety-row-icon { color: var(--accent); }
+  .pt-variety-row-icon svg { display: block; fill: currentColor; }
+  .pt-variety-row-tick { opacity: 0; color: var(--accent); display: flex; }
+  .pt-variety-row.is-active .pt-variety-row-tick { opacity: 1; }
+  .pt-variety-row-tick svg { width: 14px; height: 14px; display: block; }
+  /* A set can't go empty — the last remaining pick refuses to turn
+     off rather than leaving the sheet with nothing to deal from. */
+  .pt-variety-row.is-locked, .pt-editor-swatch.is-locked, .pt-editor-swap-thumb.is-locked { cursor: default; }
+
+  /* ── Legal: one field, because it is one line that goes on every ad
+     — nothing to pick between. ── */
+  .pt-legal-input {
+    width: 100%; resize: vertical; min-height: 62px;
+    padding: 9px 10px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--pg-bg); color: var(--text-body);
+    font: inherit; font-size: 12.5px; line-height: 1.5;
+  }
+  .pt-legal-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-legal-note { margin: 8px 2px 0; font-size: 11px; color: var(--text-subtle); }
+
+  /* ── CTA: an editable list plus the Generate switch. ── */
+  .pt-cta-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+  .pt-cta-list:empty { display: none; }
+  .pt-cta-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 6px 7px 10px; border-radius: 8px;
+    font-size: 12.5px; color: var(--text-body);
+    background: var(--hover-soft);
+  }
+  .pt-cta-row-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Body copy only (the handoff's open question: "font size and
+     character count… limit? does the text scale to fit by default?")
+     — a verdict against the
+     TIGHTEST ship size (V3, PLAN.md §V — was n/limit against only the
+     board's own size), from the size class's own headline budget
+     (bodyLimitForSize(), derived from the SIZE CLASS geometry above,
+     not a second table). Quiet by default; only turns the warning
+     color when Fixed size is picked AND the line actually breaks the
+     tightest size — Shrink to fit (the default) answers that
+     question by never needing the warning at all. nowrap: "long for
+     320×50" is longer than the old fraction ever was. */
+  .pt-cta-row-count {
+    flex-shrink: 0;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px; color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  /* omni-tokens.css carries no dedicated warning/danger token yet
+     (checked: only --omni-primitive-brand-red, also aliased as
+     --omni-brand-video) — reused here rather than a hand-picked hex,
+     flagged in the delta for whenever a real semantic warning token
+     lands upstream. */
+  .pt-cta-row-count.is-over { color: var(--omni-primitive-brand-red, #ff2c1e); }
+  .pt-cta-row-del {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    border: 0; background: transparent; color: var(--text-subtle);
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .pt-cta-row-del:hover { background: var(--card-bg); color: var(--text-strong); }
+  .pt-cta-row-del svg { width: 10px; height: 10px; display: block; }
+  .pt-cta-empty { margin: 0 2px 8px; font-size: 11px; color: var(--text-subtle); }
+  .pt-cta-add { display: flex; gap: 6px; }

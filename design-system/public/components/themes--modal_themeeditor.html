@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+  OMNI component: modal_themeeditor
+  Project: Themes
+  Note: .ch-te-overlay / .ch-te-panel — "Create your own" theme editor: name, light/dark base, accent swatch grid, custom hex, icon picker trigger
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Themes — modal_themeeditor · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/themes.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ch-te-overlay is-open" style="position:static;display:flex;opacity:1;visibility:visible;">
+      <div class="ch-te-panel" role="dialog" aria-label="Create your own theme" aria-modal="true">
+        <div class="ch-te-head">
+          <span class="ch-te-title">Create your own</span>
+          <button class="ch-te-close" type="button" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg></button>
+        </div>
+        <div class="ch-te-label">Name</div>
+        <input class="ch-te-name" type="text" maxlength="40" placeholder="My theme" value="" aria-label="Theme name">
+        <div class="ch-te-label">Base</div>
+        <div class="ch-te-seg" role="group" aria-label="Base mode">
+          <button class="ch-te-seg-btn is-active" type="button" data-base="light"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M14.5 8H13M3 8H1.5M12.6 3.4l-1.06 1.06M4.46 11.54L3.4 12.6M12.6 12.6l-1.06-1.06M4.46 4.46L3.4 3.4"/></svg><span>Light</span></button>
+          <button class="ch-te-seg-btn" type="button" data-base="dark"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 1 1 6.5 2.5a4 4 0 0 0 7 7z"/></svg><span>Dark</span></button>
+        </div>
+        <div class="ch-te-label">Accent color</div>
+        <div class="ch-te-swatches">
+          <button class="ch-te-swatch is-active" type="button" data-accent="#1858ee" style="--sw:#1858ee" aria-label="#1858ee"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#4f46e5" style="--sw:#4f46e5" aria-label="#4f46e5"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#8b5cf6" style="--sw:#8b5cf6" aria-label="#8b5cf6"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#0de0e1" style="--sw:#0de0e1" aria-label="#0de0e1"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#14b8a6" style="--sw:#14b8a6" aria-label="#14b8a6"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#16a34a" style="--sw:#16a34a" aria-label="#16a34a"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#f59e0b" style="--sw:#f59e0b" aria-label="#f59e0b"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#f97316" style="--sw:#f97316" aria-label="#f97316"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#f43f5e" style="--sw:#f43f5e" aria-label="#f43f5e"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#ec4899" style="--sw:#ec4899" aria-label="#ec4899"></button>
+          <button class="ch-te-swatch" type="button" data-accent="#64748b" style="--sw:#64748b" aria-label="#64748b"></button>
+        </div>
+        <div class="ch-te-custom">
+          <label class="ch-te-picker"><span class="ch-te-picker-dot" style="background:#1858ee"></span><span class="ch-te-picker-txt">Custom</span><input class="ch-te-color" type="color" value="#1858ee" aria-label="Custom accent color"></label>
+          <input class="ch-te-hex" type="text" spellcheck="false" maxlength="7" value="#1858ee" aria-label="Accent hex value">
+        </div>
+        <div class="ch-te-label">Icon</div>
+        <button class="ch-te-iconbtn" type="button" data-x="pick-icon">
+          <i class="bx bx-palette"></i>
+          <span class="ch-te-iconbtn-name">palette</span>
+          <span class="ch-te-iconbtn-chev" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3l3 3-3 3"/></svg></span>
+        </button>
+        <div class="ch-te-foot">
+          <button class="ch-te-reset" type="button" data-x="reset">Reset to default</button>
+          <button class="ch-te-done" type="button" data-x="save">Save theme</button>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

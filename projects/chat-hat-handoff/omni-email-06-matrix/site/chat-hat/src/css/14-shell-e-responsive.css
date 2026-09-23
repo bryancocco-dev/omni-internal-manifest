@@ -1,0 +1,1814 @@
+  /* ---------- Canvas brief stack — Swiss-style boards ----------
+     Default width is fluid: fills the canvas area minus a 32px gutter,
+     capped at 1180px so line-lengths stay readable on ultra-wide screens.
+     User drag-resize still wins via inline --stack-w. */
+  .brief-stack {
+    position: relative;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: var(--stack-w, min(calc(100% - 32px), 1180px));
+    max-width: 100%;
+    margin: 0 auto;
+    font-family: var(--font-sans);
+    color: var(--text-strong);
+  }
+  .stack-resizer {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 16px;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 4;
+  }
+  .stack-resizer.left  { left: 24px; }
+  .stack-resizer.right { right: 24px; }
+  .brief-board {
+    background: var(--card-bg);
+    border-radius: 0;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: brief-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .brief-stack > .brief-board:nth-of-type(1) { animation-delay: 80ms; }
+  .brief-stack > .brief-board:nth-of-type(2) { animation-delay: 200ms; }
+  .brief-stack > .brief-board:nth-of-type(3) { animation-delay: 320ms; }
+  .brief-stack > .brief-board:nth-of-type(4) { animation-delay: 440ms; }
+  .brief-stack > .brief-board:nth-of-type(5) { animation-delay: 560ms; }
+  .brief-stack > .brief-board:nth-of-type(6) { animation-delay: 680ms; }
+  .brief-stack > .brief-board:nth-of-type(7) { animation-delay: 800ms; }
+  .brief-stack > .brief-board:nth-of-type(8) { animation-delay: 920ms; }
+  .brief-stack > .brief-board:nth-of-type(9) { animation-delay: 1040ms; }
+  .brief-stack > .brief-board:nth-of-type(10) { animation-delay: 1160ms; }
+  .brief-stack > .brief-board:nth-of-type(11) { animation-delay: 1280ms; }
+  .brief-stack > .brief-board:nth-of-type(12) { animation-delay: 1400ms; }
+  .brief-stack > .brief-board:nth-of-type(13) { animation-delay: 1520ms; }
+  .brief-stack > .brief-board:nth-of-type(14) { animation-delay: 1640ms; }
+
+  .terr-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  /* Creative Territories */
+  .terr-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-subtle);
+    margin: 0 0 14px;
+  }
+  .terr-header { margin: 32px 0 0; }
+  .terr-header .sec-h2 {
+    font-weight: 300;
+    letter-spacing: -1px;
+  }
+  .brief-board[data-section^="territory-"] > .sec-body > .aud-hero {
+    aspect-ratio: 16 / 9;
+  }
+  .terr-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+    margin-top: 16px;
+  }
+  .terr-col-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .terr-col-left > figure {
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--line);
+  }
+  .terr-col-right {
+    display: flex;
+  }
+  .terr-col-right > figure {
+    margin: 0;
+    width: 100%;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .terr-grid figure img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Root Cause Analysis — Swiss callout with geometric anchor */
+  .rca-callout {
+    background: var(--accent-soft);
+    padding: 32px 40px;
+    margin: 8px -48px 24px;
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    column-gap: 32px;
+    align-items: start;
+  }
+  .rca-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .rca-callout h3 {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-strong);
+    margin: 0 0 16px;
+    letter-spacing: -0.2px;
+  }
+  .rca-callout p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-body);
+    margin: 0;
+  }
+  .rca-callout .datum { color: var(--text-strong); font-weight: 600; }
+
+  /* Core Insight — lede statement + body */
+  .ci-statement {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 1.55;
+    font-weight: 400;
+    color: var(--text-strong);
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  @keyframes brief-rise {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brief-board { animation: none; }
+  }
+  .full-bleed {
+    margin: 32px -48px -48px;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--line);
+  }
+  .full-bleed img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .brief-stack > .brief-board:first-child { padding-top: 40px; }
+
+  /* Cover board specifics */
+  .brief-meta {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-strong);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brief-meta .col p { margin: 0; }
+  .brief-meta .col .lbl { color: var(--text-subtle); }
+  .brief-meta .date { white-space: nowrap; }
+  /* Redacted text — solid bar in the body text color so it reads as
+     marker-blacked-out classified copy. Theme-matched so it flips
+     correctly in dark mode. The actual text stays in the DOM (good
+     for screen readers via aria-label) but is invisible to sighted
+     users since color matches the background. */
+  .redacted {
+    background: var(--text-strong);
+    color: var(--text-strong);
+    padding: 1px 4px;
+    border-radius: 1.5px;
+    user-select: none;
+    cursor: default;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+  .brief-title {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 1.04;
+    letter-spacing: -2.4px;
+    color: var(--text-strong);
+    margin: 32px 0 32px;
+    font-feature-settings: "kern" 1, "liga" 1, "ss01" 1;
+    text-rendering: geometricPrecision;
+  }
+  .brief-cover {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+    aspect-ratio: 1 / 1;
+    background: #1b1d21;
+  }
+  /* Canvas_2 cover gets a cinematic 16:9 aspect ratio — keeps the
+     canvas_1 1:1 brief cover untouched. */
+  .table-view .brief-cover { aspect-ratio: 16 / 9; }
+  .brief-cover > img.cover,
+  .brief-cover > video.cover {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Premium play/pause toggle — sits in the bottom-left of the cover
+     video, frosted-glass background via backdrop-filter, refined icon
+     morph between play and pause states. Hidden by default while the
+     video plays uninterrupted; fades in on cover hover or whenever the
+     video is paused (so the user can always resume). */
+  .video-toggle {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 4;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0.5px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.34);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(20px) saturate(180%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0;
+    transform: scale(0.88) translateY(4px);
+    transition:
+      opacity 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      background 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.22),
+      0 6px 18px rgba(0, 0, 0, 0.20);
+  }
+  .brief-cover:hover .video-toggle,
+  .video-toggle:focus-visible,
+  .video-toggle.is-paused {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  .video-toggle:hover {
+    background: rgba(0, 0, 0, 0.48);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.26),
+      0 10px 24px rgba(0, 0, 0, 0.26);
+  }
+  .video-toggle:active { transform: scale(0.94) translateY(0); }
+  .video-toggle:focus,
+  .video-toggle:focus-visible { outline: none; }
+  .video-toggle-icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+  }
+  .vt-icon {
+    position: absolute;
+    inset: 0;
+    width: 14px;
+    height: 14px;
+    display: block;
+    transition:
+      opacity 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .video-toggle .vt-icon--play { opacity: 0; transform: scale(0.6); }
+  .video-toggle.is-paused .vt-icon--pause { opacity: 0; transform: scale(0.6); }
+  .video-toggle.is-paused .vt-icon--play  { opacity: 1; transform: scale(1); }
+  .brief-omni-badge {
+    position: absolute;
+    right: 32px;
+    bottom: -56px;
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    opacity: 0;
+    transform: scale(0.7);
+    transform-origin: center;
+    transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1) 700ms,
+                transform 1400ms cubic-bezier(0.34, 1.56, 0.64, 1) 700ms;
+  }
+  .brief-cover > img.cover.in-view ~ .brief-omni-badge,
+  .brief-cover > video.cover.in-view ~ .brief-omni-badge,
+  .brief-cover:has(.cover.in-view) .brief-omni-badge {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brief-omni-badge {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+  .brief-omni-badge img {
+    width: 56px;
+    height: auto;
+    display: block;
+    filter: brightness(0) invert(1);
+  }
+  body[data-theme="dark"] .brief-omni-badge img {
+    filter: brightness(0);
+  }
+  /* Connect cover + assignment summary as a single visual surface */
+  .brief-stack > [data-section="cover"] {
+    padding-bottom: 24px;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+  }
+  /* Canvas_2 cover gets the same treatment so the OMNI+ badge extends
+     below the cover's bottom edge instead of being clipped by the
+     default .brief-board { overflow: hidden }. padding-bottom matches
+     the 48px left/right padding so the white space below the video
+     reads as a uniform frame around the cover. */
+  .table-view > .brief-board {
+    padding-bottom: 48px;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+  }
+  .brief-stack > [data-section="assignment-summary"] {
+    margin-top: -24px;
+    padding-top: 32px;
+    position: relative;
+    z-index: 1;
+  }
+  .brief-omni-badge img {
+    width: 46px; height: auto; display: block;
+    filter: brightness(0) invert(1);
+  }
+
+  /* Text-only board layout */
+  .sec-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .sec-h2 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    color: var(--text-strong);
+    margin: 0;
+  }
+  .sec-prose {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-body);
+  }
+  .sec-prose > p { margin: 0 0 1em; }
+  .sec-prose > p:last-child { margin-bottom: 0; }
+
+  /* Editorial typography enhancements */
+  .datum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+    font-weight: 500;
+    color: var(--text-strong);
+    letter-spacing: -0.01em;
+  }
+  /* Swiss-design sources lockup */
+  .sources-lockup {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    column-gap: 24px;
+    align-items: start;
+    margin-top: 24px;
+  }
+  .sources-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-subtle);
+    padding-top: 4px;
+  }
+  .sources-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .sources-list > li {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    column-gap: 12px;
+    align-items: baseline;
+    padding: 4px 0;
+  }
+  .sources-n {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .sources-text {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text-subtle);
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  .sources-text .datum { font-weight: inherit; color: inherit; }
+  .sec-body > .sec-prose:first-of-type > p:first-child {
+    font-size: 20px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--text-strong);
+    letter-spacing: -0.2px;
+    padding: 4px 0 8px 0;
+    margin: 0;
+    position: relative;
+  }
+  .sec-body > .sec-prose:first-of-type > p:not(:first-child) {
+    margin-top: 24px;
+  }
+
+  /* Sub-block (KPIs, observations) — small heading + body */
+  .sub-block { }
+  .sub-block + .sub-block {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    margin-top: 4px;
+  }
+  .sub-block h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.3;
+    color: var(--text-strong);
+    margin: 0 0 12px;
+  }
+  .sub-block p {
+    font-size: 15px; line-height: 1.65;
+    margin: 0; color: var(--text-body);
+  }
+
+  /* Target Audiences component — persona panel */
+  .aud-hero {
+    margin: 16px 0 8px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--line);
+  }
+  .aud-hero img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .aud-image-wide {
+    margin: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--line);
+  }
+  .aud-image-wide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .cc-mid-image {
+    margin: 32px 0;
+    width: 100%;
+  }
+  .cc-mid-image img { display: block; width: 100%; height: auto; }
+  .aud-image-pair {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: 32px;
+    align-items: stretch;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  .aud-image-pair figure {
+    margin: 0;
+    overflow: hidden;
+    background: var(--line);
+    height: 100%;
+  }
+  .aud-image-pair figure img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .aud-image-pair figure:nth-child(1) { aspect-ratio: 4 / 3; }
+  .aud-persona-name {
+    font-family: var(--font-sans);
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+    color: var(--text-strong);
+    margin: 24px 0 40px;
+  }
+  .aud-section {
+    padding-top: 32px;
+    padding-bottom: 8px;
+    margin-top: 0;
+    border-top: 1px solid var(--line);
+  }
+  .aud-prose {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-body);
+    margin: 0;
+  }
+  .aud-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: aud-li;
+  }
+  .aud-list > li {
+    counter-increment: aud-li;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    column-gap: 16px;
+    align-items: baseline;
+    padding: 14px 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-body);
+  }
+  .aud-list > li::before {
+    content: counter(aud-li, decimal-leading-zero);
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    padding-top: 3px;
+  }
+  .aud-persona-body {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    column-gap: 56px;
+    align-items: start;
+  }
+  .aud-persona-body > p {
+    font-size: 20px;
+    line-height: 1.6;
+    font-weight: 400;
+    color: var(--text-strong);
+    letter-spacing: -0.2px;
+    margin: 0;
+  }
+  .aud-facts {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 20px;
+    row-gap: 16px;
+  }
+  .aud-facts dt {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    padding-top: 4px;
+  }
+  .aud-facts dd {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-body);
+  }
+  .aud-section-title {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-strong);
+    margin: 0 0 28px;
+  }
+  .aud-quad {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+    row-gap: 44px;
+  }
+  .aud-quad-item h4,
+  .aud-block h4 {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-strong);
+    margin: 0 0 16px;
+    letter-spacing: -0.1px;
+  }
+  .aud-quad-item p,
+  .aud-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-body);
+    margin: 0;
+  }
+  .aud-day { display: flex; flex-direction: column; gap: 28px; }
+  .aud-day-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    column-gap: 16px;
+    align-items: baseline;
+  }
+  .aud-day-row .time {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  .aud-day-row p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-body);
+  }
+  .aud-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 32px;
+    align-items: start;
+  }
+  .aud-quotes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    column-gap: 40px;
+    row-gap: 28px;
+  }
+  .aud-quote {
+    background: transparent;
+    border-left: 1px solid var(--line);
+    padding: 6px 0 6px 20px;
+  }
+  .aud-quote p {
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text-body);
+    line-height: 1.7;
+    margin: 0;
+    letter-spacing: 0;
+  }
+
+  /* Numbered observations list */
+  .observations {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .observations > li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    column-gap: 16px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .observations > li:last-child { border-bottom: 0; }
+  .observations > li .n {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    padding-top: 4px;
+  }
+  .observations > li h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.35;
+    margin: 0 0 10px;
+    color: var(--text-strong);
+  }
+  .observations > li p {
+    font-size: 15px; line-height: 1.65;
+    margin: 0; color: var(--text-body);
+  }
+
+  /* Bibliography — Source Inventory (Swiss table) */
+  .bib-h {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    color: var(--text-strong);
+    margin: 0 0 24px;
+  }
+  .bib-summary {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.65;
+    font-weight: 400;
+    color: var(--text-body);
+    letter-spacing: 0;
+    margin: 0 0 32px;
+    max-width: none;
+  }
+  .bib-table-wrap { overflow-x: auto; }
+  .bib-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+  .bib-table thead th {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 8.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-subtle);
+    text-align: left;
+    padding: 0 14px 10px 0;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+  .bib-table thead th:last-child { padding-right: 0; }
+  .bib-table tbody td {
+    padding: 12px 14px 12px 0;
+    border-bottom: 1px solid var(--bib-row-line);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-body);
+    vertical-align: top;
+  }
+  .bib-table tbody td:last-child { padding-right: 0; }
+  .bib-table tbody tr:last-child td { border-bottom: 0; }
+  .bib-table tbody tr { transition: background 160ms ease; }
+  .bib-table tbody tr:hover { background: var(--hover-tint); }
+  .bib-n {
+    width: 32px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    color: var(--text-subtle);
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    padding-top: 14px !important;
+  }
+  .bib-source {
+    width: 30%;
+    min-width: 240px;
+  }
+  .bib-source a {
+    color: var(--accent);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+    transition: opacity 200ms ease;
+  }
+  .bib-source a:hover {
+    opacity: 0.72;
+  }
+  .bib-tag,
+  .bib-rel {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-subtle);
+    white-space: nowrap;
+    padding-top: 14px !important;
+  }
+  .bib-tag { min-width: 64px; }
+  .bib-rel { min-width: 76px; }
+  .bib-rel-pip { gap: 6px; }
+  .bib-rel-pip::before {
+    width: 4px;
+    height: 4px;
+  }
+  .bib-tag { width: 9%; min-width: 80px; }
+  .bib-rel { width: 11%; min-width: 96px; }
+  .bib-rel-pip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bib-rel-pip::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .bib-rel.critical .bib-rel-pip { color: #d54343; }
+  .bib-rel.high     .bib-rel-pip { color: var(--accent); }
+  .bib-rel.medium   .bib-rel-pip { color: var(--text-subtle); }
+  .bib-rel-pip { color: var(--text-body); }
+  .bib-coverage {
+    color: var(--text-subtle);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .bib-coverage .datum { color: var(--text-strong); font-weight: 500; }
+  /* Bibliography finale — Swiss poster panel (inset, framed) */
+  .bib-finale-tagline {
+    margin: 0;
+    padding: 48px;
+    background-color: var(--accent);
+    color: #ffffff;
+    aspect-ratio: 5 / 6;
+    max-height: 880px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    position: relative;
+  }
+  .bib-finale-tagline::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    background-repeat: repeat;
+    mix-blend-mode: overlay;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bib-finale-top,
+  .bib-finale-shape,
+  .bib-finale-meta {
+    position: relative;
+    z-index: 2;
+  }
+  .bib-finale-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+  }
+  .bib-finale-mark {
+    width: 84px;
+    height: auto;
+    display: block;
+    filter: brightness(0) invert(1);
+    flex-shrink: 0;
+  }
+  body[data-theme="dark"] .bib-finale-mark {
+    filter: brightness(0);
+  }
+  body[data-theme="dark"] .bib-finale-eyebrow {
+    color: rgba(14, 15, 16, 0.78);
+  }
+  body[data-theme="dark"] .bib-finale-num {
+    background: #0e0f10;
+  }
+  body[data-theme="dark"] .bib-finale-col p {
+    color: rgba(14, 15, 16, 0.88);
+  }
+  body[data-theme="dark"] .bib-finale-top {
+    border-bottom-color: rgba(14, 15, 16, 0.3);
+  }
+  body[data-theme="dark"] .bib-finale-meta {
+    border-top-color: rgba(14, 15, 16, 0.3);
+  }
+  .bib-finale-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    font-variant-numeric: tabular-nums;
+    align-self: center;
+    text-align: right;
+  }
+  .bib-finale-shape {
+    position: relative;
+    width: 58%;
+    max-width: 460px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    align-self: center;
+  }
+  .bib-finale-shape-layer {
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    -webkit-mask-image: url('bib-shape.png');
+            mask-image: url('bib-shape.png');
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    will-change: opacity, filter;
+  }
+  .bib-finale-shape-layer[data-layer="b"] {
+    opacity: 0;
+  }
+  body[data-theme="dark"] .bib-finale-shape-layer {
+    background: #0e0f10;
+  }
+  .bib-finale-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.32);
+  }
+  .bib-finale-col {
+    display: grid;
+    grid-template-columns: 8px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .bib-finale-num {
+    width: 8px;
+    height: 8px;
+    background: #ffffff;
+    display: block;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .bib-finale-col p {
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    letter-spacing: 0;
+  }
+  /* Reveal cascade — top row → shape → meta columns */
+  .bib-finale-top,
+  .bib-finale-shape,
+  .bib-finale-meta {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1300ms cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bib-finale-top   { transition-delay: 0ms;   }
+  .bib-finale-shape {
+    transition-delay: 400ms;
+    transition-duration: 1500ms;
+    filter: blur(24px);
+  }
+  .bib-finale-meta  { transition-delay: 1100ms; }
+  .bib-finale-tagline.in-view .bib-finale-top,
+  .bib-finale-tagline.in-view .bib-finale-shape,
+  .bib-finale-tagline.in-view .bib-finale-meta {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  .bib-finale-tagline.in-view .bib-finale-shape {
+    animation: bib-shape-spin 150s linear 2200ms infinite;
+  }
+  @keyframes bib-shape-spin {
+    from { transform: translateY(0) rotate(0deg); }
+    to   { transform: translateY(0) rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bib-finale-top,
+    .bib-finale-shape,
+    .bib-finale-meta {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
+  }
+
+  /* Chapter nav — pill at canvas bottom, vertical lockup */
+  .chapter-nav {
+    position: fixed;
+    bottom: 78px;
+    right: 32px;
+    z-index: 30;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: var(--canvas-header-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px var(--shadow-card);
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(10px);
+    pointer-events: none;
+    transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chapter-nav.visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    pointer-events: auto;
+  }
+  .chapter-nav-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 0;
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+    position: relative;
+    transition: background 220ms ease, color 220ms ease, transform 200ms ease;
+  }
+  .chapter-nav-btn:hover:not(:disabled),
+  .chapter-nav-btn.lit:not(:disabled) {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.08);
+  }
+  body[data-theme="dark"] .chapter-nav-btn:hover:not(:disabled),
+  body[data-theme="dark"] .chapter-nav-btn.lit:not(:disabled) {
+    background: rgba(13, 224, 225, 0.10);
+  }
+  .chapter-nav-btn:active:not(:disabled) { transform: scale(0.94); }
+  .chapter-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .chapter-nav-btn svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+  .chapter-nav-meta {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    color: var(--text-body);
+    line-height: 1.1;
+  }
+  .chapter-nav-current { font-weight: 600; color: var(--text-body); }
+  .chapter-nav-sep { color: var(--text-subtle); }
+  .chapter-nav-total { color: var(--text-subtle); }
+  .chapter-nav-name { display: none; }
+
+  /* footer — flex with wrap so links naturally re-flow at narrower widths;
+     row height grows automatically rather than overflowing a fixed 52px slot */
+  .footer {
+    background: var(--pg-bg);
+    border-top: 0.5px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 24px;
+    row-gap: 8px;
+    padding: 14px 24px;
+    min-height: 52px;
+    color: var(--text-subtle);
+    font-size: 11px;
+    letter-spacing: 0.01em;
+  }
+  .footer .copy { flex: 0 0 auto; }
+  .footer .omni-logo { flex: 0 0 auto; margin: 0 auto; }
+  .footer .links {
+    flex: 0 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 18px;
+    row-gap: 4px;
+    justify-content: flex-end;
+  }
+  .footer .links a {
+    color: var(--text-subtle);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .footer .links a:hover { color: var(--text-body); }
+
+  /* Footer at narrow widths: stack centered for legibility */
+  @media (max-width: 900px) {
+    .footer {
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px;
+    }
+    .footer .copy,
+    .footer .omni-logo,
+    .footer .links { justify-self: center; margin: 0; }
+    .footer .links { justify-content: center; column-gap: 16px; }
+  }
+
+  /* small icons */
+  .ic { display: inline-block; }
+
+  /* Chat dialogue cycle — messages animate in/out as a looping conversation */
+  .msg:not(:first-of-type), .thinking {
+    display: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .msg.shown, .thinking.shown { display: flex; }
+  .msg.shown.visible, .thinking.shown.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .msg.shown.fading, .thinking.shown.fading {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .msg:not(:first-of-type), .thinking {
+      display: flex !important;
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Font face system — Inter by default, Proxima Nova when toggled */
+  :root {
+    --font-sans: 'Inter', 'Helvetica Neue', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+  }
+  body[data-font="proxima"] {
+    --font-sans: 'Proxima Nova', 'Inter', 'Helvetica Neue', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+
+  /* Right-side images reveal as they scroll into view */
+  .reveal-img {
+    opacity: 0;
+    transform: translateY(40px) scale(1.06);
+    filter: blur(18px);
+    transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+                filter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform, filter;
+  }
+  .reveal-img.in-view {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-img,
+    .reveal-img.in-view {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
+  }
+
+  /* Settings popover */
+  .settings-panel {
+    position: fixed;
+    bottom: 64px;
+    left: 96px;
+    width: 260px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px var(--shadow-card),
+                0 4px 12px var(--shadow-card);
+    padding: 16px;
+    z-index: 60;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: opacity 200ms ease,
+                transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .settings-panel.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .settings-header {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-subtle);
+    margin-bottom: 14px;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .settings-label {
+    font-size: 13px;
+    color: var(--text-body);
+    font-weight: 500;
+  }
+  .settings-toggle {
+    display: inline-flex;
+    background: var(--panel-bg-3);
+    border-radius: 8px;
+    padding: 2px;
+  }
+  .settings-opt {
+    border: 0;
+    background: transparent;
+    color: var(--text-subtle);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 200ms ease, color 200ms ease;
+    font-family: inherit;
+  }
+  .settings-opt.active {
+    background: var(--card-bg);
+    color: var(--text-body);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ============================================================
+     RESPONSIVE — three tiers
+       ≤ 1100px  Tablet landscape: chat panel folds away
+       ≤ 900px   Tablet portrait: rail thins, type scales down
+       ≤ 640px   Mobile: simplified chrome, single-column boards
+     ============================================================ */
+
+  /* ---- MID-DESKTOP TIGHTENING (1101–1380px) ----
+     Chat default narrows so the brief stack keeps a comfortable line length.
+     User can still drag wider via the splitter. */
+  @media (max-width: 1380px) and (min-width: 1101px) {
+    :root { --chat-default-w: 460px; }
+  }
+  @media (max-width: 1240px) and (min-width: 1101px) {
+    :root { --chat-default-w: 400px; }
+    .brief-board { padding: 36px; }
+    .full-bleed { margin: 28px -36px -36px; }
+    .rca-callout { margin: 8px -36px 24px; padding: 24px 28px; }
+  }
+
+  /* Panel switcher — three full-width segments that REPLACE the
+     canvas-header's bottom border. Each segment is 1/3 of the header width
+     and forms part of the divider line. Active segment is painted accent
+     and bumped to 2px; inactive segments match the regular line color so
+     the bottom edge always reads as a continuous border with one section
+     "lit". Structural, not floating. */
+  :root {
+    --canvas-header-h: 64px;
+    /* P6 review (9/1): single source of truth for every canvas-state
+       topbar (sheet header IS .canvas-header; media-mode/editor/motion
+       topbars below all read this var instead of their own literal) so
+       height parity holds across states and any future breakpoint. */
+    --pt-topbar-h: var(--canvas-header-h, 64px);
+  }
+  .panel-switch {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 5;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    gap: 0;
+    align-items: flex-end;
+    box-shadow: none;
+    pointer-events: auto;
+  }
+  .psw {
+    flex: 1;
+    align-self: flex-end;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--line);
+    color: transparent;
+    font-size: 0;
+    line-height: 0;
+    cursor: pointer;
+    position: relative;
+    transition: background 220ms ease, height 220ms ease;
+  }
+  /* Tap zone extends ~32px up into the header for comfortable tapping */
+  .psw::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: -32px;
+    bottom: 0;
+  }
+  .psw .psw-label {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .psw:hover {
+    background: var(--text-subtle);
+    height: 2px;
+  }
+  .psw.active {
+    background: var(--accent);
+    height: 2px;
+  }
+  .psw:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  /* Menu segment (mobile only) — overridden in the ≤640 block */
+  .psw-nav { display: none; opacity: 0; }
+
+  /* ---- TABLET LANDSCAPE (≤1100px) ----
+     Chat and Canvas now share a single visible column and slide between
+     each other. The two-pill switcher appears below the canvas-header. */
+  @media (max-width: 1100px) {
+    .panel-switch { display: flex; opacity: 1; }
+
+    /* Topnav declutter: hide non-essential elements; keep
+       hamburger + OMNI+ + workspace + avatar.
+       Opacity + width pair lets the universal resize-transition fade them out. */
+    .topnav .nav-icon-cell--bordered,    /* home icon */
+    .topnav .tab,                        /* all tabs (incl. active Canvas) */
+    .topnav .add-tab,
+    .topnav .me span,                    /* "Bryan" label */
+    .topnav .me svg,                     /* caret */
+    .topnav .nav-site-exp-link span {    /* "Site Experience" label — icon-only */
+      display: none;
+      opacity: 0;
+    }
+    .nav-right { padding: 0 12px; gap: 8px; }
+
+    .main {
+      grid-template-columns: var(--rail-w) 1fr;
+      grid-template-rows: minmax(0, 1fr);
+      overflow: hidden;
+      position: relative;
+    }
+    .stack-resizer { display: none; }
+
+    /* Canvas-header pinned to top of the content cell, spans full content width */
+    .main > .canvas-header { grid-column: 2; grid-row: 1; }
+
+    /* Both panels share the same grid cell as the canvas-header; transform decides who's visible */
+    .main > .chat,
+    .main > #canvas {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+      width: 100%;
+      transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+      will-change: transform;
+    }
+    /* .pt-media-mode/.pt-editor/.pt-motion are hardcoded to grid-column:4
+       (the desktop grid's canvas track) — with .main collapsed to 2
+       columns here that number no longer exists, so without this
+       override they'd fall into an unbounded IMPLICIT grid track sized
+       purely by their own content (auto), never by the viewport. Only
+       .pt-media-mode is in this project's scope to fix; pin it into the
+       same bounded column #canvas now occupies. No slide transform
+       needed — it's a static full-cover overlay, not part of the
+       chat/canvas toggle. */
+    .main > .pt-media-mode {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Chat shares the column with the overlapping canvas-header at tablet/mobile,
+       so its scrollable stream gets extra top padding to clear the header. */
+    .chat-stream { padding-top: calc(var(--canvas-header-h) + 16px); }
+    /* Default: canvas in view, chat parked just off-screen to the left */
+    .chat   { transform: translateX(-101%); }
+    #canvas { transform: translateX(0); }
+    /* When chat is selected: chat slides in, canvas slides out to the right */
+    .main.show-chat .chat   { transform: translateX(0); }
+    .main.show-chat #canvas { transform: translateX(101%); }
+
+    .brief-stack { padding: 0 24px; }
+    .brief-board { padding: 40px; }
+    .full-bleed { margin: 32px -40px -40px; }
+    .rca-callout { margin: 8px -40px 24px; padding: 28px 36px; }
+  }
+
+  /* ---- TABLET PORTRAIT (≤900px) ----
+     Rail keeps full desktop look (vertical CANVAS title, rail-handle).
+     Brief board paddings tighten and type sizes step down. */
+  @media (max-width: 900px) {
+    .workspace { padding: 0 12px; }
+    .workspace > span { max-width: 200px; }
+
+    :root { --canvas-header-h: 56px; }
+    .canvas-header { padding: 0 20px; }
+    .canvas-header .title-wrap { max-width: 50%; }
+
+    .brief-stack { padding: 0 20px; }
+    .brief-board { padding: 32px; }
+    .brief-stack > .brief-board:first-child { padding-top: 28px; }
+    .full-bleed { margin: 28px -32px -32px; }
+    .rca-callout { margin: 8px -32px 24px; padding: 24px 32px; }
+
+    .brief-title { font-size: 48px; letter-spacing: -0.8px; margin: 24px 0 24px; }
+    .sec-h2 { font-size: 28px !important; }
+  }
+
+  /* ---- MOBILE (≤640px) ----
+     Whole rail hides; rail-panel becomes a full-viewport drawer.
+     Top nav strips down to hamburger + OMNI+ + active tab (compact) + avatar.
+     A third nav pill in the segmented switcher opens the rail drawer.
+     Brief boards stack to single column; type drops another step. */
+  @media (max-width: 640px) {
+    :root { --rail-w: 0px; }
+    .side-rail { display: none; opacity: 0; }
+    .rail-panel {
+      width: 100%;
+      left: 0;
+      top: var(--canvas-header-h, 52px);
+      transform: translateX(-101%);
+    }
+    .main.panel-open .rail-panel { transform: translateX(0); }
+    .main { grid-template-columns: 0 1fr; }
+
+    /* Top nav at mobile:
+         [cyan-circle hamburger] [OMNI+] | [Workspace ▾] | [right-side menu icon]
+       Workspace is the primary identifier; active tab hides (Menu pill below
+       indicates panel state). BC avatar hides too. */
+    .topnav .tab.active { display: none; opacity: 0; }
+    .topnav .me { display: none; opacity: 0; }
+    .topnav .nav-site-exp-link { display: none; opacity: 0; }
+
+    .omni-cell { width: auto; padding: 0 16px; }
+    .workspace {
+      padding: 0 14px;
+      flex: 1 1 0;
+      min-width: 0;
+      border-right: 0.5px solid var(--line);
+    }
+    .workspace > span { max-width: none; font-size: 13px; }
+    .nav-right { padding: 0; gap: 0; }
+
+    .nav-menu-secondary { display: inline-flex; opacity: 1; }
+
+    /* Reveal the third (nav) pill in the segmented switcher */
+    .psw-nav { display: inline-block; opacity: 1; }
+    /* Mobile pill order: Menu | Canvas | Chat (tablet keeps default Chat | Canvas) */
+    .psw[data-panel="nav"]    { order: 1; }
+    .psw[data-panel="canvas"] { order: 2; }
+    .psw[data-panel="chat"]   { order: 3; }
+
+    /* Canvas header */
+    :root { --canvas-header-h: 68px; }
+    .canvas-header { padding: 0 16px; gap: 8px; }
+    .canvas-header .title-wrap { max-width: none; flex: 1; }
+    .canvas-header .title { font-size: 13px; }
+    .canvas-header .actions { gap: 8px; }
+    .canvas-header .presence { display: none; } /* facepile hides on mobile */
+    .share-btn { padding: 0 12px; gap: 6px; font-size: 12.5px; }
+    .share-btn svg { width: 12px; height: 12px; }
+
+    /* Brief stack */
+    .brief-stack {
+      width: 100%;
+      padding: 0 12px;
+      gap: 16px;
+    }
+    .brief-board {
+      padding: 24px 20px;
+      animation: none;       /* skip cascading rise on mobile to avoid jank */
+    }
+    .brief-stack > .brief-board:first-child { padding-top: 20px; }
+    .full-bleed { margin: 20px -20px -24px; }
+    .rca-callout {
+      margin: 8px -20px 20px;
+      padding: 20px;
+      grid-template-columns: 1fr;
+      row-gap: 16px;
+    }
+    .rca-callout h3 { font-size: 18px; }
+    .rca-callout p  { font-size: 14.5px; line-height: 1.6; }
+
+    /* Type scale down */
+    .brief-title { font-size: 36px; line-height: 1.1; letter-spacing: -0.5px; margin: 20px 0; }
+    .ci-statement { font-size: 16px; padding-bottom: 16px; }
+    .terr-eyebrow { font-size: 9.5px; }
+    .sec-h2 { font-size: 22px !important; letter-spacing: -0.4px !important; }
+
+    /* Cover meta block: stack columns instead of two-up */
+    .brief-meta { grid-template-columns: 1fr; gap: 12px; }
+    .brief-meta .date { white-space: normal; }
+
+    /* Internal grids — collapse multi-column to single column */
+    .terr-grid { grid-template-columns: 1fr; gap: 16px; }
+    .terr-col-left > figure,
+    .terr-col-right > figure { aspect-ratio: 16 / 10; }
+
+    /* Tables already have .bib-table-wrap (overflow-x: auto) — tighten cells */
+    .bib-table thead th,
+    .bib-table tbody td { padding: 10px 12px; font-size: 12.5px; }
+    .bib-table-wrap { margin: 0 -20px; padding: 0 20px; }
+
+    /* Footer: hide on mobile to give content the floor (auto row collapses) */
+    .footer { display: none; opacity: 0; }
+
+    /* Chapter nav pill at canvas bottom — nudge upward */
+    .chapter-nav { bottom: 16px !important; }
+  }
+
+  /* ---- Premium global scrollbars ----
+     Replaces the default browser scrollbar UI with a thin pill-shaped thumb
+     on a transparent track. Same treatment everywhere a scrollbar appears
+     (page edges, .canvas, .chat-stream, .rail-panel, .table-board overflow,
+     etc.). Webkit + Firefox properties for cross-browser parity. */
+  /* IMPORTANT: don't set the standard `scrollbar-width` OR
+     `scrollbar-color` properties anywhere. Modern Chrome (v121+)
+     hands off styling to its standard scrollbar implementation as
+     soon as EITHER property is set on an element, and that
+     implementation IGNORES ::-webkit-scrollbar pseudo-elements.
+     Result: the 2px width + color-mix thumb below get silently
+     dropped and you see a ~15px OS-default scrollbar.
+     With both standard properties unset, Chrome/Safari fall back to
+     the legacy ::-webkit-scrollbar pseudos defined below. Firefox
+     loses our custom color (acceptable — the global look on Chrome
+     is what we're optimizing for). */
+  /* Soft glass pill — 4px wide, accent-tinted translucent thumb. Hint
+     of accent color washes the dark base; on hover/active the accent
+     comes through stronger. backdrop-filter is requested but most
+     browsers ignore it on scrollbar pseudos — the rgba blend gives
+     enough "glass" feel on its own. */
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(15, 23, 42, 0.28);
+    border-radius: 999px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(15, 23, 42, 0.44);
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-color: rgba(15, 23, 42, 0.56);
+  }
+  ::-webkit-scrollbar-corner { background: transparent; }
+  body[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.22);
+  }
+  body[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.36);
+  }
+  body[data-theme="dark"] ::-webkit-scrollbar-thumb:active {
+    background-color: rgba(255, 255, 255, 0.48);
+  }
+
+  /* ---- Uniform row heights + 2-line clamp + hover overlay ----
+     Every row in every table is fixed at 70px and STAYS that size on hover.
+     Long text truncates after two lines via .cell-clamp wrappers (added by
+     JS for text-only cells). On row hover, a smooth overlay popover appears
+     using the cell-clamp's data-full attribute as content — it extends to
+     fit the full text and covers right-side row content. The overlay only
+     renders for cells whose text was actually truncated (.is-clamped class
+     is added by JS once detected). */
+  .scope-table tbody tr,
+  .roadmap-table tbody tr,
+  .compare-table tbody tr,
+  .metrics-table tbody tr {
+    height: 70px;
+  }
+  /* Alternate row tint — subtle so the table still reads as clean white card */
+  .scope-table tbody tr:nth-child(even),
+  .roadmap-table tbody tr:nth-child(even),
+  .compare-table tbody tr:nth-child(even),
+  .metrics-table tbody tr:nth-child(even),
+  .assume-table tbody tr:nth-child(even),
+  .dense-table tbody tr:nth-child(even),
+  .campaign-table tbody tr:nth-child(even) {
+    background: rgba(15, 23, 42, 0.025);
+  }
+  body[data-theme="dark"] .scope-table tbody tr:nth-child(even),
+  body[data-theme="dark"] .roadmap-table tbody tr:nth-child(even),
+  body[data-theme="dark"] .compare-table tbody tr:nth-child(even),
+  body[data-theme="dark"] .metrics-table tbody tr:nth-child(even),
+  body[data-theme="dark"] .assume-table tbody tr:nth-child(even),
+  body[data-theme="dark"] .dense-table tbody tr:nth-child(even),
+  body[data-theme="dark"] .campaign-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  /* Row-hover highlight — premium, intentional treatment in place of
+     the flat gray. Three layered details:
+       1. A directional accent-tinted gradient (left → right) instead
+          of a uniform fill, so the row reads as having a focal point
+          that pairs with the row-copy button fading in on the right.
+       2. A 2px brand-accent strip animating in on the left edge via
+          a pseudo-element on the first td — feels like the row is
+          being "selected" by the cursor.
+       3. Easing on the background + strip transitions so hover-on /
+          hover-off is fluid, not a flat snap.
+     .row-selected on scope keeps its solid accent tint via the
+     :not() exclusion. */
+  .scope-table tbody tr,
+  .roadmap-table tbody tr,
+  .compare-table tbody tr,
+  .metrics-table tbody tr,
+  .assume-table tbody tr,
+  .dense-table tbody tr,
+  .campaign-table tbody tr {
+    transition: background 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .scope-table tbody tr:hover:not(.row-selected),
+  .roadmap-table tbody tr:hover,
+  .compare-table tbody tr:hover,
+  .metrics-table tbody tr:hover,
+  .assume-table tbody tr:hover,
+  .dense-table tbody tr:hover:not(.row-selected),
+  .campaign-table tbody tr:hover:not(.row-selected) {
+    background: linear-gradient(
+      to right,
+      rgba(24, 88, 238, 0.06),
+      rgba(24, 88, 238, 0.02) 60%,
+      rgba(24, 88, 238, 0.005) 100%
+    );
+  }
+  body[data-theme="dark"] .scope-table tbody tr:hover:not(.row-selected),
+  body[data-theme="dark"] .roadmap-table tbody tr:hover,
+  body[data-theme="dark"] .compare-table tbody tr:hover,
+  body[data-theme="dark"] .metrics-table tbody tr:hover,
+  body[data-theme="dark"] .assume-table tbody tr:hover,
+  body[data-theme="dark"] .dense-table tbody tr:hover:not(.row-selected),
+  body[data-theme="dark"] .campaign-table tbody tr:hover:not(.row-selected) {
+    background: linear-gradient(
+      to right,
+      rgba(13, 224, 225, 0.10),
+      rgba(13, 224, 225, 0.04) 60%,
+      rgba(13, 224, 225, 0.01) 100%
+    );
+  }
+  /* Left-edge accent strip — anchored via pseudo-element on the first
+     td of each row so it works reliably across browsers (pseudos on
+     <tr> have spotty support). 2px wide, fades + scales in vertically
+     on hover so the entry feels organic, not stamped. */
+  .scope-table tbody td:first-child::before,
+  .roadmap-table tbody td:first-child::before,
+  .compare-table tbody td:first-child::before,
+  .metrics-table tbody td:first-child::before,
+  .assume-table tbody td:first-child::before,
+  .dense-table tbody td:first-child::before,
+  .campaign-table tbody td:first-child::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--accent);
+    transform: scaleY(0.4);
+    transform-origin: center;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .scope-table tbody tr:hover:not(.row-selected) td:first-child::before,
+  .roadmap-table tbody tr:hover td:first-child::before,
+  .compare-table tbody tr:hover td:first-child::before,
+  .metrics-table tbody tr:hover td:first-child::before,
+  .assume-table tbody tr:hover td:first-child::before,
+  .dense-table tbody tr:hover:not(.row-selected) td:first-child::before,
+  .campaign-table tbody tr:hover:not(.row-selected) td:first-child::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  /* Establish positioning context on every td that might host an overlay.
+     position: relative without explicit offsets does not affect layout. */
+  .scope-table tbody td,
+  .roadmap-table tbody td,
+  .compare-table tbody td,
+  .metrics-table tbody td,
+  .assume-table tbody td,
+  .dense-table tbody td,
+  .campaign-table tbody td {
+    position: relative;
+  }
+  .cell-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+  /* Row expansion on hover — JS-driven for a true ease in/out animation
+     in both directions. JS sets max-height to the cell's exact scrollHeight
+     on mouseenter (so the transition lasts the full duration end-to-end
+     instead of overshooting past content), and clears it on mouseleave so
+     it transitions back to the CSS default. line-clamp is toggled inline
+     by JS too, with a delayed re-apply on shrink so the clip doesn't snap
+     mid-transition. */
+  .cell-clamp.is-clamped {
+    max-height: 3em;
+    transition: max-height 520ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ---- BREAKPOINT EASING ----
+     During an active window-resize gesture (body has .resizing for ~480ms after
+     the last resize event), animate every layout-affecting property — including
+     normally-discrete ones like display, visibility, flex-direction, and
+     grid-template-columns — via transition-behavior: allow-discrete (Chrome
+     117+, Safari 17.4+, Firefox 129+). Browsers without support fall back to
+     animating only the continuous properties. */
+  @media (prefers-reduced-motion: no-preference) {
+    body.resizing,
+    body.resizing *,
+    body.resizing *::before,
+    body.resizing *::after {
+      transition-property:
+        padding, padding-top, padding-bottom, padding-left, padding-right,
+        margin, margin-top, margin-bottom, margin-left, margin-right,
+        font-size, line-height, letter-spacing,
+        width, height, min-height, max-width, min-width,
+        gap, column-gap, row-gap,
+        top, bottom, left, right,
+        opacity, transform, color, background-color, border-color,
+        display, visibility,
+        flex-direction, flex-basis,
+        grid-template-columns, grid-template-rows !important;
+      transition-duration: 320ms !important;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+      transition-behavior: allow-discrete !important;
+    }
+  }
+
+  /* Small mobile (≤420px) — final squeeze */
+  @media (max-width: 420px) {
+    .brief-board { padding: 20px 16px; }
+    .full-bleed { margin: 16px -16px -20px; }
+    .rca-callout { margin: 8px -16px 16px; padding: 16px; }
+    .brief-title { font-size: 30px; }
+    .topnav .tab.active .tab-icon { margin-right: 4px; }
+  }

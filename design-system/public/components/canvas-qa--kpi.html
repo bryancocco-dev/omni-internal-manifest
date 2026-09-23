@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+  OMNI component: kpi
+  Project: QA
+  Note: .qa-kpi-grid — unified metric card (qa-kpi/qa-stat/qa-frame-card share one treatment): hairline border, big tabular number, 2-line label, chip pinned bottom
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA — kpi · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-qa.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="brief-stack">
+<article class="brief-board"><div class="sec-body">
+            <h2 class="qa-h2">Key Performance Metrics Snapshot</h2>
+            <div class="qa-kpi-grid">
+              <div class="qa-kpi qa-kpi--accounts">
+                <div class="qa-kpi-num">610–680K</div>
+                <div class="qa-kpi-label">Expected US Accounts</div>
+                <span class="qa-chip">Modeled</span>
+              </div>
+              <div class="qa-kpi qa-kpi--accounts">
+                <div class="qa-kpi-num">210–260K</div>
+                <div class="qa-kpi-label">Expected FR Accounts</div>
+                <span class="qa-chip">Modeled</span>
+              </div>
+              <div class="qa-kpi qa-kpi--benchmark">
+                <div class="qa-kpi-num">$78–$88</div>
+                <div class="qa-kpi-label">Expected Blended CPA</div>
+                <span class="qa-chip qa-chip--active">Benchmark</span>
+              </div>
+              <div class="qa-kpi qa-kpi--caution">
+                <div class="qa-kpi-num">$85–$90M</div>
+                <div class="qa-kpi-label">Diminishing Returns</div>
+                <span class="qa-chip">Modeled</span>
+              </div>
+            </div>
+          </div></article>
+</body>
+</html>

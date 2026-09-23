@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+  OMNI component: table_source
+  Project: Media Skills
+  Note: .audt-bib-table — Swiss "Source Inventory" bibliography table: numbered rows, link-styled source name, mono type column, relevance dot + tier
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Skills — table_source · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="ms.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media-skills.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="ms-app">
+<style>
+body.ms-app{--ms-mono:'Fira Code','JetBrains Mono',ui-monospace,monospace;--ms-chart-2:#7289ef;--ms-neg:#e0556b}
+body.ms-app[data-theme="dark"]{--ms-chart-2:#5b7cfa;--ms-neg:#ff6b7a}
+.audt-bib-h{font-family:var(--font-sans);font-weight:600;font-size:32px;line-height:1.2;letter-spacing:-.6px;color:var(--text-strong);margin:0 0 16px}
+.audt-bib-summary{font-family:var(--font-sans);font-size:14px;line-height:1.6;font-weight:400;color:var(--text-body);margin:0 0 28px;max-width:860px}
+.audt-bib-summary [data-countup]{color:var(--text-strong);font-weight:600}
+.audt-bib-table-wrap{overflow-x:auto}
+.audt-bib-table{width:100%;min-width:780px;border-collapse:collapse;font-family:var(--font-sans);font-variant-numeric:tabular-nums}
+.audt-bib-table thead th{font-family:var(--ms-mono);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-subtle);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom}
+.audt-bib-table thead th:last-child{padding-right:0}
+.audt-bib-table tbody td{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.55;color:var(--text-body);vertical-align:top}
+.audt-bib-table tbody td:last-child{padding-right:0}
+.audt-bib-table tbody tr:last-child td{border-bottom:0}
+.audt-bib-table tbody tr{transition:background 160ms ease}
+.audt-bib-table tbody tr:hover{background:var(--hover-tint)}
+.audt-bib-n{width:30px;font-family:var(--ms-mono);font-size:9px;color:var(--text-subtle);letter-spacing:.05em;font-variant-numeric:tabular-nums;white-space:nowrap;padding-top:14px!important}
+.audt-bib-source{width:25%;min-width:200px}
+.audt-bib-source a{color:var(--accent);text-decoration:none;background-image:linear-gradient(currentColor,currentColor);background-position:0 100%;background-repeat:no-repeat;background-size:100% 1px;padding-bottom:1px;transition:opacity 200ms ease}
+.audt-bib-source a:hover{opacity:.72}
+.audt-bib-tag{width:12%;min-width:100px;font-family:var(--ms-mono);font-size:9px;color:var(--text-subtle);white-space:nowrap;padding-top:14px!important}
+.audt-bib-rel{width:12%;min-width:100px;padding-top:14px!important}
+.audt-bib-rel-pip{display:inline-flex;align-items:center;gap:8px;font-family:var(--ms-mono);font-size:9px;color:var(--text-body);white-space:nowrap}
+.audt-bib-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;display:inline-block}
+.audt-bib-rel.critical{color:var(--ms-neg)}
+.audt-bib-rel.high{color:var(--ms-chart-2)}
+.audt-bib-rel.medium{color:var(--text-subtle)}
+.audt-bib-rel.critical .audt-bib-rel-pip,.audt-bib-rel.high .audt-bib-rel-pip,.audt-bib-rel.medium .audt-bib-rel-pip{color:var(--text-body)}
+.audt-bib-coverage{color:var(--text-subtle);font-size:12px;line-height:1.55}
+</style>
+<section class="audt-bib is-visible" data-reveal>
+  <h2 class="audt-bib-h">Source Inventory</h2>
+  <p class="audt-bib-summary"><span data-countup>10</span> sources gathered across syndicated panels, proprietary audience data, and AI-generated synthesis for the Sustainable Luxury Audiences session. Primary themes: audience sizing &amp; definitions, demographic &amp; psychographic profiling, media consumption indices, geographic distribution, and cross-audience comparison.</p>
+  <div class="audt-bib-table-wrap">
+    <table class="audt-bib-table" aria-label="Source inventory">
+      <thead>
+        <tr><th>#</th><th>Source</th><th>Type</th><th>Relevance</th><th>Key Coverage</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="audt-bib-n">01</td>
+          <td class="audt-bib-source"><a href="#" onclick="return false;">Comscore</a></td>
+          <td class="audt-bib-tag">Provider</td>
+          <td class="audt-bib-rel critical"><span class="audt-bib-rel-pip"><span class="audt-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="audt-bib-coverage">Data-source chip on all three Audience list cards (Affluent Travelers, Eco-Conscious Millennials, Luxury on a Budget Travelers); underlies the Streaming Video rows in Media channel &amp; platform interests.</td>
+        </tr>
+        <tr>
+          <td class="audt-bib-n">02</td>
+          <td class="audt-bib-source"><a href="#" onclick="return false;">Acxiom</a></td>
+          <td class="audt-bib-tag">Provider</td>
+          <td class="audt-bib-rel critical"><span class="audt-bib-rel-pip"><span class="audt-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="audt-bib-coverage">Data-source chip and boolean definition-builder inputs on all three Audience list cards and both header cards in Audience Comparison.</td>
+        </tr>
+        <tr>
+          <td class="audt-bib-n">03</td>
+          <td class="audt-bib-source"><a href="#" onclick="return false;">Corvache Data</a></td>
+          <td class="audt-bib-tag">Proprietary</td>
+          <td class="audt-bib-rel critical"><span class="audt-bib-rel-pip"><span class="audt-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="audt-bib-coverage">People / Households totals (2.1M/889K &middot; 3.8M/850K &middot; 6.8M/1.3M), the Overlap matrix (34% / 19%), and both Overlap-per-channel Venn pairs.</td>
+        </tr>
+        <tr>
+          <td class="audt-bib-n">04</td>
+          <td class="audt-bib-source"><a href="#" onclick="return false;">MRI-Simmons 2024</a></td>
+          <td class="audt-bib-tag">Syndicated Panel</td>
+          <td class="audt-bib-rel critical"><span class="audt-bib-rel-pip"><span class="audt-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="audt-bib-coverage">Demographics bar groups (Gender, Marital, Education, Age, Household Income, Children), the stat tile row, and Top Media Platforms index bars.</td>
+        </tr>
+        <tr>
+          <td class="audt-bib-n">05</td>
+          <td class="audt-bib-source"><a href="#" onclick="return false;">Nielsen Audio</a></td>
+          <td class="audt-bib-tag">Syndicated Panel</td>
+          <td class="audt-bib-rel high"><span class="audt-bib-rel-pip"><span class="audt-bib-dot" data-build="pop"></span>High</span></td>
+          <td class="audt-bib-coverage">Media Behaviors panel and the Streaming Audio column of Media channel &amp; platform interests.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</body>
+</html>

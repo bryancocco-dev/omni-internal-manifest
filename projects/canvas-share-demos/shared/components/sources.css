@@ -1,0 +1,137 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Source Inventory — a Swiss reference table, matching the real .bib-table
+   system verbatim (numbered rows, mono type tag, relevance dot-pip,
+   hairline-divided rows). Sits above the closing end-card.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.doc-sources-h {
+  font-family: var(--doc-font-display);
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: var(--doc-heading-tracking, -0.6px);
+  color: var(--doc-ink-strong);
+  margin: 0 0 14px;
+}
+
+.doc-sources-summary {
+  font-family: var(--doc-font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 400;
+  color: var(--doc-ink);
+  margin: 0 0 var(--omni-space-20);
+  max-width: none;
+}
+
+.doc-sources-table-wrap { overflow-x: auto; }
+
+.doc-sources-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--doc-font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.doc-sources-table thead th {
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--doc-ink-subtle);
+  text-align: left;
+  padding: 0 14px 10px 0;
+  border-bottom: 1px solid var(--doc-rule);
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.doc-sources-table thead th:last-child { padding-right: 0; }
+
+.doc-sources-table tbody td {
+  padding: 12px 14px 12px 0;
+  border-bottom: 1px solid var(--doc-rule);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--doc-ink);
+  vertical-align: top;
+}
+
+.doc-sources-table tbody td:last-child { padding-right: 0; }
+.doc-sources-table tbody tr:last-child td { border-bottom: 0; }
+.doc-sources-table tbody tr { transition: background var(--omni-transition-duration-fast) ease; }
+.doc-sources-table tbody tr:hover { background: var(--doc-nested-bg); }
+
+.doc-source-n {
+  width: 32px;
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  color: var(--doc-ink-subtle);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  padding-top: 14px !important;
+}
+
+.doc-source-title { width: 30%; min-width: 220px; }
+
+.doc-source-title a {
+  color: var(--doc-accent);
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  padding-bottom: 1px;
+  transition: opacity var(--omni-transition-duration-fast) ease;
+}
+
+.doc-source-title a:hover { opacity: 0.72; }
+
+.doc-source-tag,
+.doc-source-rel {
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--doc-ink-subtle);
+  white-space: nowrap;
+  padding-top: 14px !important;
+}
+
+.doc-source-tag { width: 9%; min-width: 76px; }
+.doc-source-rel { width: 11%; min-width: 92px; }
+
+.doc-source-rel-pip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--doc-ink);
+}
+
+.doc-source-rel-pip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.doc-source-rel.critical .doc-source-rel-pip { color: #d54343; }
+.doc-source-rel.high .doc-source-rel-pip { color: var(--doc-accent); }
+.doc-source-rel.medium .doc-source-rel-pip { color: var(--doc-ink-subtle); }
+
+.doc-source-coverage {
+  color: var(--doc-ink-subtle);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .doc-sources-table thead { display: none; }
+  .doc-sources-table, .doc-sources-table tbody, .doc-sources-table tr, .doc-sources-table td {
+    display: block; width: auto;
+  }
+  .doc-sources-table tr { padding: 14px 0; border-bottom: 1px solid var(--doc-rule); }
+  .doc-sources-table td { border-bottom: none !important; padding: 2px 0 !important; }
+}

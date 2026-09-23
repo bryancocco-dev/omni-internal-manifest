@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+  OMNI component: accordion
+  Project: Media Skills
+  Note: .plana-acc — collapsible parameter accordion: chevron + mono eyebrow bar, fields grid, nested audience mini-card row
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Skills — accordion · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="ms.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media-skills.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="ms-app">
+<style>
+body.ms-app{--ms-mono:'Fira Code','JetBrains Mono',ui-monospace,monospace}
+.plana-frag *{box-sizing:border-box}
+.plana-mono{font-family:var(--ms-mono)}
+.plana-eyebrow{font:500 10px/1.6 var(--ms-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--text-subtle)}
+.plana-chevron{flex:none;transition:transform 380ms cubic-bezier(.16,1,.3,1);color:var(--text-subtle)}
+.plana-chevron.is-open{transform:rotate(180deg)}
+.plana-acc{background:var(--card-bg);border:.5px solid var(--line);border-radius:8px;overflow:hidden}
+.plana-acc-bar{width:100%;display:flex;align-items:center;gap:8px;padding:13px 20px;background:none;border:0;cursor:pointer;text-align:left;font-family:inherit}
+.plana-acc-bar:hover{background:var(--hover-tint)}
+.plana-acc-bar .plana-eyebrow{color:var(--text-strong);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;min-width:0}
+.plana-acc-body{display:flex;flex-direction:column;gap:24px;padding:0 24px 20px}
+.plana-fields-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px 32px}
+.plana-field{display:flex;flex-direction:column;gap:6px}
+.plana-field-label{font-size:14px;font-weight:500;color:var(--text-subtle)}
+.plana-field-value{font-size:14px;font-weight:400;color:var(--text-body)}
+.plana-field-value.plana-accent-text{color:var(--accent)}
+.plana-filechip{display:inline-flex;align-items:center;gap:8px;background:var(--panel-bg-3);border-radius:8px;padding:10px 14px;font-size:11px;font-weight:500;color:var(--text-body);width:fit-content}
+.plana-filechip svg{flex:none;color:var(--text-subtle)}
+.plana-aud-label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-subtle)}
+.plana-audcard{border:.5px solid var(--line);border-radius:8px;background:var(--panel-bg-3);overflow:hidden}
+.plana-audcard-bar{width:100%;display:flex;align-items:flex-start;gap:16px;padding:16px;background:none;border:0;cursor:pointer;text-align:left;font-family:inherit}
+.plana-audcard-photo{width:78px;height:78px;border-radius:6px;flex:none}
+.plana-audcard-main{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.plana-audcard-title-row{display:flex;align-items:center;gap:8px}
+.plana-audcard-name{font-size:16px;font-weight:600;color:var(--text-body)}
+.plana-aichip{display:inline-flex;align-items:center;gap:4px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:600;letter-spacing:.5px;padding:2px 8px;border-radius:12px}
+.plana-audcard-blurb{font-size:13px;line-height:1.5;color:var(--text-subtle);max-width:560px}
+.plana-audcard-stats{display:flex;gap:24px;flex:none;align-self:center}
+.plana-audcard-stat{text-align:center}
+.plana-audcard-stat b{display:block;font-size:18px;font-weight:400;color:var(--text-strong);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.plana-audcard-stat span{font:500 10px/1.6 var(--ms-mono);text-transform:uppercase;letter-spacing:.14em;color:var(--text-subtle)}
+</style>
+<div class="plana-frag">
+  <div class="plana-acc is-open" id="planaParamsAcc">
+    <button type="button" class="plana-acc-bar" data-plana-toggle="acc" aria-expanded="true" aria-controls="planaParamsBody">
+      <svg class="plana-chevron is-open" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="plana-eyebrow">Plan Parameters (7)</span>
+    </button>
+    <div class="plana-acc-body" id="planaParamsBody">
+      <div class="plana-fields-grid">
+        <div class="plana-field"><span class="plana-field-label">Budget</span><span class="plana-field-value">$18,000</span></div>
+        <div class="plana-field"><span class="plana-field-label">Optimization KPI(s)</span><span class="plana-field-value plana-accent-text plana-mono">AWARENESS</span></div>
+        <div class="plana-field"><span class="plana-field-label">Flight Window</span><span class="plana-field-value">01 MAR - 24 MAY 2026</span></div>
+        <div class="plana-field"><span class="plana-field-label">Markets</span><span class="plana-field-value">US, EMEA</span></div>
+        <div class="plana-field"><span class="plana-field-label">Frequency Target</span><span class="plana-field-value">3.4x</span></div>
+        <div class="plana-field">
+          <span class="plana-field-label">Brief</span>
+          <span class="plana-filechip">
+            <svg width="13" height="15" viewBox="0 0 13 15" fill="none" aria-hidden="true"><path d="M1.5 1.5h6.8L11.5 4.7v8.8a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 1.5v3.5h3.5" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+            MarketBrief123.pdf
+          </span>
+        </div>
+      </div>
+      <span class="plana-aud-label">Audience</span>
+      <div class="plana-audcard" id="planaAudCard">
+        <button type="button" class="plana-audcard-bar" data-plana-toggle="audcard" aria-expanded="false" aria-controls="planaAudCardBody">
+          <svg class="plana-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="plana-audcard-photo" style="background:var(--panel-bg-3)" title="[photo placeholder — assets/img/plan-audience-performance.png not extracted (not a top-level project image)]"></div>
+          <div class="plana-audcard-main">
+            <div class="plana-audcard-title-row">
+              <span class="plana-audcard-name">Performance Enthusiasts</span>
+              <span class="plana-aichip">✦ AI</span>
+            </div>
+            <p class="plana-audcard-blurb">High-income, brand-loyal drivers who prioritise performance credentials and prestige engineering. Primary consideration audience for Corvache model launches and loyalty campaigns.</p>
+          </div>
+          <div class="plana-audcard-stats">
+            <div class="plana-audcard-stat"><b>2.1M</b><span>People</span></div>
+            <div class="plana-audcard-stat"><b>889K</b><span>Households</span></div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

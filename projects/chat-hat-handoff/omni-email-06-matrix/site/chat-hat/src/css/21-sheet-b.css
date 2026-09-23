@@ -1,0 +1,2028 @@
+  /* ══ §BK (9/16) — the skeleton is the resolved sheet in ghost. While
+     a sheet is being generated an overlay covers the canvas
+     (#ptSheetSkeleton — absolute inside #canvas, opaque canvas-bg, so
+     the OMNI empty state or the sheet being replaced is simply under
+     it): the Selects header + subnote lead, then each concept row —
+     a full-bleed rule, the "Concept X" eyebrow, and that row's own
+     CARD ghosts (skelConceptRowsHTML) — a head lockup + shortlist
+     circle over a dark-ground FRAME carrying the row's own layout
+     blocks (a picture block + a copy block of a logo dot, headline
+     bar(s) and a CTA pill, on the side the layout puts them), then
+     the append door. Every ghost sits within 4px of the element that
+     resolves into it (the BK.4 contract, carried over from AE.3).
+     When the sheet lands each card rises into the frame drawn for
+     it. ══ */
+  .pt-sheet-skel {
+    /* AE.1 — right:220px, not 0: the real History rail (§AE.1) never
+       leaves the DOM during a build, so leaving its own column clear
+       (rather than painting over it) is what lets it "hold its place"
+       through the skeleton too, same rail, same rect, the whole time. */
+    position: absolute; left: 6px; right: 220px; top: 0; min-height: 100%; /* left: the pane's 6px reach under the splitter (see #canvas) */
+    /* AL.11 (Bryan: "make the wireframe actually match the content of
+       the page") — the flat 40/40 padding + .pt-skel-inner's own
+       max-width:1160/auto-centre below were a pre-AE.1 holdover: they
+       land #ptSkelMain's content box up to 20px off .pt-sheet-main's
+       real one (its own 28/32 asymmetric padding, no max-width at
+       all), which skelConceptRowsHTML's ≤4px contract needs exact —
+       same padding formula as .pt-sheet-main now, so colW/xOff below
+       measure the real column, not an approximation of it. */
+    padding: calc(var(--canvas-header-h, 64px) + 24px) 32px 45vh var(--pt-stage-inset, 28px);
+    background: var(--canvas-bg);
+    z-index: 2;
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .pt-sheet-skel.is-active { display: block; }
+  .pt-sheet-skel.is-visible { opacity: 1; }
+  /* 9/10 (Bryan: "for the skeletons, look through our existing
+     components and use animation that already exists") — every ghost
+     pulses on the persona skeleton's own keyframe, cps-shimmer (light ↔
+     medium on a 1.6s ease-in-out loop, the LinkedIn/GitHub pattern this
+     shell settled on for its right-side loading), and showSheetSkeleton
+     staggers them 40ms apart top-down, the way the persona view cascades
+     its own. Nothing new is defined here. */
+  .pt-skel {
+    border-radius: 4px;
+    background-color: color-mix(in srgb, var(--text-body) 18%, transparent);
+    animation: cps-shimmer 1.6s ease-in-out infinite;
+  }
+  /* 9/10 (Bryan: "make sure the elements positionally align with the
+     resolved state") — every ghost sits on the box the real element
+     will occupy, measured off the landed sheet: the Selects label and
+     subnote (BK.1), the row heads/eyebrows, card heads and frames at
+     the concept rows' own offsets (skelConceptRowsHTML), the rail's
+     rows at its own 14/28/36px. When the sheet lands, each card rises
+     into the frame drawn for it. */
+  /* BK.1 — the Selects ghost: the label's own box, 6px, one 13px
+     line where the §BI subnote sits — no toolbar band, no dashed
+     slot. 21 (label) + 6 (gap) + 20 (subnote line) = 47, the real
+     section's own height at rest (nothing shortlisted yet). */
+  .pt-skel-selects { position: relative; height: 47px; }
+  .pt-skel-body { display: block; margin-top: 44px; } /* the real gap from the Selects subnote to the concept section's own top rule */
+  .pt-skel-main { position: relative; min-width: 0; }
+  .pt-skel-abs { position: absolute; }
+  .pt-skel-mark { width: 26px; height: 26px; border-radius: 50%; }
+  .pt-skel-rule { position: absolute; left: -100vw; right: -100vw; height: 0.5px; background: var(--line-solid, rgba(15, 23, 42, 0.10)); } /* full bleed, like the real row rules */
+  /* BK.2 — the card head ghost: the lockup pill at the left, the
+     shortlist circle at the right end — the real head's own flex row
+     (space-between does the "margin-left:auto" the real
+     .pt-unit-shortlist carries). */
+  .pt-skel-card-head { position: absolute; display: flex; align-items: center; justify-content: space-between; height: 20px; box-sizing: border-box; }
+  .pt-skel-lockup { display: inline-flex; align-items: center; gap: 12px; height: 20px; padding: 0 8px; box-sizing: border-box; border-radius: 10px; border: 1px solid var(--line); background: var(--card-bg); flex-shrink: 0; }
+  .pt-skel-lockup i { display: block; height: 8px; border-radius: 2px; width: 14px; }
+  .pt-skel-lockup i + i { width: 18px; }
+  .pt-skel-shortlist { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: var(--card-bg); flex-shrink: 0; }
+  .pt-skel-line { height: 8px; border-radius: 2px; }
+  /* BK.2 — the frame ghost: the banner's own dark ground
+     (--pt-scrim-rgb's default triplet), at the skeleton's ghost
+     strength — blended with the canvas ground, not literal black —
+     carrying that row's layout blocks in the cream-on-dark pulse
+     (cps-shimmer-light, the hero skeleton's own dark-ground recipe,
+     15-hat-a.css) rather than the light-ground cps-shimmer every
+     other ghost on this sheet uses. */
+  .pt-skel-frame {
+    position: absolute;
+    overflow: hidden;
+    background: color-mix(in srgb, rgb(19, 21, 23) 88%, var(--canvas-bg));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .pt-skel-frame-media {
+    position: absolute;
+    border-radius: 2px;
+    background-color: rgba(244, 241, 234, 0.16);
+    animation: cps-shimmer-light 1.6s ease-in-out infinite;
+  }
+  /* The scrim a copy block sits on when its layout overlays the
+     picture (card/full-bleed/diagonal) — static, no shimmer of its
+     own (it is the banner's own scrim, not a loading block). */
+  .pt-skel-frame-panel { position: absolute; background: rgba(19, 21, 23, 0.38); }
+  .pt-skel-frame-logo {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(244, 241, 234, 0.22);
+    animation: cps-shimmer-light 1.6s ease-in-out infinite;
+  }
+  .pt-skel-frame-bar {
+    position: absolute;
+    border-radius: 2px;
+    background-color: rgba(244, 241, 234, 0.22);
+    animation: cps-shimmer-light 1.6s ease-in-out infinite;
+  }
+  .pt-skel-frame-cta {
+    position: absolute;
+    border-radius: 999px;
+    background-color: rgba(244, 241, 234, 0.28);
+    animation: cps-shimmer-light 1.6s ease-in-out infinite;
+  }
+  /* BK.2 — the legal line: a thin static bar at the frame's foot, on
+     every size but STRIP (height ≤120px — 320×50/728×90/970×90 —
+     which never reserves a legal band, 21-sheet-b.css's own SIZE
+     CLASS rules below). No shimmer: the quietest thing on the card. */
+  .pt-skel-frame-legal { position: absolute; border-radius: 2px; background-color: rgba(244, 241, 234, 0.14); }
+  /* BK.3 — the append door's own ghost: the real .pt-concept-ghost
+     box (dashed, 48px top margin, a 26px badge + a label line),
+     shared by the full build overlay and the append beat's own foot
+     skeleton (both call skelConceptRowsHTML) so an append's door
+     ghost never drifts from the build's. */
+  .pt-skel-door {
+    position: absolute;
+    display: flex; align-items: center; gap: 12px;
+    min-height: 48px; padding: 11px 18px; /* border-box, house-wide (10-shell-a.css `* {box-sizing:border-box}`) — same box model as the real .pt-concept-ghost, so its 26px badge growing past the 48 minimum (51 total) matches here too */
+    border: 1.5px dashed var(--line-solid, rgba(15, 23, 42, 0.10));
+    border-radius: 12px;
+  }
+  .pt-skel-door-badge { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; }
+  .pt-skel-door-label { display: block; width: 118px; height: 12px; border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-skel, .pt-skel-frame-media, .pt-skel-frame-logo, .pt-skel-frame-bar, .pt-skel-frame-cta { animation: none; }
+  }
+  /* V2 (PLAN.md §V) — the append beat's own skeleton (showSheetSkelFoot):
+     the same row/card ghosts as the build overlay above (BK), but in
+     flow under #ptConcepts instead of covering the canvas, so it takes
+     the height its own JS-computed plan gives it rather than filling a
+     fixed box. Same fade timing as #ptSheetSkeleton. */
+  .pt-sheet-skel-foot { position: relative; opacity: 0; transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1); }
+  /* [hidden] paired with the class, not left to the bare attribute —
+     the house gotcha (see .pt-copy-input-row's own note above): a
+     same-specificity author rule silently beats [hidden] alone since
+     origin trumps specificity. This pairing is itself an author rule,
+     so it always wins. */
+  .pt-sheet-skel-foot[hidden] { display: none; }
+  .pt-sheet-skel-foot.is-visible { opacity: 1; }
+  /* The hat while a build runs: its settings hold still and dim; the
+     conversation is where the progress reads. */
+  .chat-aux-panel.pt-generating .pt-hat-wizard-body { opacity: 0.45; pointer-events: none; }
+  /* The one assistant line for the build — the house's star thinking
+     mark in front of it until it resolves in place. */
+  .pt-msg-live { display: inline-flex; align-items: center; gap: 9px; }
+  /* BF — the star thinking mark, ported (not reinvented) from
+     canvas-attach/index.html's .thinking-mark (~line 35418, CSS
+     ~1313-1400): two counter-orbiting rings of a four-point star over
+     a larger pulsing four-point core, currentColor on the accent.
+     Renamed into this file's own pt-think-* namespace so nothing
+     collides with the shell's own classes. The source mark is 32px
+     for a chat-avatar row; this line is 13px text, so the mark is
+     rebuilt at 18px (core ~11px, satellites ~5px) — every other value
+     (durations, degrees, the drop-shadows) is unchanged, per PLAN.md
+     §BF.1. The breathing text animation is NOT ported; this line
+     keeps its own voice (PLAN.md §BF.1). */
+  .pt-think-mark {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .pt-think-core {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .pt-think-core svg {
+    width: 11px;
+    height: 11px;
+    display: block;
+    filter: drop-shadow(0 0 6px rgba(24, 88, 238, 0.25));
+    animation: pt-think-pulse-spin 4.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .pt-think-track {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .pt-think-track-1 { animation: pt-think-orbit-cw 3.4s linear infinite; }
+  .pt-think-track-2 { inset: 3px; animation: pt-think-orbit-ccw 5.2s linear infinite; }
+  .pt-think-sat {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .pt-think-sat svg {
+    width: 5px;
+    height: 5px;
+    display: block;
+    filter: drop-shadow(0 0 3px rgba(24, 88, 238, 0.45));
+  }
+  @keyframes pt-think-pulse-spin {
+    0%   { transform: scale(0.85) rotate(0deg); }
+    50%  { transform: scale(1.22) rotate(180deg); }
+    100% { transform: scale(0.85) rotate(360deg); }
+  }
+  @keyframes pt-think-orbit-cw {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes pt-think-orbit-ccw {
+    from { transform: rotate(180deg); }
+    to   { transform: rotate(-180deg); }
+  }
+  .pt-concept-group:first-child { padding-top: 0; }
+  .pt-concept-group.pt-is-new .pt-concept-letter { box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-concept-head { display: flex; align-items: center; gap: 10px; }
+  .pt-concept-letter {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--text-strong); color: var(--text-button);
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 700; font-size: 12.5px;
+    flex-shrink: 0;
+  }
+  /* P12 — "layout name · headline quote", promoted from a meta caption
+     to a proper Inter 14/500 body line per spec. */
+  .pt-concept-desc { font-size: 14px; font-weight: 500; color: var(--text-body); }
+  .pt-concept-new-tag {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 2px 6px; border-radius: 5px;
+  }
+
+  /* ── P12 — the shape grid. 12 columns, 24px gutters. Left region
+     (cols 1-8) stacks the BOX row (side by side, 1:1) over the WIDE
+     row (STRIP + BILLBOARD sizes); right region (cols 9-12) holds the
+     TOWER row, side by side, tops aligned with the BOX row. A concept
+     missing one shape class just doesn't render that row — the
+     modifier classes below widen whichever region is left to fill the
+     freed columns. ── */
+  .pt-shape-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: start; }
+  .pt-shape-left { grid-column: 1 / 9; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .pt-shape-right { grid-column: 9 / 13; min-width: 0; }
+  .pt-shape-grid.pt-no-towers .pt-shape-left { grid-column: 1 / 13; }
+  .pt-shape-grid.pt-only-towers .pt-shape-right { grid-column: 1 / 5; }
+  .pt-shape-row { display: flex; align-items: flex-start; gap: 16px; }
+  /* X (PLAN.md §X, Bryan: "make sure all banners utilize the space
+     appropriately — this looks bad to have them all in one vertical
+     stack") — a WIDE row used to force column stacking + full-width
+     cards, so a 320×50 sat alone on a line with two-thirds of the
+     column empty. Wrapping lets fitWideCard's existing per-card scale
+     (natural size when it fits the column, shrunk to the column when
+     it doesn't — unchanged, see fitAllBannerScales) do the packing on
+     its own: cards keep their real (possibly natural) width instead of
+     stretching to 100%, so flex-wrap fits as many per line as actually
+     fit and only wraps a unit to its own line when it doesn't, same
+     effect as the "stands alone" case had before but at true column
+     width instead of a mostly-empty full-width row. */
+  .pt-shape-row-wide { flex-wrap: wrap; }
+  .pt-shape-row-tower { flex-wrap: nowrap; }
+
+  /* ═══ AQ — the card chrome, quiet (Bryan, 9/15: "find another place
+     for the checkboxes… I want all of this but cleaner, beautiful UI,
+     easy to understand, elegant"). At rest a card is its lockup and
+     its artwork — nothing else. Hover or keyboard focus reveals, over
+     the artwork, the select check (top-left) and one action cluster
+     (top-right); a selected card keeps its 1px accent ring and its
+     checked corner without hover; a shortlisted one keeps a ✓ in the
+     lockup's tail. Every reveal is a 180ms opacity fade on the house
+     curve (reduced motion: instant — 26-theme-a.css). ═══ */
+  /* The card's own box is 5px of air around head + artwork (padding
+     in, the same margin out, so the row's layout — fitRowUniform's
+     natural widths and 16px gaps — is byte-identical), rounded 8px
+     like the shell's chips: that box is what the hover wash fills
+     and the selection ring traces. Amendment (the designer, 9/15):
+     hover is a subtle ground fill on the whole container — the
+     History item's 4% ink wash (--hover-soft) — not a hairline; only
+     a SELECTED card carries a line, and it keeps the wash while
+     hovered. Scoped to the board — a Selects clone is sized by its
+     slot (width:100%), where a padding/margin box would not net out. */
+  .pt-banner-card {
+    position: relative;
+    flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0;
+    outline: 1px solid transparent; outline-offset: 0;
+    transition: outline-color 180ms cubic-bezier(0.16,1,0.3,1), background-color 180ms cubic-bezier(0.16,1,0.3,1);
+  }
+  #ptConcepts .pt-banner-card { padding: 5px; margin: -5px; border-radius: 8px; } /* 5, not 6: two selected neighbours keep 6px between their rings inside the row's 16px */
+  #ptConcepts .pt-banner-card:hover,
+  #ptConcepts .pt-banner-card:focus-visible,
+  #ptConcepts .pt-banner-card:has(:focus-visible),
+  #ptConcepts .pt-banner-card:has([data-unit-menu][aria-expanded="true"]) { background-color: var(--hover-soft); }
+  /* §BE.1 (9/16, Bryan: "remove the select checkbox... clicking on the
+     banner selects it") — the corner check retires (unitChromeHTML,
+     14-hat-a-files.js); a selected card's own ring is the WHOLE signal
+     now, no hover needed, so it earns weight: 2px (was 1px) and the
+     accent's own soft wash behind the card at rest — both reuse the
+     ring's existing accent tokens, no new colour. */
+  .pt-banner-card.is-active { outline-width: 2px; outline-color: var(--accent); }
+  #ptConcepts .pt-banner-card.is-active { background-color: var(--accent-soft); }
+  /* keyboard focus on the card itself: a softer accent line, so
+     "focused" never reads as "selected" (that is the full accent) */
+  .pt-banner-card:focus-visible:not(.is-active) { outline-color: color-mix(in srgb, var(--accent) 55%, var(--line-solid)); }
+  /* §BE.3 — a unit the marquee's band is currently sweeping (any
+     overlap, not containment) wears the selected ring at half weight,
+     live, while the drag is in progress; an already-selected card
+     under the same band keeps its own full ring (:not(.is-active)
+     below) rather than being downgraded. Same 2px width as .is-active,
+     the accent at half strength — no new colour. */
+  .pt-banner-card.is-marquee-candidate:not(.is-active) { outline-width: 2px; outline-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+  /* The rubber-band rectangle itself: an absolutely positioned child
+     of #ptConceptSection (already position:relative, PLAN) in the
+     section's own coordinate space — a canvas tool's band, crisp and
+     NEVER animated (no transition property at all), 1px accent border
+     over the accent at ~10%, no radius, no shadow. pointer-events:none
+     so it never itself becomes a click/drag target. */
+  .pt-sheet-marquee {
+    position: absolute; z-index: 4;
+    border: 1px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0; padding: 0;
+    pointer-events: none;
+  }
+  /* The head row holds one thing: the lockup. Still 20px, so the
+     Selects slot spacer and the viewer's ghost tiles line up with it. */
+  .pt-banner-card-head { display: flex; align-items: center; gap: 8px; height: 20px; }
+  /* The five-digit unit id is the trafficking reference, not something
+     to read on the board: in the DOM (the package sheet quotes it),
+     out of view. */
+  .pt-banner-card-head .pt-unit-id { display: none; }
+  /* 9/10 — the LOCKUP (Bryan: "a nice visual lockup of the banner
+     number, so like A1, A2, and the number rating — a beautiful tight
+     little lockup"). One 20px pill: the variant, then the score as the
+     pill's right cell, in the band's own tint, behind a single divider
+     in the band's own colour. Pending scores hide their cell entirely.
+     AQ.1: the variant sets in the sans at 600 (was mono) — the same
+     lockup the Studio topbar wears (#ptEditorUnit, AM.1) — and a
+     shortlisted unit grows a third cell, the ✓ in the accent, read
+     straight off the shortlist button's own state (:has) so the tail
+     can never disagree with the cluster. */
+  .pt-unit-lockup {
+    display: inline-flex; align-items: stretch;
+    height: 20px; box-sizing: border-box;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--card-bg);
+    overflow: visible; /* the rubric popover hangs off the score cell */
+  }
+  .pt-unit-var {
+    display: inline-flex; align-items: center;
+    padding: 0 8px 0 9px;
+    font-family: var(--font-sans);
+    font-size: 11.5px; font-weight: 600; letter-spacing: -0.1px;
+    color: var(--text-strong);
+  }
+  .pt-unit-lockup .pt-score-wrap { margin-left: 0; display: flex; }
+  .pt-unit-lockup .pt-score-chip {
+    height: 100%; padding: 0 8px 0 7px;
+    border: 0; border-left: 1px solid var(--line);
+    border-radius: 0 9px 9px 0;
+  }
+  .pt-unit-lockup .pt-score-chip.pt-score-pending { display: none; }
+  .pt-unit-lockup .pt-score-pop { left: 0; right: auto; }
+  /* 9/16 (Bryan: "when something is checked in Selects, no need to have
+     the check next to the score also") — the lockup's ✓ tail (.pt-unit-pick)
+     retired; the head's shortlist button is the one mark. */
+  /* ── the chrome over the artwork. Hosted on .pt-banner-scale (the
+     fitted footprint applyCardScale sizes), never inside the scaled
+     .pt-banner-fit, so an 8px inset is 8px at every fit scale. Hidden
+     AND inert at rest (pointer-events none — the banner click beneath
+     is the select gesture now, §BE); revealed by the card's hover or
+     keyboard focus (:has(:focus-visible), so a mouse click on a
+     button never leaves the cluster stuck open). §BE (9/16) retired
+     the corner check that used to lead this cluster (unitChromeHTML,
+     14-hat-a-files.js) — the cluster is the pencil and ⋮ alone now. ── */
+  .pt-unit-tools {
+    position: absolute; z-index: 6;
+    opacity: 0; pointer-events: none;
+    transition: opacity 180ms cubic-bezier(0.16,1,0.3,1), background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+  .pt-banner-card:hover .pt-unit-tools,
+  .pt-banner-card:focus-visible .pt-unit-tools,
+  .pt-banner-card:has(:focus-visible) .pt-unit-tools,
+  .pt-banner-card:has([data-unit-menu][aria-expanded="true"]) .pt-unit-tools, /* the cluster stays up while its ⋮ menu (on body) is open */
+  .pt-banner-card.is-active .pt-unit-tools { opacity: 1; pointer-events: auto; }
+  /* the action cluster — one hairline pill on white at 92%, two 28px
+     icon buttons: edit (the pencil — Studio in unit mode), more (⋮).
+     House glyphs at one weight — the Phosphor light set at 14px the
+     sheet header's chips already use. (The shortlist "+" moved to the
+     card head, AL.9; the select check retired here, §BE.) */
+  .pt-unit-tools {
+    right: 8px; top: 8px;
+    display: inline-flex; align-items: center; gap: 0; padding: 1px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(15,23,42,0.14);
+    box-shadow: 0 1px 2px rgba(15,23,42,0.12);
+    -webkit-backdrop-filter: blur(12px) saturate(160%); backdrop-filter: blur(12px) saturate(160%);
+  }
+  .pt-unit-tool {
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%;
+    background: transparent; color: #131517;
+    font: inherit; cursor: pointer;
+    transition: background-color 140ms ease, color 140ms ease;
+  }
+  .pt-unit-tool:hover { background: rgba(15,23,42,0.07); color: #0a0a0a; }
+  .pt-unit-tool:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  /* AQ.4 amendment — the pencil is THE door to the editor (a banner
+     click only focuses the card now), so it earns its own hover: the
+     ground one step darker than its neighbours' and a 2px lift, on
+     the house curve; its tip reads "Edit". */
+  .pt-unit-edit:hover { background: rgba(15,23,42,0.11); }
+  .pt-unit-edit > svg { transition: transform 180ms cubic-bezier(0.16,1,0.3,1); }
+  .pt-unit-edit:hover > svg { transform: translateY(-2px); } /* the lift is the glyph's — the ground stays seated, so the 28px circle never crosses the pill's edge */
+  .pt-unit-tool > svg { display: block; width: 14px; height: 14px; }
+  .pt-unit-tool .pt-select-icon svg { width: 14px; height: 14px; } /* size only — the plus/check swap below stays 20-selects-a.css's display toggle */
+  .pt-unit-tools .pt-select-icon { width: auto; flex: none; }
+  /* the shortlist button keeps its .pt-select-btn hooks; its own
+     20px-circle recipe (20-selects-a.css) yields to the cluster's, and
+     "in selects" is the accent — the lockup's ✓ — not the Scored green */
+  .pt-unit-tools .pt-select-btn { width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: #131517; }
+  .pt-unit-tools .pt-select-btn:hover { background: rgba(15,23,42,0.07); color: #0a0a0a; border-color: transparent; }
+  .pt-unit-tools .pt-select-btn.is-selected { color: var(--accent); background: transparent; }
+  .pt-unit-tools .pt-select-btn.is-selected:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .pt-unit-tools .pt-select-btn:focus-visible { outline-offset: -2px; }
+  .pt-unit-tools .pt-select-label { bottom: auto; } /* it is a .pt-set-tip too — AL.9 hoists it; only .pt-select-label's own anchor stands down */
+  /* Bryan, 9/15 ("add the plus button somewhere outside of the hover-
+     state lockup, in the top") — the shortlist "+" sits in the card
+     HEAD at the row's right end, always visible: its own 20px-circle
+     recipe (20-selects-a.css) on the head's 20px line, quiet at rest,
+     accent on hover, the accent check once shortlisted. The hover
+     cluster over the artwork keeps the pencil and ⋮. */
+  .pt-banner-card-head .pt-unit-shortlist { margin-left: auto; flex-shrink: 0; }
+  .pt-banner-card-head .pt-unit-shortlist:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid, rgba(15, 23, 42, 0.12))); }
+  .pt-banner-card-head .pt-unit-shortlist.is-selected { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid, rgba(15, 23, 42, 0.12))); }
+  /* read-only share view: nothing to select, shortlist or edit */
+  body.is-painter-shared .pt-unit-check,
+  body.is-painter-shared .pt-unit-tools { display: none !important; }
+  /* a Selects clone is not selectable on the board: no corner check there */
+  #ptSelects .pt-unit-check,
+  #ptSelectsViewer .pt-unit-check { display: none !important; }
+  .pt-unit-id {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-subtle);
+    letter-spacing: 0.02em;
+    margin-right: 2px;
+  }
+  .pt-size-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 600; color: var(--text-subtle);
+  }
+  /* P12 — the label row's own "−" remove control, right of the score
+     chip (.pt-score-wrap already carries margin-left:auto, so both
+     sit flush to the unit's own right edge). Hidden in the read-only
+     share view (body.is-painter-shared block below); disabled when a
+     concept is down to its last size — a concept can't go to zero. */
+  .pt-banner-remove-btn {
+    /* relative, so it can host the same tooltip layer the "+" uses —
+       the two sit side by side and must behave identically on hover. */
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; flex-shrink: 0;
+    background: transparent; border: 1px solid var(--line); border-radius: 50%;
+    color: var(--text-subtle); cursor: pointer;
+    transition: background 140ms ease, color 140ms ease, border-color 140ms ease, opacity 140ms ease;
+  }
+  .pt-banner-remove-btn svg { width: 9px; height: 9px; display: block; }
+  .pt-banner-remove-btn:hover:not(:disabled) { background: var(--hover-soft); color: var(--text-strong); border-color: rgba(15,23,42,0.22); }
+  .pt-banner-remove-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .pt-banner-card.is-removing {
+    transition: opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1);
+    opacity: 0; transform: scale(0.94); pointer-events: none;
+  }
+  /* P12 — a freshly-appended unit (+ Add sizes) fades/rises in; the
+     .pt-banner-frame inside plays its own pt-card-rise on insertion
+     for free, this just gives the label row above it a matching beat. */
+  .pt-banner-card.pt-unit-enter .pt-banner-card-head { animation: pt-card-rise 220ms cubic-bezier(0.16,1,0.3,1) both; }
+  /* Wraps .pt-banner-fit so wide sizes (728×90, 970×250) can scale
+     DOWN to fit the sheet column without ever clipping past the pane.
+     JS (fitBannerScale) sets an explicit width/height HERE equal to
+     the SCALED footprint (natural px × scale) so the flex row's
+     layout box matches what's actually painted. (Deliberately no
+     overflow:hidden — .pt-banner-frame's box-shadow bleeds a few px
+     past its own edge on every card, scaled or not, and clipping
+     this wrapper flush to content would flatten that shadow
+     everywhere.) */
+  .pt-banner-scale { position: relative; }
+  /* The fit-scale transform lives on ITS OWN element, separate from
+     .pt-banner-frame below — .pt-banner-frame already animates its
+     own `transform` for the staggered card-rise entrance
+     (animation-fill-mode:both), and a CSS animation's transform
+     wins the cascade over any inline transform JS sets on that SAME
+     element for as long as the animation is attached, silently
+     eating a scale set there. Keeping the fit-scale on this
+     dedicated, animation-free wrapper (natural px, transform-origin
+     top left so it shrinks toward the corner the .pt-banner-scale
+     box was sized from, not its own center) sidesteps that fight
+     entirely, and the frame's hover-lift translateY stays a third,
+     fully independent transform one level further in. */
+  .pt-banner-fit { position: relative; transform-origin: top left; }
+  .pt-banner-frame {
+    position: relative;
+    border-radius: 0; /* P11: sheet cards' banner frames are square, always */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1);
+    /* Staggered resolve — JS sets animation-delay per card (concept ×
+       size index) so the sheet lands card-by-card, not all at once. */
+    animation: pt-card-rise 420ms cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes pt-card-rise {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  /* AJ.2 — a selected unit re-rendering in place plays the house
+     blur-fade (the exact .is-swapping recipe — opacity .15/blur 4px —
+     .pt-hat-wizard-body and .pt-mm-grid already use), scoped to the
+     frame only so the head's id/score/select chrome never flickers. */
+  .pt-banner-frame.is-swapping {
+    transition: opacity 220ms ease, filter 220ms ease;
+    opacity: 0.15; filter: blur(4px); pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-banner-frame.is-swapping { transition: none !important; opacity: 1 !important; filter: none !important; }
+  }
+  .pt-banner-frame:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+  }
+  /* The pencil on the artwork itself is the Preview Sizes overlay's
+     now (openProductionPreview) — AQ moved the board card's edit
+     affordance into its action cluster (.pt-unit-edit, above), and
+     the AQ.4 amendment made that pencil the editor's only door. */
+  .pt-banner-frame-edit {
+    position: absolute; top: 8px; right: 8px; z-index: 5;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: translateY(-3px);
+    transition: opacity 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-banner-frame:hover .pt-banner-frame-edit { opacity: 1; transform: translateY(0); }
+  .pt-banner-frame-edit svg { width: 12px; height: 12px; color: #131517; }
+  .pt-banner-card-new {
+    position: absolute; top: 8px; left: 36px; z-index: 5; /* AQ — clear of the corner check's 8px + 20px + 8px */
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+    color: #131517; background: #C29049;
+    padding: 2px 6px; border-radius: 5px;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     P11 — banner system (9/1). Square corners everywhere, one
+     container-query-driven system for four SIZE CLASSES — STRIP
+     (height ≤120: 320×50, 728×90, 970×90), BOX (250–336w / 250–280h:
+     300×250, 336×280, 250×250 — the default/base rules below), TOWER
+     (width ≤300, height ≥600: 160×600, 300×600), BILLBOARD (width
+     ≥900, height ≥200: 970×250). Never per-size hand tuning — every
+     size funnels into one of these four via container-type:size real
+     px thresholds, so a new size just needs a data-size width/height
+     rule and lands in the right class for free.
+
+     .pt-banner-copy is deliberately `display:block`, NOT flex, even
+     though it visually stacks like a flex column — Chrome blockifies
+     `display:-webkit-box` (the only line-clamp mechanism this Chrome
+     supports; the standalone `line-clamp` property isn't there yet)
+     on a DIRECT CHILD of a flex/grid container, silently disabling
+     the clamp. Plain block flow doesn't blockify its children, so
+     copy's own rhythm (margin-top on each child, keyed to the
+     headline's em size) does the stacking instead of flex `gap`, and
+     "vertical centering"/"bottom anchor" per layout is real box
+     positioning (top/bottom anchor + height:auto, or a translateY
+     center) rather than justify-content. Where a layout DOES need
+     flex (type-top/bottom's media/copy split, split's row, TOWER's
+     stack), it's applied to `.pt-banner-inner`, one level up from
+     copy — copy itself stays a plain block flex/grid ITEM there,
+     which is fine (only copy's own children need protecting). ════
+     ════════════════════════════════════════════════════════════════ */
+  .pt-banner {
+    position: relative;
+    border-radius: 0; /* P11 non-negotiable: real ad units are never rounded */
+    overflow: hidden;
+    container-type: size;
+    container-name: banner;
+    --pad: clamp(8px, 6cqmin, 24px); /* safe area — every element (not media) sits inside it */
+  }
+  .pt-banner[data-size="300x250"] { width: 300px; height: 250px; }
+  .pt-banner[data-size="336x280"] { width: 336px; height: 280px; }
+  .pt-banner[data-size="250x250"] { width: 250px; height: 250px; }
+  .pt-banner[data-size="728x90"]  { width: 728px; height: 90px; }
+  .pt-banner[data-size="970x90"]  { width: 970px; height: 90px; }
+  .pt-banner[data-size="320x50"]  { width: 320px; height: 50px; }
+  .pt-banner[data-size="160x600"] { width: 160px; height: 600px; }
+  .pt-banner[data-size="300x600"] { width: 300px; height: 600px; }
+  .pt-banner[data-size="970x250"] { width: 970px; height: 250px; }
+  /* The rest of the IAB roster. Without a width/height pair a banner
+     renders dimensionless — these seven were in the Production menu
+     and the preview, and drew nothing. Every one still funnels into
+     one of the four size classes via the container queries below, so
+     no other rule needs to know about them. */
+  .pt-banner[data-size="200x200"]  { width: 200px;  height: 200px; }
+  .pt-banner[data-size="180x150"]  { width: 180px;  height: 150px; }
+  .pt-banner[data-size="468x60"]   { width: 468px;  height: 60px; }
+  .pt-banner[data-size="234x60"]   { width: 234px;  height: 60px; }
+  .pt-banner[data-size="320x100"]  { width: 320px;  height: 100px; }
+  .pt-banner[data-size="120x600"]  { width: 120px;  height: 600px; }
+  .pt-banner[data-size="300x1050"] { width: 300px;  height: 1050px; }
+
+  .pt-banner-inner {
+    position: relative; width: 100%; height: 100%; background: #131517;
+    /* Ground-color scrim seam (P9 leaves this alone): every legibility
+       scrim below reads rgba(var(--pt-scrim-rgb), α) instead of a
+       hardcoded color. Per-colorway values set the triplet; a future
+       data-colorway="custom" only needs to set THIS one var inline —
+       no layout CSS to touch. */
+    --pt-scrim-rgb: 19,21,23;
+  }
+  /* overflow:hidden so a scaled-up image is cropped by its own media
+     slot rather than painting over the copy beside it — split and
+     type-top layouts give the media a real box, not the whole banner. */
+  .pt-banner-media { position: absolute; border-radius: 0; overflow: hidden; }
+  .pt-banner-media img, .pt-banner-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* ── Copy block — see the header comment above for why this is
+     `block`, not flex. Safe-padded; the four rhythm steps (griffin→
+     headline .55em, headline→subhead .3em, subhead→body .45em,
+     body→CTA .8em) are adjacent-sibling margin-top keyed to whichever
+     field actually precedes it (fields are optional — the combinators
+     below cover every present/absent permutation without per-layout
+     hand-tuning). ── */
+  .pt-banner-copy {
+    position: absolute; display: block; min-height: 0;
+    padding: var(--pad);
+    color: #C29049; /* default ink read by Studio's blank-banner placeholders — see .is-placeholder below */
+    --hl-size: clamp(16px, 9.5cqmin, 26px); /* BOX default */
+    --sub-mult: 0.5;
+  }
+  /* Disclaimer reserved band (P11 non-negotiable: CTA never touches
+     it) — :has() lets one rule cover every bottom-anchored layout's
+     copy box without per-layout padding math. Scoped to type-bottom
+     and full-bleed only: those are the only two layouts whose copy
+     box shares the banner's actual bottom edge (`bottom:0`), so
+     they're the only ones where the CTA could ever end up adjacent to
+     the disclaimer. Centered copy (split, diagonal) and top-anchored
+     copy (type-top) never reach that edge, and reserving the band for
+     them anyway would burn vertical budget those classes' worst-case
+     content genuinely needs. */
+  /* 9/10 — the band covers EVERY layout now, and it is 18px, not 14:
+     the legal slot the QA pass designed in (e32c863: a hairline rule,
+     3px of padding, 7.5px mono) stands 16px tall at 300×250, 2px more
+     than the band reserved, and body copy showing at 300×250 (this
+     fork's own rule) walks the stack down to the slot in the top- and
+     centre-anchored layouts too. The ported P11 harness caught 20
+     CTA-over-legal overlaps; this is the fix. The clamps take the
+     budget back out of body copy, never out of the CTA. */
+  .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy {
+    /* AZ.2 — the reserve follows the slot: reads the legal slot's
+       MEASURED height (--legal-h, written on .pt-banner by the fit
+       pass — applyCardScale/fitAllBannerScales in 14-hat-a-files.js,
+       and applyDisclaimerContent in 19-sheet-c-variety.js on every
+       content change) instead of the flat 18px this literal used to
+       be. 18px stays as the fallback for the instant before the fit
+       pass has measured anything (first paint, or a context — Studio's
+       own stage — that doesn't run this file's fit pass). */
+    padding-bottom: calc(var(--pad) + var(--legal-h, 18px));
+  }
+
+  /* BA.2 — Move on the stage: each movable part carries its own inline
+     --pt-ox / --pt-oy (the banner's NATURAL px, written by
+     applyOffsetsToBanner; absent = the layout's own home) and this ONE
+     rule moves it. The `translate` property, never `transform`, so
+     nothing collides with the headline's fit var or any layout
+     transform; the vars ride the element itself, so every clone of a
+     moved banner (a card, a select, Package, History, the eye) carries
+     the move by construction. */
+  .pt-banner :is(.pt-banner-logo, .pt-banner-headline, .pt-banner-subhead, .pt-banner-body, .pt-banner-cta, .pt-banner-disclaimer) {
+    translate: var(--pt-ox, 0px) var(--pt-oy, 0px);
+  }
+  .pt-banner-logo {
+    height: var(--logo-h, clamp(14px, 10cqh, 24px));
+    width: auto; display: block; object-fit: contain;
+  }
+  .pt-banner-headline {
+    margin: 0;
+    font-family: 'Montserrat', var(--font-sans);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: #C29049;
+    /* --body-shrink-scale is the "Shrink to fit" Fit control's own
+       lever (set by JS per line, per unit, from bodyLimitForSize() —
+       see the Body copy section) — 1 (unset) in Fixed size mode, or
+       whenever a line is already within its size class's limit.
+       --pt-fit-scale is §BR.4's own, separate lever — the Studio size
+       control/Fit link, one multiplier per line PER RATIO
+       (assets.lines[id].fit[ratio], applyLineFit — 13-editor-studio-a-
+       framing.js) rather than a sheet-wide mode. The two stack
+       (shrink-to-fit's own floor first, then whatever BR.4 asked for
+       on top) since they answer different questions — one is "never
+       ellipsize," the other is "this line reads at this size on this
+       shape" — and either being unset multiplies by 1, so a line
+       neither has ever touched renders exactly as before both
+       existed. The margin rhythm below stays keyed to the unscaled
+       --hl-size on purpose: only the glyphs shrink, not the spacing
+       around them. */
+    font-size: calc(var(--hl-size) * var(--body-shrink-scale, 1) * var(--pt-fit-scale, 1));
+    line-height: 1.02;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .pt-banner-logo + .pt-banner-headline { margin-top: calc(var(--hl-size) * 0.55); }
+
+  .pt-banner-subhead {
+    margin: 0;
+    font-family: 'Montserrat', var(--font-sans);
+    font-weight: 600;
+    color: inherit;
+    opacity: 0.92;
+    font-size: calc(var(--hl-size) * var(--sub-mult));
+    line-height: 1.15;
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .pt-banner-headline + .pt-banner-subhead { margin-top: calc(var(--hl-size) * 0.3); }
+
+  .pt-banner-body {
+    margin: 0;
+    display: none; /* shown only where a size-class query below opts it in */
+    font-family: var(--font-sans);
+    font-weight: 400;
+    color: inherit;
+    opacity: 0.82;
+    font-size: clamp(6px, 3.4cqh, 10.5px);
+    line-height: 1.35;
+    overflow: hidden;
+  }
+  .pt-banner-headline + .pt-banner-body,
+  .pt-banner-subhead + .pt-banner-body { margin-top: calc(var(--hl-size) * 0.45); }
+  /* Body copy only where the class has real room — BOX is too small
+     (P11 tightens P8's old ≥300×250 rule) except 336×280's one-liner;
+     TOWER (300×600 only) and BILLBOARD show it too — all opted in via
+     their own container queries below, never a blanket display here. */
+
+  .pt-banner-cta {
+    margin: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.5em 1em;
+    border-radius: 0; /* P11: square, always */
+    /* No border: no colorway below ever gave this one a real color, so
+       it was standing in for nothing — and a 1px transparent border,
+       antialiased under the sheet's fractional card-scale transform
+       (fitAllBannerScales/scale(0.7638...) etc.), is exactly what was
+       painting the faint ring around the button that read as a stray
+       dark hairline. A CTA is a flat plate; the outlined colorway
+       (dark-on-black, below) already carries its own ring on purpose,
+       as an opaque box-shadow, which doesn't have this seam. */
+    border: 0;
+    background: linear-gradient(135deg, #C29049, #966C2F);
+    color: #131517;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 600;
+    /* §BR.4 — --pt-fit-scale, same lever/comment as the headline's own
+       above; unset multiplies by 1, so a CTA nobody has resized reads
+       exactly as before. */
+    font-size: calc(var(--cta-size, clamp(10px, 4.6cqmin, 13px)) * var(--pt-fit-scale, 1));
+    white-space: nowrap;
+    transition: background 200ms cubic-bezier(0.22,1,0.36,1), color 200ms cubic-bezier(0.22,1,0.36,1), box-shadow 200ms cubic-bezier(0.22,1,0.36,1);
+  }
+  /* The only ring a CTA keeps: keyboard focus, painted as an outline
+     (not a border) so it can never reproduce the antialiasing seam
+     above. Outside the editor the CTA isn't a focusable element, so
+     this is dormant there — it only ever shows on the editor stage's
+     own contenteditable/hover treatment below, which already owns it. */
+  .pt-banner-cta:focus-visible {
+    outline: 1.5px solid var(--accent, #1858ee);
+    outline-offset: 2px;
+  }
+  .pt-banner-headline + .pt-banner-cta,
+  .pt-banner-subhead + .pt-banner-cta,
+  .pt-banner-body + .pt-banner-cta { margin-top: calc(var(--hl-size) * 0.8); }
+
+  .pt-banner-disclaimer {
+    position: absolute; left: var(--pad); right: var(--pad); bottom: var(--pad);
+    text-align: center;
+    color: #C29049; /* default gold-on-dark ink — per-colorway overrides below */
+    opacity: 0.55;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    /* §BR.4 — --pt-fit-scale, same lever as the headline/CTA above. */
+    font-size: calc(7.5px * var(--pt-fit-scale, 1));
+    letter-spacing: 0.01em;
+    /* AZ.1 (Bryan, 9/15, on a unit's legal line ending in "registratio…":
+       "I don't think these legal lines can be … right?") — a legal line
+       is never cut. Wraps to as many lines as it needs instead of
+       ellipsizing one: two at 300×250 for the longest pool line, three
+       or four at 160×600. line-height set explicitly (not the banner's
+       inherited default) since it now actually stacks lines. The Scroll
+       box style below (.pt-banner-disclaimer--scroll) is complete by
+       construction already — a bounded, actually-scrollable region — and
+       is untouched; the empty placeholder keeps its own one-line dashed
+       box (height fixed, no text to wrap) untouched too. */
+    white-space: normal;
+    line-height: 1.25;
+    pointer-events: none;
+    z-index: 2;
+    /* No hairline by default (Bryan, 9/15: "we should not have the
+       hairline near the legal text by default") — the line sits bare
+       at the foot of the unit; the designed-in-slot rule that used to
+       sit above it (the handoff's "design into template where it
+       goes") is gone. The Scroll box style below keeps its box — a bounded
+       region is a different thing from a caption. */
+  }
+  /* Empty state: the slot itself, not nothing — a quiet dashed outline
+     at the same safe-area position, so "where it goes" is visible on
+     the sheet before anyone has typed a legal line. No hairline rule
+     here (that belongs to real type sitting under it); the dashed
+     border IS the affordance. Explicit width/height because there is
+     no text to size the box — BILLBOARD's own width:auto override
+     below would otherwise collapse an empty inline element to 0. */
+  .pt-banner-disclaimer.pt-banner-disclaimer--empty {
+    border: 1px dashed currentColor;
+    border-radius: 2px;
+    opacity: 0.28;
+    height: 11px;
+    width: auto;
+  }
+  /* Scroll box (pharma ISI) — the band's Legal pane's Style pair (AT.2). A bounded,
+     actually-scrollable region rather than one ellipsized line; height
+     is this class's own BOX default, TOWER/BILLBOARD widen it below
+     where those classes have the room. Real overflow, not a staged
+     demo: a short line simply never grows a scrollbar. */
+  .pt-banner-disclaimer.pt-banner-disclaimer--scroll {
+    top: auto; height: 30px;
+    overflow-y: auto; overflow-x: hidden;
+    white-space: normal; text-overflow: clip;
+    text-align: left;
+    border: 0.5px solid currentColor;
+    border-radius: 2px;
+    padding: 3px 5px;
+    pointer-events: auto; /* has to receive wheel/touch to scroll, unlike the decorative inline line */
+    scrollbar-width: thin;
+  }
+  .pt-banner-disclaimer.pt-banner-disclaimer--scroll::-webkit-scrollbar { width: 4px; }
+  .pt-banner-disclaimer.pt-banner-disclaimer--scroll::-webkit-scrollbar-thumb { background: currentColor; opacity: 0.4; border-radius: 2px; }
+  /* Empty + scroll style together: the placeholder previews the boxed
+     shape it will become, not just a thin rule. */
+  .pt-banner-disclaimer.pt-banner-disclaimer--empty.pt-banner-disclaimer--scroll {
+    height: 30px;
+    border-style: dashed;
+  }
+
+  /* §BS — the resting canvas's own template blanks (a Style picked,
+     nothing generated yet): a real .pt-banner with an empty reference
+     set, drawn through this same recipe so the blank and the real
+     thing never drift. The image slot reads the universal "no image"
+     transparency checkerboard — light/mid grey, a fine grid, never the
+     colorway's own ground so it stays legible on any of them. */
+  .pt-tmpl-checker {
+    width: 100%; height: 100%; display: block;
+    background-color: #f2f2f2;
+    background-image:
+      conic-gradient(#dcdcdc 90deg, transparent 90deg 180deg, #dcdcdc 180deg 270deg, transparent 270deg);
+    background-size: 14px 14px;
+  }
+  body[data-theme="dark"] .pt-tmpl-checker {
+    background-color: #2b2b2b;
+    background-image:
+      conic-gradient(#3c3c3c 90deg, transparent 90deg 180deg, #3c3c3c 180deg 270deg, transparent 270deg);
+  }
+  /* Headline/CTA go from copy to a solid bar — no placeholder text,
+     bar length ≈ a typical line. The headline already carries its
+     colorway's ink as `color` (below); background:currentColor turns
+     that same ink into the bar, sized in em off the unit's own
+     --hl-size so it scales exactly as a real line would. The CTA
+     keeps its own themed pill (background/padding) — width/height are
+     set directly since there is no label left to size the box. */
+  .pt-banner-headline.pt-tmpl-bar {
+    display: block;
+    -webkit-line-clamp: unset;
+    width: 58%;
+    height: 0.6em;
+    min-height: 4px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.82;
+  }
+  .pt-banner-cta.pt-tmpl-bar {
+    display: block;
+    padding: 0;
+    width: 5.5em;
+    height: 2em;
+  }
+  /* §BR.5 — a blank's dealt content changing (a deck line or an
+     attached image landing while still resting) gets the house
+     blur-fade flash — the panel eyebrow's own pt-panel-eyebrow-flash
+     keyframe (24-editor-studio-a.css), reused rather than a bespoke
+     one. renderTemplateBlankCellContent rebuilds the cell's banner
+     wholesale on every redraw, so this plays on the whole banner
+     rather than a single field. */
+  .pt-tmpl-fill-in { animation: pt-tmpl-fill-flash 560ms ease both; }
+  @keyframes pt-tmpl-fill-flash {
+    0% { opacity: 1; filter: none; }
+    35% { opacity: 0.15; filter: blur(4px); }
+    100% { opacity: 1; filter: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-tmpl-fill-in { animation: none; }
+  }
+
+  /* Coordinator fix, 9/18 — a neutral blank's diagonal/full-bleed/card
+     layout sits copy (and the disclaimer, which spans full-width at
+     the foot on EVERY layout) on top of the media, kept legible today
+     by a translucent scrim tuned for a real branded colorway's own
+     ink. §BR.5 can now put a real photo behind real dark text there,
+     and a scrim alone stops being enough — dark ink over a dark patch
+     of photo reads as broken. Rule: the ground under text is opaque,
+     never a scrim; the diagonal cut's own edge, outside the text
+     column, stays a real, untinted photo. .pt-tmpl-neutral (set
+     alongside the per-field crisp overrides above, buildStageBannerElForSize)
+     scopes this to a neutral (no guide) blank only — a guide's own
+     colorway already reads fine against its own scrim and is
+     untouched. */
+  .pt-banner.pt-tmpl-neutral[data-layout="diagonal"] .pt-banner-copy,
+  .pt-banner.pt-tmpl-neutral[data-layout="full-bleed"] .pt-banner-copy,
+  .pt-banner.pt-tmpl-neutral[data-layout="card"] .pt-banner-copy {
+    background: var(--pt-ground, #F4F4F5);
+  }
+  .pt-banner.pt-tmpl-neutral[data-layout="card"] .pt-banner-copy { border-radius: 4px; } /* card's own rounded panel, kept now that the fill is solid, not translucent */
+  .pt-banner.pt-tmpl-neutral .pt-banner-disclaimer {
+    background: var(--pt-ground, #F4F4F5);
+    opacity: 1; /* the base rule's 0.55 would let the image bleed through even a solid fill — full fidelity means fully opaque here */
+  }
+
+  /* ── P2 editor: the 5 approved brand lockup pairings, live-
+     switchable per concept via the editor's colorway dots.
+     No data-colorway attribute = gold-on-dark, the values already
+     set above — every banner the P1 flow generates keeps its exact
+     original look untouched. .pt-banner-inner/-headline/-cta
+     transition (added above) so switching in the editor crossfades
+     instead of snapping. Logo image src (griffin-{gold,dark,white})
+     swaps in JS alongside data-colorway — see LOGO_FOR_COLORWAY. Each
+     block also sets --pt-scrim-rgb to that colorway's own ground so
+     every full-bleed/diagonal scrim (below) reads the right color
+     without a single per-layout override. */
+  .pt-banner-inner { transition: background 200ms cubic-bezier(0.22,1,0.36,1); }
+  .pt-banner[data-colorway="white-on-dark"] .pt-banner-inner { background: #131517; --pt-scrim-rgb: 19,21,23; }
+  .pt-banner[data-colorway="white-on-dark"] .pt-banner-headline { color: #FFFFFF; }
+  .pt-banner[data-colorway="white-on-dark"] .pt-banner-cta { background: #FFFFFF; color: #131517; }
+  .pt-banner[data-colorway="white-on-dark"] .pt-banner-copy { color: #FFFFFF; }
+  .pt-banner[data-colorway="white-on-dark"] .pt-banner-disclaimer { color: #FFFFFF; }
+
+  .pt-banner[data-colorway="dark-on-gold"] .pt-banner-inner { background: linear-gradient(135deg, #C29049, #966C2F); --pt-scrim-rgb: 194,144,73; }
+  .pt-banner[data-colorway="dark-on-gold"] .pt-banner-headline { color: #131517; }
+  .pt-banner[data-colorway="dark-on-gold"] .pt-banner-cta { background: #131517; color: #C29049; }
+  .pt-banner[data-colorway="dark-on-gold"] .pt-banner-copy { color: #131517; }
+  .pt-banner[data-colorway="dark-on-gold"] .pt-banner-disclaimer { color: #131517; }
+
+  .pt-banner[data-colorway="gold-on-light"] .pt-banner-inner { background: #F3EEE4; --pt-scrim-rgb: 243,238,228; }
+  .pt-banner[data-colorway="gold-on-light"] .pt-banner-headline { color: #C29049; }
+  .pt-banner[data-colorway="gold-on-light"] .pt-banner-cta { background: #131517; color: #C29049; }
+  .pt-banner[data-colorway="gold-on-light"] .pt-banner-copy { color: #C29049; }
+  .pt-banner[data-colorway="gold-on-light"] .pt-banner-disclaimer { color: #C29049; }
+
+  .pt-banner[data-colorway="dark-on-black"] .pt-banner-inner { background: #000000; --pt-scrim-rgb: 0,0,0; }
+  .pt-banner[data-colorway="dark-on-black"] .pt-banner-headline { color: #966C2F; }
+  .pt-banner[data-colorway="dark-on-black"] .pt-banner-cta { background: transparent; color: #966C2F; box-shadow: inset 0 0 0 1.5px #966C2F; }
+  .pt-banner[data-colorway="dark-on-black"] .pt-banner-copy { color: #966C2F; }
+  .pt-banner[data-colorway="dark-on-black"] .pt-banner-disclaimer { color: #966C2F; }
+
+  /* AA.2 — ember-on-black, Corvache Precision's own locked colorway:
+     near-black ground, a white headline/copy (never gold — Precision
+     carries none of Corvache's own warmth), and the CTA alone in the
+     one hot ember accent, as a hairline ghost button — the exact
+     "dark-on-black" CTA recipe (transparent + inset box-shadow ring),
+     just in ember instead of gold-dark, since that recipe is already
+     this file's own house pattern for an outlined CTA. */
+  .pt-banner[data-colorway="ember-on-black"] .pt-banner-inner { background: #0B0C0F; --pt-scrim-rgb: 11,12,15; }
+  .pt-banner[data-colorway="ember-on-black"] .pt-banner-headline { color: #FFFFFF; }
+  .pt-banner[data-colorway="ember-on-black"] .pt-banner-cta { background: transparent; color: #DC4C2F; box-shadow: inset 0 0 0 1.5px #DC4C2F; }
+  .pt-banner[data-colorway="ember-on-black"] .pt-banner-copy { color: #FFFFFF; }
+  .pt-banner[data-colorway="ember-on-black"] .pt-banner-disclaimer { color: #FFFFFF; }
+
+  /* P9 — Colors fine-tune. data-colorway="custom" maps the exact
+     same properties the 5 named colorways set above onto 4 inline
+     CSS vars (--pt-ground/--pt-ink/--pt-accent/--pt-tint, set on the
+     .pt-banner element itself by JS — see applyCustomColorVarsToBanner/
+     customColorInlineStyleAttr) — no layout CSS to touch, same seam
+     the file's own scrim comment already reserved. CTA follows the
+     majority pattern among the 5 named colorways: accent-filled,
+     ground-colored text. Image tint reads var(--pt-tint) as an inset
+     box-shadow of the ground color over the media — no extra markup. */
+  .pt-banner[data-colorway="custom"] .pt-banner-inner { background: var(--pt-ground, #131517); --pt-scrim-rgb: var(--pt-ground-rgb, 19,21,23); }
+  .pt-banner[data-colorway="custom"] .pt-banner-headline,
+  .pt-banner[data-colorway="custom"] .pt-banner-copy,
+  .pt-banner[data-colorway="custom"] .pt-banner-disclaimer { color: var(--pt-ink, #C29049); }
+  .pt-banner[data-colorway="custom"] .pt-banner-cta { background: var(--pt-accent, #C29049); color: var(--pt-ground, #131517); }
+  .pt-banner[data-colorway="custom"] .pt-banner-media img,
+  .pt-banner[data-colorway="custom"] .pt-banner-media video {
+    box-shadow: inset 0 0 0 999px rgba(var(--pt-ground-rgb, 19,21,23), var(--pt-tint, 0));
+  }
+
+  /* ── The 5 layouts, BOX-class defaults (250–336w / 250–280h). ──
+     type-top/type-bottom: `.pt-banner-inner` becomes a 2-row GRID
+     (content-sized copy row + a flexible media row) instead of two
+     independently-absolute, fixed-% bands — the fixed-height 44–52%
+     band this project shipped with pre-P11 assumed a much smaller
+     type scale/rhythm than P11's own spec (bigger clamps, em-based
+     gaps); a hard-coded band would either clip worst-case copy or
+     force yet another per-size hand-tune. A content-sized row (auto)
+     next to a flexible one (1fr) gives copy exactly the room its
+     (clamped, bounded) content needs and hands media the remainder —
+     self-adjusting, zero overlap, by construction, at every size. */
+  /* flex column, NOT grid — a Chrome quirk (verified: reproducible
+     across separate layout passes, e.g. measuring on a later tick
+     than the DOM mutation, which is the normal case for real
+     interaction code, not just this comment's own synthetic test)
+     miscomputes a CSS Grid `auto` track's height when the item's
+     intrinsic size comes from a `-webkit-line-clamp` descendant —
+     the auto track can collapse on a later reflow even though the
+     clamped content still needs its full height. Flexbox's content-
+     sizing (`flex:0 0 auto`) doesn't share that bug. */
+  .pt-banner[data-layout="type-top"] .pt-banner-inner { display: flex; flex-direction: column; }
+  .pt-banner[data-layout="type-top"] .pt-banner-copy { position: relative; flex: 0 0 auto; order: 1; }
+  .pt-banner[data-layout="type-top"] .pt-banner-media { position: relative; flex: 1 1 0; min-height: 0; order: 2; }
+  .pt-banner[data-layout="type-bottom"] .pt-banner-inner { display: flex; flex-direction: column; }
+  .pt-banner[data-layout="type-bottom"] .pt-banner-media { position: relative; flex: 1 1 0; min-height: 0; order: 1; }
+  .pt-banner[data-layout="type-bottom"] .pt-banner-copy { position: relative; flex: 0 0 auto; order: 2; }
+
+  /* split: copy left, image right — copy is content-sized and
+     vertically centered via the ROW's cross-axis (align-items on the
+     flex container, not on copy itself — copy stays a plain block so
+     its clamped children keep working). */
+  .pt-banner[data-layout="split"] .pt-banner-inner { display: flex; align-items: center; }
+  .pt-banner[data-layout="split"] .pt-banner-media { position: relative; width: 44%; height: 100%; order: 2; align-self: stretch; }
+  .pt-banner[data-layout="split"] .pt-banner-copy { position: relative; width: 56%; height: auto; order: 1; }
+
+  /* full-bleed: image fills, copy overlays bottom with a baked-in
+     scrim, content-sized + bottom-anchored (never a fixed %, same
+     self-sizing logic as type-top/bottom above). Stays near-opaque
+     through the headline/CTA zone (0–55% up the COPY box, bottom-
+     anchored) and only fades out above that, over the logo. */
+  .pt-banner[data-layout="full-bleed"] .pt-banner-media { inset: 0; }
+  .pt-banner[data-layout="full-bleed"] .pt-banner-copy {
+    left: 0; right: 0; bottom: 0; top: auto; height: auto;
+    background: linear-gradient(to top, rgba(var(--pt-scrim-rgb), 0.88) 0%, rgba(var(--pt-scrim-rgb), 0.88) 55%, rgba(var(--pt-scrim-rgb), 0) 92%);
+  }
+  /* diagonal — the 5th arrangement: an angled cut instead of a hard
+     split line, 22° from vertical at BOX/BILLBOARD's aspect (STRIP
+     collapses it to full-bleed+scrim below — no room for a cut AND a
+     safe text zone at 50–90px tall; TOWER stacks it like type-top —
+     a diagonal cut can't stay on-canvas at a 22° angle across a
+     120–300px-wide, 600px-tall container). Copy is content-sized and
+     vertically centered (top:50%+translateY, since diagonal's copy
+     isn't a flex item of anything — position:absolute stays simplest
+     here). A scrim rides on ::after, same clip-path, so the text side
+     of the cut stays legible over any photo without losing the
+     reveal on the image side. */
+  .pt-banner[data-layout="diagonal"] .pt-banner-media { inset: 0; clip-path: polygon(40% 0, 100% 0, 100% 100%, 4% 100%); }
+  .pt-banner[data-layout="diagonal"] .pt-banner-copy {
+    left: 0; top: 50%; bottom: auto; width: 52%; height: auto;
+    transform: translateY(-50%);
+    padding-right: 4%;
+  }
+  .pt-banner[data-layout="diagonal"] .pt-banner-media::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(var(--pt-scrim-rgb), 0.92) 0%, rgba(var(--pt-scrim-rgb), 0.78) 38%, rgba(var(--pt-scrim-rgb), 0.32) 56%, rgba(var(--pt-scrim-rgb), 0) 72%);
+  }
+
+  /* AA.1 — the four new generics, BOX-class defaults. Each mirrors an
+     existing technique rather than inventing one: stacked promotes
+     copy's own children into the inner flex column (display:contents
+     on .pt-banner-copy — its children stay true DOM siblings, so the
+     existing logo→headline→subhead adjacency rhythm above keeps
+     working unchanged); split-reverse is a literal mirror of split;
+     card and type-only reuse full-bleed's inset:0 media + an
+     absolutely-positioned copy box. */
+
+  /* stacked: headline/subhead/body band on top, media in the middle
+     (flex:1, taking whatever's left), the CTA alone on the bottom —
+     three bands from one flex column once copy's own box is promoted
+     out of the way. Padding moves to the promoted children themselves
+     (copy's own padding is inert once it's display:contents), and
+     media gets negative horizontal margins equal to it so the middle
+     band still bleeds edge to edge like every other layout's media. */
+  .pt-banner[data-layout="stacked"] .pt-banner-inner { display: flex; flex-direction: column; padding: var(--pad) 0; box-sizing: border-box; }
+  .pt-banner[data-layout="stacked"] .pt-banner-copy { position: static; display: contents; padding: 0; }
+  .pt-banner[data-layout="stacked"] .pt-banner-logo,
+  .pt-banner[data-layout="stacked"] .pt-banner-headline,
+  .pt-banner[data-layout="stacked"] .pt-banner-subhead,
+  .pt-banner[data-layout="stacked"] .pt-banner-body,
+  .pt-banner[data-layout="stacked"] .pt-banner-cta { padding-left: var(--pad); padding-right: var(--pad); order: 1; flex: 0 0 auto; }
+  .pt-banner[data-layout="stacked"] .pt-banner-cta { order: 3; align-self: flex-start; }
+  .pt-banner[data-layout="stacked"] .pt-banner-media { position: relative; inset: auto; order: 2; flex: 1 1 0; min-height: 0; width: auto; margin: 0 calc(var(--pad) * -1); }
+  .pt-banner[data-layout="stacked"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-cta { margin-bottom: var(--legal-h, 18px); } /* AZ.2 — the reserve follows the slot */
+
+  /* split-reverse: split's own two boxes, mirrored — media first
+     (left) at the same 44%, copy second (right) at 56%. */
+  .pt-banner[data-layout="split-reverse"] .pt-banner-inner { display: flex; align-items: center; }
+  .pt-banner[data-layout="split-reverse"] .pt-banner-media { position: relative; width: 44%; height: 100%; order: 1; align-self: stretch; }
+  .pt-banner[data-layout="split-reverse"] .pt-banner-copy { position: relative; width: 56%; height: auto; order: 2; }
+
+  /* card: full-bleed media (full-bleed's own inset:0), copy as a
+     small solid card of the colorway ground at 92% opacity, inset
+     10px off the bottom-left corner, capped at 62% wide. */
+  .pt-banner[data-layout="card"] .pt-banner-media { inset: 0; }
+  .pt-banner[data-layout="card"] .pt-banner-copy {
+    /* Coordinator fix — was `width:auto; max-width:62%; right:auto`,
+       which is CSS's own shrink-to-fit sizing recipe for an absolutely
+       positioned box (10.3.7): with only ONE inset (left) set and
+       width:auto, the box's rendered width tracks its own content's
+       preferred width UP TO the 62% cap — it does not reliably RENDER
+       at 62%. TOWER's own card override (below, unaffected by this
+       bug) already uses the other, correct recipe — left AND right
+       both set, width:auto resolving to "fill exactly between them" —
+       which is what actually forces a definite, predictable box a
+       line-clamped headline can wrap and shrink against. Ported that
+       same recipe here instead of a shrink-to-fit max-width, and
+       widened 62% → 72% (permitted ceiling) since 62% of even a
+       correctly-forced box was still too narrow for the fixture
+       deck's own longer headlines at the semibold Atelier weight. */
+    left: 10px; right: 28%; top: auto; bottom: 10px; height: auto;
+    width: auto;
+    background: rgba(var(--pt-scrim-rgb), 0.92);
+    border-radius: 4px;
+  }
+  .pt-banner[data-layout="card"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy { bottom: calc(10px + var(--legal-h, 18px)); } /* AZ.2 — 10px card inset + the reserve, was a flat 28px (10 + the old flat 18) */
+
+  /* type-only: no media at all; copy centres on the colorway ground
+     (.pt-banner-inner itself becomes the centering flex box), the
+     mark scaled 1.6× and centred above the headline via margin:auto
+     on the one block-level child text-align can't reach. */
+  .pt-banner[data-layout="type-only"] .pt-banner-media { display: none; }
+  .pt-banner[data-layout="type-only"] .pt-banner-inner { display: flex; align-items: center; justify-content: center; }
+  .pt-banner[data-layout="type-only"] .pt-banner-copy {
+    position: relative; inset: auto; display: block; text-align: center;
+    width: 100%; max-width: 82%; height: auto; padding: var(--pad) 0;
+  }
+  .pt-banner[data-layout="type-only"] .pt-banner-logo {
+    height: calc(var(--logo-h, clamp(14px, 10cqh, 24px)) * 1.6);
+    margin: 0 auto;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     SIZE CLASS — STRIP (height ≤120px: 320×50, 728×90, 970×90).
+     One-row lockup regardless of layout — there's no vertical room
+     for a distinct media band at this height. P11b (9/2): STRIP now
+     OWNS every layout's anatomy at every width it actually has room
+     for — but 320×50 doesn't. The math: reserving even a 34% media
+     panel at 320px total width leaves ~40px for the headline once the
+     griffin, the "Reserve yours"-class CTA pill and the row's own gaps
+     take their real (measured) share — no legibility floor fits a
+     24-character headline in 40px. 728×90/970×90 have real room
+     (≥181px once panel'd). So the SHARED rules below (common to every
+     width) set up the row/hidden-fields/CTA-pinned-right anatomy, and
+     two width-scoped blocks split on that math: ≥700px wide gets the
+     panel treatment (split/diagonal right, type-top/type-bottom left);
+     <700px wide (320×50, the only member that thin) collapses every
+     layout to the SAME full-bleed+scrim treatment full-bleed itself
+     already uses — the one geometry actually verified to fit the
+     worst-case headline at that width. `.pt-banner-copy` switches to
+     flex row here (safe: STRIP's headline/subhead are single-line
+     nowrap+ellipsis, not -webkit-line-clamp, so the flex-item clamp
+     bug above doesn't apply). ════════════════════ */
+  @container banner (max-height: 120px) {
+    .pt-banner-inner { display: block; } /* undo the type-top/bottom grid — STRIP repositions media/copy itself, below */
+    .pt-banner-copy {
+      --sub-mult: 0.55;
+      --logo-h: 55cqh;
+      --cta-size: clamp(9px, 22cqh, 12px);
+      display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap;
+      position: absolute; top: 0; bottom: 0; left: 0; right: 0; height: auto; width: auto;
+      /* Tightened from clamp(4px,2cqw,10px) — freed a few real px back
+         for the headline at 320×50 (measured against the real,
+         document.fonts.ready-loaded Montserrat metrics; the original
+         coefficient was tuned against a font-loading race that
+         silently measured the narrower fallback font — see the
+         P11b build log). */
+      gap: clamp(3px, 1.3cqw, 8px);
+    }
+    /* CTA padding tightened for STRIP only (not the shared base rule)
+       — same reason as the gap above: reclaims real px for the
+       headline at 320×50 without touching BOX/TOWER/BILLBOARD's CTA. */
+    .pt-banner-cta { padding: 0.5em 0.8em; }
+    /* No reserved band at STRIP — the disclaimer is hidden outright
+       (below), so there's nothing to protect the CTA from. Matches
+       the base rule's own per-layout qualification (type-bottom,
+       full-bleed) so this actually outranks it instead of losing a
+       specificity tie to source order. */
+    .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy {
+      padding-bottom: var(--pad); /* strips hide the legal slot; no band to reserve */
+    }
+    .pt-banner-logo { flex-shrink: 0; }
+    .pt-banner-headline {
+      margin-top: 0 !important;
+      -webkit-line-clamp: 1;
+      white-space: nowrap; text-overflow: ellipsis;
+      flex: 1 1 auto; min-width: 0;
+    }
+    .pt-banner-subhead, .pt-banner-body { display: none; }
+    .pt-banner-cta { margin-top: 0 !important; margin-left: auto; flex-shrink: 0; }
+    .pt-banner-disclaimer { display: none; }
+    /* AA.1 — type-only at STRIP: "mark left, headline centre, CTA
+       right" is already this shared row's own anatomy (logo shrinks,
+       headline takes the remainder, CTA pins right) — the only
+       change type-only needs is centring the headline's OWN text
+       within that remainder, instead of the row default's left
+       alignment. True at every STRIP width — there's no media panel
+       here to trade room with, so wide vs narrow makes no difference. */
+    .pt-banner[data-layout="type-only"] .pt-banner-headline { text-align: center; }
+    .pt-banner[data-layout="type-only"] .pt-banner-logo { margin: 0; }
+  }
+  /* ── STRIP, wide (728×90 / 970×90 — ≥700px gives every panel layout
+     real room): split/diagonal keep a right ~34% media panel,
+     type-top/type-bottom get a LEFT ~34% panel, full-bleed stays its
+     own media-fills + scrim (untouched). `.pt-banner-inner` must
+     actually BE a row-flex container for the order/width rules below
+     to put media and copy side-by-side: split's own base rule already
+     gives it flex row for free (no flex-direction set = row);
+     type-top/type-bottom's BASE rule sets flex-direction:COLUMN at the
+     same specificity (needed for their non-STRIP stacked treatment)
+     and otherwise wins over the generic `display:block` above,
+     stacking media over copy instead of beside it — and diagonal's
+     base rule never touches `.pt-banner-inner` at all, so the generic
+     block rule was silently winning there too. The explicit,
+     equally-specific, later-in-source rule below is the fix for all
+     three. Each panel's media also needs `flex: 0 0 34%` (not just
+     `width: 34%`) — type-top/type-bottom's BASE rule already sets
+     `flex: 1 1 0` on media (basis 0, needed for its own stacked
+     treatment), which outranks a bare `width` for flex main-size and
+     was collapsing the panel to ~4px against copy's competing growth
+     before this was pinned to a fixed flex-basis. ── */
+  @container banner (max-height: 120px) and (min-width: 700px) {
+    .pt-banner-copy {
+      /* Sized off the ACTUAL panel'd copy row (~66% of the banner,
+         after the media panel + gap), not the full banner — verified
+         empirically at 728×90 (worst-case headline fits, floor
+         raised to 11px) and 970×90 (fits with room to spare).
+         Replaces the old 100%-width-tuned `3.1cqw` coefficient,
+         which only ever fit full-bleed/the since-removed
+         full-bleed-collapse fallback, not a real panel. Coefficient
+         tuned against the REAL loaded Montserrat metrics — an
+         earlier pass tuned it against a font-loading race (the bare
+         page never renders Montserrat until a banner mounts, so an
+         un-awaited measurement silently used the narrower fallback
+         font) and was ~1px too large once the real font swapped in. */
+      --hl-size: clamp(11px, 1.65cqw, 22px);
+    }
+    .pt-banner[data-layout="type-top"] .pt-banner-inner,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-inner,
+    .pt-banner[data-layout="diagonal"] .pt-banner-inner {
+      display: flex; flex-direction: row; align-items: stretch;
+    }
+    .pt-banner[data-layout="split"] .pt-banner-media,
+    .pt-banner[data-layout="diagonal"] .pt-banner-media {
+      position: relative; flex: 0 0 34%; width: 34%; height: 100%; order: 2; align-self: stretch; inset: auto;
+    }
+    .pt-banner[data-layout="split"] .pt-banner-copy,
+    .pt-banner[data-layout="diagonal"] .pt-banner-copy {
+      position: relative; inset: auto; flex: 1 1 auto; min-width: 0; width: auto; order: 1;
+      background: none; padding-right: var(--pad); transform: none; top: auto;
+    }
+    /* diagonal keeps an angled cut (14° — shallow, since STRIP's own
+       height leaves almost nothing for a cut to travel across) rather
+       than the hard vertical line split uses; its media's own ::after
+       scrim (base rule) protects the sliver of media nearest the cut,
+       re-enabled here since wide STRIP no longer collapses diagonal to
+       a full-bleed overlay. */
+    .pt-banner[data-layout="diagonal"] .pt-banner-media { clip-path: polygon(70% 0, 100% 0, 100% 100%, 62% 100%); }
+    .pt-banner[data-layout="diagonal"] .pt-banner-media::after { display: block; }
+    .pt-banner[data-layout="type-top"] .pt-banner-media,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-media,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-media {
+      position: relative; flex: 0 0 34%; width: 34%; height: 100%; order: 1; inset: auto; clip-path: none; align-self: stretch;
+    }
+    .pt-banner[data-layout="type-top"] .pt-banner-copy,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-copy,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-copy {
+      position: relative; inset: auto; flex: 1 1 auto; min-width: 0; width: auto; order: 2;
+      background: none; padding-left: var(--pad);
+    }
+    /* AA.1 — stacked at STRIP-wide: "headline left, media centre, CTA
+       right" — media becomes a centred flex item between two content-
+       sized text items, in one row (the vertical 3-band BOX default
+       has no room to work with at 90px tall). */
+    .pt-banner[data-layout="stacked"] .pt-banner-inner { flex-direction: row; align-items: center; padding: 0 var(--pad); }
+    .pt-banner[data-layout="stacked"] .pt-banner-logo,
+    .pt-banner[data-layout="stacked"] .pt-banner-headline,
+    .pt-banner[data-layout="stacked"] .pt-banner-subhead,
+    .pt-banner[data-layout="stacked"] .pt-banner-body { padding-left: 0; padding-right: 0; }
+    .pt-banner[data-layout="stacked"] .pt-banner-headline { order: 1; flex: 0 1 auto; }
+    .pt-banner[data-layout="stacked"] .pt-banner-media {
+      position: relative; order: 2; flex: 1 1 auto; min-height: 0; height: 100%; width: auto;
+      margin: 0 clamp(6px, 2cqw, 14px); align-self: stretch;
+    }
+    .pt-banner[data-layout="stacked"] .pt-banner-cta { order: 3; padding-left: 0; padding-right: 0; margin-left: 0; }
+    /* AA.1 — card at STRIP-wide: the card stays left, now vertically
+       centred instead of bottom-anchored (there's no "bottom" band to
+       anchor to at this height) — media stays full-bleed underneath. */
+    .pt-banner[data-layout="card"] .pt-banner-copy {
+      position: absolute; left: 10px; right: auto; top: 50%; bottom: auto; transform: translateY(-50%);
+      display: block; width: auto; max-width: 55%;
+      padding: 5px 9px;
+    }
+  }
+  /* ── STRIP, narrow (320×50 — <700px: a 34% media panel would leave
+     ~40px for the headline once the griffin/CTA/gaps take their real
+     share, not enough at any legible floor). Every layout collapses to
+     the same media-fills + horizontal scrim treatment full-bleed
+     already uses — the one geometry verified to fit the worst-case
+     headline this tight. ── */
+  @container banner (max-height: 120px) and (max-width: 699px) {
+    .pt-banner-copy {
+      /* The original fit-to-width formula (P12, 9/1) — tuned against
+         this exact full-width-copy-row geometry, still the right one
+         here since every layout now shares it at this width. */
+      --hl-size: clamp(10px, min(38cqh, 3.1cqw), 22px);
+    }
+    .pt-banner[data-layout="type-top"] .pt-banner-media,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-media,
+    .pt-banner[data-layout="split"] .pt-banner-media,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-media,
+    .pt-banner[data-layout="stacked"] .pt-banner-media,
+    .pt-banner[data-layout="card"] .pt-banner-media,
+    .pt-banner[data-layout="diagonal"] .pt-banner-media {
+      position: absolute; inset: 0; width: auto; height: auto; clip-path: none; margin: 0;
+    }
+    .pt-banner[data-layout="diagonal"] .pt-banner-media::after { display: none; }
+    /* Explicit position/width/order reset, matching specificity to the
+       layouts' own BASE (non-STRIP) rules (split: width:56%+relative;
+       diagonal: width:52%+absolute+translateY; type-top/type-bottom:
+       flex items) — the shared `.pt-banner-copy` default above (lower
+       specificity than any of those) can't out-rank them on its own,
+       so every layout needs its own copy reset here, not just a
+       shared fallback. AA.1 — stacked/split-reverse/card join the
+       same fallback (stacked's own .pt-banner-copy is display:contents
+       at BOX, which this reset also has to undo — display:block below
+       restores the promoted children to one plain overlay box). */
+    .pt-banner[data-layout="type-top"] .pt-banner-copy,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-copy,
+    .pt-banner[data-layout="split"] .pt-banner-copy,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-copy,
+    .pt-banner[data-layout="stacked"] .pt-banner-copy,
+    .pt-banner[data-layout="card"] .pt-banner-copy,
+    .pt-banner[data-layout="diagonal"] .pt-banner-copy,
+    .pt-banner[data-layout="type-only"] .pt-banner-copy {
+      position: absolute; inset: 0; width: auto; height: auto; order: 0; max-width: none;
+      top: 0; bottom: 0; left: 0; right: 0; transform: none; padding: var(--pad);
+      background: linear-gradient(90deg, rgba(var(--pt-scrim-rgb), 0.85) 0%, rgba(var(--pt-scrim-rgb), 0.85) 62%, rgba(var(--pt-scrim-rgb), 0) 100%);
+      display: flex; flex-direction: row; align-items: center;
+    }
+    /* AA.1 bugfix — type-only's own BASE rule (unconditional, outside
+       any container query: display:block; position:relative; text-
+       align:center; max-width:82%; padding:var(--pad) 0 — see the
+       type-only block above SIZE CLASS — STRIP) out-specifies the
+       shared ALL-STRIP .pt-banner-copy row rule the exact same way
+       stacked's display:contents did (see the comment above this
+       block), so it needed the identical matching-specificity reset
+       above. type-only has no media panel to scrim (media stays
+       display:none — omitted from the .pt-banner-media reset list on
+       purpose), so the inherited scrim gradient just washes over the
+       plain colorway ground, harmlessly. Headline centering (not
+       flex's own row-default left align) and the logo's zeroed margin
+       both already exist in the shared ALL-STRIP block above (this
+       same reset makes that pairing reachable at 320×50, not only
+       ≥700px — P11's original comment ("wide vs narrow makes no
+       difference") is what this fix actually delivers on). */
+    .pt-banner[data-layout="type-only"] .pt-banner-logo { flex-shrink: 0; }
+    .pt-banner[data-layout="stacked"] .pt-banner-logo,
+    .pt-banner[data-layout="stacked"] .pt-banner-headline,
+    .pt-banner[data-layout="stacked"] .pt-banner-subhead,
+    .pt-banner[data-layout="stacked"] .pt-banner-body,
+    .pt-banner[data-layout="stacked"] .pt-banner-cta {
+      order: 0; flex: 1 1 auto; min-width: 0; padding: 0; margin-left: 0;
+    }
+    .pt-banner[data-layout="stacked"] .pt-banner-cta { flex: 0 0 auto; margin-left: auto; }
+  }
+  /* Subhead only where a STRIP unit is tall enough to spare a second
+     row's worth of height (320×100-class strips; 90px units are the
+     floor per spec — one line, 55% of the headline). */
+  @container banner (max-height: 120px) and (min-height: 90px) {
+    .pt-banner-subhead {
+      display: -webkit-box; margin-top: 0 !important;
+      flex-shrink: 1; min-width: 0;
+      white-space: nowrap; text-overflow: ellipsis;
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     SIZE CLASS — BOX body. 336×280 alone used to get this (P11 had
+     tightened P8's "≥300×250 shows body" rule down to the one BOX
+     member with 30px of height to spare). Reopened to 300×250 on
+     9/6: body copy is a control on the sheet's own toolbar now, so a
+     line typed there had to appear on the ads it was typed for —
+     a menu listing three lines over nine ads showing none is the
+     control lying about what it does. Still one clamped line, and
+     still only the two BOX members that can carry one: 250×250 and
+     the small rectangles stay out.
+     ════════════════════════════════════════════════════════════════ */
+  @container banner (min-width: 296px) and (max-width: 336px) and (min-height: 250px) and (max-height: 280px) {
+    .pt-banner-body { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     SIZE CLASS — BOX exception: split's headline, sized off the COPY
+     COLUMN (P11b sheet nit, 9/2). The shared `--hl-size: 9.5cqmin`
+     formula sizes off the whole banner — fine for every other BOX
+     layout, whose copy spans the full width, but split's copy is only
+     56% of it (44% at 250/300, still ~56% here — see the base split
+     rule above), so 9.5cqmin ran the SAME font as a full-width copy
+     column into a much narrower one: "THE COAST IS CALLING" ellipsized
+     to "THE / COAST IS…" at 300×250, worst-case "GOLDEN HOUR, EVERY
+     HOUR" fared worse. Scoped to exactly the 3 BOX members (never
+     STRIP/TOWER/BILLBOARD — this query's own min/max width+height
+     bounds are mutually exclusive with all three of those) so it can't
+     leak into their own `--hl-size` overrides elsewhere despite equal
+     selector specificity. `5.6cqw` (not cqmin) — cqw tracks the
+     banner's WIDTH, which is what actually varies split's copy-column
+     px width across the 3 BOX members (250×250 and 300×250 share the
+     same cqmin, 2.5, but need different fonts: 250×250's narrower
+     copy needs ~14px, 300×250's ~20px). Coefficient tuned against the
+     REAL rendered word-wrap using the actual loaded Montserrat (not
+     the fallback sans-serif a too-early measurement would silently
+     use — see the `document.fonts.load`/`.ready` fix in the P11b
+     harness) so both "THE COAST IS CALLING" and "GOLDEN HOUR, EVERY
+     HOUR" wrap to ≤3 lines, unclamped, at all 3 sizes —
+     `-webkit-line-clamp` raised 2→3 to give the worst-case headline
+     the room this smaller font still needs.
+     ════════════════════════════════════════════════════════════════ */
+  @container banner (min-width: 250px) and (max-width: 336px) and (min-height: 250px) and (max-height: 280px) {
+    .pt-banner[data-layout="split"] .pt-banner-copy,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-copy { --hl-size: clamp(12px, 5.6cqw, 26px); }
+    .pt-banner[data-layout="split"] .pt-banner-headline,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-headline { -webkit-line-clamp: 3; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     SIZE CLASS — TOWER (width ≤300px, height ≥600px: 160×600,
+     300×600). Vertical stack forced on every layout except full-bleed
+     (already a full-bleed image + bottom overlay at any aspect — no
+     conversion needed): media 44%, copy below. Body only at 300×600
+     (the 160×600 tower has no width to spare for a 3rd text row); CTA
+     goes full-width under 170px wide.
+     ════════════════════════════════════════════════════════════════ */
+  @container banner (max-width: 300px) and (min-height: 600px) {
+    .pt-banner-copy {
+      --hl-size: clamp(13px, 11cqw, 28px);
+      --logo-h: clamp(12px, 8cqw, 22px);
+      --cta-size: clamp(10px, 4.6cqw, 14px);
+    }
+    .pt-banner-headline { -webkit-line-clamp: 3; }
+    /* TOWER's own height (600px+) affords a genuinely taller ISI box
+       than BOX's 30px default. */
+    .pt-banner-disclaimer.pt-banner-disclaimer--scroll,
+    .pt-banner-disclaimer.pt-banner-disclaimer--empty.pt-banner-disclaimer--scroll { height: 60px; }
+    .pt-banner[data-layout="type-top"] .pt-banner-inner,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-inner,
+    .pt-banner[data-layout="split"] .pt-banner-inner,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-inner,
+    .pt-banner[data-layout="diagonal"] .pt-banner-inner {
+      display: flex; flex-direction: column;
+    }
+    .pt-banner[data-layout="type-top"] .pt-banner-media,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-media,
+    .pt-banner[data-layout="split"] .pt-banner-media,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-media,
+    .pt-banner[data-layout="diagonal"] .pt-banner-media {
+      position: relative; width: 100%; height: 44%; order: 1; inset: auto; clip-path: none; flex-shrink: 0;
+    }
+    .pt-banner[data-layout="diagonal"] .pt-banner-media::after { display: none; }
+    .pt-banner[data-layout="type-top"] .pt-banner-copy,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-copy,
+    .pt-banner[data-layout="split"] .pt-banner-copy,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-copy,
+    .pt-banner[data-layout="diagonal"] .pt-banner-copy {
+      position: relative; width: 100%; height: auto; order: 2;
+      top: auto; left: auto; right: auto; bottom: auto;
+      transform: none;
+    }
+    /* diagonal's BOX-level padding-right:4% (tuned for its 52%-wide
+       column, tight against the clip edge) is a longhand that would
+       otherwise outrank the copy's own var(--pad) shorthand even here,
+       where the column is full-width and the clip is gone — reset it
+       back to the safe pad. */
+    .pt-banner[data-layout="diagonal"] .pt-banner-copy { padding-right: var(--pad); }
+    /* TOWER unifies all 4 of these layouts into the same stack, so
+       copy (order:2, right after media) can reach far enough down the
+       column for its CTA to sit level with the disclaimer band — the
+       base reservation only covers type-bottom/full-bleed (the two
+       layouts whose copy is ANCHORED to the bottom edge elsewhere);
+       here every layout effectively is, so widen it to match. */
+    .pt-banner[data-layout="type-top"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy,
+    .pt-banner[data-layout="split"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy,
+    .pt-banner[data-layout="diagonal"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy {
+      padding-bottom: calc(var(--pad) + var(--legal-h, 18px)); /* AZ.2 — the reserve follows the slot (was a flat 18px, 9/10) */
+    }
+    /* AA.1 — card at TOWER: "card bottom, full width minus inset" —
+       media stays full-bleed (its own base rule, untouched); the card
+       widens from its BOX-default 62%-max-width corner box to span
+       the full column (minus the same 10px inset on both sides) and
+       sits flush to the bottom. */
+    .pt-banner[data-layout="card"] .pt-banner-copy {
+      left: 10px; right: 10px; bottom: 10px; max-width: none; width: auto;
+    }
+    .pt-banner[data-layout="card"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy { bottom: calc(10px + var(--legal-h, 18px)); } /* AZ.2 — the reserve follows the slot (was a flat 28px) */
+  }
+  @container banner (min-width: 300px) and (max-width: 300px) and (min-height: 600px) {
+    .pt-banner-body { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  }
+  @container banner (max-width: 170px) and (min-height: 600px) {
+    .pt-banner-cta { display: flex; width: 100%; box-sizing: border-box; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     SIZE CLASS — BILLBOARD (width ≥900px, height ≥200px: 970×250).
+     Split flips: media LEFT and bigger (56%), copy right (44%) — the
+     opposite proportions from BOX's default split. Disclaimer moves
+     to bottom-right (not centered — there's a full-width media panel
+     to its left in the dominant split treatment).
+     ════════════════════════════════════════════════════════════════ */
+  @container banner (min-width: 900px) and (min-height: 200px) {
+    /* 9/10 — centred copy stays centred on the billboard: reserving the
+       legal band under a vertically-centred box shifts its content up
+       (the griffin broke the top pad at 970×250); the slot sits clear
+       of the copy column here anyway. */
+    .pt-banner[data-layout="split"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy,
+    .pt-banner[data-layout="diagonal"] .pt-banner-inner:has(.pt-banner-disclaimer) .pt-banner-copy {
+      padding-bottom: var(--pad);
+    }
+    .pt-banner-copy {
+      --hl-size: clamp(22px, 12cqh, 34px);
+      --logo-h: clamp(16px, 9cqh, 26px);
+      --cta-size: clamp(13px, 4.4cqh, 17px);
+    }
+    .pt-banner-headline { -webkit-line-clamp: 2; }
+    .pt-banner-body { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .pt-banner[data-layout="split"] .pt-banner-media { width: 56%; order: 1; }
+    .pt-banner[data-layout="split"] .pt-banner-copy { width: 44%; order: 2; }
+    /* AA.1 — split-reverse "flips" the opposite way split does: split
+       swaps its own BOX default (media right) to media-LEFT here, so
+       split-reverse (media LEFT by default) swaps to media-RIGHT —
+       split-reverse is the mirror of split at every size, billboard
+       included. */
+    .pt-banner[data-layout="split-reverse"] .pt-banner-media { width: 56%; order: 2; }
+    .pt-banner[data-layout="split-reverse"] .pt-banner-copy { width: 44%; order: 1; }
+    /* split alone is vertically centered across the FULL 250px height
+       (not content-flowed like type-top/bottom's flexible column),
+       AND its copy column is the narrowest (44%) of any BILLBOARD
+       treatment — at BILLBOARD's own bigger type scale, even a
+       1-line body leaves the worst-case deck's CTA overlapping the
+       bottom-right disclaimer's reserved zone (verified: griffin+
+       headline+subhead+CTA alone fit with room to spare; body is the
+       difference). Same "hide when there's no safe room" call STRIP
+       already makes for body/disclaimer — split is BILLBOARD's own
+       STRIP-equivalent tight case. */
+    .pt-banner[data-layout="split"] .pt-banner-body,
+    .pt-banner[data-layout="split-reverse"] .pt-banner-body { display: none; }
+    .pt-banner[data-layout="diagonal"] .pt-banner-media { clip-path: polygon(24% 0, 100% 0, 100% 100%, 14% 100%); }
+    .pt-banner-disclaimer {
+      left: auto; right: var(--pad); width: auto;
+      text-align: right;
+    }
+    /* An empty right-aligned box has no text to size it, and a scroll
+       box reads left either way (it's a block of lines, not a caption)
+       — both need an explicit width here, and BILLBOARD's own real
+       height affords a taller box than BOX's 30px default. */
+    .pt-banner-disclaimer.pt-banner-disclaimer--empty { width: 130px; }
+    .pt-banner-disclaimer.pt-banner-disclaimer--scroll,
+    .pt-banner-disclaimer.pt-banner-disclaimer--empty.pt-banner-disclaimer--scroll {
+      left: auto; right: var(--pad); width: 220px; height: 46px; text-align: left;
+    }
+    /* type-top/type-bottom's content-sized copy (flex:0 0 auto) takes
+       whatever height it needs and hands media the remainder — at
+       BILLBOARD's own bigger type scale, a 2-line body left media a
+       sliver a few px tall (verified: eyeballing the contact sheet,
+       not the harness — the mechanical asserts don't check media's
+       own proportion, only that it fills whatever slot it's given).
+       Hiding body here (same call already made for split, above)
+       gives media real room back. (A media min-height was tried here
+       too — reverted: copy is rigid (flex:0 0 auto, by design, so a
+       2-line clamped headline never gets silently compressed), so a
+       media floor with nothing willing to shrink just pushes the CTA
+       past the banner's own bottom edge instead of fixing anything.) */
+    .pt-banner[data-layout="type-top"] .pt-banner-body,
+    .pt-banner[data-layout="type-bottom"] .pt-banner-body { display: none; }
+  }
+
+  /* AA.2 — a brand-approved guide's own book-mandated deviations that
+     aren't a colorway. Atelier's book: semibold display instead of
+     the brand default's black weight, no negative tracking. Keyed off
+     data-guide (the guide's own BRAND, stamped by the build path
+     alongside its locked colorway — see varietyFor), never off a
+     specific guide id, so any future Atelier guide inherits it too. */
+  .pt-banner[data-guide="atelier"] .pt-banner-headline { font-weight: 600; letter-spacing: 0; }
+
+  /* ════════════════════════════════════════════════════════════════
+     P3 — scoring, share, cron. Sheet-header action chips share one
+     base (.pt-hdr-chip) so Score-all / Share / kebab read as one
+     family alongside the existing style-guide pill (left untouched —
+     new chips clone it rather than refactor a verified control).
+     ════════════════════════════════════════════════════════════════ */
+  /* The toolbar takes its own full-width row under the title rather
+     than sharing one with it. Eight chips in three bands no longer fit
+     in the space left beside "Concept sheet", and squeezed into it they
+     wrapped — which is precisely the thing that puts them on two
+     different horizontal axes. */
+  .pt-sheet-actions {
+    /* Sticks to the top of the scrollport for the whole sheet. Solid
+       ground, not the frosted treatment the canvas header uses — ad
+       units are dense, high-contrast artwork and a blur lets enough of
+       them through to fight the controls. Negative side margins plus
+       matching padding bleed that ground to the sheet's edges so
+       nothing scrolls up the gutters beside it.
+
+       top:0, not --canvas-header-h: #canvas already carries a
+       padding-top of exactly that height to clear its own header, and
+       a sticky inset is measured from the content edge — naming the
+       height here would apply it twice. */
+    position: sticky; top: 0; z-index: 12;
+    background: var(--canvas-bg);
+    margin: 0 -40px 20px;
+    /* Top/bottom on the 8px floor. Left stays 40px — the chip row
+       lines up under the title and every banner below it. Right comes
+       in from 40 to 2: nothing sits to its right to align against,
+       and reclaiming it is part of what lets three bands (with the
+       wider inter-chip gap above, and no more pill-badge chrome) hold
+       one row inside the canvas column at 1440 instead of running
+       past it — see the width note below. */
+    padding: 16px 40px; /* 9/10: the PRODUCTION band right-aligns to the column's own edge now, so the right pays the same 40 as the left (the 2px was for squeezing three bands into 1440) */
+    /* flex-end, not center: the groups are two rows tall and anything
+       ungrouped is one, so centring would float it between the label
+       and chip rows. Bottom-aligned, every chip sits on one axis. */
+    display: flex; align-items: flex-end; gap: 8px; row-gap: 14px; flex-wrap: wrap;
+    /* 9/10 — NOT a scroll container (Bryan: "this should not have a
+       vertical scroll bar"). H made it overflow-x:auto for narrow
+       panes, but that makes overflow-y auto as well, and the chips'
+       popovers and the Package tooltip are absolutely positioned
+       descendants hanging past its edge — so it grew a vertical
+       scrollbar out of its own hidden menus, and clipped them when
+       open. Overflow stays visible; a pane too narrow for one row
+       wraps whole bands to a second row instead (each band is one
+       flex item, so its label never parts from its chips). */
+    overflow: visible;
+  }
+  .pt-sheet-actions > * { flex-shrink: 0; }
+  .pt-action-slot { position: relative; }
+  .pt-hdr-chip {
+    /* 9/10 — the hat's own chip (.chat-aux-chip: 32px, 8px radius,
+       0.5px hairline on the card surface, inset highlight, quiet 14px
+       glyph, accent-tinted hover), not a pill (Bryan: "we should not
+       have the rounded buttons... make the design of this section
+       nicer"). One height for every chip in the row, Package included. */
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 32px; padding: 0 12px; /* 9/10: with Production in the rail the row has room again (Bryan: "space this out better") */
+    background: var(--card-bg);
+    border: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.10));
+    border-radius: 8px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    font: inherit; font-size: 13px; font-weight: 500; color: var(--text-body);
+    letter-spacing: -0.1px;
+    cursor: pointer;
+    transition: border-color 140ms cubic-bezier(0.22, 1, 0.36, 1), background 140ms cubic-bezier(0.22, 1, 0.36, 1), color 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pt-hdr-chip:not(:disabled):hover,
+  .pt-hdr-chip[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--accent) 7%, var(--card-bg));
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--line-solid, rgba(15, 23, 42, 0.10)));
+    color: var(--text-strong);
+  }
+  .pt-hdr-chip[aria-expanded="true"] { background: color-mix(in srgb, var(--accent) 11%, var(--card-bg)); }
+  .pt-hdr-chip svg { width: 14px; height: 14px; flex-shrink: 0; display: block; color: var(--text-subtle); transition: color 140ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .pt-hdr-chip:not(:disabled):hover svg,
+  .pt-hdr-chip[aria-expanded="true"] svg { color: var(--accent); }
+  .pt-hdr-chip:disabled { cursor: default; }
+  .pt-hdr-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  body[data-theme="dark"] .pt-hdr-chip {
+    background: rgba(255, 255, 255, 0.035);
+    border-color: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  /* AL.13 (Bryan: "this button should be more of a square aspect
+     ratio") — every icon-only chip in the bar/band (a glyph, no text
+     label — today just the eye beside Share, .view-btn in both the
+     canvas-header and Media-bar .actions rows) squares itself off
+     this one modifier: width matches the chip's own height via
+     aspect-ratio (32px today, whichever family it rides), no
+     separate horizontal padding, the glyph centred. One rule, no
+     per-button sizes. */
+  .pt-hdr-chip--icon {
+    aspect-ratio: 1 / 1;
+    width: auto;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+  }
+
+  /* --- Score-all header chip --- */
+  .pt-scoreall-chip.is-scoring { color: var(--text-subtle); }
+  .pt-scoreall-chip.is-scoring .pt-scoreall-icon { animation: pt-spin 0.9s linear infinite; }
+  .pt-scoreall-chip.is-done { border-color: rgba(26,127,75,0.32); color: #1a7f4b; background: rgba(26,127,75,0.07); }
+  @keyframes pt-spin { to { transform: rotate(360deg); } }
+
+  /* --- Per-card score chip + rubric popover --- */
+  /* Banked right in the head row, with the kebab after it. */
+  .pt-score-wrap { position: relative; margin-left: auto; }
+  .pt-banner-frame { position: relative; }
+  /* AQ — the kebab is one of the card's three cluster tools now
+     (.pt-unit-tool, the sheet block above); only its read-only rule
+     is its own. */
+  body.is-painter-shared .pt-unit-kebab { display: none !important; }
+  .pt-score-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--hover-soft);
+    color: var(--text-subtle);
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 700;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease, opacity 200ms ease;
+  }
+  /* P11b sheet nit (9/2): before "Score all" runs, this pending pill
+     showed only a bare dash ("—") — sitting directly beside the new
+     P12 remove control (also a small dash-ish glyph, `ICONS.minus`),
+     the label row read as TWO remove buttons to the eye even though
+     only one (`.pt-banner-remove-btn`) is real. The score chip itself
+     is real, used UI (rubric popover once scored, `syncScoreChips`
+     keeps late-added cards in sync) — not dead code to delete — so
+     the fix is visibility, not removal: stay invisible while pending
+     (`visibility`, not `display`, so the row's width/gap don't jump
+     the instant a score lands) and reveal only once `landChipInstant`/
+     `animateScoreChip` strips this class and writes a real number. */
+  .pt-score-chip.pt-score-pending { border-style: dashed; cursor: default; opacity: 0.55; visibility: hidden; }
+  .pt-score-chip[data-band="high"] { color: #1a7f4b; background: rgba(26,127,75,0.10); border-color: rgba(26,127,75,0.28); }
+  .pt-score-chip[data-band="mid"]  { color: #966C2F; background: rgba(194,144,73,0.13); border-color: rgba(194,144,73,0.32); }
+  .pt-score-chip[data-band="low"]  { color: #b3543a; background: rgba(179,84,58,0.11); border-color: rgba(179,84,58,0.30); }
+  /* AL.7 — a real hover state (was a faint brightness tweak): the
+     chip's own ground steps darker and lifts off the lockup with a
+     soft shadow — a translateY would visibly detach it from the
+     fused pill it sits inside, so the "lift" reads as elevation
+     (shadow) rather than actual movement. */
+  .pt-score-chip:not(.pt-score-pending):hover { filter: brightness(0.9); box-shadow: 0 2px 6px rgba(15,23,42,0.2); }
+  .pt-score-pop {
+    position: absolute; top: calc(100% + 6px); right: 0; z-index: 30;
+    width: 216px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.16);
+    padding: 10px;
+    opacity: 0; transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-score-pop.is-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .pt-score-row { display: flex; align-items: center; gap: 7px; padding: 3px 0; }
+  .pt-score-row-label { flex: 1 1 auto; font-size: 10.5px; color: var(--text-subtle); }
+  .pt-score-bar { width: 52px; height: 4px; border-radius: 999px; background: var(--line); overflow: hidden; flex-shrink: 0; }
+  .pt-score-bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #C29049, #966C2F); transition: width 640ms cubic-bezier(0.22, 1, 0.36, 1); } /* grows in on open — animateScorePop */
+  .pt-score-row-val { width: 20px; text-align: right; font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 700; color: var(--text-body); flex-shrink: 0; }
+  .pt-score-advice { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; line-height: 1.45; color: var(--text-subtle); }
+
+  /* --- Share chip + flyout --- */
+  .pt-share-pop {
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 40;
+    width: 268px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.16);
+    padding: 12px;
+    opacity: 0; transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-share-pop.is-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .pt-share-pop-title { font-size: 13px; font-weight: 700; color: var(--text-strong); margin-bottom: 4px; }
+  .pt-share-pop-sub { margin: 0 0 10px; font-size: 11.5px; line-height: 1.4; color: var(--text-subtle); }
+  .pt-share-copy-row {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 9px 10px; border-radius: 9px; border: 0;
+    background: var(--hover-soft);
+    font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-body);
+    cursor: pointer; text-align: left;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .pt-share-copy-row:hover { background: rgba(24,88,238,0.08); color: var(--accent); }
+  .pt-share-copy-row svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .pt-share-copy-icon-check,
+  .pt-share-copy-row.is-copied .pt-share-copy-icon-link,
+  .pt-share-copy-label-done { display: none; }
+  .pt-share-copy-row.is-copied .pt-share-copy-icon-check { display: block; color: #1a7f4b; }
+  .pt-share-copy-row.is-copied .pt-share-copy-label-default { display: none; }
+  .pt-share-copy-row.is-copied .pt-share-copy-label-done { display: inline; }
+  .pt-share-copy-row.is-copied { color: #1a7f4b; }
+
+  /* --- Kebab menu — reuses .title-menu/.title-menu-item/.tmi-* for
+     an exact visual match with the canvas title dropdown; #ptKebabMenu
+     right-aligns since it's the rightmost chip in the header row. --- */
+  .pt-kebab-btn { padding: 8px; }
+  #ptKebabMenu { left: auto; right: 0; transform-origin: top right; }
+
+  /* --- Automate confirm dialog — clones .delete-modal's centered
+     backdrop card, with a non-destructive accent confirm button
+     instead of the delete flow's red. --- */
+  .pt-automate-confirm { background: var(--accent); color: #ffffff; box-shadow: 0 1px 0 rgba(0,0,0,0.05); }
+  .pt-automate-confirm:hover { background: color-mix(in srgb, var(--accent) 85%, black); }
+
+  /* --- Quiet "nightly" status row, under the sheet header --- */
+  .pt-nightly-row {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; color: var(--text-subtle);
+    background: var(--hover-soft);
+    padding: 6px 12px; border-radius: 999px;
+    margin: -14px 0 24px; width: fit-content;
+    animation: pt-nightly-in 320ms cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes pt-nightly-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .pt-nightly-dot { width: 6px; height: 6px; border-radius: 50%; background: #1a7f4b; box-shadow: 0 0 0 3px rgba(26,127,75,0.18); flex-shrink: 0; }
+
+  /* --- Overnight batch heading (?state=overnight) --- */
+  .pt-overnight-heading {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-subtle);
+    padding-top: 24px; margin: 4px 0 -8px; border-top: 1px solid var(--line);
+  }
+  .pt-overnight-heading svg { width: 14px; height: 14px; color: #C29049; flex-shrink: 0; }
+
+  /* --- REDESIGN 8/25 (round 2) — Bryan rejected the end-of-sheet
+     "KEEP GOING" row: it stranded at the bottom with dead space. A
+     ghost "3 more concepts" ADD-TILE lives IN the concept flow itself
+     instead (.pt-concept-ghost, a child of #ptConcepts, same flex-
+     column gap as every real .pt-concept-group) — reads as the next
+     empty concept slot rather than a trailing action row. Sync'd by
+     syncConceptGhostTile() after every build/append; hides once 6
+     concepts exist. A second affordance used to sit beside it here — a
+     per-concept "+ sizes" ghost chip offering each row's own missing
+     sizes — but V1 (PLAN.md §V) removed it from the board: Sizes' own
+     "Board at" switches the whole board's size live instead of one
+     row growing its own extra sizes. Its markup/CSS below is gone with
+     it (initConceptSheetFollowUps / syncAddSizesChip stay defined,
+     see the JS comment where they're built). --- */
+  .pt-concept-ghost {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; min-width: min(420px, 100%); min-height: 48px; padding: 11px 18px; /* 9/16 — the centering pass clamps this door to the concept block's width; a single 300px unit squeezed its label onto two lines, so it never goes narrower than 420 */
+    margin-top: 48px;
+    background: transparent;
+    border: 1.5px dashed var(--line-solid);
+    border-radius: 12px;
+    font: inherit; text-align: left;
+    cursor: pointer;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+  /* AE.2/AE.3 fix — [hidden] paired with the class (the house gotcha,
+     see .pt-sheet-skel-foot[hidden] above): the bare class rule's own
+     display:flex is same-origin, same-specificity author CSS, so it
+     silently wins over the UA [hidden]{display:none} without this. */
+  .pt-concept-ghost[hidden] { display: none; }
+  .pt-concept-ghost:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .pt-concept-ghost:hover .pt-concept-ghost-badge { border-color: var(--accent); color: var(--accent); }
+  .pt-concept-ghost:disabled { opacity: 0.5; cursor: default; pointer-events: none; }
+  /* 9/16 (Bryan: "make the plus icon and Generate 3 more blue") — the
+     door reads as a door: its plus and its label take the accent at
+     rest, not only on hover. The dashed ring stays dashed (it is still
+     an empty slot, not a filled unit) and its own hover keeps the
+     accent wash, so the rest and hover states still differ. The sub
+     line stays quiet — one voice leads. */
+  .pt-concept-ghost-badge {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+    color: var(--accent);
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+  .pt-concept-ghost-badge svg { width: 12px; height: 12px; display: block; }
+  .pt-concept-ghost-label { font-size: 12.5px; font-weight: 600; color: var(--accent); }
+  .pt-concept-ghost-sub { margin-left: 8px; }
+
+  /* --- .pt-addsizes-chip / .pt-addsizes-row stay defined — Studio's
+     own Size drawer (wireStudioSizeDrawer, a different control with
+     its own popover-free list) still carries both classes. The rest
+     of this family (.pt-addsizes-slot/-pop/-list/-action, and the
+     is-checked wash on .pt-chip-check within a row) only ever served
+     the board's per-concept "+ sizes" chip, which V1 (PLAN.md §V)
+     removed — gone with it. --- */
+  .pt-concept-head { position: relative; }
+  .pt-addsizes-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px 4px 7px;
+    border: 1px dashed var(--line-solid);
+    border-radius: 999px;
+    background: transparent;
+    font: inherit; font-size: 11px; font-weight: 600; color: var(--text-subtle);
+    cursor: pointer;
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+  .pt-addsizes-chip svg { width: 11px; height: 11px; flex-shrink: 0; display: block; }
+  .pt-addsizes-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); border-style: solid; }
+  .pt-addsizes-chip[hidden] { display: none; }
+  .pt-addsizes-row {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    padding: 6px 4px; border-radius: 8px; border: 0; background: transparent;
+    font: inherit; font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px; font-weight: 500; color: var(--text-body);
+    cursor: pointer; text-align: left;
+  }
+  .pt-addsizes-row:hover { background: var(--hover-soft); }
+  .pt-addsizes-row:disabled { cursor: default; opacity: 0.5; }
+  .pt-addsizes-row:disabled:hover { background: transparent; }
+
+  /* --- Read-only shared view (?share=coast-road) — chrome
+     simplifies to just the canvas pane; Painter's authoring-only
+     sheet controls hide, banners stop being click-to-edit. --- */
+  body.is-painter-shared .main { grid-template-columns: 0px 0px 0px 1fr; }
+  body.is-painter-shared .side-rail,
+  body.is-painter-shared .rail-panel,
+  body.is-painter-shared .rail-handle,
+  body.is-painter-shared .chat,
+  body.is-painter-shared .splitter { display: none; }
+  body.is-painter-shared .canvas-header .actions,
+  body.is-painter-shared #ptMediaTopbar .actions { display: none; }
+  body.is-painter-shared #ptScoreAllBtn,
+  body.is-painter-shared #ptShareBtn,
+  body.is-painter-shared #ptSharePop,
+  body.is-painter-shared #ptKebabBtn,
+  body.is-painter-shared #ptKebabMenu,
+  body.is-painter-shared .pt-concept-ghost,
+  body.is-painter-shared .pt-banner-frame-edit,
+  body.is-painter-shared .pt-banner-remove-btn { display: none !important; } /* §BO.5 — the drag-select hint (.pt-concept-hint-line) retired outright */
+  body.is-painter-shared .pt-banner-frame { cursor: default; }
+  body.is-painter-shared .pt-banner-frame:hover { transform: none; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+  .pt-shared-bar { display: none; }
+  body.is-painter-shared .pt-shared-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    margin: -8px 0 28px; padding: 12px 16px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--panel-bg-general);
+  }
+  .pt-shared-bar-label { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--text-body); }
+  .pt-shared-bar-label svg { width: 15px; height: 15px; color: var(--text-subtle); flex-shrink: 0; }
+  .pt-shared-bar-actions { position: relative; display: inline-flex; align-items: center; gap: 8px; }
+
+  /* --- Comments affordance (shared view only) --- */
+  .pt-comments-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card-bg); font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-body);
+    cursor: pointer;
+  }
+  .pt-comments-btn:hover { border-color: rgba(15,23,42,0.22); }
+  .pt-comments-btn svg { width: 14px; height: 14px; }
+  .pt-comments-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
+    background: var(--accent); color: #fff;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 700;
+  }
+  .pt-comments-pop {
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 40;
+    width: 300px; max-height: 340px; overflow-y: auto;
+    background: var(--card-bg); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.16);
+    padding: 6px;
+    opacity: 0; transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-comments-pop.is-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .pt-comment-row { display: flex; gap: 9px; padding: 9px 8px; border-radius: 9px; }
+  .pt-comment-row + .pt-comment-row { border-top: 1px solid var(--line); }
+  .pt-comment-avatar {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--text-strong); color: var(--text-button);
+    font-size: 10px; font-weight: 700;
+  }
+  .pt-comment-body { min-width: 0; }
+  .pt-comment-meta { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+  .pt-comment-name { font-size: 12px; font-weight: 700; color: var(--text-body); }
+  .pt-comment-time { font-size: 10.5px; color: var(--text-subtle); }
+  .pt-comment-text { margin: 0; font-size: 12.5px; line-height: 1.42; color: var(--text-body); }
+
+  /* --- Download PPT — in-row spinner→check beat --- */
+  .pt-download-ppt-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card-bg); font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-body);
+    cursor: pointer;
+  }
+  .pt-download-ppt-btn:hover { border-color: rgba(15,23,42,0.22); }
+  .pt-download-ppt-btn svg { width: 14px; height: 14px; display: block; }
+  /* Higher specificity than the generic ".pt-download-ppt-btn svg"
+     rule above (2 classes beats 1 class + 1 type) so idle is the
+     only icon showing until .is-busy/.is-done says otherwise. */
+  .pt-download-ppt-btn .pt-dl-icon-spin,
+  .pt-download-ppt-btn .pt-dl-icon-check { display: none; }
+  .pt-download-ppt-btn.is-busy .pt-dl-icon-idle,
+  .pt-download-ppt-btn.is-done .pt-dl-icon-idle { display: none; }
+  .pt-download-ppt-btn.is-busy .pt-dl-icon-spin { display: block; animation: pt-spin 0.8s linear infinite; }
+  .pt-download-ppt-btn.is-done .pt-dl-icon-check { display: block; color: #1a7f4b; }
+  .pt-download-ppt-btn.is-done { border-color: rgba(26,127,75,0.32); color: #1a7f4b; }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-download-ppt-btn.is-busy .pt-dl-icon-spin,
+    .pt-scoreall-chip.is-scoring .pt-scoreall-icon { animation: none; }
+    .pt-nightly-row { animation: none; }
+  }
+

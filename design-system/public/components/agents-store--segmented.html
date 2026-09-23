@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  OMNI component: segmented
+  Project: Agents Store
+  Note: .store-pills — filter pill bar (.store-pill, active state + +more popover)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agents Store — segmented · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/agents-store.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="store-pills" role="tablist" aria-label="Filter by category">
+              <button class="store-pill is-active" data-filter="all" type="button">All</button>
+              <button class="store-pill" data-filter="library" type="button">My Library</button>
+              <button class="store-pill" data-filter="marketing" type="button">Marketing</button>
+              <button class="store-pill" data-filter="sales" type="button">Sales</button>
+              <button class="store-pill" data-filter="brand" type="button">Brand &amp; Voice</button>
+              <button class="store-pill" data-filter="research" type="button">Research</button>
+              <button class="store-pill" data-filter="productivity" type="button">Productivity</button>
+              <div class="store-pill-more-wrap">
+                <button class="store-pill store-pill--more" type="button" aria-haspopup="menu" aria-expanded="false">
+                  <span>+3 more</span>
+                  <i class="bx bx-chevron-down" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+</body>
+</html>

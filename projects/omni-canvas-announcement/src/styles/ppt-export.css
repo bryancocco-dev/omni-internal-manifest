@@ -1,0 +1,93 @@
+/* ------------------------------------------------------------------
+   PPT-EXPORT — the real feature: the canvas title-crumb dropdown with
+   its "Download as PPT" row (SPEC-canvas-exports.md, verbatim rows +
+   sequence). Prefix `xpe-` throughout. Mounted onto the live app
+   shell (canvasSide), not the flat scroll canvas. Strict OMNI light
+   theme, existing tokens only; no invented rows, no toast.
+------------------------------------------------------------------ */
+
+.xpe-title-menu {
+  position: absolute;
+  width: 248px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 12px;
+  box-shadow:
+    0 12px 32px rgba(24, 31, 64, 0.14),
+    0 4px 12px rgba(24, 31, 64, 0.08);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  transform-origin: top left;
+  z-index: 60;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.xpe-tmi {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  text-align: left;
+}
+
+.xpe-tmi-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--omni-hover-soft);
+  color: var(--omni-text-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.xpe-tmi-icon svg { width: 14px; height: 14px; display: block; }
+.xpe-tmi-glyph { display: inline-flex; }
+.xpe-tmi-check { position: absolute; opacity: 0; }
+.xpe-tmi-spinner {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid var(--omni-line-solid);
+  border-top-color: var(--omni-brand-500);
+  opacity: 0;
+}
+
+.xpe-tmi-label { flex: 1; }
+
+/* Hairline progress rule along the row's bottom edge — a real element
+   GSAP tweens (scaleX), never a CSS @keyframes animation, so capture
+   stays frame-deterministic under timeline scrub. */
+.xpe-tmi-progress {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 1px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--omni-brand-500);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.xpe-title-menu-divider {
+  height: 1px;
+  background: var(--omni-line-solid);
+  margin: 4px 6px;
+}

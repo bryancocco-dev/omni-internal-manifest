@@ -1,0 +1,97 @@
+<!-- GRAVEYARD / era7 — round-29 kills: the five 3D-skew "tilted
+     turntable" variants (round 28) — F48 ARCH·BUBBLE·3D, F49
+     ARCH·TICK·3D, F50 ARCH·BANDS·3D, F51 ARCH·RAYS·3D, F52
+     FANLIGHT·3D. Baked static at rotate(0deg) — the animation and
+     @keyframes are dropped (this is an archive card, not a live
+     treatment), but the rotateX tilt + perspective are kept as a
+     literal, non-animated transform so the ellipse/foreshortening
+     character that defined these treatments is still visible here,
+     not just a flat circle. Same real assets, same crown-repeat
+     technique (F49/F51/F52 clipped-half two-copy; F48 unclipped
+     full two-copy + conic-gradient per its round-28 post-fix; F50
+     single self-masking element), same tilt/perspective values each
+     treatment shipped with. -->
+<style>
+.gy-b48x, .gy-b49x, .gy-b50x, .gy-b51x, .gy-b52x { width: 760px; height: 950px; position: relative; overflow: hidden; background: #fff; padding: 56px; display: flex; flex-direction: column; font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif; }
+.gy-b48x .m, .gy-b49x .m, .gy-b50x .m, .gy-b51x .m, .gy-b52x .m { display: grid; grid-template-columns: 1fr auto; gap: 24px; font-family: 'Fira Code', ui-monospace, monospace; font-size: 12px; line-height: 1.6; color: #0a0a0a; padding-bottom: 24px; border-bottom: 1px solid rgba(15,23,42,0.10); position: relative; z-index: 2; }
+.gy-b48x .m p, .gy-b49x .m p, .gy-b50x .m p, .gy-b51x .m p, .gy-b52x .m p { margin: 0; }
+.gy-b48x .lb, .gy-b49x .lb, .gy-b50x .lb, .gy-b51x .lb, .gy-b52x .lb { color: #6b6d7a; }
+.gy-b48x .sp, .gy-b49x .sp, .gy-b50x .sp, .gy-b51x .sp, .gy-b52x .sp { margin-top: 1em; }
+.gy-b48x h1, .gy-b49x h1, .gy-b50x h1, .gy-b51x h1, .gy-b52x h1 { font-weight: 300; font-size: 72px; line-height: 1.02; letter-spacing: -0.039em; color: #0a0a0a; margin: 40px 0 0; position: relative; z-index: 2; }
+
+/* F48 ARCH·BUBBLE·3D — tilt:40deg, perspective:12000px (F48's own
+   post-fix override), unclipped full two-copy overlay + conic sweep. */
+.gy-b48x .tilt { position: absolute; inset: 0; z-index: 1; perspective: 12000px; perspective-origin: 50% 24%; }
+.gy-b48x .arch { position: absolute; top: 66%; left: 50%; width: 190%; aspect-ratio: 1; transform: translateX(-50%) rotateX(40deg) rotate(0deg); }
+.gy-b48x .arch i { position: absolute; inset: 0; -webkit-mask: url('brand-assets/p49-a06.svg') center/contain no-repeat; mask: url('brand-assets/p49-a06.svg') center/contain no-repeat; background: conic-gradient(from 220deg, #0f47c9, #5c84f4 50%, #0f47c9); }
+.gy-b48x .arch i:last-child { transform: rotate(180deg); }
+
+/* F49 ARCH·TICK·3D — tilt:58deg, shared 1100px perspective, clipped
+   half two-copy (this asset's uniform ticks never showed the sliver
+   defect F48's asset did). */
+.gy-b49x .tilt { position: absolute; inset: 0; z-index: 1; perspective: 1100px; perspective-origin: 50% 24%; }
+.gy-b49x .arch { position: absolute; top: 66%; left: 50%; width: 190%; aspect-ratio: 1; transform: translateX(-50%) rotateX(58deg) rotate(0deg); }
+.gy-b49x .arch i { position: absolute; inset: 0; background: #1858ee; -webkit-mask: url('brand-assets/p49-a03.svg') center/contain no-repeat; mask: url('brand-assets/p49-a03.svg') center/contain no-repeat; -webkit-clip-path: inset(0 0 50% 0); clip-path: inset(0 0 50% 0); }
+.gy-b49x .arch i:last-child { transform: rotate(180deg); }
+
+/* F50 ARCH·BANDS·3D — tilt:50deg, single self-masking element (the
+   continuous concentric-band asset needs no crown-repeat), conic
+   sweep for the same rotation-visibility reason as flat F46. */
+.gy-b50x .tilt { position: absolute; inset: 0; z-index: 1; perspective: 1100px; perspective-origin: 50% 24%; }
+.gy-b50x .arch { position: absolute; top: 66%; left: 50%; width: 190%; aspect-ratio: 1; transform: translateX(-50%) rotateX(50deg) rotate(0deg); background: conic-gradient(from 220deg, #1858ee, #3d6cf0 55%, #1858ee); -webkit-mask: url('brand-assets/p49-a09.svg') center/contain no-repeat; mask: url('brand-assets/p49-a09.svg') center/contain no-repeat; }
+
+/* F51 ARCH·RAYS·3D — tilt:62deg, shared 1100px perspective, clipped
+   half two-copy. */
+.gy-b51x .tilt { position: absolute; inset: 0; z-index: 1; perspective: 1100px; perspective-origin: 50% 24%; }
+.gy-b51x .arch { position: absolute; top: 66%; left: 50%; width: 190%; aspect-ratio: 1; transform: translateX(-50%) rotateX(62deg) rotate(0deg); }
+.gy-b51x .arch i { position: absolute; inset: 0; background: #1858ee; -webkit-mask: url('brand-assets/p49-a11.svg') center/contain no-repeat; mask: url('brand-assets/p49-a11.svg') center/contain no-repeat; -webkit-clip-path: inset(0 0 50% 0); clip-path: inset(0 0 50% 0); }
+.gy-b51x .arch i:last-child { transform: rotate(180deg); }
+
+/* F52 FANLIGHT·3D — F39's corner-crop frame, tilt:48deg, symbol
+   spinning around a Y-anchored axis instead of X. Archive card uses
+   a fixed-offset absolute frame (top computed for a 2-line title,
+   665px = 56 padding + 390 meta block + 40 title margin + 147
+   2-line title + 32 frame gap) rather than the live flex:1 box —
+   this browser's auto-height for these 72px/300 h1s inflates to
+   ~380-390px for reasons unrelated to actual text wrapping (verified:
+   persists with white-space:nowrap, persists with .frame removed
+   from the DOM entirely, persists with literal inline style matching
+   the rule 1:1 — so it's not this card's own CSS), starving a
+   flex:1 sibling of all remaining space. F48-51 dodge this because
+   their graphics overlay the whole board via position:absolute,
+   never depending on the title's measured height. */
+.gy-b52x .frame { position: absolute; left: 56px; right: 56px; top: 665px; bottom: 56px; overflow: hidden; background: #e8eefd; perspective: 1100px; perspective-origin: 50% 20%; }
+.gy-b52x .sym { position: absolute; left: -125%; bottom: 0; width: 320%; aspect-ratio: 1; transform: translateY(50%) rotateX(48deg) rotate(0deg); }
+.gy-b52x .sym i { position: absolute; inset: 0; background: #1858ee; -webkit-mask: url('brand-assets/p49-a11.svg') center/contain no-repeat; mask: url('brand-assets/p49-a11.svg') center/contain no-repeat; -webkit-clip-path: inset(0 0 50% 0); clip-path: inset(0 0 50% 0); }
+.gy-b52x .sym i:last-child { transform: rotate(180deg); }
+</style>
+
+<div class="gy-card"><p class="gy-lbl"><b>F48 — ARCH·BUBBLE·3D</b><span>killed round 29</span></p><div class="gy-frame"><div class="gy-scale"><div class="gy-board gy-b48x">
+  <div class="m"><div><p class="lb">Client</p><p>BuildSubmarines.com</p><p class="lb sp">Assignment</p><p>Paint Scheme Design Contest</p><p class="lb sp">Submission Window</p><p>June 19 — July 20</p><p class="lb sp">Budget</p><p>Up to $50,000</p><p class="lb sp">Status</p><p>For Creative Team Distribution</p></div><div>04.28.2026</div></div>
+  <h1>Roblox Racing Wrap Competition</h1>
+  <div class="tilt"><div class="arch"><i></i><i></i></div></div>
+</div></div></div></div>
+
+<div class="gy-card"><p class="gy-lbl"><b>F49 — ARCH·TICK·3D</b><span>killed round 29</span></p><div class="gy-frame"><div class="gy-scale"><div class="gy-board gy-b49x">
+  <div class="m"><div><p class="lb">Client</p><p>BuildSubmarines.com</p><p class="lb sp">Assignment</p><p>Paint Scheme Design Contest</p><p class="lb sp">Submission Window</p><p>June 19 — July 20</p><p class="lb sp">Budget</p><p>Up to $50,000</p><p class="lb sp">Status</p><p>For Creative Team Distribution</p></div><div>04.28.2026</div></div>
+  <h1>Roblox Racing Wrap Competition</h1>
+  <div class="tilt"><div class="arch"><i></i><i></i></div></div>
+</div></div></div></div>
+
+<div class="gy-card"><p class="gy-lbl"><b>F50 — ARCH·BANDS·3D</b><span>killed round 29</span></p><div class="gy-frame"><div class="gy-scale"><div class="gy-board gy-b50x">
+  <div class="m"><div><p class="lb">Client</p><p>BuildSubmarines.com</p><p class="lb sp">Assignment</p><p>Paint Scheme Design Contest</p><p class="lb sp">Submission Window</p><p>June 19 — July 20</p><p class="lb sp">Budget</p><p>Up to $50,000</p><p class="lb sp">Status</p><p>For Creative Team Distribution</p></div><div>04.28.2026</div></div>
+  <h1>Roblox Racing Wrap Competition</h1>
+  <div class="tilt"><div class="arch"></div></div>
+</div></div></div></div>
+
+<div class="gy-card"><p class="gy-lbl"><b>F51 — ARCH·RAYS·3D</b><span>killed round 29</span></p><div class="gy-frame"><div class="gy-scale"><div class="gy-board gy-b51x">
+  <div class="m"><div><p class="lb">Client</p><p>BuildSubmarines.com</p><p class="lb sp">Assignment</p><p>Paint Scheme Design Contest</p><p class="lb sp">Submission Window</p><p>June 19 — July 20</p><p class="lb sp">Budget</p><p>Up to $50,000</p><p class="lb sp">Status</p><p>For Creative Team Distribution</p></div><div>04.28.2026</div></div>
+  <h1>Roblox Racing Wrap Competition</h1>
+  <div class="tilt"><div class="arch"><i></i><i></i></div></div>
+</div></div></div></div>
+
+<div class="gy-card"><p class="gy-lbl"><b>F52 — FANLIGHT·3D</b><span>killed round 29</span></p><div class="gy-frame"><div class="gy-scale"><div class="gy-board gy-b52x">
+  <div class="m"><div><p class="lb">Client</p><p>BuildSubmarines.com</p><p class="lb sp">Assignment</p><p>Paint Scheme Design Contest</p><p class="lb sp">Submission Window</p><p>June 19 — July 20</p><p class="lb sp">Budget</p><p>Up to $50,000</p><p class="lb sp">Status</p><p>For Creative Team Distribution</p></div><div>04.28.2026</div></div>
+  <h1>Roblox Racing Wrap Competition</h1>
+  <div class="frame"><div class="sym"><i></i><i></i></div></div>
+</div></div></div></div>

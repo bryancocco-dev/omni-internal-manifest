@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  OMNI component: modal_workspaceswitch
+  Project: Switching
+  Note: .ws-gate (.ws-gate-card) — workspace-boundary confirm dialog: stacked origin→destination crossing indicator (animated rail + charge, reduced-motion aware) above title/body and full-width Continue/Cancel (shown open)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Switching — modal_workspaceswitch · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/switching-canvas.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ws-gate open" id="wsGate" role="dialog" aria-modal="true" aria-labelledby="wsGateTitle" aria-hidden="false" style="position:static;opacity:1;pointer-events:auto">
+  <div class="ws-gate-card">
+    <div class="ws-gate-head">
+      <span class="ws-gate-node">
+        <span class="ws-gate-dot">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 16 Q 5 8 9.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M19 16 Q 19 8 14.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M9 16 L 12 8 L 15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="ws-gate-node-txt">
+          <span class="ws-gate-node-lbl">You are in</span>
+          <span class="ws-gate-node-name">Omnicom Precision Marketing</span>
+        </span>
+      </span>
+      <div class="ws-gate-rail" aria-hidden="true"><i class="ws-gate-charge"></i></div>
+      <span class="ws-gate-node ws-gate-node--to">
+        <span class="ws-gate-dot"><i class="ws-gate-mark" aria-hidden="true"></i></span>
+        <span class="ws-gate-node-txt">
+          <span class="ws-gate-node-lbl">Opening in</span>
+          <span class="ws-gate-node-name">Corvache Automotive</span>
+        </span>
+      </span>
+    </div>
+
+    <div class="ws-gate-body-wrap">
+      <h2 class="ws-gate-title" id="wsGateTitle">You're about to switch workspaces</h2>
+      <p class="ws-gate-body">Opening <strong>Progress 2026</strong> moves you into Corvache. Your own work stays where it is.</p>
+
+      <div class="ws-gate-actions">
+        <button class="ws-gate-btn ws-gate-btn--go" id="wsGateGo" type="button">Continue</button>
+        <button class="ws-gate-btn ws-gate-btn--cancel" id="wsGateCancel" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

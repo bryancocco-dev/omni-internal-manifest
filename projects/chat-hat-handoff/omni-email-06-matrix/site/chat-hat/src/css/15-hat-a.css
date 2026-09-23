@@ -1,0 +1,2877 @@
+  /* ═══════════════════════════════════════════════════════════════════════
+     CHAT HAT prototype — additive styles only. Owns the prompt-card UI
+     inside .chat-aux-panel and blanks out the right-side persona magazine
+     while keeping every other piece of chrome (topnav, side-rail, chat
+     column, canvas-header, footer) pixel-identical to the persona page.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /* Bryan asked for the right side to be fully empty — hide the entire
+     persona-view (selector chips + magazine + finale) so the canvas
+     area below the canvas-header is blank. The canvas-header itself
+     (with "Acme / Untitled Canvas") stays visible. */
+  body[data-app="chat-hat"] .persona-view { display: none !important; }
+  body[data-app="chat-hat"] .ch-canvas-empty { display: none !important; }
+  /* …UNTIL the user picks a persona type in the prompt-card flow.
+     Then `is-persona-resolved` is added to <body> via JS and the
+     full magazine view comes back. The OMNI empty state hides at
+     the same time so only one layer is visible on the canvas. */
+  body[data-app="chat-hat"].is-persona-resolved .persona-view {
+    display: block !important;
+    animation: ch-persona-fade-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  body[data-app="chat-hat"].is-persona-resolved .ch-empty-state {
+    display: none !important;
+  }
+  @keyframes ch-persona-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Painter concept sheet rides the exact same contract: hidden until
+     the flow resolves (is-painter-resolved on <body>), at which point
+     it fades in and the OMNI empty state hides. Same keyframe, same
+     easing — one visual grammar for "the canvas just resolved." */
+  body[data-app="chat-hat"] .painter-sheet-view { display: none !important; }
+  body[data-app="chat-hat"].is-painter-resolved .painter-sheet-view {
+    display: block !important;
+    animation: ch-persona-fade-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  body[data-app="chat-hat"].is-painter-resolved .ch-empty-state {
+    display: none !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body[data-app="chat-hat"].is-painter-resolved .painter-sheet-view { animation: none; }
+  }
+  /* AL.14 — the OMNI empty-state splash also has to hide for the
+     whole Guided/Studio wizard, not just once a sheet resolves:
+     openMediaMode()/closeMediaMode() already fade #canvas's own
+     opacity to/from 0 while .pt-media-mode is up, which should carry
+     .ch-empty-state (its child) along for free, but that's a 380ms
+     JS-driven transition (skippable, racy against step renders) — a
+     flat attribute selector is instant and unconditional, so this
+     wins regardless of that animation's own timing or state. Media
+     and .pt-media-mode are siblings (both children of #main, next to
+     #canvas — see .pt-mm-topbar's own comment), so the general
+     sibling combinator reaches #canvas's child directly. */
+  .pt-media-mode[data-visible="1"] ~ #canvas .ch-empty-state {
+    display: none !important;
+  }
+
+  /* Right-side per-element skeleton — applied to many text blocks
+     inside the persona view while a step's task pipeline runs. The
+     text fades to transparent and a high-contrast shimmer gradient
+     paints over the element's natural width/height, so the layout
+     never shifts. Cleared when the step pulse fires.
+     - Higher contrast (28% peak vs prior 18%) so the shimmer is
+       more visible against the magazine surface.
+     - 250% background-size on a faster 1.3s sweep — reads as a
+       deliberate wave instead of a slow pulse.
+     - JS applies a 40ms-staggered setTimeout per element so the
+       skeleton state cascades top-down across the whole page. */
+  body[data-app="chat-hat"] .persona-view .is-right-loading {
+    color: transparent !important;
+    /* Pulses via cps-shimmer (background-color light ↔ medium).
+       NO `!important` on background — author `!important` would
+       outrank the keyframe's bg-color writes and silently freeze
+       the block at transparent (CSS spec: declared !important
+       beats animation origin). The keyframe handles bg-color
+       itself; the static value just clears any inherited image. */
+    background-image: none !important;
+    background-color: color-mix(in srgb, var(--text-body) 18%, transparent);
+    animation: cps-shimmer 1.6s ease-in-out infinite !important;
+    border-radius: 4px !important;
+    user-select: none !important;
+  }
+  /* Hero variant uses cream-on-dark pulse for contrast over the
+     dark photo bg. */
+  body[data-app="chat-hat"] .persona-view .persona-hero .is-right-loading {
+    background-image: none !important;
+    background-color: rgba(244, 241, 234, 0.22);
+    animation: cps-shimmer-light 1.6s ease-in-out infinite !important;
+  }
+
+  /* Reveal animation — when the loading clears, the text fades back
+     in with a subtle blur-out, lift, and scale-up. Mounted as a
+     keyframe (not transition) so it always runs from the start each
+     time the class is added, regardless of previous state. */
+  body[data-app="chat-hat"] .persona-view .is-revealing {
+    animation: ch-text-reveal 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes ch-text-reveal {
+    0%   {
+      opacity: 0;
+      transform: translateY(3px) scale(0.985);
+      filter: blur(2.5px);
+    }
+    55%  { filter: blur(0); }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body[data-app="chat-hat"] .persona-view .is-right-loading,
+    body[data-app="chat-hat"] .persona-view .is-revealing { animation: none !important; }
+  }
+
+  /* Right-side "step pulse" — a brief accent halo around the persona
+     view that fires whenever a step's task pipeline completes. Reads
+     as a "this just updated" indicator without yanking the whole
+     magazine. JS adds .is-step-pulse, removes it ~900ms later. */
+  body[data-app="chat-hat"] .persona-view.is-step-pulse {
+    animation: ch-persona-step-pulse 900ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes ch-persona-step-pulse {
+    0%   {
+      box-shadow: 0 0 0 0 transparent,
+                  0 0 0 0 transparent;
+      transform: scale(1);
+    }
+    18%  {
+      transform: scale(0.996);
+    }
+    38%  {
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 40%, transparent),
+                  0 0 56px 18px color-mix(in srgb, var(--accent) 24%, transparent),
+                  inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+      transform: scale(1.004);
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent,
+                  0 0 0 0 transparent,
+                  inset 0 0 0 0 transparent;
+      transform: scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body[data-app="chat-hat"] .persona-view.is-step-pulse { animation: none; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PERSONA SKELETON LOADER — covers the canvas right side after the
+     user picks a persona type, before the resolved magazine view
+     fades in. Mirrors the real persona layout (.persona-selector
+     strip + .persona-hero with #0d1530 dark bg + demographics grid)
+     so the resolve transition reads as one layout settling into place.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .ch-persona-skeleton {
+    /* Mirror .persona-view EXACTLY (line ~6996): same width formula,
+       same L/R padding, same box-sizing. With box-sizing: border-box,
+       the skeleton's content box equals .persona-view's content box
+       — which is where .persona-page renders. Net effect: when the
+       skeleton fades out and the magazine fades in, every block
+       lands at the exact same horizontal position with no jump. */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--stack-w, min(calc(100% - 48px), 1080px));
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    /* Transparent outer — matches .persona-view, whose bg is
+       canvas-bg (i.e. invisible against the canvas). Only the inner
+       blocks (cps-nav, cps-hero, cps-body) carry card-bg, which is
+       exactly how .persona-page renders inside .persona-view. Without
+       this, the skeleton looked ~64px wider than the resolved
+       magazine because its card-bg fill extended into the padding. */
+    background: transparent;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+  /* Match persona-view's responsive padding override at narrow
+     viewports (line ~9277) so the skeleton tracks it. */
+  @media (max-width: 640px) {
+    .ch-persona-skeleton { padding: 0 12px; }
+  }
+  .ch-persona-skeleton.is-active { display: flex; }
+  .ch-persona-skeleton.is-visible { opacity: 1; }
+
+  /* Continuous brightness PULSE (changed 2026-06-03 — see
+     SESSION.md "Shimmer animation"). Previously these animated
+     `background-position` to slide a bright band across each
+     placeholder, but with the band off-screen for ~half the
+     cycle the eye registered the blocks as static — multiple
+     contrast tunings didn't fix the perception. A simple
+     pulsing `background-color` alpha is the same pattern
+     LinkedIn / GitHub / etc. use for skeletons: no offscreen
+     dead-zones, motion is always visible, the whole block
+     breathes between light and medium gray. */
+  @keyframes cps-shimmer {
+    0%, 100% { background-color: color-mix(in srgb, var(--text-body) 18%, transparent); }
+    50%      { background-color: color-mix(in srgb, var(--text-body) 36%, transparent); }
+  }
+  /* Dark-on-dark pulse for elements sitting on the dark hero bg
+     — cream highlights instead of black. */
+  @keyframes cps-shimmer-light {
+    0%, 100% { background-color: rgba(244, 241, 234, 0.22); }
+    50%      { background-color: rgba(244, 241, 234, 0.50); }
+  }
+
+  /* ── Nav strip (mirrors .persona-selector) ───────────────────── */
+  .ch-persona-skeleton .cps-nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--p-line, rgba(15, 23, 42, 0.10));
+    flex-shrink: 0;
+    background: var(--card-bg, #fff);
+  }
+  .cps-nav-label,
+  .cps-nav-tab,
+  .cps-nav-cta {
+    /* No static gradient — the `cps-shimmer` keyframe drives
+       background-color on its own (pulse pattern, see keyframe
+       comment). Leaving a static gradient here would mask the
+       pulsing color behind it. */
+    background: transparent;
+    animation: cps-shimmer 1.6s ease-in-out infinite;
+    border-radius: 2px;
+  }
+  .cps-nav-label { width: 64px; height: 11px; }
+  .cps-nav-tabs { display: flex; gap: 18px; flex: 1; padding: 0 4px; }
+  .cps-nav-tab { width: 82px; height: 30px; border-radius: 2px; }
+  .cps-nav-cta { width: 50px; height: 30px; border-radius: 8px; }
+
+  /* ── Hero block (mirrors .persona-hero) ──────────────────────── */
+  .ch-persona-skeleton .cps-hero {
+    position: relative;
+    flex: 0 0 auto;
+    height: calc(100dvh - 184px - 380px);
+    min-height: 480px;
+    /* Monochrome neutral grey — no #0d1530 dark blue. Sits a touch
+       darker than the body so the hero still reads as a distinct
+       block, but stays inside the greyscale palette. */
+    background: color-mix(in srgb, var(--text-body) 14%, var(--card-bg, #fff));
+    border-top: 1px solid var(--p-line, rgba(15, 23, 42, 0.10));
+    border-bottom: 1px solid var(--p-line, rgba(15, 23, 42, 0.10));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  /* Hero placeholders use the same monochrome text-body alpha
+     stack as the body skeletons — no cream tint. Static blocks
+     (corner meta + tag) have a flat fill; the two title rows
+     shimmer. */
+  .ch-persona-skeleton .cps-hero .cps-meta,
+  .ch-persona-skeleton .cps-hero .cps-tag {
+    background: color-mix(in srgb, var(--text-body) 16%, transparent);
+    border-radius: 2px;
+  }
+  .ch-persona-skeleton .cps-hero .cps-title-1,
+  .ch-persona-skeleton .cps-hero .cps-title-2 {
+    /* Hero is now monochrome light-gray (not the original dark
+       blue), so use the same dark-on-light pulse as the body
+       placeholders instead of cps-shimmer-light. */
+    background: transparent;
+    animation: cps-shimmer 1.6s ease-in-out infinite;
+    border-radius: 2px;
+  }
+  /* Top row of corner meta — mirrors "OMNI — PERSONA LIBRARY",
+     "@OMNI.RESEARCH", "© 2026" in the real persona. */
+  .cps-meta-top-left    { position: absolute; top: 18px; left: 22px;  width: 180px; height: 11px; }
+  .cps-meta-top-center  { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 130px; height: 11px; }
+  .cps-meta-top-right   { position: absolute; top: 18px; right: 22px; width: 64px;  height: 11px; }
+  /* Title block — two stacked rows + a centered location tag. */
+  .ch-persona-skeleton .cps-title-1 {
+    width: 56%;
+    max-width: 480px;
+    height: 52px;
+  }
+  .ch-persona-skeleton .cps-title-2 {
+    width: 64%;
+    max-width: 540px;
+    height: 52px;
+  }
+  .ch-persona-skeleton .cps-tag {
+    width: 260px;
+    height: 28px;
+    margin-top: 22px;
+  }
+  /* Bottom row of corner meta — mirrors "LOW INTENT", "PR-001",
+     "40.6782° N · 73.9442° W" in the real persona. */
+  .cps-meta-bottom-left   { position: absolute; bottom: 18px; left: 22px;  width: 110px; height: 11px; }
+  .cps-meta-bottom-center { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); width: 70px;  height: 11px; }
+  .cps-meta-bottom-right  { position: absolute; bottom: 18px; right: 22px; width: 200px; height: 11px; }
+
+  /* ── Body — section header + 2×4 demographics grid ──────────── */
+  .ch-persona-skeleton .cps-body {
+    padding: 28px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex-shrink: 0;
+    background: var(--card-bg, #fff);
+  }
+  .cps-section-row { display: flex; align-items: center; gap: 18px; }
+  .cps-section-num,
+  .cps-section-eyebrow,
+  .cps-stat-label,
+  .cps-stat-value {
+    /* Pulses via the cps-shimmer keyframe. */
+    background: transparent;
+    animation: cps-shimmer 1.6s ease-in-out infinite;
+    border-radius: 2px;
+  }
+  .cps-section-num     { width: 22px;  height: 11px; }
+  .cps-section-eyebrow { width: 140px; height: 11px; }
+  .ch-persona-skeleton .cps-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 36px;
+  }
+  .ch-persona-skeleton .cps-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--p-line, rgba(15, 23, 42, 0.10));
+  }
+  .cps-stat-label { width: 60%; height: 10px; }
+  .cps-stat-value { width: 80%; height: 22px; }
+
+  /* ── Pull quote placeholder (mirrors .persona-pullquote) ─────── */
+  .cps-pullquote {
+    margin: 36px 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .cps-pq-line {
+    height: 22px;
+    border-radius: 3px;
+  }
+  .cps-pq-line--1 { width: 92%; }
+  .cps-pq-line--2 { width: 78%; }
+  .cps-pq-attr {
+    width: 220px;
+    height: 11px;
+    margin-top: 4px;
+  }
+
+  /* ── Section header (number + eyebrow) ──────────────────────── */
+  .cps-section-row + .cps-prose,
+  .cps-section-row + .cps-strip-grid { margin-top: 14px; }
+
+  /* ── Prose block (mirrors .pf-prose-body / persona-feature) ─── */
+  .cps-prose {
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cps-prose-line { height: 12px; }
+  .cps-prose-line--full { width: 100%; }
+  .cps-prose-line--96  { width: 96%; }
+  .cps-prose-line--82  { width: 82%; }
+
+  /* ── Behaviors strip ─────────────────────────────────────────── */
+  .cps-strip-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .cps-strip-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--p-line, rgba(15, 23, 42, 0.10));
+  }
+  .cps-strip-num { width: 22px; height: 11px; }
+  .cps-strip-text { width: 90%; height: 14px; }
+
+  /* ── Two-up section (motivations + channels) ─────────────────── */
+  .cps-twoup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 32px 0;
+    border-top: 0.5px solid var(--p-line, rgba(15, 23, 42, 0.10));
+    border-bottom: 0.5px solid var(--p-line, rgba(15, 23, 42, 0.10));
+    margin-bottom: 36px;
+  }
+  .cps-twoup-col { display: flex; flex-direction: column; gap: 14px; }
+  .cps-twoup-title { width: 60%; height: 22px; margin-bottom: 4px; }
+  .cps-twoup-row {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 0.5px solid var(--p-line, rgba(15, 23, 42, 0.10));
+  }
+  .cps-twoup-num { width: 22px; height: 11px; }
+  .cps-twoup-text { width: 82%; height: 12px; }
+
+  /* ── Finale (back cover) — dark accent block ─────────────────── */
+  .cps-finale {
+    background: color-mix(in srgb, var(--text-body) 18%, var(--card-bg, #fff));
+    border-radius: 4px;
+    padding: 32px 24px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin: 0 -8px 24px;
+  }
+  .cps-finale-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cps-finale-mark { width: 32px; height: 14px; }
+  .cps-finale-eyebrow { width: 280px; height: 11px; }
+  .cps-finale-shape {
+    width: 38%;
+    max-width: 280px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-image: none !important;
+    background-color: rgba(244, 241, 234, 0.22);
+    animation: cps-shimmer-light 1.6s ease-in-out infinite !important;
+  }
+  .cps-finale-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding-top: 22px;
+    border-top: 0.5px solid color-mix(in srgb, var(--card-bg, #fff) 25%, transparent);
+  }
+  .cps-finale-col { display: flex; flex-direction: column; gap: 8px; }
+  .cps-finale-line { height: 10px; }
+  .cps-finale-line--80 { width: 80%; }
+  .cps-finale-line--90 { width: 90%; }
+
+  /* Allow the skeleton body to scroll if the magazine extends past
+     the viewport — matches how the resolved .persona-view behaves. */
+  .ch-persona-skeleton .cps-body { overflow-y: visible; }
+  .ch-persona-skeleton { overflow-y: auto; }
+  .ch-persona-skeleton::-webkit-scrollbar { width: 0; height: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ch-persona-skeleton [class*="cps-"] { animation: none !important; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     CANVAS ASSISTANT INTRO — sits at the top of the chat stream.
+     AI-disclaimer block + divider + standing prompt. Distinct styling
+     from regular chat messages — typographic hierarchy, no body bg.
+     ═══════════════════════════════════════════════════════════════════════ */
+  /* Base case — every Canvas Assistant avatar, regardless of which
+     message type wraps it (plain chat msg, .ch-intro-msg, .ch-richmsg).
+     Found missing while verifying the "See all" catalog stubs: without
+     this, .msg-avatar's base rule (color:#fff, no background) leaves
+     the glyph an invisible white-on-transparent circle — the same gap
+     silently affected every plain ptBot() line (Media/Painter's "Done",
+     "Audio beds…", the nightly-automate confirm, etc.), not just the
+     new stubs. The two scoped rules below still exist for their own
+     border/layout nuance but no longer need to carry the color base. */
+  .msg-avatar.av-canvas-assistant {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 0.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  body[data-theme="dark"] .msg-avatar.av-canvas-assistant {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  /* (flex/center/circle sizing already comes from the base .msg-avatar
+     rule a couple thousand lines up — every avatar variant gets it.) */
+  body[data-app="chat-hat"] .ch-intro-msg .msg-name {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+  body[data-app="chat-hat"] .ch-intro-msg .body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  /* Open dismissable notice — no card backing, sans-serif heading +
+     body, hairline divider below. The dismiss X stays anchored
+     top-right of the notice block. */
+  body[data-app="chat-hat"] .ch-intro-notice {
+    position: relative;
+    padding: 4px 30px 28px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 0.5px solid var(--p-line, rgba(15, 23, 42, 0.10));
+    border-radius: 0;
+    margin: 0 0 12px;
+    transition:
+      opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 260ms cubic-bezier(0.4, 0, 0.2, 1),
+      max-height 320ms cubic-bezier(0.4, 0, 0.2, 1),
+      margin 320ms cubic-bezier(0.4, 0, 0.2, 1),
+      padding 320ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    max-height: 600px;
+  }
+  body[data-theme="dark"] .ch-intro-notice {
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+  }
+  body[data-app="chat-hat"] .ch-intro-notice.is-dismissing {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+  }
+  body[data-app="chat-hat"] .ch-intro-notice-close {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  body[data-app="chat-hat"] .ch-intro-notice-close:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-intro-notice-close:hover { background: rgba(255, 255, 255, 0.06); }
+  body[data-app="chat-hat"] .ch-intro-notice-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  /* Open sans-serif heading + body — feels like real Canvas
+     Assistant prose instead of code-style chrome. */
+  body[data-app="chat-hat"] .ch-intro-heading {
+    margin: 0 0 14px;
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-strong);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  body[data-app="chat-hat"] .ch-intro-paragraph {
+    margin: 0;
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+  /* Standing prompt below the notice — sized like a regular chat
+     line so it reads as the bot's actual question. Extra top
+     margin gives it air after the hairline. */
+  body[data-app="chat-hat"] .ch-intro-prompt {
+    margin: 18px 0 0;
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 14px;
+    color: var(--text-body);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     EMPTY-STATE — CINEMATIC OMNI INTRO
+     Right-side canvas starts with the burst icon HUGE and glowing.
+     The icon scales down into its final position. Once it lands, the
+     OMNI letters cascade out from beside it (right → left, closest
+     to the star first). Choreographed for a premium intro feel.
+     ═══════════════════════════════════════════════════════════════════════ */
+  body[data-app="chat-hat"] .ch-empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+    /* Use currentColor on the SVG paths so we drive fill via CSS color,
+       letting us animate filters cleanly without fighting the dark-theme
+       filter inversion on the global .omni-logo class. */
+    color: #0a0a0a;
+  }
+  body[data-theme="dark"] body[data-app="chat-hat"] .ch-empty-state,
+  body[data-app="chat-hat"][data-theme="dark"] .ch-empty-state {
+    color: #ffffff;
+  }
+  /* Fallback: scope by data-theme on body directly */
+  body[data-theme="dark"][data-app="chat-hat"] .ch-empty-state {
+    color: #ffffff;
+  }
+  /* .pt-mm-empty is the Media wizard's idle mark (9/1 fix,
+     renderMmGhostsDefault() — see the .pt-mm-empty block further
+     down) — a verbatim clone of this same .ch-empty-logo-wrap +
+     .ch-empty-logo markup, so it's added as an alternate ancestor
+     here rather than duplicating the declarations: one set of rules
+     drives both idle mounts identically. */
+  body[data-app="chat-hat"] .ch-empty-state .ch-empty-logo,
+  body[data-app="chat-hat"] .pt-mm-empty .ch-empty-logo {
+    height: 40px;
+    width: auto;
+    display: block;
+    overflow: visible;
+    /* Quiet blur fade-in. Finishes before the ambient float
+       (`ch-amb-float`) kicks in at 1500ms — those are separate
+       elements (intro is on the SVG, ambient is on the wrap)
+       so they don't conflict. The 1100ms duration with a longer
+       quart-out tail lets the blur clear feel deliberate rather
+       than snappy. */
+    animation: ch-omni-fade 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  body[data-app="chat-hat"] .ch-empty-state .ch-empty-logo path,
+  body[data-app="chat-hat"] .pt-mm-empty .ch-empty-logo path {
+    fill: currentColor;
+  }
+  /* Star + letters inherit the SVG's opacity + filter — no
+     per-element animations. */
+  @keyframes ch-omni-fade {
+    0%   { opacity: 0; filter: blur(14px); }
+    60%  { filter: blur(0); }
+    100% { opacity: 1; filter: blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body[data-app="chat-hat"] .ch-empty-state .ch-empty-logo,
+    body[data-app="chat-hat"] .pt-mm-empty .ch-empty-logo {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     AMBIENT EFFECT PICKER (top-right of nav)
+     Five toggleable idle treatments for the OMNI empty-state logo.
+     Live demo via body[data-ambient="1..5"]. State persists in
+     localStorage so reloads restore the last pick.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .ch-ambient-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-right: 14px;
+    padding: 3px;
+    border-radius: 8px;
+    background: var(--hover-soft);
+  }
+  body[data-theme="dark"] .ch-ambient-selector { background: rgba(255, 255, 255, 0.04); }
+  .ch-ambient-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 160ms cubic-bezier(0.4, 0, 0.2, 1),
+                color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ch-ambient-btn:hover {
+    background: var(--card-bg);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-ambient-btn:hover { background: rgba(255, 255, 255, 0.06); }
+  .ch-ambient-btn.is-active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  body[data-theme="dark"] .ch-ambient-btn.is-active { color: #0a0a0a; }
+  .ch-ambient-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     AMBIENT EFFECTS — wrap-level animations layered on top of the
+     intro. The .ch-empty-logo-wrap is the ambient container; the
+     SVG inside owns its one-shot intro animation.
+     ═══════════════════════════════════════════════════════════════════════ */
+  body[data-app="chat-hat"] .ch-empty-logo-wrap {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    /* GPU compositing hint — promotes the wrap to its own layer so
+       transform + filter animations are painted on the GPU instead
+       of triggering repaints. */
+    will-change: transform, filter;
+    backface-visibility: hidden;
+  }
+  /* Pre-set the float ambient's resting state on the wrap so when
+     the animation kicks in at 1500ms there's no sudden filter pop.
+     The zero-stack uses color-mix(... 0%, transparent) — NOT the
+     `transparent` keyword — so the color stays accent-tinted at
+     zero alpha. Mixing `transparent` (rgba(0,0,0,0)) with an
+     accent rgba color causes CSS to interpolate through grey,
+     producing a visible darkening mid-cycle. */
+  body[data-app="chat-hat"][data-ambient="4"] .ch-empty-logo-wrap {
+    filter:
+      drop-shadow(0 3px 8px color-mix(in srgb, var(--accent) 18%, transparent))
+      drop-shadow(0 0px 0px color-mix(in srgb, var(--accent) 0%, transparent));
+    /* 9/1 fix: Bryan wants the calm float back — "too dramatic, keep
+       the ambient floating omni logo we've had in other projects" —
+       rejecting the P6b 14-matte waiting wall outright. The 8/25 fix
+       below had disabled this animation entirely because the
+       ORIGINAL keyframe's 50% bloom (30px blur/42% accent) read as a
+       stray rectangle; @keyframes ch-amb-float itself is recalibrated
+       below (same 4500ms timing + translateY sweep, bloom halved to
+       ~14px/20%) so re-enabling it here is safe. This rule (plain
+       .ch-empty-logo-wrap, no .ch-empty-state ancestor requirement)
+       drives BOTH idle mounts — the bare Chat Hat canvas AND the
+       Media wizard's .pt-mm-empty clone (renderMmGhostsDefault()) —
+       identically, since both are just this same wrap element. */
+    animation: ch-amb-float 4500ms cubic-bezier(0.45, 0, 0.55, 1) 1500ms infinite;
+  }
+
+  /* ── 1. AURORA PULSE — slow accent halo breath ───────────────────── */
+  body[data-app="chat-hat"][data-ambient="1"] .ch-empty-logo-wrap {
+    animation: ch-amb-aurora 5500ms cubic-bezier(0.45, 0, 0.55, 1) 1500ms infinite;
+  }
+  @keyframes ch-amb-aurora {
+    0%, 100% {
+      filter:
+        drop-shadow(0 0 4px  color-mix(in srgb, var(--accent) 15%, transparent))
+        drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 8%,  transparent));
+    }
+    50% {
+      filter:
+        drop-shadow(0 0 36px color-mix(in srgb, var(--accent) 65%, transparent))
+        drop-shadow(0 0 80px color-mix(in srgb, var(--accent) 40%, transparent));
+    }
+  }
+
+  /* ── 2. IRIDESCENT SHIMMER — light sweep every ~7s ───────────────── */
+  body[data-app="chat-hat"][data-ambient="2"] .ch-empty-logo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -8px -16px;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 32%,
+      color-mix(in srgb, var(--accent) 25%, transparent) 44%,
+      color-mix(in srgb, var(--accent) 65%, transparent) 50%,
+      color-mix(in srgb, var(--accent) 25%, transparent) 56%,
+      transparent 68%
+    );
+    background-size: 260% 100%;
+    background-position: 130% 0;
+    opacity: 0;
+    animation: ch-amb-shimmer 7000ms cubic-bezier(0.4, 0, 0.2, 1) 1500ms infinite;
+  }
+  @keyframes ch-amb-shimmer {
+    0%   { opacity: 0; background-position: 130% 0; }
+    8%   { opacity: 1; }
+    24%  { background-position: -30% 0; }
+    36%  { opacity: 0; }
+    100% { opacity: 0; background-position: -30% 0; }
+  }
+
+  /* ── 3. PARTICLE GLINTS — bigger sparkles with strong halos ──────── */
+  body[data-app="chat-hat"] .ch-glint {
+    position: absolute;
+    left: var(--gx);
+    top: var(--gy);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 0 12px color-mix(in srgb, var(--accent) 90%, transparent),
+      0 0 24px color-mix(in srgb, var(--accent) 50%, transparent);
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  body[data-app="chat-hat"][data-ambient="3"] .ch-glint {
+    animation: ch-amb-glint 3600ms cubic-bezier(0.4, 0, 0.2, 1) calc(1500ms + var(--gd)) infinite;
+  }
+  @keyframes ch-amb-glint {
+    0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+    25%      { opacity: 1; transform: translate(-50%, -50%) scale(1.4); }
+    45%      { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+  }
+
+  /* ── 4. DRAMATIC FLOAT — quiet lift, recalibrated 9/1 ───────────────
+     BUG FIX 2026-08-25 (superseded 2026-09-01): this animation was
+     disabled outright after design review flagged its ORIGINAL 50%
+     keyframe — an 80px-wide, 42%-opacity drop-shadow bloom — as "a
+     stray white rectangle behind the OMNI wordmark" (root cause:
+     data-ambient="4" is hardcoded on <body>, so there was no way to
+     pick a calmer option; not wizard-specific, just more likely to be
+     caught mid-bloom on a longer walkthrough). 2026-09-01: Bryan
+     rejected the wall built to replace it and asked to keep the
+     ambient float instead — "too dramatic" was about the BLOOM, not
+     the float itself. Re-enabled (see the [data-ambient="4"] rule
+     above) with the bloom halved — peak blur 30px→14px, opacity
+     42%→20% — so the 50% keyframe reads as a soft lift, never a box,
+     in either idle mount (.ch-empty-state's own mark and the Media
+     wizard's .pt-mm-empty clone). */
+  /* Both keyframes use a 2-drop-shadow chain so CSS interpolates
+     between them smoothly. Zero-state uses color-mix(... 0%) so
+     the alpha fades without the color shifting through grey. */
+  @keyframes ch-amb-float {
+    0%, 100% {
+      transform: translateY(0);
+      filter:
+        drop-shadow(0 3px 8px color-mix(in srgb, var(--accent) 18%, transparent))
+        drop-shadow(0 0px 0px color-mix(in srgb, var(--accent) 0%, transparent));
+    }
+    50% {
+      transform: translateY(-10px);
+      filter:
+        drop-shadow(0 8px 14px color-mix(in srgb, var(--accent) 20%, transparent))
+        drop-shadow(0 2px 5px color-mix(in srgb, var(--accent) 12%, transparent));
+    }
+  }
+
+  /* ── 5. CHROMATIC SHIFT — wider hue cycle with saturation surge ─── */
+  body[data-app="chat-hat"][data-ambient="5"] .ch-empty-logo-wrap {
+    animation: ch-amb-chroma 9000ms cubic-bezier(0.45, 0, 0.55, 1) 1500ms infinite;
+  }
+  @keyframes ch-amb-chroma {
+    0%   { filter: hue-rotate(0deg)   saturate(1)    brightness(1); }
+    25%  { filter: hue-rotate(-32deg) saturate(1.35) brightness(1.08); }
+    50%  { filter: hue-rotate(0deg)   saturate(1)    brightness(1); }
+    75%  { filter: hue-rotate(32deg)  saturate(1.25) brightness(1.05); }
+    100% { filter: hue-rotate(0deg)   saturate(1)    brightness(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 9/1 fix: the wrap itself must NOT go opacity:0 here — it's the
+       actual OMNI mark's container (not a decorative overlay like
+       ::after/.ch-glint below), so this used to hide the whole logo
+       whenever reduced-motion was on. Only the animation/filter (the
+       float itself) turns off; the mark stays fully visible. */
+    body[data-app="chat-hat"][data-ambient] .ch-empty-logo-wrap {
+      animation: none !important;
+      filter: none !important;
+    }
+    body[data-app="chat-hat"][data-ambient] .ch-empty-logo-wrap::after,
+    body[data-app="chat-hat"][data-ambient] .ch-glint {
+      animation: none !important;
+      filter: none !important;
+      opacity: 0 !important;
+    }
+  }
+
+  /* Persona-selector "Chat" button — visually enabled on the Chat Hat
+     page (Bryan wants it to read as active in the chrome), but still
+     functionally disabled (the native `disabled` attribute on the
+     button blocks the click). The "looks enabled" treatment is full
+     opacity + default cursor; pointer-events stays auto so hover
+     animation works. */
+  body[data-app="chat-hat"] .persona-selector .psl-launch[disabled] {
+    opacity: 1;
+    cursor: default;
+    pointer-events: auto;
+  }
+  /* In dark theme the accent is bright cyan (#0de0e1) — white text on
+     cyan reads poorly, so the Chat button label flips to near-black. */
+  body[data-theme="dark"] .persona-selector .psl-launch {
+    color: #0a0a0a;
+  }
+  /* Same rule for the BC avatar chip in the topnav + presence stack:
+     accent background in dark mode is cyan, white "BC" letters wash
+     out. Force near-black text. AL.12 — .avatar-bc and .av-nick join
+     this list now that they carry the same accent ground. */
+  body[data-theme="dark"] .avatar,
+  body[data-theme="dark"] .pa.pa-bc,
+  body[data-theme="dark"] .pa-card-circle.pa-bc,
+  body[data-theme="dark"] .roadmap-avatar.avatar-bc,
+  body[data-theme="dark"] .msg-avatar.av-nick,
+  body[data-theme="dark"] .ch-profile-avatar {
+    color: #0a0a0a;
+  }
+
+  /* ── BC profile popover ─────────────────────────────────────────
+     Anchored to the .me chip in the topnav. Created lazily by JS
+     in the ChatHatProfile IIFE below. Pattern + look matches the
+     screenshot Bryan attached. */
+  /* ── Profile overlay — premium pass ──
+     Layered shadow (long ambient + tight contact + inner highlight),
+     gradient-tinted card bg, hairline border, gradient-fading dividers,
+     radial-gradient avatar with glow, refined typography. */
+  .ch-profile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: transparent;
+    /* Pointer-blocker only — outside-click handled by JS. */
+  }
+  .ch-profile-menu {
+    position: absolute;
+    z-index: 9999;
+    width: 320px;
+    background:
+      radial-gradient(
+        140% 100% at 50% 0%,
+        color-mix(in srgb, var(--accent) 4%, var(--card-bg, #ffffff)) 0%,
+        var(--card-bg, #ffffff) 55%
+      );
+    border: 0.5px solid rgba(15, 23, 42, 0.08);
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 1px rgba(15, 23, 42, 0.02),
+      0 28px 80px -12px rgba(15, 23, 42, 0.22),
+      0 12px 32px -8px rgba(15, 23, 42, 0.14),
+      0 2px 6px rgba(15, 23, 42, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    padding: 32px 24px 16px;
+    transform-origin: top right;
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    animation: ch-profile-open 420ms cubic-bezier(0.19, 1, 0.22, 1) both;
+    will-change: transform, opacity, filter;
+  }
+  body[data-theme="dark"] .ch-profile-menu {
+    background:
+      radial-gradient(
+        140% 100% at 50% 0%,
+        color-mix(in srgb, var(--accent) 6%, #1d1f25) 0%,
+        #1d1f25 55%
+      );
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      0 28px 80px -12px rgba(0, 0, 0, 0.70),
+      0 12px 32px -8px rgba(0, 0, 0, 0.50),
+      0 2px 6px rgba(0, 0, 0, 0.40),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  /* Subtle gradient ring along the top edge of the menu — accent-tinted */
+  .ch-profile-menu::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+      transparent 45%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  @keyframes ch-profile-open {
+    0%   { opacity: 0; transform: translateY(-8px) scale(0.94); filter: blur(6px); }
+    60%  { opacity: 1; }
+    100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+  }
+  .ch-profile-menu.is-closing {
+    animation: ch-profile-close 240ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  @keyframes ch-profile-close {
+    0%   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-6px) scale(0.96); filter: blur(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-profile-menu,
+    .ch-profile-menu.is-closing { animation: none; }
+  }
+
+  /* Avatar — radial gradient + soft accent glow */
+  .ch-profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        80% 80% at 30% 25%,
+        color-mix(in srgb, var(--accent) 70%, #ffffff) 0%,
+        var(--accent) 50%,
+        color-mix(in srgb, var(--accent) 88%, #000) 100%
+      );
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    align-self: center;
+    margin-bottom: 16px;
+    box-shadow:
+      0 8px 24px color-mix(in srgb, var(--accent) 30%, transparent),
+      0 2px 6px color-mix(in srgb, var(--accent) 22%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    position: relative;
+  }
+
+  .ch-profile-name {
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-strong);
+    text-align: center;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .ch-profile-email {
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-subtle);
+    text-align: center;
+    margin-top: 6px;
+    margin-bottom: 20px;
+    letter-spacing: 0;
+  }
+
+  /* Dividers — gradient hairline that fades out at the edges */
+  .ch-profile-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(15, 23, 42, 0.10) 12%,
+      rgba(15, 23, 42, 0.10) 88%,
+      transparent 100%
+    );
+    margin: 0 -4px;
+    border: 0;
+  }
+  body[data-theme="dark"] .ch-profile-divider {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.10) 12%,
+      rgba(255, 255, 255, 0.10) 88%,
+      transparent 100%
+    );
+  }
+
+  .ch-profile-row {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-body);
+    cursor: pointer;
+    border-radius: 10px;
+    letter-spacing: 0;
+    transition:
+      background 220ms cubic-bezier(0.19, 1, 0.22, 1),
+      color 220ms cubic-bezier(0.19, 1, 0.22, 1),
+      transform 220ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .ch-profile-row:hover {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-profile-row:hover {
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+  .ch-profile-row:active { transform: scale(0.985); }
+  .ch-profile-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .ch-profile-row svg { flex-shrink: 0; transition: transform 220ms cubic-bezier(0.19, 1, 0.22, 1); }
+  .ch-profile-row.is-logout {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .ch-profile-row.is-link {
+    justify-content: flex-start;
+    padding: 14px 12px;
+  }
+  .ch-profile-row.is-link .ch-profile-row-chev {
+    margin-left: auto;
+    opacity: 0.4;
+    transition: transform 260ms cubic-bezier(0.19, 1, 0.22, 1), opacity 220ms ease;
+  }
+  .ch-profile-row.is-link:hover .ch-profile-row-chev {
+    transform: translateX(3px);
+    opacity: 0.8;
+  }
+
+  /* ── Sub-view stack ──
+     Both views (main + themes) live in the same grid cell so they
+     overlap. Inactive one fades + slides off-axis with pointer-events
+     disabled. Slides left when going into themes, right when going
+     back to main — directional via .ch-profile-menu.dir-* class. */
+  .ch-profile-stack {
+    display: grid;
+    grid-template-areas: 'stack';
+    position: relative;
+  }
+  .ch-profile-view {
+    grid-area: stack;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 280ms cubic-bezier(0.19, 1, 0.22, 1),
+      transform 360ms cubic-bezier(0.19, 1, 0.22, 1),
+      filter 280ms cubic-bezier(0.19, 1, 0.22, 1);
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+  .ch-profile-view.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 60ms;
+  }
+  /* Going INTO themes — main slides left and out, themes comes in
+     from right. Going BACK — main comes in from left, themes slides
+     right and out. The dir class is set on the menu by JS. */
+  .ch-profile-menu.dir-forward .ch-profile-view-main:not(.is-visible) {
+    transform: translateX(-18px) scale(0.98);
+    filter: blur(3px);
+  }
+  .ch-profile-menu.dir-forward .ch-profile-view-themes:not(.is-visible) {
+    transform: translateX(18px) scale(0.98);
+    filter: blur(3px);
+  }
+  .ch-profile-menu.dir-back .ch-profile-view-main:not(.is-visible) {
+    transform: translateX(-18px) scale(0.98);
+    filter: blur(3px);
+  }
+  .ch-profile-menu.dir-back .ch-profile-view-themes:not(.is-visible) {
+    transform: translateX(18px) scale(0.98);
+    filter: blur(3px);
+  }
+  /* Default (no direction class set yet) — fade only */
+  .ch-profile-view:not(.is-visible) {
+    transform: translateX(8px) scale(0.99);
+    filter: blur(2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-profile-view {
+      transition: opacity 120ms ease !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+
+  /* ── Full-page theme switch animation (fallback for browsers
+       without View Transitions API). Animates color + bg + border
+       on common surfaces during the theme flip so it cross-fades
+       rather than snapping. */
+  body[data-app="chat-hat"].ch-theme-transitioning,
+  body[data-app="chat-hat"].ch-theme-transitioning *:not(svg):not(svg *) {
+    transition:
+      background-color 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      color 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      border-color 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      box-shadow 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      fill 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      stroke 380ms cubic-bezier(0.19, 1, 0.22, 1) !important;
+  }
+
+  /* View Transitions API — Chrome's built-in cross-fade for theme
+     swap. Soft + atmospheric. Only fires where supported. */
+  @supports (view-transition-name: none) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 420ms;
+      animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    ::view-transition-old(root) {
+      animation-name: ch-vt-fade-out;
+    }
+    ::view-transition-new(root) {
+      animation-name: ch-vt-fade-in;
+    }
+    @keyframes ch-vt-fade-out {
+      to { opacity: 0; }
+    }
+    @keyframes ch-vt-fade-in {
+      from { opacity: 0; }
+    }
+  }
+
+  /* Themes sub-view */
+  .ch-profile-menu.is-themes { padding: 16px 8px 8px; }
+  .ch-profile-themes-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 14px 14px;
+  }
+  .ch-profile-themes-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+  .ch-profile-themes-close {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-subtle);
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 140ms ease, color 140ms ease;
+  }
+  .ch-profile-themes-close:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-profile-themes-close:hover { background: rgba(255, 255, 255, 0.06); }
+  .ch-profile-theme-row {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    padding: 14px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-body);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 140ms ease, color 140ms ease;
+  }
+  .ch-profile-theme-row:hover { background: var(--hover-soft); }
+  body[data-theme="dark"] .ch-profile-theme-row:hover { background: rgba(255, 255, 255, 0.04); }
+  .ch-profile-theme-row.is-active {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .ch-profile-theme-row.is-active svg { color: var(--accent); }
+  .ch-profile-theme-row svg { color: var(--text-body); flex-shrink: 0; }
+  .ch-profile-theme-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  /* Hide the v1/v2/v3 version-switch entirely on the Chat Hat page.
+     We're locked to v3 here, no reason to expose the toggle next to
+     the BC profile chip. */
+  body[data-app="chat-hat"] .version-switch { display: none !important; }
+  /* Empty-state placeholder centered in the canvas. */
+  .ch-canvas-empty {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 48px;
+    color: var(--text-subtle);
+    text-align: center;
+  }
+  .ch-canvas-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .ch-canvas-empty-title {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-strong);
+  }
+  .ch-canvas-empty-sub {
+    max-width: 360px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ── Prompt-card chat-hat (feedback applied) ──
+     This replaces .chat-aux-chips when an interactive prompt is firing.
+     Stronger contrast, soft elevated border, entrance animation, numbered
+     options, free-text fallback handled by the composer textarea. */
+  .ch-prompt {
+    display: none;
+    flex-direction: column;
+    /* Slightly smaller than the body-inner padding-top above the
+       subtitle (18px) so the subtitle sits optically centered
+       between the two hairlines — top space slightly larger
+       compensates for cap-height appearing high in the line. */
+    gap: 14px;
+  }
+  /* Smooth chip-out / prompt-in cross-fade (premium swap).
+     Chips fade + lift + blur out on `.is-leaving`, then JS hides
+     them and shows the prompt. The is-leaving class handles the
+     visual transition before the display swap. */
+  .chat-aux-chips {
+    transition:
+      opacity 260ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 360ms cubic-bezier(0.4, 0, 0.2, 1),
+      filter 260ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  .chat-aux-chips.is-leaving {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+    filter: blur(3px);
+    pointer-events: none;
+  }
+  .chat-aux-panel.ch-prompt-active .chat-aux-chips,
+  .chat-aux-panel.ch-prompt-active .pt-seeall-link { display: none !important; }
+  /* Prompt enters with a soft fade + lift + focus pull. Cards inside
+     cascade in via their own existing nth-child stagger. */
+  .chat-aux-panel.ch-prompt-active .ch-prompt {
+    display: flex;
+    animation: ch-prompt-mount 420ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes ch-prompt-mount {
+    0%   { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  }
+  /* Title text — smooth fade when content swaps between steps. */
+  .chat-aux-title {
+    transition:
+      opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .chat-aux-title.is-changing {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  /* Sub-text (pick-one description) — same fade behaviour as title. */
+  .ch-prompt-sub {
+    transition:
+      opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ch-prompt-sub.is-changing {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  /* In-place content swap when moving between steps — the prompt
+     stays mounted (no chips re-appear), just its contents soft-fade
+     out and back in around the listEl rebuild. */
+  .ch-prompt {
+    transition:
+      opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      filter 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ch-prompt.is-swapping {
+    opacity: 0.15;
+    filter: blur(4px);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-chips,
+    .chat-aux-chips.is-leaving,
+    .chat-aux-panel.ch-prompt-active .ch-prompt,
+    .chat-aux-title.is-changing {
+      animation: none !important;
+      transition: none !important;
+      filter: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+    .chat-aux-chips.is-leaving { opacity: 0 !important; }
+  }
+
+  /* Note #1 — make it stand out when it fires.
+     Panel matches the chip-state surface (canvas-bg) so the option
+     cards inside (card-bg) "pop out" with the same surface
+     relationship the chips have in the open state. */
+  body[data-theme="dark"] .chat-aux-panel.ch-prompt-active {
+    background: var(--canvas-bg);
+    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    /* Preserve the base panel's seamless bottom-edge merge with the
+       composer (otherwise the shorthand re-adds a bottom border that
+       doubles up with the composer's top border). */
+    border-bottom: 0;
+  }
+  .chat-aux-panel.ch-prompt-active {
+    background: var(--canvas-bg);
+    border: 0.5px solid rgba(15, 23, 42, 0.16);
+    border-bottom: 0;
+  }
+  .chat-aux-panel.ch-prompt-active.ch-just-fired {
+    animation: ch-prompt-enter 520ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes ch-prompt-enter {
+    0%   { transform: translateY(8px) scale(0.985); opacity: 0; }
+    60%  { transform: translateY(-2px) scale(1.003); opacity: 1; }
+    100% { transform: translateY(0)    scale(1);     opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel.ch-prompt-active.ch-just-fired { animation: none; }
+  }
+
+  .ch-prompt-sub {
+    /* Subtitle removed by request — kept the element in DOM but
+       hidden from layout so any code that references it (textContent
+       updates, etc.) doesn't break. */
+    display: none;
+  }
+
+  /* Option card — single column stack, numbered, auto-submits on click.
+     No inline Submit button (Note #2). */
+  .ch-opt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ch-opt {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    /* Cards use card-bg (the brighter chip surface) on top of the
+       panel's canvas-bg — same surface relationship the open-state
+       chips have on the panel. */
+    background: var(--card-bg);
+    border: 0.5px solid var(--line-solid);
+    border-radius: 10px;
+    color: var(--text-body);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    /* Buttery-smooth hover transitions — quart-out curve (Apple
+       premium feel), longer duration, every animatable property
+       coordinated to arrive together. */
+    transition:
+      background 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  body[data-theme="dark"] .ch-opt {
+    background: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .chat-aux-panel.ch-prompt-active .ch-opt { opacity: 1; transform: translateY(0); }
+  /* Entry stagger — delays apply per transition prop in the order
+     declared above (bg, border, color, transform, shadow). Only
+     transform + shadow want the staggered delay; others stay at 0. */
+  .chat-aux-panel.ch-prompt-active .ch-opt:nth-child(1) { transition-delay: 0s, 0s, 0s, 80ms,  80ms; }
+  .chat-aux-panel.ch-prompt-active .ch-opt:nth-child(2) { transition-delay: 0s, 0s, 0s, 140ms, 140ms; }
+  .chat-aux-panel.ch-prompt-active .ch-opt:nth-child(3) { transition-delay: 0s, 0s, 0s, 200ms, 200ms; }
+  .chat-aux-panel.ch-prompt-active .ch-opt:nth-child(4) { transition-delay: 0s, 0s, 0s, 260ms, 260ms; }
+  .chat-aux-panel.ch-prompt-active .ch-opt:nth-child(5) { transition-delay: 0s, 0s, 0s, 320ms, 320ms; }
+
+  /* Hover — subtle accent wash + accent-tinted border + soft lift +
+     deeper shadow with an accent halo ring. All via color-mix so
+     the accent bleeds into the existing surface rather than
+     replacing it flatly. */
+  .ch-opt:hover {
+    /* Bryan: keep the card fill as-is on hover, ONLY the border
+       hairline changes color. The earlier accent-soft fill made
+       the cards feel busy on hover. */
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--line-solid));
+    transform: translateY(-1px);
+  }
+  body[data-theme="dark"] .ch-opt:hover {
+    border-color: color-mix(in srgb, var(--accent) 60%, rgba(255, 255, 255, 0.08));
+  }
+  .ch-opt:active { transform: translateY(0) scale(0.99); }
+  .ch-opt:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .ch-opt.is-picked {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+
+  /* ── 4th "Other" card — inline custom-answer input ───────────────
+     Click (or press its number key) to flip the card from a normal
+     option row into an inline text input. Submit with Enter.
+     Body has min-height locked so the card stays the same size
+     regardless of whether it shows title+desc or just the input. */
+  .ch-opt.ch-opt-custom {
+    cursor: text;
+    position: relative;
+    /* Native dashed border via border-style — simpler than the
+       SVG-mask custom-spacing approach we tried, no doubling, no
+       fat horizontal lines. Right padding leaves room for the X
+       button (top-right 20px wide, anchored 6px from right). */
+    padding-right: 38px;
+    border-width: 0.5px;
+    border-style: dashed;
+    transition:
+      background 320ms cubic-bezier(0.19, 1, 0.22, 1),
+      border-color 320ms cubic-bezier(0.19, 1, 0.22, 1),
+      transform 320ms cubic-bezier(0.19, 1, 0.22, 1),
+      box-shadow 380ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .ch-opt.ch-opt-custom .ch-opt-body {
+    /* Fixed height + grid stack: label-wrap and input both live in
+       the same grid cell, cross-fading via opacity/transform. No
+       content swap = no jump. */
+    height: 40px;
+    display: grid;
+    grid-template-areas: "stack";
+    /* Override the .ch-opt-body's default column-flex (no longer
+       needed since we're using grid stacking here). */
+    flex-direction: row;
+    gap: 0;
+  }
+  .ch-opt.ch-opt-custom .ch-opt-custom-label {
+    grid-area: stack;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Default: visible. Cross-fades to hidden when is-editing. */
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    pointer-events: auto;
+    transition:
+      opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      filter 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ch-opt.ch-opt-custom .ch-opt-custom-input {
+    grid-area: stack;
+    align-self: start;
+    width: 100%;
+    line-height: 1.4;
+    /* Default: hidden. Cross-fades to visible when is-editing,
+       with a slight delay so the label fades out first. */
+    opacity: 0;
+    transform: translateY(-3px);
+    pointer-events: none;
+    filter: blur(2px);
+    transition:
+      opacity 240ms cubic-bezier(0.4, 0, 0.2, 1) 100ms,
+      transform 320ms cubic-bezier(0.4, 0, 0.2, 1) 100ms,
+      filter 240ms cubic-bezier(0.4, 0, 0.2, 1) 100ms;
+  }
+  .ch-opt.ch-opt-custom.is-editing .ch-opt-custom-label {
+    opacity: 0;
+    transform: translateY(4px);
+    filter: blur(2px);
+    pointer-events: none;
+  }
+  .ch-opt.ch-opt-custom.is-editing .ch-opt-custom-input {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    pointer-events: auto;
+  }
+  /* Reverse the delay on collapse — label should fade in AFTER the
+     input has cleared, otherwise they'd briefly overlap. */
+  .ch-opt.ch-opt-custom:not(.is-editing) .ch-opt-custom-label {
+    transition-delay: 100ms;
+  }
+  .ch-opt.ch-opt-custom:not(.is-editing) .ch-opt-custom-input {
+    transition-delay: 0s;
+  }
+  /* Title + desc keep consistent line-height with the input for
+     baseline alignment when stacked in the grid cell. */
+  .ch-opt.ch-opt-custom .ch-opt-title {
+    line-height: 1.4;
+  }
+
+  /* Default (un-edited) state styled distinctly from the other
+     options to signal "active input field" — custom-drawn dashed
+     stroke (via SVG mask, see ::before below) so dash spacing can
+     be controlled. Lighter fill, italic placeholder-style
+     description, and a pencil icon anchored to the right side. */
+  .ch-opt.ch-opt-custom:not(.is-editing) {
+    border-color: color-mix(in srgb, var(--text-subtle) 40%, transparent);
+    background: transparent;
+  }
+  .ch-opt.ch-opt-custom:not(.is-editing) .ch-opt-num {
+    background: transparent;
+    color: var(--text-subtle);
+    border: 1px dashed color-mix(in srgb, var(--text-subtle) 45%, transparent);
+  }
+  .ch-opt.ch-opt-custom:not(.is-editing) .ch-opt-title {
+    font-weight: 400;
+    color: var(--text-subtle);
+    font-style: italic;
+  }
+  .ch-opt.ch-opt-custom:not(.is-editing) .ch-opt-desc {
+    color: var(--text-subtle);
+    opacity: 0.7;
+    font-style: italic;
+  }
+  /* Hover lifts the card toward "ready to edit": dashed border
+     warms to accent, fill picks up a faint accent wash. */
+  .ch-opt.ch-opt-custom:not(.is-editing):hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+  body[data-theme="dark"] .ch-opt.ch-opt-custom:not(.is-editing):hover {
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+  .ch-opt.ch-opt-custom:not(.is-editing):hover .ch-opt-num {
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+    color: var(--accent);
+  }
+  .ch-opt.ch-opt-custom:not(.is-editing):hover .ch-opt-title,
+  .ch-opt.ch-opt-custom:not(.is-editing):hover .ch-opt-desc {
+    color: var(--text-strong);
+    opacity: 1;
+  }
+
+  /* X (cancel) button — lives in DOM permanently but hidden via
+     CSS in default state, fades in when is-editing is set. Anchored
+     to the top-right of the card. */
+  .ch-opt-custom-close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 2;
+    opacity: 0;
+    transform: scale(0.85);
+    pointer-events: none;
+    transition:
+      opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      background 160ms ease,
+      color 160ms ease;
+  }
+  .ch-opt.ch-opt-custom.is-editing .ch-opt-custom-close {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    transition-delay: 140ms;
+  }
+  .ch-opt-custom-close:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-opt-custom-close:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .ch-opt-custom-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .ch-opt.ch-opt-custom.is-editing {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+      0 4px 14px rgba(15, 23, 42, 0.07);
+    background: var(--card-bg);
+    cursor: text;
+  }
+  body[data-theme="dark"] .ch-opt.ch-opt-custom.is-editing {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+      0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+  .ch-opt-custom-input {
+    appearance: none;
+    border: 0;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-strong);
+    caret-color: var(--accent);
+  }
+  .ch-opt-custom-input::placeholder {
+    color: var(--text-subtle);
+    font-style: italic;
+    opacity: 0.85;
+  }
+  /* In editing mode the number pill takes on the accent (active) tint
+     so the card visually "lights up" as the focused row. */
+  .ch-opt.ch-opt-custom.is-editing .ch-opt-num {
+    background: var(--accent);
+    color: #ffffff;
+  }
+  body[data-theme="dark"] .ch-opt.ch-opt-custom.is-editing .ch-opt-num {
+    color: #0a0a0a;
+  }
+
+  /* Note #4 — number every option 1/2/3 so users can keyboard it. */
+  .ch-opt-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    /* Coordinated micro-shift on parent hover. Background color is
+       the only animating property — scale was being applied to a
+       24px box with 11px mono text and made the digits sub-pixel
+       wiggle during the animation. Background tint shift alone gives
+       enough hover affordance. */
+    transition: background 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ch-opt:hover .ch-opt-num {
+    background: color-mix(in srgb, var(--accent) 22%, var(--accent-soft));
+  }
+  .ch-opt-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .ch-opt-title {
+    font-size: 13px;
+    color: var(--text-strong);
+    font-weight: 500;
+  }
+  .ch-opt-desc {
+    font-size: 11.5px;
+    color: var(--text-subtle);
+    line-height: 1.4;
+    transition: color 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ch-opt:hover .ch-opt-desc {
+    color: var(--text-body);
+  }
+  .ch-opt-kbd {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-subtle);
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(15, 23, 42, 0.04);
+    border: 0.5px solid var(--line);
+  }
+  body[data-theme="dark"] .ch-opt-kbd {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Note #5 — confirm free-text works.
+     Hint sits below the options telling the user they can type their
+     own answer into the composer. */
+  .ch-prompt-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-top: 0.5px dashed var(--line);
+    margin-top: 4px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-subtle);
+  }
+  .ch-prompt-hint svg { flex-shrink: 0; opacity: 0.7; }
+
+  /* Body padding when prompt is active — subtitle was removed, so
+     just a small top buffer between the hairline and the first
+     option card. */
+  .chat-aux-panel.ch-prompt-active .chat-aux-body-inner {
+    padding: 12px 16px 14px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     AMBIENT CORNER GLINT — occasional accent-tinted highlight that
+     traces along the upper-left edge of the chat hat panel. Reads
+     like a reflective sheen catching the panel's border. Sits on
+     ::after of the panel so it doesn't conflict with the first-
+     reveal ::before sweep (which is class-scoped to ch-first-reveal).
+     ═══════════════════════════════════════════════════════════════════════ */
+  .chat-aux-panel:not(.ch-first-reveal)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Match the chat hat panel's 0.5px hairline so the glow rides
+       on the same line weight as the border, not over it. */
+    padding: 0.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 80%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 35%, transparent) 12%,
+      transparent 30%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 4;
+    animation: ch-aux-corner-glint 5s cubic-bezier(0.4, 0, 0.6, 1) 1s infinite;
+  }
+  @keyframes ch-aux-corner-glint {
+    /* Sine-like pulse — smooth ramp up to peak, smooth ramp back
+       down. Eased curve + symmetric keyframes mean no sharp stops
+       or held middle, just one continuous breath. */
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 0.85; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel:not(.ch-first-reveal)::after { animation: none; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     FIRST-REVEAL — restrained, high-end entrance choreographed with
+     the body's growth so nothing snaps. The body's max-height is
+     animated by a keyframe (not the standard transition) so it eases
+     in over the same arc as the panel itself. Content (mode tiles,
+     chips) carries no entrance of its own (9/1b) — it rests at opacity
+     1 / transform none and the growing body reveals it, one unit, same
+     as the manual-toggle path. Stripped after settle.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .chat-aux-panel.ch-first-reveal {
+    /* Panel header stays put — no transform/opacity on the container
+       itself. The body grows, chips stagger in, and a layered
+       shimmer + accent halo pulses around the panel during the reveal. */
+    position: relative;
+    overflow: visible;
+    /* Accent halo that blooms out and fades — feels like the panel
+       is "lit" briefly as it opens. Uses box-shadow keyframe so it
+       doesn't displace any layout. */
+    animation: ch-fr-halo 800ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both;
+  }
+  /* Body grows from 0 → 300px (clamped by its ~246px content). Faster
+     timing for a snappier reveal. */
+  .chat-aux-panel.ch-first-reveal .chat-aux-body {
+    transition: none !important;
+    animation: ch-fr-body 700ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both;
+  }
+  .chat-aux-panel.ch-first-reveal.is-expanded .chat-aux-body {
+    /* Must match ch-fr-body's 100% keyframe AND the base is-expanded
+       cap — a mismatch here is exactly the load-time last-few-px pop
+       fixed on 9/1 (was 220 vs content 246). */
+    max-height: 300px;
+  }
+  /* Prompt-active variant — match the velocity of the initial
+     "What would you like to create?" reveal exactly. That open
+     uses `ch-fr-body` (700ms cubic-bezier(0.4, 0, 0.2, 1) + 60ms
+     delay) to go 0→220px; this variant uses the same curve and
+     duration to go 0→300px in one motion. Bryan asked for the
+     two opens to feel like the same gesture.
+
+     Earlier this was a simple 380ms transition that matched the
+     manual-toggle feel — that approach also worked for the
+     "travel in unison" pin (the chat-stream pin uses
+     getBoundingClientRect each RAF so it follows whatever curve
+     the body is on). The unison still works with this keyframe
+     because the pin runs for 900ms (covers 60ms delay + 700ms
+     keyframe + 140ms tail) and reads the live panel height
+     every frame. */
+  .chat-aux-panel.ch-first-reveal.ch-prompt-active .chat-aux-body {
+    animation: ch-fr-body-prompt 700ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both;
+  }
+  @keyframes ch-fr-body-prompt {
+    0%   { max-height: 0; }
+    100% { max-height: 300px; }
+  }
+  /* Surface sheen — diagonal accent-tinted light bar sweeps across
+     the panel as it opens. Density is tuned to read equally in
+     light + dark theme (no blend mode — the gradient just paints
+     the accent over the panel surface so the blue in light + cyan
+     in dark both register clearly). */
+  .chat-aux-panel.ch-first-reveal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        105deg,
+        transparent 30%,
+        color-mix(in srgb, var(--accent) 8%,  transparent) 44%,
+        color-mix(in srgb, var(--accent) 20%, transparent) 50%,
+        color-mix(in srgb, var(--accent) 8%,  transparent) 56%,
+        transparent 70%
+      );
+    background-size: 240% 100%;
+    background-position: 130% 0;
+    opacity: 0;
+    z-index: 2;
+    animation: ch-fr-sweep 800ms cubic-bezier(0.4, 0, 0.2, 1) 100ms both;
+  }
+  /* Border-trace glow — a bright accent ring overlay that fades in,
+     pulses, and fades out. Sits just outside the panel via padded
+     inset so it reads as a halo around the rounded-rect edges. */
+  .chat-aux-panel.ch-first-reveal::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 80%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 30%, transparent) 35%,
+      transparent 55%,
+      color-mix(in srgb, var(--accent) 30%, transparent) 80%,
+      color-mix(in srgb, var(--accent) 80%, transparent) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+    animation: ch-fr-trace 950ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both;
+  }
+  /* Header bar (title + dot + chevron) intentionally NOT animated
+     during first-reveal — Bryan wants the bar to be visible from the
+     first paint and only the BODY to open from that resting position.
+     The dot keeps its steady "breath" loop (inherited from base CSS).
+     Chips (and mode tiles) carry no first-reveal entrance either
+     (9/1b, removed — was its own opacity/translateY stagger via
+     ch-fr-chip, up to 680ms delay + 450ms duration, layered on top of
+     the body's own keyframe, which is exactly the "different loading
+     timers" Bryan flagged). They render at their resting opacity 1 /
+     transform none and the growing body uncovers them — one unit. */
+
+  @keyframes ch-fr-panel {
+    /* Subtle: 6px lift, soft blur dissolving, no scale. Single ease. */
+    0%   { transform: translateY(6px); opacity: 0; filter: blur(6px); }
+    60%  { opacity: 1; }
+    100% { transform: translateY(0);   opacity: 1; filter: blur(0); }
+  }
+  /* Body grows from 0 → its natural expanded max-height as a smooth
+     keyframe arc, in the same easing family as the panel entrance. */
+  @keyframes ch-fr-body {
+    0%   { max-height: 0; }
+    /* 300, matching the base is-expanded cap AND ch-fr-body-prompt.
+       Was 220 — fine when the hat's content was ~192px, but the
+       See-all footer row (9/1) grew content to ~246px, so the
+       load-time reveal clamped at 220 (See-all clipped) and then
+       popped the last ~26px when ch-first-reveal was stripped and
+       the 300px base rule took over. THAT was the "opens then moves
+       the last few px" stutter — it only existed on the auto-expand
+       path, never on a manual head-click. Keep all three max-height
+       ends (here, the rule below, the base cap) in agreement. */
+    100% { max-height: 300px; }
+  }
+  @keyframes ch-fr-sweep {
+    /* Diagonal sheen sweep — fade in, brightest mid-traverse,
+       fade out as it exits the panel. */
+    0%   { opacity: 0; background-position: 130% 0; }
+    18%  { opacity: 1; }
+    78%  { opacity: 1; }
+    100% { opacity: 0; background-position: -30% 0; }
+  }
+  /* Halo bloom — accent-tinted glow expands around the panel,
+     peaks in brightness, then settles. Density tuned so the
+     glow reads with equal weight in light + dark theme. */
+  @keyframes ch-fr-halo {
+    0% {
+      box-shadow:
+        0 0 0  0 color-mix(in srgb, var(--accent) 0%,  transparent),
+        0 0 0  0 color-mix(in srgb, var(--accent) 0%,  transparent);
+    }
+    35% {
+      box-shadow:
+        0 0 24px 4px color-mix(in srgb, var(--accent) 48%, transparent),
+        0 0 60px 14px color-mix(in srgb, var(--accent) 26%, transparent);
+    }
+    100% {
+      box-shadow:
+        0 0 0  0 color-mix(in srgb, var(--accent) 0%,  transparent),
+        0 0 0  0 color-mix(in srgb, var(--accent) 0%,  transparent);
+    }
+  }
+  /* Border trace — accent ring around the panel edges, brightest at
+     opposite corners (135deg gradient), fades in + out cleanly. */
+  @keyframes ch-fr-trace {
+    0%   { opacity: 0; }
+    25%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes ch-fr-dot {
+    /* Scale from 0.6 → 1 (not 0). No ring. No overshoot. */
+    0%   { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  @keyframes ch-fr-title {
+    /* Pure fade. No transform. */
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes ch-fr-chev {
+    /* Just a fade. The chevron sits at its rest rotation. */
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel.ch-first-reveal,
+    .chat-aux-panel.ch-first-reveal::before,
+    .chat-aux-panel.ch-first-reveal::after,
+    .chat-aux-panel.ch-first-reveal .chat-aux-body {
+      animation: none !important;
+    }
+  }
+  /* Panel max-height bumps up when prompt is active to fit cards */
+  .chat-aux-panel.ch-prompt-active.is-expanded .chat-aux-body { max-height: 300px; }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     TASK LIST VIEW — replaces the option-card list inside the chat
+     hat body after the user picks a persona type. Mimics a code-
+     editor todo pane: monospace, IN PROGRESS task highlighted with
+     a spinning accent ring, PENDING tasks dimmed and idle.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .ch-task-list {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  }
+  .ch-task-section { display: flex; flex-direction: column; }
+  .ch-task-section-label {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    font-weight: 600;
+  }
+  .ch-task-section + .ch-task-section .ch-task-section-label { margin-top: 14px; }
+  .ch-task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 4px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-body);
+    transition: color 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ch-task-icon {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 1.25px solid color-mix(in srgb, var(--text-body) 30%, transparent);
+    flex-shrink: 0;
+    position: relative;
+    background: transparent;
+    /* Nudge the icon down so it lines up with the cap-height of the
+       first text line (which sits a bit above the line-box centre). */
+    margin-top: 3px;
+  }
+  .ch-task-text { flex: 1; }
+  .ch-task-text strong { font-weight: 700; color: inherit; }
+  .ch-task-item.is-in-progress { color: var(--accent); }
+  .ch-task-item.is-in-progress .ch-task-icon {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  .ch-task-item.is-in-progress .ch-task-icon::after {
+    content: '';
+    position: absolute;
+    inset: -1.25px;
+    border-radius: 50%;
+    border: 1.25px solid transparent;
+    border-top-color: var(--accent);
+    animation: ch-task-spin 1.05s linear infinite;
+  }
+  .ch-task-item.is-pending { color: var(--text-subtle); }
+  .ch-task-item.is-pending .ch-task-icon {
+    border-color: color-mix(in srgb, var(--text-subtle) 55%, transparent);
+  }
+  /* Done state — filled accent circle with a crisp white check.
+     The check is an inline SVG (rounded line-caps, no border-trick
+     corner artifacts), positioned to fill the icon. */
+  .ch-task-item.is-done { color: var(--text-subtle); }
+  .ch-task-item.is-done .ch-task-icon {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .ch-task-item.is-done .ch-task-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none'><path d='M3.5 7.2 L6 9.5 L10.5 5' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    animation: none;
+  }
+  /* In dark theme the accent fill is cyan — a white check washes
+     out against it. Swap to a near-black stroke so the tick reads
+     clearly against the bright fill. */
+  body[data-theme="dark"] .ch-task-item.is-done .ch-task-icon::after {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none'><path d='M3.5 7.2 L6 9.5 L10.5 5' stroke='%230a1320' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  }
+  /* All state transitions on the task icons + text use the same
+     buttery curve so the cascade through tasks feels coherent. */
+  .ch-task-item,
+  .ch-task-icon {
+    transition:
+      color 320ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 320ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes ch-task-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Compact task-head marker rendered inside the chat-aux-title when
+     the chat hat is in collapsed "task watching" mode. Mirrors the
+     full body task item: spinning circle + "N of M: description"
+     in a tight inline layout. The title's existing fade transition
+     carries content swaps between tasks. */
+  .chat-aux-title .ch-task-head-marker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-body);
+  }
+  .chat-aux-title .ch-task-head-icon {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .chat-aux-title .ch-task-head-icon::after {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    border-top-color: var(--accent);
+    animation: ch-task-spin 1.05s linear infinite;
+  }
+  .chat-aux-title .ch-task-head-text strong { font-weight: 700; }
+
+  /* Crossfade transition when the option list morphs into the task
+     list. Both directions slide a few pixels for a buttery feel. */
+  .ch-opt-list.is-leaving {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition:
+      opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ch-task-list {
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ch-task-list.is-entered {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-opt-list.is-leaving,
+    .ch-task-list,
+    .ch-task-list.is-entered {
+      transition: none;
+      transform: none;
+    }
+    .ch-task-item.is-in-progress .ch-task-icon::after { animation: none; }
+  }
+
+  /* "You chose X" echo in the chat thread (Note #3) */
+  .msg.user-choice { /* lean on existing .msg styles, this is just a hook */ }
+  .ch-choice-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  /* IMPORTANT: do NOT set `scroll-behavior: smooth` on .chat-stream.
+     The spec says it should only affect scrollTo()/scrollIntoView(),
+     but Chromium (verified 2026-06-03) ALSO applies smooth scrolling
+     to direct `stream.scrollTop = X` assignments — which is what
+     `_autoScrollToBottom()` and the hat-grow pin loop both use. With
+     smooth-scroll on, every scrollTop write becomes a target the
+     browser LERPs toward, so the pin lags the hat-grow keyframe
+     by ~half a transition (~190ms) — content visibly drags behind
+     the chat-hat opening instead of moving in unison. The wheel-lerp
+     IIFE handles user wheel/trackpad input directly via scrollTop=,
+     and the one helper that wants smooth-scroll (line ~35826) passes
+     `behavior: 'smooth'` in its scrollTo() call explicitly. No CSS
+     opt-in needed. */
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PERSONA INTRO RESPONSE — when the user clicks the Persona chip, the
+     chat stream fills with: (1) a user bubble, (2) a slim "system
+     thought" line (orb spinner → fira-code typewriter), then (3) a
+     Canvas Assistant bubble with a rich response (heading + table +
+     workflow + tips + how-to-trigger).
+     ═══════════════════════════════════════════════════════════════════════ */
+  /* Override the lease-campaign dialogue-cycle baseline that hides every
+     .msg:not(:first-of-type) until .shown is added. Our intro messages
+     are appended live and should display + fade in immediately. */
+  .chat-stream .msg.ch-injected {
+    display: flex;
+    animation: ch-msg-fade-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes ch-msg-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* User bubbles get a richer entrance — longer 520ms quart-out
+     with a soft blur clear, a touch of scale-up, and a slightly
+     deeper Y-translate so the bubble feels like it's settling
+     into place rather than just popping in. Overrides the
+     shared ch-msg-fade-in via the more specific selector. */
+  .chat-stream .msg.user.ch-injected {
+    animation: ch-msg-user-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes ch-msg-user-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.97);
+      filter: blur(4px);
+    }
+    55% {
+      filter: blur(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+  /* Canvas Assistant rich-response messages get a longer,
+     calmer entrance than user bubbles — 640ms quart-out with
+     a deeper blur clear and gentler scale. Reads as the
+     assistant "arriving" with weight, not popping in. The
+     same animation drives the .is-leaving exit when one ever
+     gets removed (currently only the intro thought-line uses
+     .is-fading, but rich messages get the symmetric exit
+     here too so any future remove path animates cleanly). */
+  .chat-stream .msg.bot.ch-richmsg.ch-injected {
+    animation: ch-msg-bot-in 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes ch-msg-bot-in {
+    0% {
+      opacity: 0;
+      transform: translateY(12px) scale(0.985);
+      filter: blur(6px);
+    }
+    50% {
+      filter: blur(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+  .chat-stream .msg.bot.ch-richmsg.is-leaving {
+    animation: ch-msg-bot-out 420ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes ch-msg-bot-out {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.985);
+      filter: blur(4px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-stream .msg.user.ch-injected,
+    .chat-stream .msg.bot.ch-richmsg.ch-injected,
+    .chat-stream .msg.bot.ch-richmsg.is-leaving { animation: none; }
+  }
+
+  /* The chat-stream's baseline flex-gap is 28px (shared with the
+     lease-campaign layout). For chat-hat — where the messages are
+     denser and have less visual containment — push that out so the
+     blocks breathe and don't read like stacked lego bricks. */
+  body[data-app="chat-hat"] .chat-stream { gap: 44px; }
+
+  /* The intro message (Canvas Assistant + "What can I help with?")
+     is a soft welcome, not a real exchange — give it extra air below
+     before the user's question starts the actual conversation. */
+  body[data-app="chat-hat"] .chat-stream .msg.ch-intro-msg {
+    padding-bottom: 12px;
+  }
+
+  /* User bubble: right-aligned, with its right edge aligned to the
+     "Important AI Reminder" notice card above (which sits at the
+     chat-stream's natural inner-right edge). Bubble is content-sized
+     — no max-width cap, because the heavy 176px right padding plus
+     a max-width was squeezing the content area so narrow the text
+     was double-wrapping on the chat panel. */
+  .chat-stream .msg.user.ch-injected > .bubble {
+    align-self: flex-end;
+    margin-right: 0;
+    padding-right: 176px;
+  }
+
+  /* System-thought line — orb spinner sits flush at the left edge of
+     the chat column (aligned with the AI reminder card's left edge),
+     and the fira-code text grows to the right of the orb as the
+     typewriter runs. The base `.msg` is flex-direction: column, so
+     we override to row + flex-start so children don't center. */
+  .chat-stream .msg.ch-thought {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0;
+    /* Breathing room top + bottom — the grey monospace text reads
+       dense against the surrounding bubbles. 32px above (on top of
+       the 28px flex-gap) and 56px below give it explicit air, so
+       it doesn't butt into the user bubble OR the chat-hat top
+       (especially in collapsed task-list mode where the hat sits
+       directly under the thought line and any tension between them
+       reads as cramped — Bryan was specific about this). With the
+       chat-stream's 16px bottom-padding, the visible gap between
+       the thought's bottom line and the chat-hat header is ~72px. */
+    margin: 32px 0 56px;
+    min-height: 28px;
+  }
+  /* Pull the orb back to vertical centre against the first line of
+     text now that the container uses flex-start. */
+  .chat-stream .msg.ch-thought .thinking-mark {
+    margin-top: 2px;
+  }
+  /* Give the rich AI response a touch of trailing air before whatever
+     comes next, so its long body doesn't run flush into the next
+     element below. */
+  .chat-stream .msg.bot.ch-richmsg { padding-bottom: 8px; }
+  .chat-stream .msg.ch-thought .thinking {
+    /* Override the legacy `.thinking { display: none; opacity: 0 }`
+       baseline so the orb + text actually paint inside our wrapper. */
+    display: flex;
+    opacity: 1;
+    transform: none;
+    transition: none;
+    margin-top: 0;
+    gap: 10px;
+  }
+  .chat-stream .msg.ch-thought .thinking-mark {
+    width: 24px;
+    height: 24px;
+    transition:
+      opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
+      width 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      margin-right 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-stream .msg.ch-thought .thinking-mark .orb-core svg { width: 11px; height: 11px; }
+  .chat-stream .msg.ch-thought .thinking-mark .orb-sat svg  { width: 6px;  height: 6px;  }
+  /* Orb plays for ~2s, then collapses away as the typewriter takes
+     over — text grows in from where the orb was (left edge of the
+     chat content column). is-typed is added by _typeInto when the
+     first char lands. */
+  .chat-stream .msg.ch-thought.is-typed .thinking { gap: 0; }
+  .chat-stream .msg.ch-thought.is-typed .thinking-mark {
+    opacity: 0;
+    width: 0;
+    /* margin-right: 0 (not negative) so the text lands at the exact
+       same left edge the orb was at — which is the AI reminder
+       card's left edge. The earlier -10px was pulling the text past
+       it by 10px. */
+    margin-right: 0;
+    pointer-events: none;
+  }
+  /* Smooth fade-out for the entire thought line — used when the
+     Canvas Assistant rich response takes over and the thought is
+     "replaced". JS captures the current pixel height as inline
+     max-height before adding this class so the transition has a
+     starting value to ease from (auto → 0 would snap). Single
+     quart-out curve across all three properties so they arrive
+     together. */
+  .chat-stream .msg.ch-thought.is-fading {
+    opacity: 0;
+    max-height: 0 !important;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    transition:
+      opacity 360ms cubic-bezier(0.16, 1, 0.3, 1),
+      max-height 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      margin 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-stream .msg.ch-thought .ch-thought-text {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+    line-height: 1.65;
+    color: var(--text-subtle);
+    white-space: pre-wrap;
+  }
+  .chat-stream .msg.ch-thought .ch-thought-text .ch-caret {
+    display: inline-block;
+    width: 2px;
+    height: 0.95em;
+    vertical-align: text-bottom;
+    background: currentColor;
+    margin-left: 2px;
+    animation: ch-caret-blink 0.85s steps(2, end) infinite;
+  }
+  .chat-stream .msg.ch-thought.is-done .ch-thought-text .ch-caret { display: none; }
+  @keyframes ch-caret-blink {
+    0%, 50%   { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Rich Canvas Assistant response. */
+  .ch-richresp { padding-top: 2px; }
+  /* Intro sentence above the hairline — the "Here's how Persona
+     Builder works and how to get started:" line that replaces the
+     grey fira-code thought once the Canvas Assistant takes over. */
+  .ch-richresp-intro {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--text-body);
+    margin: 4px 0 16px;
+    font-weight: 400;
+  }
+  .ch-richresp-intro + hr {
+    border: none;
+    border-top: 0.5px solid var(--line);
+    margin: 0 0 22px;
+  }
+  .ch-richresp h2 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+    margin: 6px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-body);
+  }
+  .ch-richresp h2 .ch-richresp-icon {
+    font-size: 19px;
+    line-height: 1;
+    filter: saturate(0.85);
+  }
+  .ch-richresp h3 {
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    margin: 18px 0 10px;
+    color: var(--text-body);
+  }
+  .ch-richresp p {
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin: 0 0 12px;
+    color: var(--text-body);
+  }
+  .ch-richresp p strong,
+  .ch-richresp li strong { font-weight: 600; color: var(--text-body); }
+  .ch-richresp hr {
+    border: none;
+    border-top: 0.5px solid var(--line);
+    margin: 20px 0;
+  }
+  .ch-richresp table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4px 0 12px;
+    font-size: 12.5px;
+  }
+  .ch-richresp th,
+  .ch-richresp td {
+    border: 0.5px solid var(--line);
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+  .ch-richresp th {
+    font-weight: 600;
+    background: color-mix(in srgb, var(--text-body) 3%, transparent);
+  }
+  .ch-richresp td code {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11.5px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .ch-richresp ol,
+  .ch-richresp ul {
+    margin: 0 0 14px;
+    padding-left: 22px;
+  }
+  .ch-richresp ol li,
+  .ch-richresp ul li {
+    font-size: 13.5px;
+    line-height: 1.65;
+    margin-bottom: 6px;
+    color: var(--text-body);
+  }
+  .ch-richresp blockquote {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px;
+    color: var(--text-body);
+    border-left: 2px solid var(--accent);
+    padding: 6px 0 6px 14px;
+    margin: 0 0 6px;
+    font-style: italic;
+  }
+  /* Alternative-action line that follows the blockquote example —
+     "Or select from the presets below." This is INSTRUCTION, not
+     the example text. Sans-serif, subtle color, smaller, and sits
+     OUTSIDE the accent-border blockquote so it reads as a
+     follow-up sentence the user isn't meant to type. */
+  .ch-richresp .ch-richresp-alt {
+    font-family: inherit;
+    font-style: normal;
+    font-size: 12.5px;
+    color: var(--text-subtle);
+    margin: 0 0 12px;
+    padding: 0;
+    border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-stream .msg.ch-injected { animation: none; }
+    .chat-stream .msg.ch-thought .ch-thought-text .ch-caret { animation: none; }
+  }
+
+  /* === Chat attachments (per an earlier ask) ================================
+     Paste (⌘V) or drag-and-drop ANY file into the chat to attach it —
+     not just images. Chips land in a row inside the composer above the
+     textarea; sending renders the attachments inside the user's message
+     bubble. Drag veil + chip row ported from canvas-graphics S68 and
+     extended with paste handling + any-file support. */
+  .ca-attach-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex: 0 0 auto;
+  }
+  .ca-attach-row:empty { display: none; margin-bottom: 0; }
+  @keyframes ca-chip-enter {
+    from { opacity: 0; filter: blur(6px); transform: translateY(3px); }
+    to   { opacity: 1; filter: none;     transform: none; }
+  }
+  .ca-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 26px;
+    padding: 0 7px 0 0;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 7px;
+    color: var(--text-body);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    white-space: nowrap;
+    user-select: none;
+    overflow: hidden;
+    animation: ca-chip-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    transition: border-color 140ms ease;
+  }
+  .ca-chip:hover { border-color: var(--line-solid); }
+  .ca-chip-thumb {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+    display: block;
+    flex: 0 0 auto;
+  }
+  /* §BY — a video chip's poster+play-glyph treatment, ported verbatim
+     from the Imagery popover's own .pt-editor-swap-thumb.is-video::after
+     (22-hat-c-wizard.css), just scaled to the chip's 26px thumb — the
+     badge needs a non-replaced box to sit on (::after on a bare <img>/
+     <video> never paints), so it's a wrapper span around the <video>. */
+  .ca-chip-thumb-wrap { position: relative; width: 26px; height: 26px; flex: 0 0 auto; }
+  .ca-chip-thumb-wrap .ca-chip-thumb { width: 100%; height: 100%; }
+  .ca-chip-thumb-wrap.is-video::after {
+    content: '';
+    position: absolute; left: 2px; bottom: 2px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='white'><path d='M231.36,116.19,87.28,28.06a14,14,0,0,0-14.18-.27A13.69,13.69,0,0,0,66,39.87V216.13a13.69,13.69,0,0,0,7.1,12.08,14,14,0,0,0,14.18-.27l144.08-88.13a13.82,13.82,0,0,0,0-23.62Z'/></svg>");
+    background-repeat: no-repeat; background-position: center; background-size: 6px;
+  }
+  /* File-type badge — colors reuse the topnav tab-icon palette so file
+     chips read as part of the same system, not a new icon language. */
+  .ca-chip-badge {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .ca-badge-pdf   { background: #FF7B6E; color: #4a1410; }
+  .ca-badge-doc   { background: #5DD3E0; color: #082a2f; }
+  .ca-badge-sheet { background: #7ED98C; color: #0d3a1d; }
+  .ca-badge-deck  { background: #F5C677; color: #4a2f10; }
+  .ca-badge-av    { background: #9B8AFB; color: #211244; }
+  .ca-badge-file  { background: var(--nav-selected); color: var(--text-subtle); }
+  /* Workspace objects picked from the files pane rather than uploaded —
+     a Canvas has no file extension to badge, and it is the product's
+     own accent-coloured concept everywhere else, so it reads in accent
+     here too. --text-button flips the ink with the theme. */
+  .ca-badge-canvas { background: var(--accent); color: var(--text-button); }
+  .ca-chip-name {
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ca-chip-size { color: var(--text-subtle); font-size: 9px; }
+  .ca-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    color: var(--text-subtle);
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: color 140ms ease, background 140ms ease;
+  }
+  .ca-chip-remove:hover { color: var(--text-body); background: var(--hover-soft); }
+  .ca-chip-remove svg { width: 9px; height: 9px; display: block; }
+
+  /* Paste feedback — one accent ring pulse on the composer. */
+  @keyframes ca-composer-flash {
+    0%   { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+    100% { box-shadow: 0 0 0 1.5px transparent; }
+  }
+  .composer.ca-flash { animation: ca-composer-flash 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  /* Drag veil — covers the CHAT column (measured off .chat's live rect,
+     never hardcoded) the instant a real file drag enters the window.
+     The drop itself is accepted window-wide; the veil marks where it
+     lands. pointer-events stays none so the depth counter on window
+     never fights the veil's own surface. */
+  #caDropVeil {
+    position: fixed;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.99);
+    pointer-events: none;
+    background: color-mix(in srgb, var(--canvas-bg) 62%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 18px;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #caDropVeil.is-leaving { transition-duration: 240ms; }
+  #caDropVeil.is-active { opacity: 1; transform: scale(1); }
+  #caDropVeil::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border-radius: 14px;
+    border: 2px dashed color-mix(in srgb, var(--accent) 70%, transparent);
+    pointer-events: none;
+    animation: ca-drop-ring-breathe 2600ms ease-in-out infinite;
+  }
+  @keyframes ca-drop-ring-breathe {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+  .ca-drop-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-strong);
+    pointer-events: none;
+  }
+  .ca-drop-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .ca-drop-icon svg { width: 22px; height: 22px; display: block; }
+  .ca-drop-label {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+  }
+  .ca-drop-sub {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-subtle);
+  }
+
+  /* A dropped file flies from the drop point to the chip row as a plain
+     fixed clone — transform + opacity only, removed once it settles. */
+  .ca-fly-clone {
+    position: fixed;
+    z-index: 9998;
+    border-radius: 7px;
+    object-fit: cover;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    overflow: hidden;
+    transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease 320ms;
+    will-change: transform;
+  }
+
+  /* Attachments rendered inside a sent message bubble. */
+  .msg-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .msg-attach-img {
+    border-radius: 10px;
+    max-width: 210px;
+    max-height: 150px;
+    object-fit: cover;
+    display: block;
+    border: 0.5px solid var(--line);
+  }
+  /* §BY — the bubble-sized twin of .ca-chip-thumb-wrap.is-video above;
+     same play-glyph, scaled to .msg-attach-img's larger footprint. */
+  .msg-attach-video { position: relative; display: block; }
+  .msg-attach-video.is-video::after {
+    content: '';
+    position: absolute; left: 8px; bottom: 8px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='white'><path d='M231.36,116.19,87.28,28.06a14,14,0,0,0-14.18-.27A13.69,13.69,0,0,0,66,39.87V216.13a13.69,13.69,0,0,0,7.1,12.08,14,14,0,0,0,14.18-.27l144.08-88.13a13.82,13.82,0,0,0,0-23.62Z'/></svg>");
+    background-repeat: no-repeat; background-position: center; background-size: 10px;
+  }
+  .msg-attach-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px 5px 5px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 10px;
+    max-width: 240px;
+  }
+  .msg-attach-file .ca-chip-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    font-size: 8px;
+  }
+  .msg-attach-file-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .msg-attach-file-name {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-body);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .msg-attach-file-size {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-subtle);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ca-chip { animation: none; }
+    .composer.ca-flash { animation: none; }
+    #caDropVeil { transition: none !important; }
+    #caDropVeil::before { animation: none !important; opacity: 0.75; }
+    .ca-fly-clone { display: none; }
+  }
+

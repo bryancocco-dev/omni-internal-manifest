@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Generative Covers — Contact Sheet</title>
+<meta name="robots" content="noindex, nofollow" />
+<!-- Internal reference only — deliberately unlinked from the demo itself
+     (PLAN-COVERS.md §5). Nothing in demos/corvash-strategist/ points here. -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./shared/tokens/tokens.css" />
+
+<style>
+  /* Plain :root light values only — no [data-theme] is ever set on this
+     page, so tokens.css's dark overrides never engage. This is an internal
+     tool, not a themed surface; it always reads in the one OMNI light mode. */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--doc-page-bg);
+    color: var(--doc-ink);
+    font-family: var(--doc-font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .cv-head {
+    padding: 40px var(--doc-edge-gutter) 28px;
+    border-bottom: 1px solid var(--doc-rule);
+  }
+  .cv-eyebrow {
+    display: block;
+    font-family: var(--doc-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--doc-accent);
+    margin-bottom: 10px;
+  }
+  .cv-head h1 {
+    margin: 0 0 8px;
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--doc-ink-strong);
+  }
+  .cv-head p {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--doc-ink-subtle);
+  }
+  .cv-head code {
+    font-family: var(--doc-font-mono);
+    font-size: 0.92em;
+    background: var(--doc-nested-bg);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+  }
+
+  /* ── the grid ──────────────────────────────────────────────────────────
+     Fixed-size thumbnails (not fluid) — a contact sheet is browsed, not
+     laid out responsively; the wrap just scrolls horizontally on narrow
+     viewports. 6 rows (treatments) × 8 columns (tags), plus one header
+     row and one header column. */
+  .cv-wrap {
+    overflow-x: auto;
+    padding: 28px var(--doc-edge-gutter) 64px;
+  }
+  .cv-grid {
+    display: grid;
+    grid-template-columns: 128px repeat(8, 300px);
+    gap: 1px;
+    background: var(--doc-rule);
+    border: 1px solid var(--doc-rule);
+    width: max-content;
+  }
+  .cv-colhead,
+  .cv-rowhead {
+    background: var(--doc-page-bg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--doc-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--doc-ink-subtle);
+  }
+  .cv-colhead {
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 4px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .cv-colhead span { color: var(--doc-ink); font-weight: 500; letter-spacing: 0.03em; }
+  .cv-rowhead {
+    padding: 0 14px;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+  .cv-rowhead span { color: var(--doc-ink-strong); font-weight: 600; font-family: var(--doc-font-body); font-size: 12px; letter-spacing: 0; }
+  /* corner cell */
+  .cv-grid::before {
+    content: '';
+    grid-column: 1;
+    grid-row: 1;
+    background: var(--doc-page-bg);
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 3;
+  }
+
+  .cv-cell {
+    display: block;
+    background: var(--doc-paper-bg);
+    text-decoration: none;
+    position: relative;
+  }
+  .cv-cell__frame {
+    display: block;
+    width: 300px;
+    height: 168.75px; /* 1600×900 = 1.778 — inside the 1.6–1.9 hero AR band */
+    overflow: hidden;
+    position: relative;
+    background: #0a0b0d;
+  }
+  .cv-cell__frame iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1600px;
+    height: 900px;
+    border: 0;
+    pointer-events: none; /* decorative preview — the <a> carries the click */
+    transform: scale(0.1875); /* 300 / 1600 */
+    transform-origin: top left;
+  }
+  .cv-cell__label {
+    display: block;
+    padding: 7px 9px;
+    font-family: var(--doc-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--doc-ink-subtle);
+    border-top: 1px solid var(--doc-rule);
+    transition: color 140ms ease, background 140ms ease;
+  }
+  .cv-cell:hover .cv-cell__label,
+  .cv-cell:focus-visible .cv-cell__label {
+    color: var(--doc-accent);
+    background: var(--doc-accent-soft);
+  }
+  .cv-cell:focus-visible { outline: 2px solid var(--doc-accent); outline-offset: -2px; }
+  .cv-cell:hover .cv-cell__frame { outline: 2px solid var(--doc-accent); outline-offset: -2px; }
+
+  .cv-foot {
+    padding: 0 var(--doc-edge-gutter) 48px;
+    font-family: var(--doc-font-mono);
+    font-size: 10.5px;
+    color: var(--doc-ink-subtle);
+    letter-spacing: 0.03em;
+  }
+</style>
+</head>
+<body>
+  <div class="cv-head">
+    <span class="cv-eyebrow">Internal · Not linked from any demo</span>
+    <h1>Generative Covers — Contact Sheet</h1>
+    <p>
+      6 ring treatments × 8 micrographic tags, at true hero aspect. Each cell
+      is the live <code>corvash-strategist</code> hero rendered for real —
+      click (or open in a new tab) to land on that exact combination via
+      <code>?cover=&amp;tag=</code>.
+    </p>
+  </div>
+  <div class="cv-wrap">
+    <div class="cv-grid">
+      <!-- CV:GRID:START -->
+      <div class="cv-colhead">V1<span>INSTRUMENT</span></div>
+      <div class="cv-colhead">V2<span>SPEC</span></div>
+      <div class="cv-colhead">V3<span>ORBIT</span></div>
+      <div class="cv-colhead">V4<span>SEAL</span></div>
+      <div class="cv-colhead">V5<span>BARCODE</span></div>
+      <div class="cv-colhead">V6<span>LEDGER</span></div>
+      <div class="cv-colhead">V7<span>REGISTRY</span></div>
+      <div class="cv-colhead">V8<span>MARK</span></div>
+      <div class="cv-rowhead">01<span>RAYS</span></div>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=1" target="_blank" rel="noopener" aria-label="RAYS, INSTRUMENT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=1" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V1</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=2" target="_blank" rel="noopener" aria-label="RAYS, SPEC">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=2" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V2</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=3" target="_blank" rel="noopener" aria-label="RAYS, ORBIT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=3" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V3</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=4" target="_blank" rel="noopener" aria-label="RAYS, SEAL">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=4" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V4</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=5" target="_blank" rel="noopener" aria-label="RAYS, BARCODE">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=5" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V5</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=6" target="_blank" rel="noopener" aria-label="RAYS, LEDGER">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=6" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V6</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=7" target="_blank" rel="noopener" aria-label="RAYS, REGISTRY">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=7" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V7</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=rays&tag=8" target="_blank" rel="noopener" aria-label="RAYS, MARK">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=rays&tag=8" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">01 RAYS &middot; V8</span>
+      </a>
+      <div class="cv-rowhead">02<span>TICK</span></div>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=1" target="_blank" rel="noopener" aria-label="TICK, INSTRUMENT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=1" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V1</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=2" target="_blank" rel="noopener" aria-label="TICK, SPEC">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=2" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V2</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=3" target="_blank" rel="noopener" aria-label="TICK, ORBIT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=3" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V3</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=4" target="_blank" rel="noopener" aria-label="TICK, SEAL">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=4" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V4</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=5" target="_blank" rel="noopener" aria-label="TICK, BARCODE">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=5" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V5</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=6" target="_blank" rel="noopener" aria-label="TICK, LEDGER">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=6" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V6</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=7" target="_blank" rel="noopener" aria-label="TICK, REGISTRY">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=7" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V7</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=tick&tag=8" target="_blank" rel="noopener" aria-label="TICK, MARK">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=tick&tag=8" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">02 TICK &middot; V8</span>
+      </a>
+      <div class="cv-rowhead">03<span>BUBBLE</span></div>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=1" target="_blank" rel="noopener" aria-label="BUBBLE, INSTRUMENT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=1" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V1</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=2" target="_blank" rel="noopener" aria-label="BUBBLE, SPEC">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=2" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V2</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=3" target="_blank" rel="noopener" aria-label="BUBBLE, ORBIT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=3" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V3</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=4" target="_blank" rel="noopener" aria-label="BUBBLE, SEAL">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=4" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V4</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=5" target="_blank" rel="noopener" aria-label="BUBBLE, BARCODE">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=5" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V5</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=6" target="_blank" rel="noopener" aria-label="BUBBLE, LEDGER">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=6" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V6</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=7" target="_blank" rel="noopener" aria-label="BUBBLE, REGISTRY">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=7" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V7</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=bubble&tag=8" target="_blank" rel="noopener" aria-label="BUBBLE, MARK">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=bubble&tag=8" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">03 BUBBLE &middot; V8</span>
+      </a>
+      <div class="cv-rowhead">04<span>BURST</span></div>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=1" target="_blank" rel="noopener" aria-label="BURST, INSTRUMENT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=1" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V1</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=2" target="_blank" rel="noopener" aria-label="BURST, SPEC">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=2" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V2</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=3" target="_blank" rel="noopener" aria-label="BURST, ORBIT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=3" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V3</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=4" target="_blank" rel="noopener" aria-label="BURST, SEAL">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=4" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V4</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=5" target="_blank" rel="noopener" aria-label="BURST, BARCODE">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=5" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V5</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=6" target="_blank" rel="noopener" aria-label="BURST, LEDGER">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=6" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V6</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=7" target="_blank" rel="noopener" aria-label="BURST, REGISTRY">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=7" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V7</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=burst&tag=8" target="_blank" rel="noopener" aria-label="BURST, MARK">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=burst&tag=8" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">04 BURST &middot; V8</span>
+      </a>
+      <div class="cv-rowhead">05<span>FIELD</span></div>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=1" target="_blank" rel="noopener" aria-label="FIELD, INSTRUMENT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=1" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V1</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=2" target="_blank" rel="noopener" aria-label="FIELD, SPEC">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=2" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V2</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=3" target="_blank" rel="noopener" aria-label="FIELD, ORBIT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=3" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V3</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=4" target="_blank" rel="noopener" aria-label="FIELD, SEAL">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=4" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V4</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=5" target="_blank" rel="noopener" aria-label="FIELD, BARCODE">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=5" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V5</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=6" target="_blank" rel="noopener" aria-label="FIELD, LEDGER">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=6" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V6</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=7" target="_blank" rel="noopener" aria-label="FIELD, REGISTRY">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=7" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V7</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=field&tag=8" target="_blank" rel="noopener" aria-label="FIELD, MARK">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=field&tag=8" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">05 FIELD &middot; V8</span>
+      </a>
+      <div class="cv-rowhead">06<span>GRID</span></div>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=1" target="_blank" rel="noopener" aria-label="GRID, INSTRUMENT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=1" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V1</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=2" target="_blank" rel="noopener" aria-label="GRID, SPEC">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=2" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V2</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=3" target="_blank" rel="noopener" aria-label="GRID, ORBIT">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=3" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V3</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=4" target="_blank" rel="noopener" aria-label="GRID, SEAL">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=4" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V4</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=5" target="_blank" rel="noopener" aria-label="GRID, BARCODE">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=5" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V5</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=6" target="_blank" rel="noopener" aria-label="GRID, LEDGER">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=6" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V6</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=7" target="_blank" rel="noopener" aria-label="GRID, REGISTRY">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=7" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V7</span>
+      </a>
+      <a class="cv-cell" href="./demos/corvash-strategist/?stay=1&cover=grid&tag=8" target="_blank" rel="noopener" aria-label="GRID, MARK">
+        <span class="cv-cell__frame"><iframe src="./demos/corvash-strategist/?stay=1&cover=grid&tag=8" width="1600" height="900" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe></span>
+        <span class="cv-cell__label">06 GRID &middot; V8</span>
+      </a>
+      <!-- CV:GRID:END -->
+    </div>
+  </div>
+  <p class="cv-foot">corvash-strategist · doc-hero--gen · PLAN-COVERS.md §5</p>
+</body>
+</html>

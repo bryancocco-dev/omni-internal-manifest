@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Versions — OMNI System</title>
+<style>
+  :root {
+    --bg: #F8F4E9; --surface: #FFF; --border: #D4D4D4;
+    --text: #0B0B0B; --muted: #737373; --accent: #1858EE;
+    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 var(--sans); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+  h1 { font-size: 32px; letter-spacing: -.02em; margin: 0 0 8px; }
+  .meta { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+  .project { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px; padding: 20px 24px; }
+  .project header { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+  .project h2 { font-size: 18px; margin: 0; }
+  .slug { font: 12px/1 var(--mono); color: var(--muted); }
+  .head { font: 12px/1 var(--mono); color: var(--accent); margin-left: auto; }
+  .row  { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; }
+  .col h3 { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+  .tag, .commit { font: 12px/1.5 var(--mono); padding: 4px 0; border-bottom: 1px dotted var(--border); }
+  .tag:last-child, .commit:last-child { border-bottom: none; }
+  .tag .name { color: var(--accent); font-weight: 600; }
+  .commit .h  { color: var(--accent); }
+  .date { color: var(--muted); margin-left: 6px; }
+  .empty { color: var(--muted); font-style: italic; }
+  .error { color: #B0001A; font-family: var(--mono); font-size: 12px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back { display: inline-block; margin-bottom: 24px; font-family: var(--mono); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">&larr; back to OMNI System</a>
+  <h1>Versions</h1>
+  <div class="meta">Generated 2026-09-23T19:13:15.943Z · 10 projects tracked</div>
+  
+    <section class="project">
+      <header>
+        <h2>OMNI System (this site)</h2>
+        <span class="slug">omni-system</span>
+        <span class="head">@ 7e2b41c</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.4.0</span><span class="date">2026-06-09</span><div>v0.4.0: comprehensive non-color design tokens + global font swap</div></div>
+            
+              <div class="tag"><span class="name">v0.3.0</span><span class="date">2026-06-09</span><div>v0.3.0: build out components catalog</div></div>
+            
+              <div class="tag"><span class="name">v0.2.0</span><span class="date">2026-06-09</span><div>v0.2.0: land live OAI/OMNI omni-2026 light palette</div></div>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: omni-system scaffold</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">7e2b41c</span><span class="date">2026-06-09</span> v0.4.0: comprehensive non-color design tokens + global font swap</div>
+            
+              <div class="commit"><span class="h">5002dfe</span><span class="date">2026-06-09</span> v0.3.0: build out components catalog</div>
+            
+              <div class="commit"><span class="h">21f9b5b</span><span class="date">2026-06-09</span> add Foundations/Surface Preview — representative OMNI+ chrome on tokens</div>
+            
+              <div class="commit"><span class="h">a1c3161</span><span class="date">2026-06-09</span> track omni-system itself on the versions page</div>
+            
+              <div class="commit"><span class="h">8df0d53</span><span class="date">2026-06-09</span> v0.2.0: land live OAI/OMNI omni-2026 light palette</div>
+            
+              <div class="commit"><span class="h">7b48501</span><span class="date">2026-06-09</span> whitelist /tokens.* in middleware so prototypes can &lt;link&gt; tokens.css publicly</div>
+            
+              <div class="commit"><span class="h">8715457</span><span class="date">2026-06-09</span> v0.1.0: omni-system scaffold</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>OMNI Dashboard (manifest)</h2>
+        <span class="slug">omni-dashboard</span>
+        <span class="head">@ 257981f</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of omni-dashboard</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">257981f</span><span class="date">2026-09-03</span> Video row at 031 (links canvas-graphics, shares its zip) + checkpoint of the uncommitted pages-popup / Media Skills row work already live</div>
+            
+              <div class="commit"><span class="h">aa0c0d6</span><span class="date">2026-08-04</span> Graphics goes in at 001</div>
+            
+              <div class="commit"><span class="h">12a96f0</span><span class="date">2026-06-09</span> add System section to manifest with Colors / Components / Versions cards</div>
+            
+              <div class="commit"><span class="h">e58b3f0</span><span class="date">2026-06-09</span> v0.1.0: baseline state of omni-dashboard</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Agents Store</h2>
+        <span class="slug">agents-store</span>
+        <span class="head">@ cd3c84e</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of agents-store</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">cd3c84e</span><span class="date">2026-06-09</span> v0.1.0: baseline state of agents-store</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Chat Hat</h2>
+        <span class="slug">chat-hat</span>
+        <span class="head">@ 580d61d</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of chat-hat</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">580d61d</span><span class="date">2026-06-09</span> v0.1.0: baseline state of chat-hat</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Persona</h2>
+        <span class="slug">persona-subnav</span>
+        <span class="head">@ ba97bdd</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of persona-subnav</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">ba97bdd</span><span class="date">2026-06-09</span> v0.1.0: baseline state of persona-subnav</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Agent Builder</h2>
+        <span class="slug">omni-agent-builder</span>
+        <span class="head">@ 9a6a1ff</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of omni-agent-builder</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">9a6a1ff</span><span class="date">2026-06-09</span> v0.1.0: baseline state of omni-agent-builder</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Brief</h2>
+        <span class="slug">lease-campaign-brief-handoff</span>
+        <span class="head">@ 41468db</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of lease-campaign-brief-handoff</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">41468db</span><span class="date">2026-06-09</span> v0.1.0: baseline state of lease-campaign-brief-handoff</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Gawdtable</h2>
+        <span class="slug">gawdtable</span>
+        <span class="head">@ 05d2c9c</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline gawdtable pragmatic clone of lease-campaign</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">05d2c9c</span><span class="date">2026-06-09</span> v0.1.0: baseline gawdtable pragmatic clone of lease-campaign</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Media</h2>
+        <span class="slug">media</span>
+        <span class="head">@ d47dad5</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline media pragmatic clone of lease-campaign</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">d47dad5</span><span class="date">2026-06-09</span> v0.1.0: baseline media pragmatic clone of lease-campaign</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+    <section class="project">
+      <header>
+        <h2>Lease Campaign (Brief/Gawdtable/Media source)</h2>
+        <span class="slug">lease-campaign</span>
+        <span class="head">@ 7281230</span>
+      </header>
+      
+        <div class="row">
+          <div class="col">
+            <h3>Tags</h3>
+            
+              <div class="tag"><span class="name">v0.1.0</span><span class="date">2026-06-09</span><div>v0.1.0: baseline state of lease-campaign</div></div>
+            
+          </div>
+          <div class="col">
+            <h3>Recent commits</h3>
+            
+              <div class="commit"><span class="h">7281230</span><span class="date">2026-06-09</span> v0.1.0: baseline state of lease-campaign</div>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+</div>
+</body>
+</html>

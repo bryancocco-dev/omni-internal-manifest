@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Seam M1 — Edges alive (MOTION PHASE, "The Current")
+   New animation-only CSS for OmniEdge.jsx. `styles/flow.css` is FROZEN this
+   phase — everything here is additive. Imported from `edges/index.js`,
+   which (via FlowCanvas -> App -> main.jsx's module graph) evaluates after
+   cw-tokens.css / flow.css / app.css / nodes.css, so equal-specificity
+   overrides of flow.css selectors below win without needing extra
+   specificity tricks.
+   Easing/duration come from M3's src/styles/motion.css (`--cw-e-*` /
+   `--cw-d-*` on #workflow-root) via var() — with literal fallbacks matching
+   PLAN.md's Global Rules, since seams build concurrently and motion.css may
+   not have landed yet.
+   See PLAN.md "## MOTION PHASE" -> "### M1 — Edges alive" for the numbered
+   spec each block below implements.
+   ========================================================================== */
+
+/* ---- SIGNAL COMET PASS — the idle wire animation, elevated -------------
+   Replaces the old 2-layer capsule pulse (`.omni-edge-pulse` / `--head` /
+   `--tail` — MOTION PHASE M1's items 1+2, PREMIUM WIRE PASS item 4)
+   wholesale — see PLAN.md "## SIGNAL COMET PASS". Bryan: "make the
+   animations running along the lines cooler... push what we can do here —
+   it needs to look great, understated but noticeable." CD direction
+   (Fable): the old pulse read as a conveyor belt — constant speed,
+   constant interval, a dash ALWAYS somewhere on the path. Premium motion
+   is RHYTHM and EASING: one comet launches, travels with intent, arrives,
+   and the wire rests — bare for most of the period, not always-on.
+
+   Renamed `.omni-edge-pulse*` -> `.omni-edge-signal*` per PLAN.md's own
+   suggestion that this might happen — grepped run/, edges/, nodes.css
+   first (also per PLAN.md) and the old class never appeared outside this
+   file + OmniEdge.jsx, so nothing else needed updating. "pulse" stopped
+   fitting too: this design is invisible ~64% of any period, nothing
+   "pulses" — and staying off the word "comet" here specifically avoids
+   colliding with RUN SHOW A1's own COMET_DOTS / `.omni-edge-comet-dot`
+   further below, an unrelated one-shot mechanism this pass doesn't touch.
+
+   Mechanism: OmniEdge.jsx renders 4 <path> layers (SIGNAL_LAYERS) sharing
+   ONE @keyframes and ONE `stroke-dasharray: 2.6 97.4` (a short dash on a
+   `pathLength=100` path — same numbers the old head used). Dashoffset
+   travels 0 -> -97.4 (source->target) across only the FIRST ~36% of the
+   cycle (1.6s of a 4.4s period), eased; opacity ramps in just after
+   launch and back out just after arrival, then holds at 0 for the
+   remaining ~64% — a genuine rest, not just a dim moment. Every layer
+   shares the IDENTICAL 0 -> -97.4 span; the exponential tail comes from a
+   small POSITIVE `animation-delay` stacked per layer (set where these
+   render, OmniEdge.jsx) instead of a shifted dashoffset span — see that
+   comment for why (a shifted span wraps a trailing layer to the wrong end
+   of the path right as it should be launching from the source).
+
+   Why 0 -> -97.4 and not the more obvious 100 -> 0 (what the old, now-
+   retired pulse animated, and this design's own first draft): dash
+   (2.6) + gap (97.4) sum to EXACTLY 100 = pathLength, so the pattern's
+   period exactly equals the path's own length. Verified by hand (see the
+   scratch calc run while building this): for any offset in (0, 2.6), the
+   dash's on-path interval SPLITS in two — a shrinking piece still near
+   the target plus a GROWING ghost sliver of the same brightness back at
+   the SOURCE, reaching full dash width exactly at offset=0 (0 and 100 are
+   the same position mod 100, so the "arrived" end of a 100->0 sweep
+   actually renders the dash back at the source, not the target). That
+   window falls late in the eased travel (offset<2.6 is a small slice of
+   the VALUE range but, because the curve is slow again near the end, a
+   real ~300ms+ slice of TIME) — squarely inside the "opacity held at
+   peak" plateau (34%/36.36% below), so it would have been a visible ghost
+   flash at the source timed right at arrival, not a masked one-frame
+   glitch. Sweeping 0 -> -97.4 instead (source flush at the front, target
+   flush against the far end of the path) never enters that split
+   condition at any point in the range — confirmed by the same hand
+   calc. ------------------------------------------------------------- */
+@keyframes omni-edge-signal-travel {
+  0% { stroke-dashoffset: 0; opacity: 0; }
+  3% { opacity: var(--sig-peak-o, .9); }
+  34% { opacity: var(--sig-peak-o, .9); }
+  36.36% { stroke-dashoffset: -97.4; opacity: var(--sig-peak-o, .9); } /* arrival — 1.6s into the 4.4s period */
+  39% { opacity: 0; }
+  100% { opacity: 0; } /* rest — bare wire until the loop wraps back to 0% */
+}
+
+#workflow-root .omni-edge-signal {
+  stroke-linecap: round;
+  pointer-events: none;
+  stroke-dasharray: 2.6 97.4;
+  animation: omni-edge-signal-travel 4.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* No `.is-active { animation-duration: ... }` rule here — that's the
+   trick MOTION PHASE M1 documented for the OLD pulse ("browsers adjust a
+   running animation's pace in place instead of restarting it"), and it
+   does NOT hold for THIS keyframe: verified empirically (dense frame
+   sampling) that a plain class-driven duration change preserves the
+   animation's raw elapsed time, not its ITERATION PROGRESS — since
+   progress = elapsed/duration, changing duration alone still recomputes
+   progress and visibly teleports the comet. OmniEdge.jsx's own
+   `useLayoutEffect` (search SIGNAL_ACTIVE_MS) re-times `animation-
+   duration` AND a freshly-solved `animation-delay` together via the Web
+   Animations API instead, so progress is provably continuous across the
+   change — CSS only ever declares the base 4.4s above. */
+/* PLAN.md item 4 — "head opacity rises" on hover/select names the head
+   only; tail falloff is untouched here to match. This part IS still a
+   plain CSS custom-property change (not routed through the JS retiming
+   effect): --sig-peak-o only ever moves opacity by <=0.05 at any point in
+   the keyframe, an imperceptible delta next to the ~30-90px position
+   teleport the duration change caused — not worth the same treatment. */
+#workflow-root .omni-edge-signal--head.is-active {
+  --sig-peak-o: 1;
+}
+
+/* ---- connect-time surge (cw:surge) / live run-edge surge (R4 item 5,
+   cw:run-edge) -------------------------------------------------------------
+   Same distinct-keyframe-per-state trick MOTION PHASE M1 established (a
+   different `animation-name`, not just a different duration, forces the
+   browser to restart fresh from source instead of continuing the ambient
+   loop's current phase) — two near-duplicate keyframes so a run-edge
+   mid-connect-surge (or the reverse) always restarts clean even though
+   both share the same 0->100% shape. No rest segment needed (unlike the
+   ambient keyframe above): each is a ONE-SHOT, `1 forwards`, and
+   OmniEdge.jsx's own timers (the `surging`/`runSurging` state) revert the
+   class after 480ms/360ms, at which point the element falls back to the
+   ambient `.omni-edge-signal` rule above. Only the head's peak opacity
+   steps up (idle .95 < surge .98 < run-surge 1) — mirrors the hover
+   line's own head-only wording above rather than re-tuning all 4 layers
+   for a state that only lasts a few hundred ms. */
+@keyframes omni-edge-signal-surge {
+  0% { stroke-dashoffset: 0; opacity: 0; }
+  8% { opacity: var(--sig-peak-o, .9); }
+  100% { stroke-dashoffset: -97.4; opacity: var(--sig-peak-o, .9); } /* 0 -> -97.4, not 100 -> 0 — see the travel keyframe's own comment above */
+}
+@keyframes omni-edge-signal-run-surge {
+  0% { stroke-dashoffset: 0; opacity: 0; }
+  8% { opacity: var(--sig-peak-o, .9); }
+  100% { stroke-dashoffset: -97.4; opacity: var(--sig-peak-o, .9); }
+}
+
+#workflow-root .omni-edge-signal.is-surging {
+  animation: omni-edge-signal-surge 480ms cubic-bezier(0.4, 0, 0.2, 1) 1 forwards;
+}
+#workflow-root .omni-edge-signal--head.is-surging { --sig-peak-o: .98; }
+
+#workflow-root .omni-edge-signal.is-run-surging {
+  animation: omni-edge-signal-run-surge 360ms cubic-bezier(0.4, 0, 0.2, 1) 1 forwards;
+}
+#workflow-root .omni-edge-signal--head.is-run-surging { --sig-peak-o: 1; }
+
+/* ---- arrival bloom (item 3) -----------------------------------------------
+   A single circle (OmniEdge.jsx, parked at the edge's true target point)
+   flaring once a period, timed to the head's own arrival — the SAME
+   36.36% mark the travel keyframe above arrives at, so it stays in sync
+   for free under the hover duration-swap (`.omni-edge-signal.is-active`
+   above already covers this element too — it carries the shared base
+   class) instead of needing a separately-tracked "phase + travel time"
+   delay that would drift the instant duration changes. `r` (not
+   `transform: scale`) is what grows/shrinks it: an SVG geometry property
+   animates around the circle's own cx/cy directly, no transform-origin
+   fuss on an SVG shape. */
+@keyframes omni-edge-signal-bloom {
+  0%, 34.3% { opacity: 0; r: 2.5px; }
+  36.36% { opacity: .8; r: 4px; }
+  38.4%, 100% { opacity: 0; r: 2.5px; }
+}
+
+#workflow-root .omni-edge-signal-bloom {
+  animation-name: omni-edge-signal-bloom;
+  pointer-events: none;
+}
+
+/* ---- RUN SHOW A1 — traversal comet ---------------------------------------
+   Three small circles (OmniEdge.jsx's COMET_DOTS) riding the edge's own
+   path via `offset-path`/`offset-distance` — NOT the dash-offset trick the
+   pulse layers above use: that only works for an INFINITE loop along the
+   path's own stroke, while a comet needs to travel 0%->100% ONCE and stop,
+   which `offset-distance` expresses directly. `offset-path` itself is set
+   inline per-edge in OmniEdge.jsx (it's this edge's own geometry, a CSS
+   file has no way to know it). The trailing-tail read comes from a POSITIVE
+   `animation-delay` stagger between the three dots (inline, JS-side) — see
+   OmniEdge.jsx's COMET_DOTS comment for why that's a real spatial lag, not
+   a rotation/blur trick. One shared envelope (fade in, hold, fade out
+   before arrival) covers all three dots; each one's own peak opacity comes
+   in via --comet-o (inline, per dot) rather than three separate keyframes. */
+@keyframes omni-edge-comet-travel {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--comet-o, 1);
+  }
+  85% {
+    opacity: var(--comet-o, 1);
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+#workflow-root .omni-edge-comet-dot {
+  fill: var(--cw-edge-active, #1858EE);
+  pointer-events: none;
+  animation: omni-edge-comet-travel 420ms var(--cw-e-out, cubic-bezier(.22, 1, .36, 1)) both;
+}
+
+/* ---- item 4 (signal half) — cut dissolve ----------------------------------
+   `animation: none` here, not `animation-play-state: paused` (the trick
+   MOTION PHASE M1 used for the old pulse) — that trick relied on the OLD
+   ambient keyframe never touching `opacity` at all, so a plain
+   `opacity: 0` in the same rule won outright over a merely-paused
+   animation. This keyframe DOES animate opacity (the launch/rest envelope
+   above), so a still-attached-but-paused animation would keep dictating
+   whatever opacity it happened to freeze on instead of yielding to the 0
+   below — fully detaching the animation is what lets the transition take
+   over cleanly, fading out from wherever the comet's brightness was the
+   instant it was cut. Declared last among the signal modifiers, same
+   reasoning as before: wins over is-active/is-surging/is-run-surging if
+   more than one ever coincides. ------------------------------------------ */
+#workflow-root .omni-edge-signal.is-cutting {
+  animation: none;
+  opacity: 0;
+  transition: opacity 70ms var(--cw-e-out, cubic-bezier(.22, 1, .36, 1));
+}
+
+/* ---- item 3 — draw-on at mount -------------------------------------------
+   The MAIN visible path (BaseEdge's own <path>, given `pathLength={100}`
+   and this class in OmniEdge.jsx) draws itself in once per mount. Per the
+   shell's "React Flow only mounts while the overlay is open" rule, that
+   means once per canvas open — right after the node cards land. Per-edge
+   delay is an inline `animationDelay` (id-hash, 0-200ms) set in JSX; `both`
+   fill-mode holds it hidden through that delay instead of flashing drawn. */
+@keyframes omni-edge-draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+#workflow-root .omni-edge-main-path {
+  stroke-dasharray: 100;
+  animation: omni-edge-draw 320ms var(--cw-e-out, cubic-bezier(.22, 1, .36, 1)) both;
+}
+
+/* ---- WIRE FEEL item 4 — connect-settle crossfade (backward routes only) -
+   OmniEdge.jsx's own comment (search connectCrossfading) explains why the
+   backward detour gets this instead of the forward morph/wobble: a
+   multi-corner polyline has no single control-point pair to interpolate.
+   Layers ON TOP of the draw-on reveal above (both are active at once on a
+   freshly-connected backward edge) — a brief extra brighten-in rather than
+   a competing animation, since draw-on already owns stroke-dashoffset and
+   this only ever touches opacity. `both` so it holds at 0 through nothing
+   (no delay here — it starts the instant `cw:wire-connected` matches). --- */
+@keyframes omni-edge-connect-crossfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#workflow-root .omni-edge-main-path.is-connect-crossfade {
+  animation:
+    omni-edge-draw 320ms var(--cw-e-out, cubic-bezier(.22, 1, .36, 1)) both,
+    omni-edge-connect-crossfade 120ms var(--cw-e-out, cubic-bezier(.22, 1, .36, 1)) both;
+}
+
+/* ---- item 4 (main path half) — cut dissolve ------------------------------
+   Retraces the draw-on in reverse. A distinctly-named animation so it
+   always starts clean regardless of where the draw-on left off. --------- */
+@keyframes omni-edge-retract {
+  from { stroke-dashoffset: 0; opacity: 1; }
+  to { stroke-dashoffset: 100; opacity: 0; }
+}
+
+#workflow-root .omni-edge-main-path.is-cutting {
+  animation: omni-edge-retract 70ms var(--cw-e-out, cubic-bezier(.22, 1, .36, 1)) both;
+}
+
+/* ---- item 5 — +/x controls: spring arrival, quick fade, press feedback --
+   Overrides flow.css's plain opacity toggle on `.omni-edge-controls` (same
+   selector — this file evaluates after flow.css, see header) to add a
+   scale-from-.6 spring pop. Opacity keeps its own quick, non-spring fade so
+   the exit never overshoots, only the scale does. ------------------------ */
+#workflow-root .omni-edge-controls {
+  transform: scale(.6);
+  transition:
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(.22, 1, .36, 1)),
+    transform var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(.34, 1.56, .64, 1));
+}
+
+#workflow-root .omni-edge-controls.is-visible {
+  transform: scale(1);
+}
+
+#workflow-root .omni-edge-btn:active {
+  transform: scale(.9);
+  transition: transform var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(.22, 1, .36, 1));
+}
+
+/* ---- item 6 — perf guard --------------------------------------------------
+   Everything above under "SIGNAL COMET PASS" only ever runs while
+   OmniEdge.jsx actually renders the `.omni-edge-signal` layers, which it
+   gates on total edge count <= 40 (PULSE_MAX_EDGES, via useStore((s) =>
+   s.edges.length) — name kept as-is, the guard's ROLE is unchanged, only
+   what it gates grew from 2 layers to 4 + a bloom). Past that cap edges
+   render as plain static paths — draw-on and the controls motion (items
+   3/5) stay on regardless, since those are one-shot / interaction-driven
+   rather than standing loops. ------------------------------------------- */
+
+/* ---- prefers-reduced-motion ------------------------------------------------
+   Global rule (PLAN.md "MOTION PHASE" -> "Global rules"): every ambient
+   loop off, every entrance collapses to a fast, linear fade. ------------- */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes omni-edge-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* SIGNAL COMET PASS — this one base-class rule now hides all 4 dash
+     layers AND the arrival bloom in a single declaration (all 5 elements
+     share the `omni-edge-signal` base class) — "no comet, no bloom" per
+     PLAN.md, static ink only. */
+  #workflow-root .omni-edge-signal {
+    animation: none;
+    opacity: 0;
+  }
+
+  #workflow-root .omni-edge-signal.is-surging {
+    animation: omni-edge-fade-in var(--cw-d-1, 140ms) linear;
+    opacity: .9;
+  }
+
+  #workflow-root .omni-edge-signal.is-run-surging {
+    animation: omni-edge-fade-in var(--cw-d-1, 140ms) linear;
+    opacity: .95;
+  }
+
+  /* RUN SHOW A4 — belt-and-braces: OmniEdge.jsx's spawnComet() already
+     checks prefers-reduced-motion and never mounts a comet dot at all, so
+     this normally has nothing to do. Kept anyway (same defensive posture
+     the rest of this file takes) in case the OS setting flips mid-flight,
+     between a comet already mounting and this media query re-evaluating. */
+  #workflow-root .omni-edge-comet-dot {
+    animation: none;
+    opacity: 0;
+  }
+
+  #workflow-root .omni-edge-signal.is-cutting {
+    animation: none;
+    opacity: 0;
+  }
+
+  #workflow-root .omni-edge-main-path {
+    stroke-dasharray: none;
+    animation: omni-edge-fade-in var(--cw-d-1, 140ms) linear both;
+  }
+
+  #workflow-root .omni-edge-main-path.is-cutting {
+    animation: none;
+    opacity: 0;
+    transition: opacity var(--cw-d-1, 140ms) linear;
+  }
+
+  #workflow-root .omni-edge-controls {
+    transform: none;
+    transition: opacity var(--cw-d-1, 140ms) linear;
+  }
+
+  #workflow-root .omni-edge-controls.is-visible {
+    transform: none;
+  }
+
+  #workflow-root .omni-edge-btn:active {
+    transform: none;
+    transition: none;
+  }
+}

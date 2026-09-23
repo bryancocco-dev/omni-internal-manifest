@@ -1,0 +1,212 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Generative cover — the OMNI+ Book Ends front-cover ring system, ported
+   onto the read-only hero. Source of truth: canvas-book-ends' F39 FANLIGHT
+   frame (index.html ~21165-21300) and PLAN-COVERS.md (this repo root),
+   whose §1 geometry table is measured, not guessed — the numbers below are
+   not re-derived here, only re-anchored from frame-width to hero-height.
+
+   Companion files:
+   - cover-gen.js       ring data (GEN_SYMBOLS) + template resolution +
+                         applyGenerativeCover(), which sets the per-ring
+                         --ring-* custom properties this file consumes.
+   - cover-tags.css/.js  the micrographic tag's CONTENTS — owned separately.
+                         This file only lays out the tag SLOT's box (§3);
+                         it does not style anything inside it.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* One unit every ring position/size is expressed as a multiple of. Equals
+   the hero's own height on normal screens; grows on ultrawide so the ring
+   composition never runs out of horizontal cover to sweep across. */
+.doc-hero {
+  --gen-unit: max(100vh, 560px, calc(100vw / 1.869));
+}
+
+/* ── palette pin ──────────────────────────────────────────────────────────
+   These are generic OMNI templates, not brand art — cover-gen.js resolves
+   cover.template.palette / ?palette= (PLAN-COVERS.md's FIX 1) into
+   [data-gen-palette] on .doc-hero, and everything below (the board, the
+   type flip, the ring fill, and every --doc-accent/--doc-ink-* consumer
+   cover-tags.css writes for the tag's contents) reads --doc-accent /
+   --doc-paper-bg / --doc-ink-strong / --doc-ink-subtle same as always — the
+   pin works by SHADOWING those four custom properties on .doc-hero itself,
+   so nothing downstream needs to know a palette pin happened.
+
+   'omni' (default): fixed OMNI blue-on-light, ignoring the document's brand
+   theme entirely — Corvache's gold, BMW's blue-on-white, Omni Dark, whatever
+   is live on <body> — none of it should leak into a generic OMNI cover.
+   'theme' (opt-in via ?palette=theme or cover.template.palette:"theme"):
+   declares nothing here, so the four keep inheriting live from body
+   (themes.js) exactly as this file worked before FIX 1 — brand reskins and
+   Omni Dark still tint the cover correctly on request. */
+.doc-hero--gen[data-gen-palette="omni"] {
+  --doc-accent: #1858ee;
+  --doc-paper-bg: #ffffff;
+  --doc-ink-strong: #0a0a0a;
+  --doc-ink-subtle: #818ea6;
+}
+
+/* ── the light board ─────────────────────────────────────────────────────
+   Always derived from --doc-accent/--doc-paper-bg, never a hard-coded
+   #e8eefd — the palette pin above is what decides whether those two are the
+   fixed OMNI values or the live theme's. Sanity check: OMNI light
+   (--doc-accent:#1858ee, --doc-paper-bg:#fff) resolves to #e8eefd — exactly
+   book-ends' own --accent-soft. The port is exact. */
+.doc-hero--gen {
+  --gen-board: color-mix(in srgb, var(--doc-accent) 9%, var(--doc-paper-bg));
+  background: var(--gen-board);
+}
+
+/* .doc-hero__media is normally over-sized (top:-8%/height:116%) so a
+   photo's parallax drift never reveals an edge behind it. A generative
+   cover has no photo to protect — this box holds nothing but transparent
+   ring graphics, so drifting it can only ever reveal the SAME board colour
+   already sitting behind it. More importantly, the ring geometry below is
+   measured from the HERO's own top-left corner (§1) — that only holds if
+   this wrapper's box exactly matches the hero's, so reset the inflation. */
+.doc-hero--gen .doc-hero__media {
+  top: 0;
+  height: 100%;
+}
+
+/* ── the ring graphic ─────────────────────────────────────────────────────
+   Every ring is an absolutely-positioned square placed BY ITS CENTRE
+   (rotation-invariant — the book-ends file burned ~15 rounds on a
+   left/bottom/translateY "centre-preserving formula" to keep multi-ring
+   symbols concentric; here concentricity is true by construction, since
+   every ring of a symbol shares --ring-cx/--ring-cy).
+
+   cover-gen.js sets --ring-k / --ring-zoom / --ring-cx / --ring-src /
+   --ring-dur per ring as inline custom properties, straight from the §1
+   table — this rule is pure geometry, no per-symbol values live here.
+   --ring-cy is the one value every symbol shares, so it defaults here. */
+.doc-hero__ring {
+  --ring-cy: 1.298;
+  position: absolute;
+  width: calc(var(--ring-k) * var(--gen-unit));
+  aspect-ratio: 1;
+  left: calc(var(--ring-cx) * var(--gen-unit) - (var(--ring-k) * var(--gen-unit)) / 2);
+  top: calc(var(--ring-cy) * var(--gen-unit) - (var(--ring-k) * var(--gen-unit)) / 2);
+  background: var(--doc-accent);
+  /* Chromium law (PLAN §1): a mask on a NON-ANIMATED CHILD of an animated
+     ancestor is silently dropped — the element paints as a solid
+     --doc-accent block and the whole hero turns flat blue. mask and
+     animation MUST stay on this same element; never split across a
+     wrapper/child pair. The JS parallax transform lives on the ANCESTOR
+     (.doc-hero__media, untouched by this file — initHeroParallax already
+     targets it); this element's own rotate is separate and composes fine. */
+  -webkit-mask: var(--ring-src) center / var(--ring-zoom) no-repeat;
+          mask: var(--ring-src) center / var(--ring-zoom) no-repeat;
+  animation: docGenSpin var(--ring-dur) linear infinite;
+}
+@keyframes docGenSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-hero__ring { animation: none; }
+}
+
+/* ── type flip — light board, dark ink ──────────────────────────────────
+   hero.css sets these seven for the dark photo hero; the light board
+   needs the opposite, all derived from the theme's own ink tokens so a
+   brand reskin's ink follows automatically. */
+.doc-hero--gen .doc-hero__title { color: var(--doc-ink-strong); }
+.doc-hero--gen .doc-hero__subtitle { color: var(--doc-ink-subtle); }
+.doc-hero--gen .doc-hero__lbl { color: color-mix(in srgb, var(--doc-ink-strong) 55%, transparent); }
+.doc-hero--gen .doc-hero__val { color: var(--doc-ink-strong); }
+.doc-hero--gen .doc-hero__meta::before { background: color-mix(in srgb, var(--doc-ink-strong) 22%, transparent); }
+.doc-hero--gen .doc-hero__scroll-label { color: var(--doc-ink-subtle); text-shadow: none; }
+.doc-hero--gen .doc-hero__scroll-line { background: linear-gradient(to bottom, color-mix(in srgb, var(--doc-ink-strong) 60%, transparent), transparent); }
+
+/* ── the hairline sits between two blocks; both clear it equally ─────────
+   Bryan: "move these ... closer down to the hairline so they sit equal
+   distance to the hairline as the eyebrows and text below the hairline."
+   Below the line the CLIENT/ASSIGNMENT eyebrows clear it by --hero-rail-pad
+   (hero.css). Above it the type block cleared it by the full column gap —
+   far more — so the composition read lopsided about its own rule. Now both
+   sides are set from that one number.
+
+   --hero-rail-optical is the box-vs-ink trim, and the measurements argued it
+   down to ~nothing: the subtitle's half-leading below its last descender and
+   the eyebrow's cap-top inset under the rail padding very nearly cancel, so
+   equal PADDING already gives equal INK. Swept 1/2/3px against rendered
+   pixels at four viewports; 1px lands dead equal at 2549x1289 and 1920x1080,
+   +1px at 1280x800, +4px at 1440x900 (the one size whose rail-pad clamp bites
+   while the subtitle's leading stays fixed). Kept as a knob, not a formula.
+
+   Measure the hairline in the IMAGE, never from the DOM — a DOM read catches
+   docHeroUp's 22px entrance offset and reports the line 22px low. */
+.doc-hero--gen .doc-hero__inner {
+  --hero-rail-optical: 1px;
+  --hero-stack-gap: calc(var(--hero-rail-pad) - var(--hero-rail-optical));
+}
+
+/* ── scrim ────────────────────────────────────────────────────────────────
+   Same gradient GEOMETRY the photo hero already uses (bottom band + one
+   side lift), in the board colour instead of near-black. FIX 2: the photo
+   hero's type sits bottom-LEFT, so its scrim only ever needed to lift from
+   the left — this cover's tag sits bottom-RIGHT instead, the densest part
+   of the ray field, so a third layer mirrors the side-lift from the right
+   edge, and the bottom band itself is stronger/taller so the whole tag
+   (not just its bottom-most line) clears the rays. Insurance, not a
+   treatment: the graphic stays dominant, the crown is never flattened to
+   solve a corner. */
+.doc-hero--gen .doc-hero__scrim {
+  background:
+    linear-gradient(to top,
+      color-mix(in srgb, var(--gen-board) 97%, transparent) 0%,
+      color-mix(in srgb, var(--gen-board) 74%, transparent) 30%,
+      color-mix(in srgb, var(--gen-board) 24%, transparent) 60%,
+      transparent 82%),
+    linear-gradient(to right,
+      color-mix(in srgb, var(--gen-board) 52%, transparent) 0%,
+      transparent 46%),
+    linear-gradient(to left,
+      color-mix(in srgb, var(--gen-board) 66%, transparent) 0%,
+      transparent 32%);
+}
+
+/* ── tag slot ─────────────────────────────────────────────────────────────
+   Far right, above the bottom hairline — one right-aligned flex sibling
+   inserted immediately before .doc-hero__meta inside .doc-hero__inner
+   (a column flex; align-self:flex-end pushes just this child to the far
+   edge). This is the SLOT BOX ONLY: cover-tags.css styles whatever
+   buildCoverTag() mounts inside it. */
+/* Pinned to the meta rail's top edge — i.e. straight onto the hairline
+   (.doc-hero__meta::before sits at the rail's top:0) — and OUT of
+   .doc-hero__inner's column flow entirely. In the flow it was a flex item
+   whose height plus the column gap pushed the title and subtitle ~100px off
+   the hairline, which read as a void on the left where nothing balances it.
+   Absolute costs the column no height, so the type block keeps its own
+   natural rhythm against the rail while the tag stays tight above the line. */
+.doc-hero__tag {
+  position: absolute;
+  right: 0;                /* the rail's right edge = the SENT cell's edge */
+  bottom: 100%;            /* the rail's top edge = the hairline */
+  /* Bryan: "have the micrographics and text align optically with the bottom of
+     the sub text." The tag no longer stacks with the type block, so it has to
+     be told to sit on the same line — that line is the type block's own
+     distance off the rail, i.e. hero.css's --hero-stack-gap (viewport-scaled,
+     so this tracks it at every size instead of pinning one magic number).
+     --tag-optical trims the difference between the two BOXES and the two
+     INKS: the subtitle's 1.5 line-height leaves half-leading below its
+     descenders, while the tag's lowest ink is a hard border edge (the dashed
+     client box / the last readout row) that sits flush to its own box. Without
+     the trim the boxes line up and the ink does not. Measured, not guessed. */
+  --tag-optical: 13px;
+  margin-bottom: calc(var(--hero-stack-gap, 44px) + var(--tag-optical));
+  z-index: 3;
+}
+
+/* Overlaying instead of stacking is what buys the type its rhythm back, but it
+   also means the tag and the headline now share a band. .doc-hero__type is
+   max-width:min(1000px, 66%), so below roughly 1180px that 66% plus the tag's
+   own width exceeds the viewport and the two genuinely collide — measured, not
+   assumed: the title's inked extent crosses the tag from 1024px down, and by
+   768px the subtitle does too.
+   The tag is a decorative generative stamp (aria-hidden), so it yields rather
+   than shoving the headline around or forcing the title narrower. Same call
+   .doc-header__context already makes at its own breakpoint. */
+@media (max-width: 1180px) {
+  .doc-hero__tag { display: none; }
+}

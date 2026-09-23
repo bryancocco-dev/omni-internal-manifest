@@ -1,0 +1,160 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Read-only canvas shell — the page-level chrome for a shared canvas.
+   No app nav, no sidebars, no tabs: this is the entire "chrome" a recipient
+   ever sees. Every demo page wraps its content in <main class="doc">.
+
+   The layout mirrors the OMNI+ Canvas board stack (publish-to-workspace's
+   .brief-stack / .brief-board): white boards on the #F5F7FA canvas bg,
+   separated by small gaps, 48px board padding, square corners. All type is
+   Inter — no serif.
+   ───────────────────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+html {
+  color-scheme: light dark;
+}
+
+/* Thin, recessive scrollbars everywhere — no chunky default gutters. Firefox
+   uses scrollbar-width/color; WebKit gets an overlay-style thumb that only
+   reads on hover, with a transparent track (no groove). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--doc-ink-subtle) 34%, transparent) transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--doc-ink-subtle) 30%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--doc-ink-subtle) 52%, transparent);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner { background: transparent; }
+
+body {
+  margin: 0;
+  background: var(--doc-page-bg);
+  color: var(--doc-ink);
+  font-family: var(--doc-font-body);
+  font-size: 16px;
+  line-height: var(--omni-font-line-height-relaxed, 1.5);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.doc {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Centered content column — holds the boards. Header + footer sit outside
+   this and run the full page width. Width is resizable via the edge handles
+   (column-resize.js) through --doc-inner-w; max-width so it uses the auto
+   fill-then-cap behaviour (this engine honours max-width reliably). */
+.doc-inner {
+  position: relative;
+  max-width: var(--doc-inner-w, var(--doc-content-width));
+  margin: 0 auto;
+}
+
+/* Drag-to-resize edge handles — the OMNI .stack-resizer pattern: an invisible
+   full-height strip straddling each column edge, signaled only by the
+   col-resize cursor (no outline, hover or dragging). */
+.doc-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  z-index: 6;
+  cursor: col-resize;
+  touch-action: none;
+}
+.doc-resizer--left { left: -8px; }
+.doc-resizer--right { right: -8px; }
+
+body.col-resizing { cursor: col-resize; user-select: none; }
+
+@media (max-width: 1100px) {
+  .doc-resizer { display: none; }
+}
+
+/* The header + cover board (the "presentation front page") live in
+   cover.css. Everything below is the repeating board treatment. */
+
+/* Each block is a white board on the canvas bg — the OMNI+ Canvas board
+   treatment with the app frame removed. Square corners, generous padding,
+   separated by the canvas bg showing through the gap. */
+.doc-section {
+  position: relative;
+  background: var(--doc-paper-bg);
+  border-radius: var(--doc-card-radius);
+  padding: var(--doc-card-padding);
+  margin-bottom: var(--doc-section-gap);
+}
+
+/* Board header affordance cluster — search + kebab, top-right of each board,
+   exactly as the OMNI Canvas boards present them. Purely a chrome cue here. */
+.doc-board-tools {
+  position: absolute;
+  top: var(--doc-card-padding);
+  right: var(--doc-card-padding);
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+
+/* Matches the real .bb-search-icon / .scope-table-menu-btn convention:
+   borderless/transparent by default, revealed on hover — not a bordered
+   button at rest. */
+.doc-board-tool {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--omni-radius-medium);
+  background: transparent;
+  color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition: color var(--omni-transition-duration-fast) ease,
+    border-color var(--omni-transition-duration-fast) ease,
+    background var(--omni-transition-duration-fast) ease,
+    box-shadow var(--omni-transition-duration-fast) ease;
+}
+
+/* Search-style tool: border + shadow lift on hover (real .scope-table-search convention). */
+.doc-board-tool--search:hover {
+  border-color: var(--omni-rule-line-hairline);
+  background: var(--doc-paper-bg);
+  box-shadow: var(--omni-shadow-elevation-1);
+}
+
+/* Kebab: background-wash on hover, no border (real .scope-table-menu-btn convention). */
+.doc-board-tool--kebab:hover {
+  background: var(--doc-nested-bg);
+  color: var(--doc-ink-strong);
+}
+
+.doc-footer {
+  padding: var(--omni-space-16) var(--doc-card-padding) 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  color: var(--doc-ink-subtle);
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 640px) {
+  .doc-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .doc-board-tools { display: none; }
+}

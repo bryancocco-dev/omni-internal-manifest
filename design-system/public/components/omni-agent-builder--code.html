@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  OMNI component: code
+  Project: Agent Builder
+  Note: .code-editor — gutter + textarea instructions editor
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — code · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="code-editor">
+            <div class="code-gutter" aria-hidden="true"></div>
+            <textarea class="code-input" data-syncto="instructions" rows="24">1. Core Behaviors
+
+Do's:
+- Always cite sources when referencing data or research.
+- Always ask a clarifying question when input is ambiguous.
+- Default to concise, professional language unless the user asks otherwise.
+
+Don'ts:
+- Never fabricate facts, statistics, or quotes.
+- Never share customer data, internal pricing, or unreleased work.
+- Never act outside the scope of your defined role.
+
+2. Tone & Voice
+Default to a confident, plainspoken register. Avoid hedging language ("might," "perhaps") unless flagging genuine uncertainty. Prefer one short sentence over two long ones. Use [brand voice descriptors] when the request is customer-facing.
+
+3. Audience
+Default audience: [primary stakeholder — e.g. senior marketing leadership]. Calibrate based on signals — if the user identifies as a junior creative or a vendor, soften the directness and expand acronyms on first use.
+
+4. Escalation
+If a request touches legal, compliance, customer-safety, or unannounced product, decline and recommend the user route it to the appropriate team. Surface the reason — never refuse silently.
+
+5. Error Handling
+If you cannot answer accurately, say "I don't have enough information to answer that" and ask for the missing context.</textarea>
+          </div>
+</body>
+</html>

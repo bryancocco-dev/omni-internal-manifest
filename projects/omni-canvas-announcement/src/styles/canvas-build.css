@@ -1,0 +1,167 @@
+/* ------------------------------------------------------------------
+   CANVAS-BUILD — the brief board that materializes on the canvas
+   stage once the phantom user picks "Creative Brief". Strict OMNI
+   light theme, existing tokens only (see announcement.css :root).
+   All classes prefixed xcb- (this module's own DOM, appended to
+   .cs-canvas-stage as a .vig-layer — see canvas-build.js).
+------------------------------------------------------------------ */
+
+.xcb-board {
+  /* .vig-layer already supplies position:absolute; inset:0;
+     pointer-events:none; opacity:0 (default hidden) */
+}
+
+.xcb-wrap {
+  position: absolute;
+  inset: 46px 60px 58px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Eyebrow sits tight to the grid below it (gap-below < gap-above —
+   the wrap's top inset reads as the larger space above). */
+.xcb-eyebrow {
+  margin: 0 0 14px;
+  font-family: var(--omni-font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+
+.xcb-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "headline headline"
+    "image chart"
+    "stats stats";
+  gap: 26px;
+}
+
+.xcb-card {
+  position: relative;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 20px;
+  /* Established subtle tile shadow (matches app-tile / chat-hat chip
+     treatment elsewhere) — no invented shadow language. */
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+  overflow: hidden;
+}
+
+/* ---- Headline block: skeleton lines, first accent-tinted ------- */
+.xcb-headline {
+  grid-area: headline;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 30px 32px;
+}
+.xcb-line {
+  display: block;
+  width: 100%;
+  height: 15px;
+  border-radius: 8px;
+  background: var(--omni-line-solid);
+}
+.xcb-line--accent {
+  height: 20px;
+  width: 62%;
+  background: var(--omni-brand-500);
+  opacity: 0.85;
+}
+
+/* ---- Shared tile eyebrow tag (tight to its module, not floating) */
+.xcb-tag {
+  display: block;
+  margin: 0 0 14px;
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+
+/* ---- Image tile: scan-band reveal -------------------------------- */
+.xcb-image {
+  grid-area: image;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 28px;
+}
+.xcb-scan-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, rgba(15,23,42,0.05) 0 1px, transparent 1px 20%),
+    repeating-linear-gradient(0deg,  rgba(15,23,42,0.05) 0 1px, transparent 1px 20%),
+    linear-gradient(160deg, #eef1f7 0%, #e3e8f2 100%);
+}
+.xcb-scan {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: -40%;
+  height: 55%;
+  background: linear-gradient(180deg, transparent, rgba(24, 88, 238, 0.22), transparent);
+}
+
+/* ---- Chart tile: bars grow with back.out ------------------------- */
+.xcb-chart {
+  grid-area: chart;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 28px;
+}
+.xcb-bars {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+.xcb-bar {
+  flex: 1;
+  height: var(--h, 50%);
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--omni-brand-500), color-mix(in srgb, var(--omni-brand-500) 65%, #0a1e57));
+}
+
+/* ---- Stat / KPI row: 3 cells, numbers fade up -------------------- */
+.xcb-stats {
+  grid-area: stats;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+.xcb-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 4px 0;
+  border-top: 0.5px solid var(--omni-line);
+}
+.xcb-stat-num {
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 38px;
+  letter-spacing: -0.02em;
+  color: var(--omni-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.xcb-stat-label {
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}

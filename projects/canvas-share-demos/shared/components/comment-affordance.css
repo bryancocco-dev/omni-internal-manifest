@@ -1,0 +1,222 @@
+/* Comment pin — sits inside the board's top-right tool cluster, left of the
+   search + kebab, styled as a matching board tool (see .doc-board-tool). */
+
+.doc-comment-pin {
+  position: absolute;
+  top: var(--doc-card-padding);
+  right: calc(var(--doc-card-padding) + 84px);
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: var(--omni-radius-medium);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--doc-ink-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 4;
+  transition: color var(--omni-transition-duration-fast) ease, border-color var(--omni-transition-duration-fast) ease,
+    background var(--omni-transition-duration-fast) ease, box-shadow var(--omni-transition-duration-fast) ease;
+}
+.doc-comment-pin svg { flex: none; }
+
+.doc-comment-pin:hover,
+.doc-comment-pin.is-open {
+  color: var(--doc-accent);
+  border-color: var(--omni-rule-line-hairline);
+  background: var(--doc-paper-bg);
+  box-shadow: var(--omni-shadow-elevation-1);
+}
+
+/* Has comments → an accent-tinted count pill (icon + number inline), so the
+   count reads as one cohesive element instead of a floating badge. */
+.doc-comment-pin.has-count {
+  width: auto;
+  padding: 0 11px 0 9px;
+  background: var(--doc-accent-soft);
+  color: var(--doc-accent);
+  border-color: transparent;
+  box-shadow: none;
+}
+.doc-comment-pin.has-count:hover,
+.doc-comment-pin.has-count.is-open {
+  background: var(--doc-accent-soft);
+  border-color: var(--doc-accent-line);
+  box-shadow: none;
+}
+
+.doc-comment-pin__count {
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--doc-accent);
+}
+
+.doc-comment-popover {
+  position: absolute;
+  top: calc(var(--doc-card-padding) + 42px);
+  right: calc(var(--doc-card-padding) + 84px);
+  width: 320px;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-large);
+  box-shadow: var(--omni-shadow-elevation-2);
+  padding: var(--omni-space-12);
+  display: none;
+  flex-direction: column;
+  gap: var(--omni-space-8);
+  z-index: 20;
+}
+
+.doc-comment-popover.is-open { display: flex; }
+
+.doc-comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--omni-space-8);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.doc-comment-empty {
+  font-size: 12.5px;
+  color: var(--doc-ink-subtle);
+  margin: 0;
+}
+
+.doc-comment {
+  display: flex;
+  gap: 8px;
+}
+
+.doc-comment__avatar {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--doc-accent-soft);
+  color: var(--doc-accent);
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-comment__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--doc-ink-subtle);
+  margin-bottom: 2px;
+}
+
+.doc-comment__meta strong { color: var(--doc-ink-strong); font-weight: 600; }
+
+.doc-comment__body p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--doc-ink);
+}
+
+/* Threaded replies in the inline popover — a compact rail beneath the root. */
+.doc-comment-thread { display: flex; flex-direction: column; }
+.doc-comment-thread__replies {
+  margin: 9px 0 0 11px;            /* 11px = root avatar radius → rail centres on it */
+  padding: 9px 0 1px 13px;
+  border-left: 1.5px solid var(--doc-rule);
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.doc-comment--reply .doc-comment__avatar { width: 19px; height: 19px; font-size: 8px; }
+.doc-comment--reply .doc-comment__body p { font-size: 12.5px; }
+
+/* Uploaded image attachments inside an inline comment. */
+.doc-comment__imgs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.doc-comment__imgs-item {
+  max-width: 100%;
+  max-height: 160px;
+  border-radius: var(--omni-radius-small);
+  border: 1px solid var(--doc-rule);
+  object-fit: cover;
+  display: block;
+}
+
+/* @mention chip inside an inline comment body. */
+.doc-comment .doc-mention {
+  color: var(--doc-accent);
+  font-weight: 600;
+  background: var(--doc-accent-soft);
+  padding: 0 3px;
+  border-radius: var(--omni-radius-small);
+}
+
+.doc-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--doc-rule);
+  padding-top: var(--omni-space-8);
+}
+
+.doc-comment-form textarea {
+  resize: none;
+  font: inherit;
+  font-size: 12.5px;
+  padding: 6px 8px;
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-small);
+  background: transparent;
+  color: var(--doc-ink);
+}
+
+.doc-comment-form textarea:focus {
+  outline: none;
+  border-color: var(--doc-accent);
+}
+
+.doc-comment-form button {
+  align-self: flex-end;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--omni-radius-pill);
+  border: none;
+  background: var(--doc-accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+/* CTA-band variant: an inline, always-visible comment composer rather than
+   a margin pin — used at the bottom of the page where there's no section
+   edge to pin against. */
+
+.doc-comment-inline {
+  background: var(--doc-nested-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-large);
+  padding: var(--omni-space-16);
+  max-width: 420px;
+}
+
+.doc-comment-inline .doc-comment-list { margin-bottom: var(--omni-space-8); }
+.doc-comment-inline .doc-comment-form { border-top: 1px solid var(--doc-rule); }
+
+/* On narrow screens the search+kebab cluster is hidden, so the comment pin
+   moves to the board's top-right corner on its own. */
+@media (max-width: 640px) {
+  .doc-comment-pin { right: var(--doc-card-padding); }
+  .doc-comment-popover {
+    right: var(--doc-card-padding);
+    left: auto;
+    width: min(260px, calc(100vw - 2 * var(--doc-card-padding)));
+  }
+}

@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  OMNI component: editfield
+  Project: Collab
+  Note: .doc-edit-controls — inline text-fix affordance (edit-affordance.js): click any [data-edit-key] field to edit it in place, caret at the click point; the attached pill is Reset · Cancel · Confirm. Requires body.can-edit (permission-gated, not a mode toggle)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collab — editfield · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/profile.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/ask-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/ask-treatments.css" />
+<link rel="stylesheet" href="../../shared/components/edit-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/add-section-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/media-gallery.css" />
+<link rel="stylesheet" href="../../shared/components/address-comments.css" />
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-collab.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="can-edit">
+<div style="position:relative;max-width:640px">
+  <p class="doc-body is-editing-field" data-edit-key="exec-summary::body::0" data-edit-original="2025 was less about a single breakout moment and more about steady, compounding gains across every channel we touch. Demand grew fastest at the top — configurator sessions more than doubled — but the more durable story is the order book: the deposit holders we earned in Q1 are still with us in Q4, and they're speccing richer builds each time they come back." contenteditable="true">2025 was less about a single breakout moment and more about steady, compounding gains across every channel we touch. Demand grew fastest at the top — configurator sessions more than doubled — but the more durable story is the order book: the deposit holders we earned in Q1 are still with us in Q4, and they're speccing richer builds each time they come back.</p>
+  <span class="doc-edit-controls" style="top: calc(100% + 8px); left: 0px;">
+    <span class="doc-edit-normal-inner">
+
+      <button type="button" class="doc-edit-reset" aria-label="Reset to original"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M222,128a94,94,0,0,1-92.74,94H128a93.43,93.43,0,0,1-64.5-25.65,6,6,0,1,1,8.24-8.72A82,82,0,1,0,70,70l-.19.19L39.44,98H72a6,6,0,0,1,0,12H24a6,6,0,0,1-6-6V56a6,6,0,0,1,12,0V90.34L61.63,61.4A94,94,0,0,1,222,128Z"></path></svg></button>
+      <span class="doc-edit-controls__divider" aria-hidden="true"></span>
+      <button type="button" class="doc-edit-cancel" aria-label="Cancel edit"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z"></path></svg></button>
+      <button type="button" class="doc-edit-commit" aria-label="Save edit"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M228.24,76.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,219.76,67.76a6,6,0,0,1,8.48,8.48Z"></path></svg></button>
+    </span>
+    <span class="doc-edit-confirmreset-inner">
+      <span class="doc-edit-confirmreset__label">Reset to original?</span>
+      <button type="button" class="doc-edit-confirmreset__no" aria-label="Keep editing"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z"></path></svg></button>
+      <button type="button" class="doc-edit-confirmreset__yes" aria-label="Confirm reset"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M228.24,76.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,219.76,67.76a6,6,0,0,1,8.48,8.48Z"></path></svg></button>
+    </span></span>
+</div>
+</body>
+</html>

@@ -1,0 +1,4253 @@
+  /* --- Billboard 970×250 ---------- node 2216:15485 ------------- */
+  .c4-display-frame[data-size="billboard"] .c4-display-logo { width: 56px; height: 56px; }
+  .c4-display-frame[data-size="billboard"] .c4-display-logo-text { font-size: 13px; }
+  .c4-display-frame[data-size="billboard"] .c4-display-heading { font-size: 26px; line-height: 1.15; }
+  .c4-display-frame[data-size="billboard"] .c4-display-body { font-size: 13px; }
+  .c4-display-frame[data-size="billboard"] .c4-display-cta {
+    height: 40px; width: 129px; font-size: 12px; border-radius: 20px;
+  }
+  .c4-display-frame.v1[data-size="billboard"] .c4-display-img {
+    width: 59.79%; height: 100%;
+  }
+  .c4-display-frame.v1[data-size="billboard"] .c4-display-content-bottom {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 40.21%; height: 100%;
+    padding: 16px 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .c4-display-frame.v1[data-size="billboard"] .c4-display-top-group {
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 0;
+  }
+  .c4-display-frame.v1[data-size="billboard"] .c4-display-text-group {
+    padding-right: 20px;
+    padding-bottom: 12px;
+    gap: 12px;
+  }
+  .c4-display-frame.v1[data-size="billboard"] .c4-display-cta-row {
+    padding: 0;
+  }
+
+  /* ----- Billboard V2 (Image Hero) — node 2216:15454 ----------- */
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-content-overlay-bottom {
+    padding: 16px 20px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-text-group {
+    gap: 16px;
+    padding-right: 20px;
+    padding-bottom: 16px;
+    flex: 1;
+    min-width: 0;
+  }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-heading { font-size: 26px; }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-body { font-size: 14px; color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-cta {
+    height: 38px; width: 129px; border-radius: 19px; font-size: 12px;
+  }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-cta-row { padding: 0; flex: 0 0 auto; }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-logo-floating { top: 15px; left: 15px; }
+  .c4-display-frame.v2[data-size="billboard"] .c4-display-scrim-top { height: 104px; }
+
+  /* ----- Billboard V3 (Product Focus) — node 2216:15484 -------- */
+  .c4-display-frame.v3[data-size="billboard"] .c4-display-img { height: 80%; }
+  .c4-display-frame.v3[data-size="billboard"] .c4-display-content-slim {
+    height: 79px;
+    padding: 0 20px 16px 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .c4-display-frame.v3[data-size="billboard"] .c4-display-heading { font-size: 16px; }
+  .c4-display-frame.v3[data-size="billboard"] .c4-display-cta {
+    height: 32px; width: 129px; border-radius: 16px; font-size: 12px;
+    /* Override base CTA's align-self: flex-start so the CTA sits
+       vertically centered alongside the heading in the slim row. */
+    align-self: center;
+  }
+  .c4-display-frame.v3[data-size="billboard"] .c4-display-logo-floating { top: 15px; left: 15px; }
+  .c4-display-frame.v3[data-size="billboard"] .c4-display-scrim-top { height: 104px; }
+
+  /* ----- Billboard V4 (Hero Top) — node 2243:15810 ------------- */
+  .c4-display-frame.v4[data-size="billboard"] .c4-display-content-overlay-top {
+    padding: 24px 24px 27px;
+    gap: 16px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v4[data-size="billboard"] .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    gap: 16px;
+    padding-right: 20px;
+  }
+  .c4-display-frame.v4[data-size="billboard"] .c4-display-heading { font-size: 28px; }
+  .c4-display-frame.v4[data-size="billboard"] .c4-display-body { font-size: 14px; color: rgba(255,255,255,0.85); }
+  /* cta-row is now OUTSIDE content-overlay-top so position:absolute
+     resolves to the frame. For Billboard V4, mimic the inline-end
+     placement (Figma has CTA as 3rd flex sibling of content row
+     items-start). Position absolute at top: 24 (matches content
+     padding-top) right: 24 (matches content padding-right). */
+  .c4-display-frame.v4[data-size="billboard"] .c4-display-cta-row {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    bottom: auto;
+    z-index: 3;
+  }
+  .c4-display-frame.v4[data-size="billboard"] .c4-display-cta {
+    height: 38px; width: 130px; border-radius: 19px; font-size: 12px;
+  }
+
+  /* ----- Billboard V6 (Split Horizontal) — node 2250:44 -------- */
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-img {
+    width: 43.3%;
+    height: 100%;
+  }
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-content-right {
+    width: 56.7%;
+    padding: 16px 24px 32px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 20px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-right: 20px;
+  }
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-heading { font-size: 24px; line-height: 1.15; }
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-body { font-size: 13px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v6[data-size="billboard"] .c4-display-cta {
+    height: 38px; width: 129px; border-radius: 19px; font-size: 12px;
+    align-self: flex-start;
+  }
+
+  /* ----- Billboard V7 (Copy First) — node 2253:36 -------------
+     Top-group at top, CTA right-aligned at bottom (per Figma's
+     `_CTA Row items-start justify-end`). Base v7 has gap:12 on
+     top-group; Figma Billboard has none, so override to 0 and let
+     text-group's own pt:16 handle logo→heading spacing. */
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-content-fill {
+    padding: 8px 24px;
+    gap: 0;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 0;
+    padding-right: 20px;
+    padding-top: 16px;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 16px;
+    padding-right: 20px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-heading,
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-heading-large { font-size: 34px; line-height: 1.15; }
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-body { font-size: 14px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v7[data-size="billboard"] .c4-display-cta {
+    height: 42px; width: 129px; border-radius: 21px; font-size: 12px;
+    align-self: flex-end;
+    margin-right: 20px;
+    margin-bottom: 8px;
+  }
+
+  /* ----- Billboard V8 (Full Bleed Overlay) — node 2257:40 -----
+     Top-group at top with logo + text-group flush (no gap, Figma
+     has none). CTA bottom-right via cta-row-right (base sets
+     justify-end + width 100%). */
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-content-fill {
+    padding: 24px 20px 16px 24px;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 0;
+    padding-right: 20px;
+    padding-bottom: 12px;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 16px;
+    padding-right: 20px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-heading,
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-heading-large { font-size: 32px; line-height: 1.15; }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-body { font-size: 14px; color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-scrim-top { height: 108px; }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-cta-row-right {
+    padding-bottom: 16px;
+    padding-right: 0;
+  }
+  .c4-display-frame.v8[data-size="billboard"] .c4-display-cta {
+    height: 40px; width: 129px; border-radius: 20px; font-size: 12px;
+  }
+
+  /* ----- Billboard V9 (Centered) — node 2562:2 ----------------
+     Top-group centered (logo + text-group flush, no gap in
+     Figma). CTA centered in cta-row-centered at bottom. */
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-content-centered {
+    padding: 12px 20px 16px 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-top-group-centered {
+    height: 172px;
+    gap: 0;
+    padding-right: 20px;
+    padding-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-text-group-centered {
+    gap: 16px;
+    padding-right: 20px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    text-align: center;
+    align-items: center;
+  }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-heading,
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-heading-large {
+    font-size: 32px;
+    line-height: 1.15;
+    text-align: center;
+  }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-body {
+    font-size: 14px;
+    color: rgba(255,255,255,0.92);
+    text-align: center;
+  }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-scrim-top { height: 108px; }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-cta-row-centered {
+    padding-bottom: 16px;
+    padding-right: 0;
+  }
+  .c4-display-frame.v9[data-size="billboard"] .c4-display-cta {
+    height: 40px; width: 129px; border-radius: 20px; font-size: 12px;
+  }
+
+  /* --- Half Page 300×600 ---------- node 2216:15396 ------------- */
+  .c4-display-frame[data-size="half-page"] .c4-display-logo { width: 48px; height: 48px; }
+  .c4-display-frame[data-size="half-page"] .c4-display-logo-text { font-size: 12px; }
+  .c4-display-frame[data-size="half-page"] .c4-display-heading { font-size: 22px; line-height: 1.14; }
+  .c4-display-frame[data-size="half-page"] .c4-display-body { font-size: 13px; }
+  .c4-display-frame[data-size="half-page"] .c4-display-cta {
+    height: 36px; width: 129px; font-size: 12px; border-radius: 18px;
+  }
+  .c4-display-frame.v1[data-size="half-page"] .c4-display-img {
+    height: 63.33%;
+  }
+  .c4-display-frame.v1[data-size="half-page"] .c4-display-content-bottom {
+    height: 51.67%;
+    padding: 16px 16px 24px;
+    gap: 12px;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v1[data-size="half-page"] .c4-display-top-group {
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v1[data-size="half-page"] .c4-display-text-group {
+    padding-right: 16px;
+    padding-top: 16px;
+    gap: 12px;
+  }
+
+  /* --- Leaderboard 728×90 --------- node 2216:15342 ------------- */
+  .c4-display-frame[data-size="leaderboard"] .c4-display-logo { width: 40px; height: 40px; }
+  .c4-display-frame[data-size="leaderboard"] .c4-display-logo-text { font-size: 10px; }
+  .c4-display-frame[data-size="leaderboard"] .c4-display-heading { font-size: 18px; line-height: 1.15; }
+  .c4-display-frame[data-size="leaderboard"] .c4-display-body { font-size: 11px; }
+  .c4-display-frame[data-size="leaderboard"] .c4-display-cta {
+    height: 36px; width: 121px; font-size: 12px; border-radius: 18px;
+  }
+  .c4-display-frame.v1[data-size="leaderboard"] .c4-display-img {
+    width: 35.71%; height: 100%;
+  }
+  .c4-display-frame.v1[data-size="leaderboard"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 35.71%; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .c4-display-frame.v1[data-size="leaderboard"] .c4-display-content-bottom {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 64.29%; height: 100%;
+    padding: 12px 14px 16px 16px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .c4-display-frame.v1[data-size="leaderboard"] .c4-display-top-group {
+    flex-direction: row;
+    flex: 1;
+    padding: 0;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v1[data-size="leaderboard"] .c4-display-text-group {
+    flex: 1;
+    gap: 12px;
+    padding: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .c4-display-frame.v1[data-size="leaderboard"] .c4-display-cta-row {
+    padding: 0;
+    width: auto;
+  }
+
+  /* --- Mobile Banner 320×50 ------- node 2216:15433 ------------- */
+  .c4-display-frame[data-size="mobile-banner"] .c4-display-logo { width: 32px; height: 32px; }
+  .c4-display-frame[data-size="mobile-banner"] .c4-display-logo-text { font-size: 8px; }
+  .c4-display-frame[data-size="mobile-banner"] .c4-display-heading {
+    font-size: 12px; line-height: 1.15;
+    white-space: nowrap;
+  }
+  .c4-display-frame.v1[data-size="mobile-banner"] .c4-display-img {
+    width: 40.625%; height: 100%;
+  }
+  .c4-display-frame.v1[data-size="mobile-banner"] .c4-display-content-bottom {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 59.375%; height: 100%;
+    padding: 9px 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .c4-display-frame.v1[data-size="mobile-banner"] .c4-display-top-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding-right: 0;
+  }
+  .c4-display-frame.v1[data-size="mobile-banner"] .c4-display-text-group {
+    flex: 1;
+    gap: 0;
+    padding-right: 0;
+    padding-bottom: 12px;
+    min-width: 0;
+  }
+  .c4-display-frame.v1[data-size="mobile-banner"] .c4-display-body,
+  .c4-display-frame.v1[data-size="mobile-banner"] .c4-display-cta-row { display: none; }
+
+  /* --- Mobile Leaderboard 320×100 -- node 2216:15587 ------------ */
+  .c4-display-frame[data-size="mobile-lead"] .c4-display-logo { width: 32px; height: 32px; }
+  .c4-display-frame[data-size="mobile-lead"] .c4-display-logo-text { font-size: 8px; }
+  .c4-display-frame[data-size="mobile-lead"] .c4-display-heading { font-size: 12px; line-height: 1.15; }
+  .c4-display-frame[data-size="mobile-lead"] .c4-display-body { font-size: 10px; }
+  .c4-display-frame.v1[data-size="mobile-lead"] .c4-display-img {
+    width: 40.625%; height: 100%;
+  }
+  .c4-display-frame.v1[data-size="mobile-lead"] .c4-display-content-bottom {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 59.375%; height: 100%;
+    padding: 8px;
+    gap: 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v1[data-size="mobile-lead"] .c4-display-top-group {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    padding-right: 0;
+  }
+  .c4-display-frame.v1[data-size="mobile-lead"] .c4-display-text-group {
+    flex: 1;
+    gap: 4px;
+    padding-right: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v1[data-size="mobile-lead"] .c4-display-cta-row { display: none; }
+
+  /* --- Skyscraper 160×600 --------- node 2216:15536 ------------- */
+  .c4-display-frame[data-size="skyscraper"] .c4-display-logo { width: 40px; height: 40px; }
+  .c4-display-frame[data-size="skyscraper"] .c4-display-logo-text { font-size: 10px; }
+  .c4-display-frame[data-size="skyscraper"] .c4-display-heading { font-size: 16px; line-height: 1.125; }
+  .c4-display-frame[data-size="skyscraper"] .c4-display-body { font-size: 10px; }
+  .c4-display-frame[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 92px; font-size: 12px; border-radius: 16px;
+  }
+  .c4-display-frame.v1[data-size="skyscraper"] .c4-display-img {
+    height: 63.33%;
+  }
+  .c4-display-frame.v1[data-size="skyscraper"] .c4-display-content-bottom {
+    height: 36.67%;
+    padding: 0 12px 24px 16px;
+    gap: 12px;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v1[data-size="skyscraper"] .c4-display-top-group {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 12px;
+    padding-top: 16px;
+    gap: 0;
+  }
+  .c4-display-frame.v1[data-size="skyscraper"] .c4-display-text-group {
+    padding-right: 12px;
+    padding-top: 16px;
+    gap: 12px;
+  }
+
+  /* ----- Skyscraper V2 (Image Hero) — node 2216:15507 --------- */
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-content-overlay-bottom {
+    padding: 16px 12px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-text-group {
+    gap: 12px;
+    padding-right: 0;
+    padding-bottom: 16px;
+    width: 100%;
+  }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-heading { font-size: 16px; line-height: 18px; }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 92px; border-radius: 16px; font-size: 12px;
+  }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-cta-row { padding: 0; }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-logo-floating { top: 7px; left: 7px; }
+  .c4-display-frame.v2[data-size="skyscraper"] .c4-display-scrim-top { height: 80px; }
+
+  /* ----- Skyscraper V3 (Product Focus) — node 2216:15535 ------ */
+  .c4-display-frame.v3[data-size="skyscraper"] .c4-display-img { height: 90%; }
+  .c4-display-frame.v3[data-size="skyscraper"] .c4-display-content-slim {
+    height: 10%;
+    padding: 21px 12px 24px;
+    flex-direction: column;
+    align-items: center;
+  }
+  .c4-display-frame.v3[data-size="skyscraper"] .c4-display-heading { font-size: 16px; line-height: 18px; text-align: center; }
+  .c4-display-frame.v3[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 100%; border-radius: 16px; font-size: 12px;
+  }
+  .c4-display-frame.v3[data-size="skyscraper"] .c4-display-logo-floating {
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* ----- Skyscraper V4 (Hero Top) — node 2243:15831 ----------- */
+  .c4-display-frame.v4[data-size="skyscraper"] .c4-display-content-overlay-top {
+    padding: 16px 12px;
+    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+  }
+  .c4-display-frame.v4[data-size="skyscraper"] .c4-display-text-group {
+    flex: 0 0 auto;
+    min-width: 0;
+    gap: 12px;
+    padding-right: 0;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+  .c4-display-frame.v4[data-size="skyscraper"] .c4-display-heading {
+    font-size: 16px; line-height: 18px; text-align: center; width: 136px;
+  }
+  .c4-display-frame.v4[data-size="skyscraper"] .c4-display-body {
+    font-size: 10px; color: rgba(255,255,255,0.75); text-align: center; width: 132px;
+  }
+  .c4-display-frame.v4[data-size="skyscraper"] .c4-display-cta-row {
+    position: absolute;
+    bottom: 29px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    z-index: 2;
+    flex: 0 0 auto;
+  }
+  .c4-display-frame.v4[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 144px; border-radius: 16px; font-size: 12px;
+  }
+
+  /* ----- Skyscraper V6 (Split Horizontal → vertical split) ---- */
+  /*       — node 2250:55 — image TOP, content BOTTOM             */
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-img {
+    width: 100%;
+    height: 62.33%;
+    top: 0;
+    left: 0;
+  }
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-content-right {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 37.67%;
+    padding: 16px 12px 24px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 12px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-right: 0;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-heading { font-size: 14px; line-height: 1.15; }
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v6[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 92px; border-radius: 16px; font-size: 12px;
+  }
+
+  /* ----- Skyscraper V7 (Copy First) — node 2253:45 ------------ */
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-content-fill {
+    padding: 16px 12px 24px;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    padding-right: 12px;
+    padding-top: 0;
+  }
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-right: 0;
+    padding-top: 12px;
+  }
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-heading,
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-heading-large { font-size: 18px; line-height: 1.15; }
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v7[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 92px; border-radius: 16px; font-size: 12px;
+  }
+
+  /* ----- Skyscraper V8 (Full Bleed Overlay) — node 2257:50 ---- */
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-content-fill {
+    padding: 16px 12px 24px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    padding-right: 12px;
+    height: 512px;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-right: 12px;
+  }
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-heading,
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-heading-large { font-size: 16px; line-height: 18px; }
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-scrim-top { height: 86px; }
+  .c4-display-frame.v8[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 92px; border-radius: 16px; font-size: 12px;
+  }
+
+  /* ----- Skyscraper V9 (Centered) — node 2562:83 -------------- */
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-content-centered {
+    padding: 16px 12px 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-top-group-centered {
+    height: 512px;
+    align-items: center;
+    justify-content: center;
+    padding-right: 12px;
+    gap: 327px;
+  }
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-text-group-centered {
+    gap: 12px;
+    padding-right: 12px;
+    text-align: center;
+    align-items: center;
+  }
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-heading,
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-heading-large { font-size: 16px; line-height: 18px; }
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-scrim-top { height: 86px; }
+  .c4-display-frame.v9[data-size="skyscraper"] .c4-display-cta {
+    height: 32px; width: 92px; border-radius: 16px; font-size: 12px;
+  }
+
+  /* ----- Half Page V2 (Image Hero) — node 2216:15364 ---------- */
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-content-overlay-bottom {
+    padding: 16px 16px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-text-group {
+    gap: 12px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    width: 100%;
+  }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-heading { font-size: 20px; line-height: 23px; }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-body { font-size: 12px; color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-cta {
+    height: 36px; width: 129px; border-radius: 18px; font-size: 12px;
+  }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-cta-row { padding: 0; }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-logo-floating { top: 15px; left: 15px; }
+  .c4-display-frame.v2[data-size="half-page"] .c4-display-scrim-top { height: 92px; }
+
+  /* ----- Half Page V3 (Product Focus) — node 2216:15395 ------- */
+  .c4-display-frame.v3[data-size="half-page"] .c4-display-img { height: 90%; }
+  .c4-display-frame.v3[data-size="half-page"] .c4-display-content-slim {
+    height: 79px;
+    padding: 16px;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .c4-display-frame.v3[data-size="half-page"] .c4-display-heading { font-size: 14px; }
+  .c4-display-frame.v3[data-size="half-page"] .c4-display-cta {
+    height: 34px; width: 121px; border-radius: 17px; font-size: 12px;
+  }
+  .c4-display-frame.v3[data-size="half-page"] .c4-display-logo-floating { top: 15px; left: 15px; }
+  .c4-display-frame.v3[data-size="half-page"] .c4-display-scrim-top { height: 88px; }
+
+  /* ----- Half Page V4 (Hero Top) — node 2243:15770 ------------ */
+  .c4-display-frame.v4[data-size="half-page"] .c4-display-content-overlay-top {
+    padding: 16px;
+    gap: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v4[data-size="half-page"] .c4-display-text-group {
+    flex: 0 0 auto;
+    min-width: 0;
+    gap: 12px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    width: 100%;
+  }
+  .c4-display-frame.v4[data-size="half-page"] .c4-display-heading { font-size: 22px; line-height: 25px; }
+  .c4-display-frame.v4[data-size="half-page"] .c4-display-body { font-size: 13px; color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v4[data-size="half-page"] .c4-display-cta-row {
+    position: absolute;
+    bottom: 23px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    z-index: 2;
+    flex: 0 0 auto;
+  }
+  .c4-display-frame.v4[data-size="half-page"] .c4-display-cta {
+    height: 36px; width: 131px; border-radius: 18px; font-size: 12px;
+  }
+
+  /* ----- Half Page V6 (Split Horizontal) — node 2250:24 ------- */
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-img {
+    width: 49.33%;
+    height: 100%;
+  }
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-content-right {
+    width: 50.67%;
+    padding: 16px 16px 32px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-heading { font-size: 16px; }
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v6[data-size="half-page"] .c4-display-cta {
+    height: 28px; width: 113px; border-radius: 14px; font-size: 11px;
+  }
+
+  /* ----- Half Page V7 (Copy First) — node 2253:20 ------------- */
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-content-fill {
+    padding: 16px 16px 24px;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-heading,
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-heading-large { font-size: 28px; line-height: 1.15; }
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-body { font-size: 13px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v7[data-size="half-page"] .c4-display-cta {
+    height: 34px; width: 121px; border-radius: 17px; font-size: 12px;
+  }
+
+  /* ----- Half Page V8 (Full Bleed Overlay) — node 2257:22 ----- */
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-content-fill {
+    padding: 16px 16px 24px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-top-group-stacked {
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-top-group-stacked .c4-display-text-group {
+    gap: 12px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-heading,
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-heading-large { font-size: 28px; line-height: 1.15; }
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-body { font-size: 12px; color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-scrim-top { height: 96px; }
+  .c4-display-frame.v8[data-size="half-page"] .c4-display-cta {
+    height: 34px; width: 121px; border-radius: 17px; font-size: 12px;
+  }
+
+  /* ----- Half Page V9 (Centered) — node 2562:54 -------------- */
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-content-centered {
+    padding: 16px 16px 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-top-group-centered {
+    gap: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    align-items: center;
+    justify-content: center;
+  }
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-text-group-centered {
+    gap: 12px;
+    padding: 16px;
+    text-align: center;
+    align-items: center;
+    width: 100%;
+  }
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-heading,
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-heading-large { font-size: 28px; line-height: 1.15; }
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-body { font-size: 12px; color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-scrim-top { height: 96px; }
+  .c4-display-frame.v9[data-size="half-page"] .c4-display-cta {
+    height: 34px; width: 121px; border-radius: 17px; font-size: 12px;
+  }
+
+  /* ----- Leaderboard V2 (Image Hero) — node 2216:15312 -------- */
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-content-overlay-bottom {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 47.94%; height: 100%;
+    padding: 12px 14px 16px 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.6);
+  }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    padding: 0 12px;
+    gap: 4px;
+    height: 86px;
+    justify-content: center;
+  }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-heading { font-size: 18px; }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-body { font-size: 11px; color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-cta {
+    height: 36px; width: 129px; border-radius: 18px; font-size: 12px;
+  }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-cta-row { padding: 0; }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-logo-floating { top: 11px; left: 11px; }
+  .c4-display-frame.v2[data-size="leaderboard"]::before {
+    /* horizontal logo scrim — gradient left→right over image area */
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 70.05%; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .c4-display-frame.v2[data-size="leaderboard"] .c4-display-scrim-top { display: none; }
+
+  /* ----- Leaderboard V3 (Product Focus) — node 2216:15341 ----- */
+  .c4-display-frame.v3[data-size="leaderboard"] .c4-display-img {
+    width: 82.42%; height: 100%;
+  }
+  .c4-display-frame.v3[data-size="leaderboard"] .c4-display-content-slim {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 21.7%; height: 100%;
+    padding: 30px 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: #1f1f1f;
+  }
+  .c4-display-frame.v3[data-size="leaderboard"] .c4-display-content-slim > .c4-display-heading {
+    display: none; /* heading is rendered as absolute overlay on image */
+  }
+  .c4-display-frame.v3[data-size="leaderboard"] .c4-display-cta {
+    height: 30px; width: 125px; border-radius: 15px; font-size: 12px;
+  }
+  .c4-display-frame.v3[data-size="leaderboard"] .c4-display-logo-floating { top: 11px; left: 11px; }
+  .c4-display-frame.v3[data-size="leaderboard"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 70.05%; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .c4-display-frame.v3[data-size="leaderboard"] .c4-display-scrim-top { display: none; }
+
+  /* ----- Leaderboard V4 (Hero Top) — node 2243:15748 ---------- */
+  .c4-display-frame.v4[data-size="leaderboard"] .c4-display-content-overlay-top {
+    top: 0; left: 0;
+    width: 47.8%; height: 100%;
+    padding: 12px;
+    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    background: rgba(0,0,0,0.6);
+  }
+  .c4-display-frame.v4[data-size="leaderboard"] .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+    padding: 0 12px;
+  }
+  .c4-display-frame.v4[data-size="leaderboard"] .c4-display-heading { font-size: 18px; }
+  .c4-display-frame.v4[data-size="leaderboard"] .c4-display-body { font-size: 11px; color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v4[data-size="leaderboard"] .c4-display-cta-row {
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    transform: translateY(-50%);
+    bottom: auto;
+    z-index: 2;
+    flex: 0 0 auto;
+  }
+  .c4-display-frame.v4[data-size="leaderboard"] .c4-display-cta {
+    height: 36px; width: 125px; border-radius: 18px; font-size: 12px;
+  }
+
+  /* ----- Leaderboard V6 (Split Horizontal) — node 2250:13 ----- */
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-img {
+    width: 38.46%;
+    height: 100%;
+  }
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-content-right {
+    width: 61.54%;
+    padding: 12px 12px 12px 16px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 12px;
+    padding-right: 0;
+    padding-bottom: 0;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 12px;
+    padding-right: 12px;
+    padding-bottom: 0;
+    min-width: 0;
+    height: 86px;
+    justify-content: center;
+  }
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-heading { font-size: 16px; }
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v6[data-size="leaderboard"] .c4-display-cta {
+    height: 34px; width: 121px; border-radius: 17px; font-size: 12px;
+  }
+
+  /* ----- Leaderboard V7 (Copy First) — node 2253:11 ----------- */
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-content-fill {
+    padding: 12px 16px 16px 12px;
+    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 12px;
+    padding-right: 0;
+    padding-top: 0;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 8px;
+    padding-right: 12px;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-heading,
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-heading-large { font-size: 18px; }
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v7[data-size="leaderboard"] .c4-display-cta {
+    height: 36px; width: 125px; border-radius: 18px; font-size: 12px;
+  }
+
+  /* ----- Leaderboard V8 (Full Bleed Overlay) — node 2257:12 --- */
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-content-fill {
+    padding: 12px 16px 16px 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 12px;
+    padding-right: 0;
+    padding-bottom: 0;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 8px;
+    padding-right: 12px;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-heading,
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-heading-large { font-size: 18px; }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-scrim-top { height: 80px; }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-cta-row {
+    flex: 0 0 auto;
+    padding: 0;
+    width: auto;
+  }
+  .c4-display-frame.v8[data-size="leaderboard"] .c4-display-cta {
+    height: 36px; width: 125px; border-radius: 18px; font-size: 12px;
+  }
+
+  /* ----- Leaderboard V9 (Centered) — node 2562:17 ------------- */
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-content-centered {
+    padding: 12px 16px 16px 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-top-group-centered {
+    flex-direction: row;
+    flex: 1;
+    gap: 12px;
+    padding-right: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-text-group-centered {
+    flex: 1;
+    gap: 8px;
+    padding-right: 12px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-heading,
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-heading-large { font-size: 18px; text-align: center; }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); text-align: center; }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-scrim-top { height: 80px; }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-cta-row-centered {
+    flex: 0 0 auto;
+    padding-bottom: 0;
+    width: auto;
+  }
+  .c4-display-frame.v9[data-size="leaderboard"] .c4-display-cta {
+    height: 36px; width: 125px; border-radius: 18px; font-size: 12px;
+  }
+
+  /* ----- Mobile Banner V2–V9 — all CTAs are text-only (no fill)
+     since the frame is too short (50px) for a pill button. Body
+     is hidden across V2–V9 (Figma omits it at 320×50). Heading is
+     12–13px depending on variant. */
+  .c4-display-frame[data-size="mobile-banner"]:not(.v1) .c4-display-body { display: none; }
+  .c4-display-frame[data-size="mobile-banner"]:not(.v1) .c4-display-cta {
+    background: transparent;
+    color: rgba(255,255,255,0.95);
+    border: 0;
+    border-radius: 0;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  /* ----- Mobile Banner V2 (Image Hero) — node 2216:15412 ------ */
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-content-overlay-bottom {
+    background: rgba(0,0,0,0.5);
+    padding: 0 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    inset: 0;
+  }
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-text-group {
+    padding-left: 44px;
+    flex: 1;
+    gap: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-heading {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-cta-row { padding: 0; flex: 0 0 auto; }
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-cta { width: 71px; }
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-logo-floating { top: 9px; left: 12px; }
+  .c4-display-frame.v2[data-size="mobile-banner"] .c4-display-scrim-top { height: 100%; }
+
+  /* ----- Mobile Banner V3 (Product Focus) — node 2216:15432 --- */
+  .c4-display-frame.v3[data-size="mobile-banner"] .c4-display-img { width: 75%; height: 100%; }
+  .c4-display-frame.v3[data-size="mobile-banner"] .c4-display-content-slim {
+    left: auto; right: 0; top: 0; bottom: 0;
+    width: 32.19%; height: 100%;
+    padding: 11px 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: #1f1f1f;
+  }
+  .c4-display-frame.v3[data-size="mobile-banner"] .c4-display-content-slim > .c4-display-heading {
+    /* Heading is overlaid on image area, not inside slim panel */
+    position: absolute;
+    left: 55px; top: 9px;
+    width: 188px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .c4-display-frame.v3[data-size="mobile-banner"] .c4-display-cta { width: 71px; }
+  .c4-display-frame.v3[data-size="mobile-banner"] .c4-display-logo-floating { top: 8px; left: 11px; }
+  .c4-display-frame.v3[data-size="mobile-banner"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .c4-display-frame.v3[data-size="mobile-banner"] .c4-display-scrim-top { display: none; }
+
+  /* ----- Mobile Banner V4 (Hero Top) — node 2243:15790 -------- */
+  .c4-display-frame.v4[data-size="mobile-banner"] .c4-display-content-overlay-top {
+    top: 0; left: 0;
+    width: 68.75%; height: 100%;
+    padding: 8px 12px;
+    flex-direction: row;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(0,0,0,0.5);
+  }
+  .c4-display-frame.v4[data-size="mobile-banner"] .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    gap: 0;
+    padding: 0 12px 12px 0;
+  }
+  .c4-display-frame.v4[data-size="mobile-banner"] .c4-display-heading { font-size: 12px; white-space: nowrap; }
+  /* cta-row is outside content-overlay-top — position it absolutely
+     to mimic inline-below-heading placement inside the left dark
+     zone (Figma: _Stack contains heading + CTA stacked). */
+  .c4-display-frame.v4[data-size="mobile-banner"] .c4-display-cta-row {
+    position: absolute;
+    top: 26px;
+    left: 56px;
+    right: auto;
+    bottom: auto;
+    z-index: 3;
+  }
+  .c4-display-frame.v4[data-size="mobile-banner"] .c4-display-cta { width: auto; }
+
+  /* ----- Mobile Banner V6 (Split Horizontal) — node 2250:35 --- */
+  .c4-display-frame.v6[data-size="mobile-banner"] .c4-display-img {
+    width: 34.375%; height: 100%;
+  }
+  .c4-display-frame.v6[data-size="mobile-banner"] .c4-display-content-right {
+    width: 65.625%;
+    padding: 8px 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v6[data-size="mobile-banner"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 12px;
+    padding: 0;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v6[data-size="mobile-banner"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 0;
+    padding: 4px 0;
+    min-width: 0;
+    height: 50px;
+    justify-content: center;
+  }
+  .c4-display-frame.v6[data-size="mobile-banner"] .c4-display-heading { font-size: 12px; white-space: nowrap; }
+  .c4-display-frame.v6[data-size="mobile-banner"] .c4-display-cta { width: auto; }
+
+  /* ----- Mobile Banner V7 (Copy First) — node 2253:29 --------- */
+  .c4-display-frame.v7[data-size="mobile-banner"] .c4-display-content-fill {
+    padding: 9px 12px;
+    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v7[data-size="mobile-banner"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v7[data-size="mobile-banner"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 0;
+    padding: 4px 12px 12px 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v7[data-size="mobile-banner"] .c4-display-heading,
+  .c4-display-frame.v7[data-size="mobile-banner"] .c4-display-heading-large { font-size: 13px; white-space: nowrap; }
+  .c4-display-frame.v7[data-size="mobile-banner"] .c4-display-cta {
+    width: 77px; font-size: 11px;
+  }
+
+  /* ----- Mobile Banner V8 (Full Bleed Overlay) — node 2257:32 - */
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-content-fill {
+    padding: 9px 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 0;
+    padding: 0 12px 12px 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-heading,
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-heading-large { font-size: 13px; white-space: nowrap; }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-scrim-top { display: none; }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-scrim-bottom-heavy {
+    /* Mobile Banner V8 uses a HORIZONTAL gradient instead of vertical */
+    background: linear-gradient(to right, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
+  }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-cta-row {
+    flex: 0 0 auto;
+    padding: 0;
+    width: auto;
+  }
+  .c4-display-frame.v8[data-size="mobile-banner"] .c4-display-cta {
+    width: 82px; height: 30px; font-size: 12px;
+  }
+
+  /* ----- Mobile Banner V9 (Centered) — node 2562:30 ----------- */
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-content-centered {
+    padding: 9px 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-top-group-centered {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-text-group-centered {
+    flex: 1;
+    gap: 0;
+    padding: 0 12px 12px 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-heading,
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-heading-large {
+    font-size: 13px; white-space: nowrap; text-align: center;
+  }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-scrim-top { display: none; }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-scrim-bottom-heavy {
+    background: linear-gradient(to right, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
+  }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-cta-row-centered {
+    flex: 0 0 auto;
+    padding-bottom: 0;
+    width: auto;
+  }
+  .c4-display-frame.v9[data-size="mobile-banner"] .c4-display-cta {
+    width: 82px; height: 30px; font-size: 12px;
+  }
+
+  /* ----- Mobile Lead V2–V9 — most CTAs are text-only (no fill).
+     V3 is the exception: it carries a white pill CTA (89×28
+     r100). Body is 10px / alpha 0.75 across variants; heading
+     12px (V2–V6) and 12px (V7–V9). */
+  .c4-display-frame[data-size="mobile-lead"]:not(.v1):not(.v3) .c4-display-cta {
+    background: transparent;
+    color: rgba(255,255,255,0.95);
+    border: 0;
+    border-radius: 0;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  /* ----- Mobile Lead V2 (Image Hero) — node 2216:15557 -------- */
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-content-overlay-bottom {
+    background: rgba(0,0,0,0.5);
+    top: auto; bottom: 0; left: 0; right: 0;
+    height: 64px;
+    padding: 0 8px 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-text-group {
+    padding-left: 40px;
+    flex: 1;
+    gap: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-heading { font-size: 12px; }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-body { display: none; }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-cta-row { padding: 0; flex: 0 0 auto; }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-cta { width: 73px; }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-logo-floating { top: 44px; left: 8px; }
+  .c4-display-frame.v2[data-size="mobile-lead"] .c4-display-scrim-top { height: 80px; }
+
+  /* ----- Mobile Lead V3 (Product Focus) — node 2216:15586 -----
+     V3 Mobile Lead has no slim bottom panel. The heading + CTA are
+     absolutely positioned on top of the image at fixed coords. */
+  .c4-display-frame.v3[data-size="mobile-lead"] .c4-display-img { height: 100%; width: 100%; }
+  .c4-display-frame.v3[data-size="mobile-lead"] .c4-display-content-slim {
+    position: static;
+    background: transparent;
+    height: 0;
+    padding: 0;
+    display: block;
+    overflow: visible;
+  }
+  .c4-display-frame.v3[data-size="mobile-lead"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .c4-display-frame.v3[data-size="mobile-lead"] .c4-display-scrim-top { display: none; }
+  .c4-display-frame.v3[data-size="mobile-lead"] .c4-display-logo-floating {
+    top: 11.81px;
+    left: 11px;
+    z-index: 2;
+  }
+  .c4-display-frame.v3[data-size="mobile-lead"] .c4-display-heading {
+    position: absolute;
+    top: 10.81px;
+    left: 51px;
+    width: 155px;
+    font-size: 12px;
+    color: #fff;
+    z-index: 2;
+  }
+  .c4-display-frame.v3[data-size="mobile-lead"] .c4-display-cta {
+    position: absolute;
+    top: 35px;
+    left: 218px;
+    width: 89px;
+    height: 28px;
+    padding: 0 16px;
+    border-radius: 100px;
+    font-size: 10px;
+    background: #ffffff;
+    color: #121212;
+    z-index: 2;
+  }
+
+  /* ----- Mobile Lead V4 (Hero Top) — node 2243:15852 ---------- */
+  .c4-display-frame.v4[data-size="mobile-lead"] .c4-display-content-overlay-top {
+    top: 0; left: 0;
+    width: 68.75%; height: 100%;
+    padding: 8px;
+    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    background: rgba(0,0,0,0.55);
+  }
+  .c4-display-frame.v4[data-size="mobile-lead"] .c4-display-text-group {
+    flex: 0 0 auto;
+    min-width: 0;
+    gap: 4px;
+    padding: 0;
+    width: 100%;
+  }
+  .c4-display-frame.v4[data-size="mobile-lead"] .c4-display-heading { font-size: 12px; }
+  .c4-display-frame.v4[data-size="mobile-lead"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v4[data-size="mobile-lead"] .c4-display-cta-row { display: none; }
+
+  /* ----- Mobile Lead V6 (Split Horizontal) — node 2250:66 ----- */
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-img {
+    width: 34.375%; height: 100%;
+  }
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-content-right {
+    width: 65.625%;
+    padding: 12px 8px 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 4px;
+    padding: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-heading { font-size: 12px; }
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-body { display: none; }
+  .c4-display-frame.v6[data-size="mobile-lead"] .c4-display-cta { width: auto; }
+
+  /* ----- Mobile Lead V7 (Copy First) — node 2253:54 ----------- */
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-content-fill {
+    padding: 12px 8px 8px;
+    gap: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 4px;
+    padding: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-heading,
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-heading-large { font-size: 12px; }
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v7[data-size="mobile-lead"] .c4-display-cta {
+    width: 78px;
+    font-size: 11px;
+  }
+
+  /* ----- Mobile Lead V8 (Full Bleed Overlay) — node 2257:60 --- */
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-content-fill {
+    padding: 12px 8px 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-top-group-stacked {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-top-group-stacked .c4-display-text-group {
+    flex: 1;
+    gap: 4px;
+    padding: 0;
+    min-width: 0;
+  }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-heading,
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-heading-large { font-size: 12px; }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-scrim-top { height: 80px; }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-cta-row {
+    flex: 0 0 auto;
+    padding: 0;
+    width: auto;
+  }
+  .c4-display-frame.v8[data-size="mobile-lead"] .c4-display-cta {
+    width: 78px;
+    font-size: 11px;
+  }
+
+  /* ----- Mobile Lead V9 (Centered) — node 2562:41 ------------- */
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-content-centered {
+    padding: 12px 8px 8px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-top-group-centered {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-text-group-centered {
+    flex: 1;
+    gap: 4px;
+    padding: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-heading,
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-heading-large {
+    font-size: 12px; text-align: center;
+  }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-body { font-size: 10px; color: rgba(255,255,255,0.75); text-align: center; }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-scrim-top { height: 80px; }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-cta-row-centered {
+    flex: 0 0 auto;
+    padding-bottom: 0;
+    width: auto;
+  }
+  .c4-display-frame.v9[data-size="mobile-lead"] .c4-display-cta {
+    width: 78px;
+    font-size: 11px;
+  }
+
+  /* ===== Legal disclaimer line ================================
+     Per the Figma board, every template carries a tiny disclaimer
+     (Inter Regular 7px) at the frame's bottom edge. Color flips
+     based on which surface the text sits over:
+       Billboard  → over the IMAGE zone (light bg) → dark text
+       Half Page  → over the DARK content zone (bottom) → white
+       Leaderboard→ over the IMAGE zone with scrim → white
+       Med Rect   → over the DARK content zone (bottom) → white
+       Mobile *   → over the DARK content zone (right) → white
+       Skyscraper → over the DARK content zone (bottom) → white
+     Positions match Figma's `bottom-[15.19px]` placement, anchored
+     to the frame edge with overflow: hidden + ellipsis on the chrome
+     frame already clipping any unwanted bleed. */
+  .c4-display-frame .c4-display-legal {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 7px;
+    line-height: 1.1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .c4-display-frame[data-size="billboard"] .c4-display-legal {
+    bottom: 8px;
+    left: 7px;
+    right: 400px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+  .c4-display-frame[data-size="half-page"] .c4-display-legal {
+    bottom: 8px;
+    left: 5px;
+    right: 5px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .c4-display-frame[data-size="leaderboard"] .c4-display-legal {
+    bottom: 8px;
+    left: 7px;
+    right: 481px;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .c4-display-frame[data-size="med-rect"] .c4-display-legal {
+    bottom: 4px;
+    left: 6px;
+    right: 6px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .c4-display-frame[data-size="mobile-banner"] .c4-display-legal {
+    bottom: 4px;
+    left: 134px;
+    right: 8px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .c4-display-frame[data-size="mobile-lead"] .c4-display-legal {
+    bottom: 4px;
+    left: 134px;
+    right: 8px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .c4-display-frame[data-size="skyscraper"] .c4-display-legal {
+    bottom: 4px;
+    left: 5px;
+    right: 5px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  /* === Accuracy-audit CSS additions (Meta/IG/LI/Reddit fixes) ===
+
+     These rules support the chrome corrections landed during the
+     full-platform accuracy audit. New classes used by the updated
+     chrome functions live here so the existing chrome CSS above
+     stays intact for any unaltered units. */
+
+  /* --- Meta CTA button: real FB blue (not generic grey) --- */
+  .c4-ad-cta-meta {
+    background: #1877F2 !important;
+    color: #ffffff !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    height: 30px !important;
+    padding: 0 14px !important;
+    font-weight: 600;
+  }
+  .c4-ad-cta-meta-outlined {
+    background: #ffffff !important;
+    color: #1877F2 !important;
+    border: 1px solid #1877F2 !important;
+    border-radius: 6px !important;
+    height: 30px !important;
+    padding: 0 14px !important;
+    font-weight: 600;
+  }
+
+  /* --- Meta link card with link description line --- */
+  .c4-ad-link-meta { align-items: stretch; }
+  .c4-ad-link-desc {
+    font-size: 11px;
+    color: #65676B;
+    line-height: 1.35;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* --- Meta Live: "is live" header text + small inline LIVE pill --- */
+  .c4-ad-meta-livetext {
+    font-weight: 400;
+    color: #65676B;
+    font-size: 12px;
+    margin-left: 2px;
+  }
+  .c4-ad-meta-live-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 6px;
+    background: #E41E26;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    margin-right: 2px;
+    vertical-align: 1px;
+  }
+
+  /* --- Meta Branded Content: dual avatar (creator + brand) --- */
+  .c4-ad-meta-avstack {
+    position: relative;
+    width: 36px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .c4-ad-meta-avstack .c4-ad-avatar {
+    position: absolute;
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .c4-ad-meta-avstack > .c4-ad-avatar:first-child {
+    top: 0;
+    left: 0;
+    z-index: 2;
+    box-shadow: 0 0 0 1.5px #ffffff;
+  }
+  .c4-ad-meta-avstack-back {
+    top: 4px;
+    left: 12px;
+    z-index: 1;
+    box-shadow: 0 0 0 1.5px #ffffff;
+  }
+
+  /* --- Meta Event date pin (now with day-of-week stripe) --- */
+  .c4-ad-event-pin-dow {
+    background: #ffffff;
+    color: #E41E26;
+    font-size: 8.5px;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 0 0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 0.5px solid rgba(15,23,42,0.08);
+  }
+  /* --- Meta Event card replaces the standard link card --- */
+  .c4-ad-event-card {
+    background: #F0F2F5;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.08);
+    padding: 10px 12px 12px;
+  }
+  .c4-ad-event-date-line {
+    font-size: 10.5px;
+    color: #E41E26;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .c4-ad-event-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #050505;
+    letter-spacing: -0.15px;
+    margin-top: 2px;
+  }
+  .c4-ad-event-sub {
+    font-size: 11px;
+    color: #65676B;
+    margin-top: 1px;
+  }
+  .c4-ad-event-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .c4-ad-event-actions .c4-ad-cta-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* --- Meta Link Share large-card CTA: full-width footer button
+     within the card boundary (matches real FB link card chrome). */
+  .c4-ad-link-large-cta {
+    width: calc(100% - 24px);
+    margin: 0 12px 12px;
+    height: 32px !important;
+    border-radius: 6px !important;
+  }
+
+  /* --- Meta Album: 1+3 layout (hero left, 3 stacked right) ---
+     Overall frame is square (1:1) to match the unit spec. Hero
+     fills the full height; right column splits into 3 equal rows.
+     Cell-level aspect-ratio is cleared so the grid sizes win. */
+  .c4-ad-meta-album {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    background: #fff;
+    aspect-ratio: 1 / 1;
+  }
+  .c4-ad-meta-album .c4-ad-meta-album-cell { aspect-ratio: auto; }
+  .c4-ad-meta-album-cell-hero {
+    grid-row: span 3;
+  }
+
+  /* --- IG avatar bump (32px on Instagram vs 28px base) --- */
+  .c4-ad-frame[data-platform="instagram"] > .c4-ad-header > .c4-ad-avatar,
+  .c4-ad-frame[data-platform="instagram"] > .c4-ad-header > .c4-ad-avatar-ig {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* --- IG Live LIVE badge + viewer chip ON the video (top-left) --- */
+  .c4-ad-ig-live-badge {
+    position: absolute;
+    top: 60px;
+    left: 12px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    background: linear-gradient(135deg, #FF3B5C 0%, #C13584 100%);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.28);
+  }
+  .c4-ad-ig-live-viewers {
+    position: absolute;
+    top: 60px;
+    left: 72px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .c4-ad-ig-live-header .c4-ad-sub { color: rgba(255,255,255,0.78) !important; }
+
+  /* --- LinkedIn Spotlight: brand-color banner behind headshot --- */
+  .c4-ad-spotlight-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: linear-gradient(135deg, #0A66C2 0%, #1E88E5 60%, #5DD3E0 100%);
+    z-index: 0;
+  }
+  .c4-ad-spotlight-headshot {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 0 3px #ffffff;
+    margin-top: 28px;
+  }
+  .c4-ad-frame-spotlight {
+    position: relative;
+    padding: 0 16px 16px !important;
+  }
+  .c4-ad-frame-spotlight .c4-ad-spotlight-head {
+    margin-bottom: 8px;
+    z-index: 1;
+    position: relative;
+  }
+  .c4-ad-frame-spotlight .c4-ad-spotlight-title,
+  .c4-ad-frame-spotlight .c4-ad-spotlight-sub,
+  .c4-ad-frame-spotlight .c4-ad-spotlight-cta,
+  .c4-ad-frame-spotlight .c4-ad-spotlight-promoted {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* --- LinkedIn Celebrate: branded illustrated template panel --- */
+  .c4-ad-li-celebrate {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #0A66C2 0%, #1E88E5 50%, #3FCBC4 100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .c4-ad-li-celebrate-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .c4-ad-li-celebrate-body {
+    position: relative;
+    z-index: 1;
+    padding: 16px 18px 18px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    background: linear-gradient(to top, rgba(10,40,80,0.42) 0%, rgba(10,40,80,0) 70%);
+  }
+  .c4-ad-li-celebrate-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .c4-ad-li-celebrate-title {
+    margin-top: 3px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.15px;
+    line-height: 1.25;
+  }
+  .c4-ad-li-celebrate-sub {
+    margin-top: 3px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* === Basic / organic post-type chromes ====================== */
+
+  /* --- LIVE badge (Meta Live + IG Live) --- */
+  .c4-ad-live-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    background: #E41E26;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.22);
+  }
+  .c4-ad-live-badge-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 5px;
+    background: #E41E26;
+    color: #fff;
+    border-radius: 2px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    margin-right: 4px;
+  }
+  .c4-ad-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    animation: c4-ad-live-pulse 1500ms ease-in-out infinite;
+  }
+  @keyframes c4-ad-live-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .c4-ad-live-views {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.62);
+    color: #fff;
+    border-radius: 14px;
+    font-size: 10.5px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* --- Meta Text Post (status with colored background) --- */
+  .c4-ad-meta-text-card {
+    background: linear-gradient(135deg, #1F3A8A 0%, #2563EB 55%, #38BDF8 100%);
+    color: #ffffff;
+    aspect-ratio: 1.91 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 24px;
+    text-align: center;
+  }
+  .c4-ad-meta-text-body {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+  }
+
+  /* --- Meta Link Share (large link preview card) --- */
+  .c4-ad-link-large {
+    display: flex;
+    flex-direction: column;
+    background: #F0F2F5;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.08);
+  }
+  .c4-ad-link-large-img {
+    aspect-ratio: 1.91 / 1;
+    background: #1c1c1e;
+    overflow: hidden;
+  }
+  .c4-ad-link-large-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-ad-link-large-text {
+    padding: 8px 12px 10px;
+  }
+  .c4-ad-link-large-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #050505;
+    letter-spacing: -0.1px;
+    line-height: 1.3;
+    margin-top: 2px;
+  }
+  .c4-ad-link-large-desc {
+    font-size: 11.5px;
+    color: #65676B;
+    line-height: 1.35;
+    margin-top: 3px;
+  }
+
+  /* --- Meta Album (2x2 grid) --- */
+  .c4-ad-meta-album {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: #fff;
+  }
+  .c4-ad-meta-album-cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #1c1c1e;
+    overflow: hidden;
+  }
+  .c4-ad-meta-album-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-ad-meta-album-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.5px;
+  }
+
+  /* --- IG Live (comment stream + input) --- */
+  .c4-ad-frame[data-platform="instagram"][data-chrome="story"] .c4-ad-live-badge-mini { vertical-align: 1px; }
+  .c4-ad-ig-live-stream {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 56px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 11.5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .c4-ad-ig-live-msg strong {
+    font-weight: 700;
+    margin-right: 5px;
+  }
+  .c4-ad-ig-live-input {
+    position: absolute;
+    bottom: 16px;
+    left: 12px;
+    right: 12px;
+    z-index: 3;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11.5px;
+    background: rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* --- LinkedIn Text Post (no media, body type) --- */
+  .c4-ad-li-text-body {
+    padding: 0 12px 12px;
+    font-size: 12.5px;
+    color: #0a0a0a;
+    line-height: 1.5;
+    letter-spacing: -0.05px;
+  }
+
+  /* --- LinkedIn Poll --- */
+  .c4-ad-li-poll {
+    padding: 0 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .c4-ad-li-poll-row {
+    position: relative;
+    padding: 9px 12px;
+    background: #F4F2EE;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .c4-ad-li-poll-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--w);
+    background: rgba(10, 102, 194, 0.18);
+    z-index: 0;
+  }
+  .c4-ad-li-poll-text {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #0a0a0a;
+  }
+  .c4-ad-li-poll-pct {
+    color: #0A66C2;
+    font-weight: 700;
+  }
+  .c4-ad-li-poll-meta {
+    margin-top: 4px;
+    font-size: 10.5px;
+    color: #5E5E5E;
+  }
+
+  /* --- LinkedIn Article card --- */
+  .c4-ad-li-article {
+    margin: 0 12px 8px;
+    border: 0.5px solid rgba(15, 23, 42, 0.10);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .c4-ad-li-article-img {
+    aspect-ratio: 1.91 / 1;
+    background: #1c1c1e;
+    overflow: hidden;
+  }
+  .c4-ad-li-article-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-ad-li-article-text {
+    padding: 10px 12px 12px;
+  }
+  .c4-ad-li-article-label {
+    font-size: 10px;
+    color: #5E5E5E;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .c4-ad-li-article-title {
+    margin-top: 3px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0a0a0a;
+    line-height: 1.25;
+    letter-spacing: -0.15px;
+  }
+  .c4-ad-li-article-byline {
+    margin-top: 4px;
+    font-size: 10.5px;
+    color: #5E5E5E;
+  }
+
+  /* --- LinkedIn Newsletter card --- */
+  .c4-ad-li-newsletter {
+    margin: 0 12px 8px;
+    border: 0.5px solid rgba(15, 23, 42, 0.10);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .c4-ad-li-newsletter-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 0.5px solid rgba(15, 23, 42, 0.06);
+  }
+  .c4-ad-li-newsletter-icon {
+    width: 36px;
+    height: 36px;
+    background: #F4F2EE;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .c4-ad-li-newsletter-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .c4-ad-li-newsletter-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+  }
+  .c4-ad-li-newsletter-sub {
+    font-size: 10.5px;
+    color: #5E5E5E;
+    margin-top: 1px;
+  }
+  .c4-ad-li-newsletter-cta {
+    height: 28px !important;
+    padding: 0 14px !important;
+    background: #ffffff !important;
+    color: #0A66C2 !important;
+    border: 1px solid #0A66C2 !important;
+    border-radius: 14px !important;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .c4-ad-li-newsletter-title {
+    padding: 10px 12px 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+  }
+  .c4-ad-li-newsletter-snippet {
+    padding: 0 12px 12px;
+    font-size: 11.5px;
+    color: #5E5E5E;
+    line-height: 1.4;
+  }
+
+  /* --- LinkedIn Celebrate (confetti milestone) --- */
+  .c4-ad-li-celebrate {
+    position: relative;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F0E7FA 100%);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .c4-ad-li-celebrate-confetti {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 22%, #0A66C2 1px, transparent 2px),
+      radial-gradient(circle at 80% 18%, #F5B800 1px, transparent 2px),
+      radial-gradient(circle at 28% 70%, #F33E58 1px, transparent 2px),
+      radial-gradient(circle at 88% 76%, #0A66C2 1px, transparent 2px),
+      radial-gradient(circle at 50% 12%, #F5B800 1.5px, transparent 2.5px),
+      radial-gradient(circle at 18% 50%, #F33E58 1.5px, transparent 2.5px),
+      radial-gradient(circle at 72% 50%, #0A66C2 1.5px, transparent 2.5px),
+      radial-gradient(circle at 64% 90%, #F5B800 1.5px, transparent 2.5px);
+    background-size: 100% 100%;
+    opacity: 0.85;
+  }
+  .c4-ad-li-celebrate-body {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .c4-ad-li-celebrate-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0A66C2;
+    letter-spacing: -0.1px;
+  }
+  .c4-ad-li-celebrate-sub {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-li-celebrate-react {
+    padding: 8px 12px 10px;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.06);
+  }
+  .c4-ad-li-celebrate-btn {
+    height: 30px !important;
+    padding: 0 16px !important;
+    background: #0A66C2 !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: 15px !important;
+    font-weight: 600;
+  }
+
+  /* --- Reddit Link Card --- */
+  .c4-ad-reddit-linkcard {
+    margin: 0 12px 8px;
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px;
+    background: #F6F7F8;
+    border-radius: 6px;
+  }
+  .c4-ad-reddit-linkcard-img {
+    width: 72px;
+    height: 56px;
+    border-radius: 4px;
+    background: #1c1c1e;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .c4-ad-reddit-linkcard-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-ad-reddit-linkcard-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+  }
+  .c4-ad-reddit-linkcard-host {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    color: #7C7C83;
+  }
+  .c4-ad-reddit-linkcard-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1A1A1B;
+    letter-spacing: -0.05px;
+    line-height: 1.3;
+  }
+
+  /* --- Reddit Poll --- */
+  .c4-ad-reddit-poll {
+    padding: 0 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .c4-ad-reddit-poll-row {
+    position: relative;
+    padding: 8px 12px;
+    background: #F6F7F8;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .c4-ad-reddit-poll-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--w);
+    background: rgba(255, 69, 0, 0.16);
+    z-index: 0;
+  }
+  .c4-ad-reddit-poll-text {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: #1A1A1B;
+    font-weight: 600;
+  }
+  .c4-ad-reddit-poll-pct {
+    color: #FF4500;
+    font-weight: 700;
+  }
+  .c4-ad-reddit-poll-meta {
+    margin-top: 4px;
+    font-size: 10.5px;
+    color: #7C7C83;
+  }
+
+  /* --- Reddit Gallery indicator --- */
+  .c4-ad-reddit-gallery-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.68);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Foot lockup — two compact lines instead of three:
+     line 1: unit name (primary)
+     line 2: ● platform · dimensions   (single combined meta row)
+     Tighter vertical rhythm uses the cell space more efficiently
+     and elevates the unit name as the headline. */
+  .c4-ad-unit-foot {
+    width: 280px;
+    max-width: 100%;
+    /* Foot now sits ABOVE the chrome as a label row, so neither
+       margin-top:auto (pushed to bottom) nor padding-top (gap
+       between chrome-above and foot-below) is needed. Spacing
+       between foot and chrome comes from the cell's gap. */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  /* The original name-line + meta-line stack now lives inside this
+     wrapper. The 3-dot menu sits as the foot's second flex child on
+     the right. */
+  .c4-ad-unit-foot-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .c4-ad-unit-menu {
+    position: relative;
+    flex: 0 0 auto;
+  }
+  /* Trigger button — matches the canvas_2 .title-chevron behavior:
+     subtle by default, lifts to body color on hover, locks to the
+     accent + light accent bg when its panel is open. */
+  .c4-unit-menu-btn {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 0;
+    flex-shrink: 0;
+    /* Pull the dots up a hair so they visually center on the unit
+       name's baseline rather than the foot's top edge. */
+    margin-top: -2px;
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .c4-unit-menu-btn:hover {
+    color: var(--text-body);
+    background: var(--hover-soft);
+  }
+  .c4-unit-menu-btn:focus,
+  .c4-unit-menu-btn:focus-visible { outline: none; }
+  .c4-unit-menu-btn[aria-expanded="true"] {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.08);
+  }
+  body[data-theme="dark"] .c4-unit-menu-btn[aria-expanded="true"] {
+    background: rgba(13, 224, 225, 0.10);
+  }
+
+  /* Panel — matches the canvas_2 .title-menu: 248px wide, 12px
+     radius, layered shadow, opacity + scale fade-in keyed off the
+     .open class. Pointer-events gates clicks while invisible. */
+  .c4-unit-menu-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 248px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px var(--shadow-card),
+                0 4px 12px var(--shadow-card);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    transform-origin: top right;
+    pointer-events: none;
+    transition: opacity 200ms ease,
+                transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+  }
+  .c4-unit-menu-panel.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* Item rows — canvas_2 .title-menu-item: icon + label + shortcut
+     in a 12px-gap flex row, accent-tinted hover that lifts the icon
+     bg from neutral soft to solid accent. */
+  .c4-unit-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+    text-align: left;
+    width: 100%;
+    letter-spacing: -0.05px;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .c4-unit-menu-item:hover {
+    background: rgba(24, 88, 238, 0.06);
+    color: var(--accent);
+  }
+  .c4-unit-menu-item.c4-unit-menu-item--muted { color: var(--text-subtle); }
+  .c4-unit-menu-item.c4-unit-menu-item--muted:hover {
+    color: #d54343;
+    background: rgba(213, 67, 67, 0.08);
+  }
+  .c4-unit-menu-item .tmi-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: var(--hover-soft);
+    color: var(--text-body);
+    flex-shrink: 0;
+    transition: background 160ms ease, color 160ms ease, transform 200ms ease;
+  }
+  .c4-unit-menu-item .tmi-icon svg { width: 14px; height: 14px; display: block; }
+  .c4-unit-menu-item:hover .tmi-icon {
+    background: var(--accent);
+    color: #ffffff;
+    transform: scale(1.05);
+  }
+  .c4-unit-menu-item.c4-unit-menu-item--muted:hover .tmi-icon {
+    background: #d54343;
+    color: #ffffff;
+  }
+  .c4-unit-menu-item .tmi-label { flex: 1; }
+  .c4-unit-menu-item .tmi-shortcut {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--text-subtle);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+  .c4-unit-menu-item:hover .tmi-shortcut { color: var(--accent); opacity: 0.7; }
+  .c4-unit-menu-item.c4-unit-menu-item--muted:hover .tmi-shortcut { color: #d54343; opacity: 0.7; }
+  .c4-unit-menu-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 4px 6px;
+  }
+  /* Info header at the top of the card menu — non-interactive row
+     carrying the metadata that used to live in the foot lockup
+     (platform icon, dims, ratio, etc.). Visually distinct from the
+     action items below: smaller font, subtle color, no hover. */
+  .c4-unit-menu-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px 6px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    letter-spacing: -0.05px;
+    cursor: default;
+  }
+  .c4-unit-menu-info .c4-ad-unit-platform-icon { flex-shrink: 0; }
+  .c4-unit-menu-info .c4-ad-unit-meta-sep {
+    color: rgba(15, 23, 42, 0.25);
+    font-size: 11px;
+  }
+  body[data-theme="dark"] .c4-unit-menu-info .c4-ad-unit-meta-sep {
+    color: rgba(255, 255, 255, 0.20);
+  }
+  .c4-unit-menu-info .c4-ad-unit-dims,
+  .c4-unit-menu-info .c4-ad-unit-platform-name {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--text-subtle);
+  }
+  .c4-unit-menu-info .c4-ad-unit-specs {
+    /* Keep the deep-link clickable but tone it down — accent on
+       hover, plain text at rest so it doesn't fight the rest of the
+       info row. */
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-body);
+    text-decoration: none;
+    transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-unit-menu-info .c4-ad-unit-specs:hover { color: var(--accent); }
+  body[data-theme="dark"] .c4-unit-menu-item:hover {
+    background: rgba(13, 224, 225, 0.10);
+    color: var(--accent);
+  }
+  body[data-theme="dark"] .c4-unit-menu-item:hover .tmi-icon {
+    color: #0e0f10;
+  }
+  body[data-theme="dark"] .c4-unit-menu-item.c4-unit-menu-item--muted:hover {
+    background: rgba(213, 67, 67, 0.16);
+    color: #ff6b6b;
+  }
+  body[data-theme="dark"] .c4-unit-menu-item.c4-unit-menu-item--muted:hover .tmi-shortcut {
+    color: #ff6b6b;
+  }
+
+  /* Edit mode — outlines every contenteditable surface inside an
+     active card so the user knows what's editable. Action bar pins
+     to the bottom of the card with Cancel + Confirm buttons. */
+  /* Edit-target wrapper class — added by JS to every contenteditable
+     surface when its card enters edit mode. The class carries a
+     transitionable box-shadow + background so the highlight can fade
+     IN smoothly. The `.is-active` modifier is applied on the next
+     animation frame after the class itself, giving the transition a
+     real start state to animate from. Removing `.is-active` triggers
+     the fade OUT; JS waits ~280ms before tearing down the
+     contenteditable + class so the exit animation can complete. */
+  .c4-edit-target {
+    background: transparent;
+    box-shadow: 0 0 0 1px transparent;
+    border-radius: 2px;
+    cursor: text;
+    transition:
+      box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .c4-edit-target.is-active {
+    background: rgba(15, 23, 42, 0.025);
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.22);
+  }
+  .c4-edit-target.is-active:focus {
+    outline: none;
+    background: rgba(15, 23, 42, 0.05);
+    box-shadow: 0 0 0 1.5px var(--accent, #0a0a0a);
+  }
+  body[data-theme="dark"] .c4-edit-target.is-active {
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22);
+  }
+  body[data-theme="dark"] .c4-edit-target.is-active:focus {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .c4-ad-unit-edit-bar {
+    display: flex;
+    /* Left-aligned to the unit's left edge so the action set anchors
+       with the card content rather than floating on the right. */
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 0 0 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .c4-ad-unit-edit-bar.c4-ad-unit-edit-bar--open {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .c4-edit-cancel,
+  .c4-edit-confirm {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: -0.05px;
+    transition:
+      background 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-edit-cancel {
+    border: 0.5px solid var(--line);
+    background: transparent;
+    color: var(--text-body);
+  }
+  .c4-edit-cancel:hover {
+    border-color: rgba(15, 23, 42, 0.32);
+    background: rgba(15, 23, 42, 0.03);
+    color: var(--text-strong);
+  }
+  .c4-edit-confirm {
+    border: 0.5px solid #0a0a0a;
+    background: #0a0a0a;
+    color: #fff;
+  }
+  .c4-edit-confirm:hover { background: #1f1f1f; }
+  body[data-theme="dark"] .c4-edit-confirm {
+    background: #ececef;
+    border-color: #ececef;
+    color: #0a0a0a;
+  }
+  body[data-theme="dark"] .c4-edit-confirm:hover { background: #ffffff; }
+  .c4-ad-unit-meta-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+  .c4-ad-unit-meta-sep {
+    color: var(--text-subtle);
+    font-size: 11px;
+    line-height: 1;
+  }
+  /* Specs deep-link — sits to the right of the platform icon in
+     the foot meta-line. Opens the platform's official spec page
+     for the unit's exact format in a new tab. Subtle by default,
+     accent on hover. */
+  .c4-ad-unit-specs {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    color: var(--text-body);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-ad-unit-specs:hover {
+    color: var(--accent);
+  }
+  .c4-ad-unit-specs:hover .c4-ad-unit-specs-icon { opacity: 1; }
+  .c4-ad-unit-specs:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  .c4-ad-unit-specs-icon {
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    vertical-align: -1px;
+  }
+  .c4-ad-unit-platform-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .c4-ad-unit-platform-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .c4-ad-unit-platform-dot[data-platform="meta"]      { background: #1877F2; }
+  .c4-ad-unit-platform-dot[data-platform="instagram"] { background: linear-gradient(135deg, #FCAF45 0%, #E1306C 60%, #962FBF 100%); }
+  .c4-ad-unit-platform-dot[data-platform="linkedin"]  { background: #0A66C2; }
+  .c4-ad-unit-platform-dot[data-platform="reddit"]    { background: #FF4500; }
+  /* Display ads — neutral graphite dot to distinguish from
+     platform-tinted social units. */
+  .c4-ad-unit-platform-dot-display { background: #1F2937; }
+  /* Platform icon — small 14×14 SVG that replaces the colored dot
+     + text label in the foot meta-line. Aligns vertically against
+     the dims text and the middot separator. */
+  .c4-ad-unit-platform-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: -2px;
+  }
+  .c4-ad-unit-platform-name {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-body);
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-unit-name {
+    /* Foot label is now all Fira Code mono — number + name read as
+     one catalog-style index line. */
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--text-strong);
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    /* Wrap full name across lines — never truncate. */
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  /* Foot lockup name-line — small mono index number + unit name
+     on the same baseline. Numbering reads like a catalog reference
+     (01, 02, …) and pairs visually with the Fira Code meta-line. */
+  .c4-ad-unit-name-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .c4-ad-unit-num {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text-subtle);
+    line-height: 1.35;
+    flex-shrink: 0;
+  }
+  /* Skyscraper foot is at the 160px-narrow band — tighten the
+     index typography so it stays paired tightly with the name. */
+  .c4-display-band[data-band="skyscraper"] .c4-ad-unit-num {
+    font-size: 9.5px;
+    gap: 6px;
+  }
+  .c4-display-band[data-band="skyscraper"] .c4-ad-unit-name-line {
+    gap: 6px;
+  }
+  .c4-ad-unit-dims {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    letter-spacing: 0.02em;
+  }
+  .c4-ad-phone {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .c4-ad-phone-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  }
+  .c4-ad-phone-spec {
+    color: var(--text-subtle);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: var(--font-sans);
+  }
+
+  /* Phone frame — slate hairline edge, slightly rounded body, subtle
+     two-layer shadow for premium feel without skeuomorphism. */
+  .c4-phone-frame {
+    width: 280px;
+    height: 580px;
+    background: #ffffff;
+    border-radius: 38px;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 12px 32px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  /* Dynamic-island-style top pill */
+  .c4-phone-frame::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px;
+    height: 22px;
+    background: #0a0a0a;
+    border-radius: 14px;
+    z-index: 4;
+  }
+  .c4-phone-status {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 10px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+  }
+  .c4-phone-status .c4-phone-icons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .c4-phone-status svg { color: #0a0a0a; }
+
+  /* === Feed-ad layout (Instagram post in feed) === */
+  .c4-ig-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px 10px;
+    flex: 0 0 auto;
+  }
+  .c4-ig-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #feda75 0%, #fa7e1e 28%, #d62976 58%, #962fbf 86%, #4f5bd5 100%);
+    padding: 2px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+  .c4-ig-avatar > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #fff;
+    overflow: hidden;
+  }
+  .c4-ig-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .c4-ig-user {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1;
+  }
+  .c4-ig-username {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.15px;
+    line-height: 1.15;
+  }
+  .c4-ig-sponsored {
+    font-size: 11px;
+    color: #777;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+  .c4-ig-more {
+    width: 20px;
+    height: 20px;
+    color: #0a0a0a;
+    flex-shrink: 0;
+  }
+
+  .c4-ig-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #f3f3f3;
+    overflow: hidden;
+    flex: 0 0 auto;
+  }
+  .c4-ig-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .c4-ig-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px 4px;
+    flex: 0 0 auto;
+  }
+  .c4-ig-actions svg { color: #0a0a0a; }
+  .c4-ig-actions svg.c4-ig-bookmark { margin-left: auto; }
+
+  .c4-ig-likes {
+    padding: 0 14px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+    flex: 0 0 auto;
+  }
+  .c4-ig-caption {
+    padding: 0 14px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+    flex: 1 1 auto;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .c4-ig-caption .c4-ig-handle {
+    font-weight: 600;
+    color: #0a0a0a;
+    margin-right: 4px;
+  }
+  .c4-ig-caption .c4-ig-cta {
+    color: #00376b;
+    font-weight: 500;
+  }
+
+  /* === Story / Reel layout — full-bleed vertical media === */
+  .c4-ad-phone[data-ad-type="story"] .c4-phone-frame,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-phone-frame {
+    background: #0a0a0a;
+  }
+  .c4-ad-phone[data-ad-type="story"] .c4-phone-status,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-phone-status { color: #fff; }
+  .c4-ad-phone[data-ad-type="story"] .c4-phone-status svg,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-phone-status svg { color: #fff; }
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-image,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-image {
+    aspect-ratio: 9 / 16;
+    flex: 1 1 auto;
+    background: #0a0a0a;
+    position: relative;
+  }
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-header,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-header {
+    position: absolute;
+    top: 56px;
+    left: 0; right: 0;
+    z-index: 3;
+    padding: 8px 14px;
+  }
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-username,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-username,
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-sponsored,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-sponsored { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-more,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-more { color: #fff; }
+  /* Story progress bar */
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-image::before {
+    content: '';
+    position: absolute;
+    top: 44px;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.30);
+    border-radius: 1px;
+    z-index: 3;
+  }
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-image::after {
+    content: '';
+    position: absolute;
+    top: 44px;
+    left: 14px;
+    width: 40%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1px;
+    z-index: 3;
+  }
+  /* Story / Reel CTA chip at the bottom */
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-cta-chip,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-cta-chip {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 11px 22px;
+    background: #fff;
+    color: #0a0a0a;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+    border-radius: 20px;
+    z-index: 4;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  }
+  /* Reel — play indicator + side action rail */
+  .c4-ad-phone[data-ad-type="reel"] .c4-reel-actions {
+    position: absolute;
+    right: 12px;
+    bottom: 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    z-index: 3;
+    color: #fff;
+  }
+  .c4-ad-phone[data-ad-type="reel"] .c4-reel-actions svg { display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .c4-ad-phone[data-ad-type="reel"] .c4-reel-actions span {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+    margin-top: -4px;
+  }
+  /* In Story / Reel mode, hide the feed-only elements. */
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-actions,
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-likes,
+  .c4-ad-phone[data-ad-type="story"] .c4-ig-caption,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-actions,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-likes,
+  .c4-ad-phone[data-ad-type="reel"]  .c4-ig-caption { display: none; }
+
+  .c4-search {
+    /* Bigger toolbar search across every canvas_4 section — 2× wider
+       and ~25% taller footprint. Text size stays the same so only
+       the chassis grows, not the type inside. */
+    width: 560px;
+    max-width: 100%;
+    height: 40px;
+    padding: 0 16px;
+    border: 0.5px solid var(--line);
+    border-radius: 20px;
+    background: var(--card-bg);
+    color: var(--text-strong);
+    font-size: 12.5px;
+    font-weight: 400;
+    letter-spacing: -0.05px;
+    transition: border-color 180ms ease, background 180ms ease;
+  }
+  .c4-search:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .c4-search::placeholder { color: var(--text-subtle); }
+
+  .c4-view-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-subtle);
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .c4-view-btn:hover { background: rgba(15, 23, 42, 0.05); color: var(--text-strong); }
+  .c4-view-btn.active {
+    background: var(--accent-soft, rgba(24, 88, 238, 0.12));
+    color: var(--accent);
+  }
+  .c4-view-btn:focus,
+  .c4-view-btn:focus-visible { outline: none; }
+
+  /* === Grid layouts === */
+  .c4-grid {
+    width: 100%;
+  }
+  .c4-grid[data-view="mosaic"] {
+    column-count: 4;
+    column-gap: 4px;
+  }
+  @media (max-width: 1100px) { .c4-grid[data-view="mosaic"] { column-count: 3; } }
+  @media (max-width: 820px)  { .c4-grid[data-view="mosaic"] { column-count: 2; } }
+  .c4-grid[data-view="grid"] {
+    column-count: 6;
+    column-gap: 2px;
+  }
+  @media (max-width: 1100px) { .c4-grid[data-view="grid"] { column-count: 5; } }
+  @media (max-width: 820px)  { .c4-grid[data-view="grid"] { column-count: 4; } }
+  .c4-grid[data-view="list"] {
+    column-count: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  /* Audio section: 2-up tile grid by default — its tiles are wider
+     than image cards because the waveform needs horizontal room. */
+  .c4-grid[data-grid="audio"][data-view="mosaic"] {
+    column-count: 2;
+    column-gap: 12px;
+  }
+  @media (max-width: 820px) { .c4-grid[data-grid="audio"][data-view="mosaic"] { column-count: 1; } }
+
+  /* === Card — shared between media / images / video === */
+  .c4-card {
+    display: block;
+    margin: 0 0 4px;
+    break-inside: avoid;
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.04);
+    cursor: pointer;
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-grid[data-view="grid"] .c4-card { margin-bottom: 2px; border-radius: 4px; }
+  .c4-card img,
+  .c4-card video {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.03);
+    transition: opacity 540ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-card img.loaded,
+  .c4-card video.loaded {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .c4-card:hover img,
+  .c4-card:hover video {
+    transform: scale(1.04);
+  }
+  /* Bottom-anchored caption on hover. Subtle gradient + frosted glass
+     pill with the asset name. Matches the canvas_3 aesthetic but
+     simpler — no model chip, no action cluster (yet). */
+  .c4-card-caption {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    padding: 7px 11px;
+    background: rgba(18, 20, 26, 0.72);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    line-height: 1.35;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .c4-card:hover .c4-card-caption {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Tiny duration pill anchored top-right of video tiles. */
+  .c4-card-duration {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 7px;
+    background: rgba(18, 20, 26, 0.78);
+    color: rgba(255, 255, 255, 0.92);
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* === Audio tile — Teenage Engineering hardware aesthetic =======
+     Warm cream surface that evokes the OP/PO-series anodized
+     panels. Industrial radii (6px), thin section dividers, mono
+     caps typography, tabular figures. Tactile play disc gets a
+     soft inset highlight + recessed dome shadow so it reads as a
+     real button. */
+  .c4-audio-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    break-inside: avoid;
+    margin: 0 0 12px;
+    padding: 14px 16px 12px;
+    background: #ffffff;
+    color: var(--text-strong);
+    border: 0.5px solid var(--line);
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    box-shadow:
+      0 1px 0 rgba(15, 23, 42, 0.03),
+      0 2px 5px rgba(15, 23, 42, 0.04);
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+  body[data-theme="dark"] .c4-audio-tile {
+    background: var(--card-bg);
+    color: var(--text-strong);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.32);
+  }
+  .c4-audio-tile:hover {
+    transform: translateY(-1px);
+    border-color: rgba(15, 23, 42, 0.18);
+    box-shadow:
+      0 1px 0 rgba(15, 23, 42, 0.05),
+      0 8px 22px rgba(15, 23, 42, 0.08);
+  }
+  body[data-theme="dark"] .c4-audio-tile:hover {
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.3),
+      0 8px 26px rgba(0, 0, 0, 0.42);
+  }
+
+  .c4-audio-tile-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid rgba(22, 20, 18, 0.10);
+  }
+  body[data-theme="dark"] .c4-audio-tile-head {
+    border-bottom-color: rgba(255, 248, 232, 0.10);
+  }
+  .c4-audio-title {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: inherit;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .c4-audio-stats {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: rgba(22, 20, 18, 0.55);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  body[data-theme="dark"] .c4-audio-stats {
+    color: rgba(255, 248, 232, 0.55);
+  }
+
+  /* Waveform "screen" panel — recessed inset that reads like a
+     small piece of glass on a unit's face. */
+  .c4-audio-waves {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 14px 0;
+  }
+  .c4-audio-wave-row {
+    position: relative;
+    padding: 14px 12px;
+    background: rgba(22, 20, 18, 0.05);
+    border-radius: 3px;
+    box-shadow:
+      inset 0 1px 0 rgba(22, 20, 18, 0.06),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.4);
+  }
+  body[data-theme="dark"] .c4-audio-wave-row {
+    background: rgba(0, 0, 0, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(0, 0, 0, 0.35),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .c4-audio-wave {
+    width: 100%;
+    height: 32px;
+    display: block;
+    color: rgba(22, 20, 18, 0.72);
+  }
+  body[data-theme="dark"] .c4-audio-wave {
+    color: rgba(236, 232, 222, 0.72);
+  }
+  .c4-audio-wave svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Foot — play disc + slider on a top hairline (channel-strip
+     divider). */
+  .c4-audio-foot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid rgba(22, 20, 18, 0.10);
+  }
+  body[data-theme="dark"] .c4-audio-foot {
+    border-top-color: rgba(255, 248, 232, 0.10);
+  }
+  /* Play disc — flat solid accent, matched to the composer's
+     primary round button (#sendBtn). No dome gradient, no inset
+     highlight, no recessed press — just a clean disc that scales
+     on hover with an accent-tinted outer glow. */
+  .c4-audio-play {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--text-button);
+    border: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      filter 200ms ease,
+      box-shadow 280ms ease;
+  }
+  .c4-audio-play:hover {
+    transform: scale(1.06);
+    filter: brightness(1.05);
+    box-shadow:
+      0 4px 14px color-mix(in srgb, var(--accent) 32%, transparent),
+      0 8px 24px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .c4-audio-play:active {
+    transform: scale(0.96);
+    transition-duration: 120ms;
+  }
+  .c4-audio-play:focus,
+  .c4-audio-play:focus-visible { outline: none; }
+  .c4-audio-play svg {
+    width: 11px;
+    height: 11px;
+    display: block;
+  }
+  .c4-audio-play[data-playing="1"] {
+    background: #0a0a0a;
+    color: #ffffff;
+  }
+  body[data-theme="dark"] .c4-audio-play[data-playing="1"] {
+    background: #ECEDF0;
+    color: #0a0a0a;
+  }
+
+  /* Slider — neutral track with an orange thumb that matches the
+     play button. Thin precision rail rather than a soft pillow. */
+  .c4-audio-volume {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-width: 0;
+    margin-right: auto;
+  }
+  .c4-audio-volume svg {
+    flex-shrink: 0;
+    color: rgba(22, 20, 18, 0.55);
+  }
+  body[data-theme="dark"] .c4-audio-volume svg {
+    color: rgba(255, 248, 232, 0.55);
+  }
+  .c4-audio-volume input[type="range"] {
+    flex: 0 0 auto;
+    width: 96px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    background: rgba(22, 20, 18, 0.18);
+    border-radius: 1px;
+    outline: none;
+    cursor: pointer;
+    min-width: 0;
+    box-shadow: inset 0 1px 0 rgba(22, 20, 18, 0.06);
+  }
+  body[data-theme="dark"] .c4-audio-volume input[type="range"] {
+    background: rgba(255, 248, 232, 0.16);
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.24);
+  }
+  .c4-audio-volume input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 0;
+  }
+  .c4-audio-volume input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 0;
+  }
+
+  /* List view — collapse to a single horizontal row. The two
+     mic-rows go side-by-side, foot pins to the right. */
+  .c4-grid[data-grid="audio"][data-view="list"] .c4-audio-tile {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+  }
+  .c4-grid[data-grid="audio"][data-view="list"] .c4-audio-tile-head {
+    flex-shrink: 0;
+    gap: 6px;
+    max-width: 200px;
+  }
+  .c4-grid[data-grid="audio"][data-view="list"] .c4-audio-tile-head .c4-audio-stats { display: none; }
+  .c4-grid[data-grid="audio"][data-view="list"] .c4-audio-waves {
+    flex: 1;
+    flex-direction: row;
+    gap: 6px;
+    min-width: 0;
+  }
+  .c4-grid[data-grid="audio"][data-view="list"] .c4-audio-wave-row {
+    flex: 1;
+    padding: 6px 8px 12px;
+  }
+  .c4-grid[data-grid="audio"][data-view="list"] .c4-audio-foot {
+    flex-shrink: 0;
+    padding-top: 0;
+    width: 160px;
+  }
+
+  /* ========================================================================
+     Additional table-board styles for the canvas_2 component showcase.
+     Each table-board demonstrates a distinct table pattern.
+     ====================================================================== */
+
+  /* ---- 01 · Assumptions table — 2-col key/value reading grid ----
+     Mirrors the rest of the set: no outer shell, no vertical column
+     dividers, horizontal hairline rows only. Same header type rhythm
+     (Fira Code mono caps 10.5px, 14×16 padding) and same body cell
+     padding (18×16) as roadmap/audience/metrics. */
+  .assume-wrap { width: 100%; }
+  .assume-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+  }
+  /* Column 1 = .scope-rownum (38px); Dimension is column 2. */
+  .assume-table thead th:nth-child(2) { width: 18%; }
+  .assume-table thead th:last-child  { width: auto; }
+  .assume-table thead th {
+    text-align: left;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    padding: 14px 16px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .assume-table tbody td {
+    padding: 18px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+    color: var(--text-body);
+    line-height: 1.55;
+    letter-spacing: -0.05px;
+  }
+  body[data-theme="dark"] .assume-table tbody td { border-bottom-color: rgba(255, 255, 255, 0.07); }
+  .assume-table tbody tr:last-child td { border-bottom: 0; }
+  /* Dimension column (column 2 — after the .scope-rownum column at 1) */
+  .assume-table tbody td:nth-child(2) {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  /* Neutral/upcoming status pill (used by roadmap "Upcoming" rows) */
+  .scope-status.neutral {
+    background: rgba(100, 116, 139, 0.10);
+    color: var(--text-subtle);
+  }
+  .scope-status.neutral::before {
+    background: rgba(100, 116, 139, 0.7);
+  }
+  body[data-theme="dark"] .scope-status.neutral { color: var(--text-subtle); }
+
+  /* ---- 02 · Roadmap table — phases with avatars + progress bars ---- */
+  .roadmap-wrap { width: 100%; }
+  .roadmap-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+  }
+  /* Column distribution — Progress (chart visual) absorbs remainder */
+  /* All non-greedy columns equal width; Progress takes the remainder. */
+  /* Column 1 = .scope-rownum (38px); column layout starts at 2. */
+  .roadmap-table thead th:nth-child(2) { width: 17%; }  /* Phase */
+  .roadmap-table thead th:nth-child(3) { width: 21%; }  /* Window (extra room for larger date text) */
+  .roadmap-table thead th:nth-child(4) { width: 17%; }  /* Owner */
+  .roadmap-table thead th:nth-child(5) { width: auto; } /* Progress (greedy, gives up width to Window) */
+  .roadmap-table thead th:nth-child(6) { width: 17%; }  /* Status */
+  .roadmap-table thead th {
+    text-align: left;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    padding: 14px 16px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .roadmap-table tbody td {
+    padding: 18px 16px;
+    border-bottom: 0.5px solid rgba(15, 23, 42, 0.08);
+    color: var(--text-body);
+    vertical-align: middle;
+    font-size: 13.5px;
+  }
+  body[data-theme="dark"] .roadmap-table tbody td { border-bottom-color: rgba(255, 255, 255, 0.07); }
+  .roadmap-table tbody tr:last-child td { border-bottom: 0; }
+  .roadmap-phase {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-strong);
+    letter-spacing: -0.15px;
+    width: 100%;
+  }
+  .roadmap-table tbody td.roadmap-dates {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px;
+    color: var(--text-subtle);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .roadmap-owner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .roadmap-owner-name {
+    color: var(--text-body);
+    font-weight: 500;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .roadmap-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    flex-shrink: 0;
+  }
+  .roadmap-avatar.avatar-bc { background: var(--accent); color: #fff; font-weight: 600; }
+  .roadmap-avatar.avatar-lo { background: #FFB877; color: #3a1f00; }
+  .roadmap-avatar.avatar-jr { background: #B7A3FF; color: #1a0d4d; }
+  .roadmap-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .roadmap-progress-bar {
+    flex: 1;
+    height: 5px;
+    background: rgba(15, 23, 42, 0.07);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+  body[data-theme="dark"] .roadmap-progress-bar { background: rgba(255, 255, 255, 0.07); }
+  .roadmap-progress-bar > span {
+    display: block;
+    height: 100%;
+    width: var(--pct, 0%);
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .roadmap-progress-pct {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    width: 38px;
+    text-align: left;
+  }
+  /* 0% rows: empty bar + muted label so the pair reads as "no progress" */
+  .roadmap-table tbody td[data-sort="0"] .roadmap-progress-pct {
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+
+  /* ---- 03 · Comparison matrix — attributes × segments ---- */
+  .compare-wrap { width: 100%; }
+  .compare-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+  }
+  /* Column distribution — equal segments, slightly narrower attribute label */
+  /* Column 1 = .scope-rownum (38px); column layout starts at 2. */
+  .compare-table thead th:nth-child(2) { width: 20%; }  /* Attribute */
+  .compare-table thead th:nth-child(3),
+  .compare-table thead th:nth-child(4),
+  .compare-table thead th:nth-child(5),
+  .compare-table thead th:nth-child(6) { width: 20%; }  /* 4 segments equal */
+  .compare-table thead th {
+    text-align: center;
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: -0.1px;
+    color: var(--text-strong);
+    padding: 16px 14px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  /* Attribute column (column 2 — after the .scope-rownum column at 1).
+     Bumped from :first-child since rownum is now leftmost. */
+  .compare-table thead th:nth-child(2) {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    text-align: left;
+    width: 200px;
+  }
+  .compare-table tbody td {
+    padding: 14px;
+    border-bottom: 0.5px solid rgba(15, 23, 42, 0.08);
+    color: var(--text-body);
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13.5px;
+  }
+  body[data-theme="dark"] .compare-table tbody td { border-bottom-color: rgba(255, 255, 255, 0.07); }
+  .compare-table tbody tr:last-child td { border-bottom: 0; }
+  .compare-attr {
+    text-align: left !important;
+    font-weight: 500;
+    color: var(--text-strong);
+    letter-spacing: -0.05px;
+  }
+  .compare-value {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--text-body);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+  .compare-row-channels .compare-value { font-size: 10.5px; letter-spacing: 0.04em; }
+  .compare-row-ages .compare-value { font-size: 10.5px; letter-spacing: 0.04em; }
+  .compare-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .compare-check.yes {
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+  }
+  .compare-check.no {
+    background: transparent;
+    color: rgba(15, 23, 42, 0.22);
+    font-weight: 500;
+  }
+  body[data-theme="dark"] .compare-check.yes { color: #4ade80; }
+  body[data-theme="dark"] .compare-check.no { color: rgba(255, 255, 255, 0.2); }
+
+  /* ---- 04 · Metrics table — KPIs with sparklines + delta ---- */
+  .metrics-wrap { width: 100%; }
+  .metrics-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+  }
+  /* Column distribution — sparkline trend (chart visual) absorbs remainder */
+  /* Column 1 = .scope-rownum (38px); column layout starts at 2. */
+  .metrics-table thead th:nth-child(2) { width: 16%; }  /* Metric (wraps if narrow) */
+  .metrics-table thead th:nth-child(3) { width: 12%; }  /* Current */
+  .metrics-table thead th:nth-child(4) { width: 12%; }  /* Δ Week */
+  .metrics-table thead th:nth-child(5) { width: auto; } /* 7-day trend (greedy) */
+  .metrics-table thead th:nth-child(6) { width: 11%; }  /* Goal */
+  .metrics-table thead th:nth-child(7) { width: 16%; }  /* Status (fits pills + breathing at 900px) */
+  .metrics-table thead th {
+    text-align: left;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    padding: 14px 16px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .metrics-table thead th.num,
+  .metrics-table tbody td.num { text-align: left; }
+  .metrics-table tbody td {
+    padding: 18px 16px;
+    border-bottom: 0.5px solid rgba(15, 23, 42, 0.08);
+    color: var(--text-body);
+    vertical-align: middle;
+    font-size: 13.5px;
+  }
+  body[data-theme="dark"] .metrics-table tbody td { border-bottom-color: rgba(255, 255, 255, 0.07); }
+  .metrics-table tbody tr:last-child td { border-bottom: 0; }
+
+  /* ---- 06 · Dense data matrix — wide multi-column reading grid ----
+     Mostly text, smaller font, tighter padding, 10 columns of varying
+     widths. overflow-x: auto on the wrap so the table can extend past
+     the cover at narrow stack widths without bursting the table-board. */
+  .dense-wrap { width: 100%; overflow-x: auto; }
+  .dense-table {
+    width: 100%;
+    min-width: 1322px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+  }
+  /* Column layout: nth-child(1) = .scope-rownum (38px), (2) = .scope-select
+     checkbox (44px) — both have their own width rules. Data columns
+     start at nth-child(3). */
+  .dense-table thead th:nth-child(3)  { width: 9%;  } /* Method */
+  .dense-table thead th:nth-child(4)  { width: 11%; } /* Vendor */
+  .dense-table thead th:nth-child(5)  { width: 11%; } /* Audience */
+  .dense-table thead th:nth-child(6)  { width: 9%;  } /* Geography */
+  .dense-table thead th:nth-child(7)  { width: 9%;  } /* Sample */
+  .dense-table thead th:nth-child(8)  { width: 9%;  } /* Window */
+  .dense-table thead th:nth-child(9)  { width: 5%;  } /* Spend */
+  .dense-table thead th:nth-child(10) { width: 14%; } /* Output */
+  .dense-table thead th:nth-child(11) { width: 9%;  } /* Owner — wider so single-word labels (ANALYTICS, RESEARCH) don't wrap */
+  .dense-table thead th:nth-child(12) { width: 14%; } /* Notes */
+  .dense-table thead th {
+    text-align: left;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    padding: 12px 14px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .dense-table tbody td {
+    padding: 14px 14px;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-body);
+    font-size: 11.5px;
+    line-height: 1.45;
+    vertical-align: top;
+    /* word-break: break-word was aggressively splitting single words
+       like OWNER labels onto two lines when columns were tight. Default
+       wrapping keeps words whole and only breaks at natural boundaries. */
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: none;
+  }
+  body[data-theme="dark"] .dense-table tbody td { border-bottom-color: rgba(255, 255, 255, 0.07); }
+  .dense-table tbody tr:last-child td { border-bottom: 0; }
+  .dense-table tbody td.dense-tag {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-subtle);
+    letter-spacing: 0.02em;
+  }
+  /* ---- Type hierarchy across the 10 columns ----
+     Each column gets a distinct typographic role so the table reads as
+     a layered information surface, not a wall of uniform text:
+       1. Method        — primary anchor (strong, 600, slightly larger)
+       2. Vendor        — secondary anchor (strong, 500)
+       3. Audience      — body narrative (default)
+       4. Geography     — tag-like (mono caps, subtle)
+       5. Sample        — tabular numeric (mono, tabular nums)
+       6. Window        — tabular numeric (mono, tabular nums)
+       7. Spend         — accent emphasis ($-tier in brand color)
+       8. Output        — body narrative (default, slightly more line-height)
+       9. Owner         — tag-like (mono caps, subtle)
+      10. Notes         — footnote tone (smaller, softer color) */
+  /* nth-child(1) = .scope-rownum, (2) = .scope-select checkbox; data
+     columns start at 3 — typographic hierarchy below targets data only. */
+  .dense-table tbody td:nth-child(3) {
+    font-weight: 600;
+    color: var(--text-strong);
+    font-size: 12px;
+    letter-spacing: -0.1px;
+  }
+  .dense-table tbody td:nth-child(4) {
+    color: var(--text-strong);
+    font-weight: 500;
+  }
+  .dense-table tbody td:nth-child(6) {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .dense-table tbody td:nth-child(7),
+  .dense-table tbody td:nth-child(8) {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-body);
+    letter-spacing: 0.02em;
+  }
+  .dense-table tbody td.dense-spend {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .dense-table tbody td:nth-child(10) { line-height: 1.5; }
+  .dense-table tbody td:nth-child(11) {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .dense-table tbody td:nth-child(12) {
+    color: var(--text-subtle);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* === Campaign options table (component 07) ===
+     Editorial three-column layout: a tone tag (mono caps), a display
+     headline (heavier weight, tighter tracking), and a flowing caption.
+     Shares all the canvas_2 affordances — rownum, checkbox column,
+     filter, sort, expand-all, multi-row copy. */
+  .campaign-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+  }
+  /* Column 1 = .scope-rownum (38px); column 2 = .scope-select (44px). */
+  .campaign-table thead th:nth-child(3) { width: 18%; }   /* Tone */
+  .campaign-table thead th:nth-child(4) { width: 24%; }   /* Headline */
+  .campaign-table thead th:nth-child(5) { width: auto; }  /* Caption (greedy) */
+  .campaign-table thead th {
+    text-align: left;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    padding: 14px 16px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .campaign-table tbody td {
+    padding: 18px 16px;
+    border-bottom: 0.5px solid rgba(15, 23, 42, 0.08);
+    color: var(--text-body);
+    vertical-align: middle;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  body[data-theme="dark"] .campaign-table tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+  }
+  .campaign-table tbody tr:last-child td { border-bottom: 0; }
+
+  /* Tone — Fira Code mono caps tag */
+  .campaign-table tbody td:nth-child(3) {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Headline — strong anchor weight + tight tracking. Sized to feel
+     like a featured cell without overpowering the caption next to it. */
+  .campaign-table tbody td.campaign-headline {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--text-strong);
+    letter-spacing: -0.2px;
+  }
+
+  /* Caption — body text, line-height bumped slightly for editorial flow */
+  .campaign-table tbody td:nth-child(5) {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+
+  .metric-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-strong);
+    letter-spacing: -0.15px;
+    width: 100%;
+    /* Allow long metric names ("Engagement Rate", "Avg. Watch Time") to
+       flow to a second line instead of getting clipped. The .cell-clamp
+       wrapper added by JS still caps at 2 lines max via -webkit-line-clamp. */
+    white-space: normal;
+    line-height: 1.25;
+  }
+  .metric-val {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    width: 110px;
+  }
+  .metric-goal {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    width: 80px;
+  }
+  .metric-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .metric-delta.up   { color: #16a34a; }
+  .metric-delta.down { color: #dc2626; }
+  body[data-theme="dark"] .metric-delta.up   { color: #4ade80; }
+  body[data-theme="dark"] .metric-delta.down { color: #f87171; }
+  .sparkline {
+    color: var(--text-subtle);
+    width: 100%;
+    height: 24px;
+    display: block;
+  }
+  /* Nudge the sparkline cell content slightly left within its column —
+     keeps column width unchanged but moves the chart's visual position
+     leftward by trimming left padding and pushing the spare to the right.
+     nth-child(5) because column 1 is .scope-rownum. */
+  .metrics-table tbody td:nth-child(5) {
+    padding-left: 4px;
+    padding-right: 28px;
+  }
+  .sparkline-path { stroke-linecap: round; stroke-linejoin: round; }
+  .sparkline-path.up   { stroke: #16a34a; }
+  .sparkline-path.down { stroke: #dc2626; }
+  body[data-theme="dark"] .sparkline-path.up   { stroke: #4ade80; }
+  body[data-theme="dark"] .sparkline-path.down { stroke: #f87171; }
+
+  /* ============================================================
+     Canvas_2 chart + graphic build-in animation
+     Each .table-board sits in a "preanimate" state by default
+     (bars empty, sparklines unsketched, badges scaled to 0). When
+     JS observes the board entering the viewport for the first
+     time, it adds .tbl-anim-in to release the staggered animation.
+     The class is added once and never removed — re-scrolling past
+     a board does NOT replay its animation.
+     ============================================================ */
+  /* Per-row stagger via inheritable CSS custom property. Child
+     elements pick up var(--row-delay) inherited from their tr. */
+  .table-board tbody tr { --row-delay: 0ms; }
+  .table-board tbody tr:nth-of-type(1)  { --row-delay: 100ms; }
+  .table-board tbody tr:nth-of-type(2)  { --row-delay: 220ms; }
+  .table-board tbody tr:nth-of-type(3)  { --row-delay: 340ms; }
+  .table-board tbody tr:nth-of-type(4)  { --row-delay: 460ms; }
+  .table-board tbody tr:nth-of-type(5)  { --row-delay: 580ms; }
+  .table-board tbody tr:nth-of-type(6)  { --row-delay: 700ms; }
+  .table-board tbody tr:nth-of-type(7)  { --row-delay: 820ms; }
+  .table-board tbody tr:nth-of-type(8)  { --row-delay: 940ms; }
+  .table-board tbody tr:nth-of-type(9)  { --row-delay: 1060ms; }
+  .table-board tbody tr:nth-of-type(10) { --row-delay: 1180ms; }
+  .table-board tbody tr:nth-of-type(11) { --row-delay: 1300ms; }
+  .table-board tbody tr:nth-of-type(12) { --row-delay: 1420ms; }
+  .table-board tbody tr:nth-of-type(13) { --row-delay: 1540ms; }
+  .table-board tbody tr:nth-of-type(14) { --row-delay: 1660ms; }
+  .table-board tbody tr:nth-of-type(15) { --row-delay: 1780ms; }
+  .table-board tbody tr:nth-of-type(16) { --row-delay: 1900ms; }
+
+  /* --- Pre-animate state (before .tbl-anim-in fires) --- */
+  /* Generic per-row fade-in. Applies to every table-board so even
+     mostly-text tables (03 Audience, 04 Metrics) get a clearly
+     visible row-by-row reveal. Opacity-only — transforms on <tr>
+     elements cause spurious overflow scrollbars in Chromium. Chart
+     accents below layer transforms onto their inner spans/svgs
+     instead, where transforms behave normally. */
+  .table-board tbody tr            { opacity: 0; }
+  .table-board .roadmap-progress-bar > span { width: 0%; }
+  .table-board .roadmap-progress-pct        { opacity: 0; transform: translateY(3px); }
+  .table-board .roadmap-avatar              { opacity: 0; transform: scale(0.55); }
+  .table-board .roadmap-owner-name          { opacity: 0; }
+  .table-board .scope-status                { opacity: 0; transform: translateY(3px); }
+  .table-board tbody .scope-checkbox        { opacity: 0; transform: scale(0.7); }
+  .table-board .compare-check               { opacity: 0; transform: scale(0.4); }
+  /* Sparkline SVG container stays opaque — the drama lives in the path
+     stroke-draw, not a fade. dasharray/dashoffset both pegged well past
+     any path length so the line is fully hidden until the offset
+     animates to 0. */
+  .table-board .sparkline-path              { stroke-dasharray: 500; stroke-dashoffset: 500; }
+  .table-board .metric-delta                { opacity: 0; transform: translateY(2px); }
+
+  /* --- Animate-in state (released by per-row IntersectionObserver) ---
+     Each row gets .row-anim-in independently when it enters viewport.
+     Chart-specific staggers layer on top (e.g. progress pct waits for
+     its bar to draw), but offsets are relative to row-anim-in instead
+     of a global cascade — so the bottom rows of a tall table no longer
+     animate before the user scrolls to them. */
+  .table-board tbody tr.row-anim-in {
+    opacity: 1;
+    transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .table-board tbody tr.row-anim-in .roadmap-progress-bar > span {
+    width: var(--pct, 0%);
+    transition: width 1500ms cubic-bezier(0.22, 1, 0.36, 1) 120ms;
+  }
+  .table-board tbody tr.row-anim-in .roadmap-progress-pct {
+    opacity: 1; transform: translateY(0);
+    transition:
+      opacity 520ms ease 1100ms,
+      transform 560ms cubic-bezier(0.22, 1, 0.36, 1) 1100ms;
+  }
+  .table-board tbody tr.row-anim-in .roadmap-avatar {
+    opacity: 1; transform: scale(1);
+    transition:
+      opacity 480ms ease,
+      transform 660ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .table-board tbody tr.row-anim-in .roadmap-owner-name {
+    opacity: 1;
+    transition: opacity 480ms ease 140ms;
+  }
+  .table-board tbody tr.row-anim-in .scope-status {
+    opacity: 1; transform: translateY(0);
+    transition:
+      opacity 560ms ease,
+      transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .table-board tbody tr.row-anim-in .scope-checkbox {
+    opacity: 1; transform: scale(1);
+    transition:
+      opacity 460ms ease,
+      transform 580ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .table-board tbody tr.row-anim-in .compare-check {
+    opacity: 1; transform: scale(1);
+    transition:
+      opacity 720ms ease 160ms,
+      transform 880ms cubic-bezier(0.34, 1.56, 0.64, 1) 160ms;
+  }
+  .table-board tbody tr.row-anim-in .sparkline-path {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 2800ms cubic-bezier(0.22, 1, 0.36, 1) 420ms;
+  }
+  .table-board tbody tr.row-anim-in .metric-delta {
+    opacity: 1; transform: translateY(0);
+    transition:
+      opacity 720ms ease 720ms,
+      transform 760ms cubic-bezier(0.22, 1, 0.36, 1) 720ms;
+  }
+
+  /* Reduced motion: skip the build-in entirely so charts are
+     visible immediately and don't subject motion-sensitive users
+     to the staggered reveal. */
+  @media (prefers-reduced-motion: reduce) {
+    .table-board tbody tr { opacity: 1; transform: none; }
+    .table-board .roadmap-progress-bar > span { width: var(--pct, 0%); }
+    .table-board .roadmap-progress-pct,
+    .table-board .roadmap-avatar,
+    .table-board .roadmap-owner-name,
+    .table-board .scope-status,
+    .table-board .scope-checkbox,
+    .table-board .compare-check,
+    .table-board .sparkline,
+    .table-board .metric-delta { opacity: 1; transform: none; }
+    .table-board .sparkline-path { stroke-dashoffset: 0; stroke-dasharray: none; }
+  }
+

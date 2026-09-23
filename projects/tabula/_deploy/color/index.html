@@ -1,0 +1,2351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Tab — OMNI+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<style>
+  :root {
+    color-scheme: light;
+    --font-sans: 'Instrument Sans', 'Helvetica Neue', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    /* ============ Omnicom Institutional Palette (Brand Guidelines 2025, p.31) ============
+       Humanity Coral FF672E · Innovation Blue 4F7FF2 · Omnicom White FFFFFF ·
+       Omnicom Gray D1D1D1 · Omnicom Dark Gray 4A4A4A · Omnicom Black 000000.
+       Accents (coral/blue) stay SPARING — one section-voice accent per area,
+       never a predominant field. Light theme below = the guidelines' white
+       chapters; dark theme = the guidelines' black chapters (§20.1). */
+    --voice-apps: #4F7FF2;   /* Innovation Blue — Apps section voice */
+    --voice-skills: #1858EE; /* OAI Blue — Skills section voice (Bryan: OAI blues, no orange) */
+
+    --pg-bg: #ffffff;
+    --card-bg: #ffffff;
+    --line-solid: #e7e7e7;
+    --text-strong: #000000;
+    --line: #e7e7e7;
+
+    --brand-blue: #4F7FF2;
+
+    --ic-text: #1858EE;
+    --ic-canvas: #4F7FF2;
+    --ic-graphics: #1858EE;
+    --ic-video: #1858EE;
+    --ic-audio: #1858EE;
+    --ic-research: #1858EE;
+    --ic-workflow: #4F7FF2;
+
+    --nav-bg: #ffffff;
+    --nav-selected: #f0f0f0;
+    --hover-soft: rgba(0, 0, 0, 0.04);
+    --hover-tint: rgba(0, 0, 0, 0.025);
+    --text-body: #000000;
+    --text-subtle: #4a4a4a;
+    --accent: #4F7FF2;
+    --accent-soft: rgba(79, 127, 242, 0.10);
+    --text-button: #ffffff;
+    --desc-text: #4a4a4a;
+    --art-bg: #ffffff;
+    --wash: transparent;
+    --shadow-card: none;
+    --shadow-hover-base: none;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Dark theme — driven entirely by body[data-theme], set by the boot script
+     right after <body> (system-preference resolved there into an explicit
+     attribute, so no @media(prefers-color-scheme) duplicate is needed here).
+     The guidelines' own black-ground chapters: pure #000 ground, white ink,
+     #4A4A4A hairlines, same institutional accents (§20.1). */
+  body[data-theme="dark"] {
+    color-scheme: dark;
+    --pg-bg: #000000;
+    --card-bg: #000000;
+    --line-solid: #4a4a4a;
+    --text-strong: #ffffff;
+    --line: #4a4a4a;
+
+    --nav-bg: #000000;
+    --nav-selected: #1a1a1a;
+    --hover-soft: rgba(255, 255, 255, 0.06);
+    --hover-tint: rgba(255, 255, 255, 0.03);
+    --text-body: #ffffff;
+    --text-subtle: #d1d1d1;
+    --accent: #4F7FF2;
+    --accent-soft: rgba(79, 127, 242, 0.18);
+    --text-button: #ffffff;
+    --desc-text: #d1d1d1;
+    --art-bg: #000000;
+    --wash: transparent;
+    --shadow-card: none;
+    --shadow-hover-base: none;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: var(--pg-bg);
+    overflow-x: hidden;
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    color: var(--text-body);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* flat institutional ground — no gradients (§20.1) */
+    background: var(--pg-bg);
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+  ::selection { background: rgba(79, 127, 242, 0.18); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ============ ENTRANCE CHOREOGRAPHY ============ */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .topnav      { animation: fadeIn 500ms var(--ease-out) both; }
+  .hero-title  { animation: rise 700ms var(--ease-out) 80ms both; }
+  .footer      { animation: fadeIn 700ms var(--ease-out) 900ms both; }
+  .section-rule { animation: fadeIn 400ms var(--ease-out) both; }
+  .section-rule.rule-skills-2 { margin-top: 36px; }
+  .rule-apps   { animation-delay: 220ms; }
+  .rule-skills { animation-delay: 420ms; }
+  .rule-skills-2 { animation-delay: 560ms; }
+  .tile-card   { animation: rise 700ms var(--ease-out) both; }
+  .card-canvas   { animation-delay: 300ms; }
+  .card-workflow { animation-delay: 380ms; }
+  /* v3-cards — twelve uniform skill cards. Each one carries .tile-card
+     (see .skills-grid below), so the base rise animation above already
+     applies to them; only the per-card stagger delay is added here. */
+  .skc-text       { animation-delay: 500ms; }
+  .skc-graphics   { animation-delay: 528ms; }
+  .skc-video      { animation-delay: 556ms; }
+  .skc-audio      { animation-delay: 584ms; }
+  .skc-research   { animation-delay: 612ms; }
+  .skc-brief      { animation-delay: 640ms; }
+  .skc-moodboard  { animation-delay: 668ms; }
+  .skc-storyboard { animation-delay: 696ms; }
+  .skc-persona    { animation-delay: 724ms; }
+  .skc-mockups    { animation-delay: 752ms; }
+  .skc-plan       { animation-delay: 780ms; }
+  .skc-instagram  { animation-delay: 808ms; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* ============ HEADER — the shell's own topnav (canvas-workflows page), verbatim ============ */
+  /* nav chrome keeps the shell's own type (ref-verbatim) while the page runs Instrument Sans */
+  .topnav { font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif; }
+  .topnav {
+    position: sticky;
+    top: 0;
+    z-index: 7;
+    height: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: stretch;
+    background: var(--nav-bg);
+    border-bottom: 0.5px solid var(--line);
+  }
+  .omni-cell {
+    width: 80px;
+    background: var(--nav-bg);
+    border-right: 0.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .omni-logo { display: block; height: auto; }
+  .omni-logo--sm { height: 12px; }
+  .nav-icon-cell {
+    width: 44px;
+    background: var(--nav-bg);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-body); cursor: pointer;
+    transition: background 200ms ease;
+  }
+  .nav-icon-cell:hover { background: var(--hover-soft); }
+  .nav-icon-cell--bordered { border-right: 0.5px solid var(--line); }
+  #navMenuBtn {
+    width: 36px;
+    height: 36px;
+    align-self: center;
+    margin: 0 12px 0 14px;
+    flex: 0 0 36px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--accent);
+    border: 0.5px solid var(--line);
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.04),
+                0 3px 6px rgba(15, 18, 24, 0.06),
+                0 8px 20px rgba(15, 18, 24, 0.06);
+    transition: background 200ms ease, box-shadow 200ms ease, transform 160ms ease;
+  }
+  #navMenuBtn:hover {
+    background: var(--card-bg);
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.05),
+                0 4px 8px rgba(15, 18, 24, 0.08),
+                0 12px 28px rgba(15, 18, 24, 0.10);
+  }
+  #navMenuBtn:active { transform: scale(0.96); }
+  .workspace {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border-right: 0.5px solid var(--line);
+    color: var(--text-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: -0.05px;
+    min-width: 0;
+    transition: background 200ms ease;
+  }
+  .workspace > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .workspace:hover { background: var(--hover-soft); }
+  .workspace svg.caret {
+    color: var(--text-subtle);
+    flex-shrink: 0;
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .workspace[aria-expanded="true"] svg.caret { transform: rotate(180deg); }
+  .workspace-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 280px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.04),
+                0 6px 14px rgba(15, 18, 24, 0.06),
+                0 24px 48px rgba(15, 18, 24, 0.10);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity 200ms ease,
+                transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 60;
+    text-align: left;
+    cursor: default;
+  }
+  .workspace-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .workspace-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    color: var(--text-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background 160ms ease;
+  }
+  .workspace-menu-item:hover { background: var(--hover-soft); }
+  .workspace-menu-item.active { background: var(--nav-selected); }
+  .wsm-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wsm-icon svg { display: block; }
+  .wsm-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    background: transparent;
+    color: var(--text-subtle);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+    min-width: 48px;
+    max-width: 320px;
+    white-space: nowrap;
+    position: relative;
+    letter-spacing: -0.05px;
+    border: 0;
+    border-right: 0.5px solid var(--line);
+    transition: color 280ms ease,
+                letter-spacing 280ms ease,
+                background 240ms ease;
+  }
+  .tab-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tab-icon svg { display: block; }
+  .tab-icon.graphics { background: #7ED98C; color: #0d3a1d; }
+  .tab-icon.video    { background: #FF7B6E; color: #4a1410; }
+  .tab-icon.audio    { background: #9B8AFB; color: #211244; }
+  .tab-icon.text     { background: #5DD3E0; color: #082a2f; }
+  .tab-icon.canvas   { background: #3FCBC4; color: #052723; }
+  .tab:hover {
+    color: var(--text-body);
+    background: var(--hover-tint);
+  }
+  .tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+    border-radius: 4px;
+  }
+  .add-tab {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    align-self: center;
+    margin-left: 6px;
+    padding: 0;
+    background: transparent;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                background 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .add-tab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(24, 88, 238, 0.16);
+    transition: box-shadow 520ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .add-tab svg {
+    transition: transform 540ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .add-tab:hover {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.10);
+    transform: scale(1.06);
+  }
+  .add-tab:hover::before {
+    box-shadow: 0 0 0 2px rgba(24, 88, 238, 0.07),
+                0 0 0 4px rgba(24, 88, 238, 0.03);
+  }
+  .add-tab:hover svg {
+    transform: rotate(90deg);
+  }
+  .add-tab:active {
+    transform: scale(0.94);
+    transition-duration: 120ms;
+  }
+  /* The + IS the current surface on this page — selected-tab treatment */
+  .add-tab--active {
+    align-self: stretch;
+    height: auto;
+    width: 48px;
+    flex-basis: 48px;
+    margin: 0;
+    border-radius: 0;
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .nav-spacer { flex: 1; background: transparent; }
+  .nav-right {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 12px;
+  }
+  .avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent);
+    color: #ffffff; font-size: 10px; font-weight: 700;
+    letter-spacing: -0.2px;
+    display: flex; align-items: center; justify-content: center;
+    object-fit: cover;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-body);
+    padding: 6px 10px;
+    border-radius: 6px;
+    align-self: center;
+    transition: background 200ms ease;
+  }
+  .me:hover { background: var(--hover-soft); }
+  .me svg { color: var(--text-subtle); }
+  .me .avatar {
+    background: linear-gradient(135deg, #f5a97f, #9d6c47);
+    color: #ffffff;
+  }
+  .nav-menu-secondary { display: none; }
+  /* dark: the wordmark inverts (shell rule, translated to this page's theme contexts) */
+  body[data-theme="dark"] .omni-logo { filter: brightness(0) invert(1); }
+  body[data-theme="dark"] #navMenuBtn {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+                0 2px 10px rgba(0, 0, 0, 0.45);
+  }
+  @media (max-width: 640px) {
+    .workspace-menu {
+      position: fixed;
+      top: 56px;
+      left: 16px;
+      right: 16px;
+      width: auto;
+      transform-origin: top center;
+    }
+  }
+  /* Serif T — the Text skill's mark in the reference is a type specimen, not an icon glyph */
+  .t-glyph {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    line-height: 1;
+    font-size: 0.95em;
+  }
+
+  /* ============ MAIN BODY ============ */
+  .main-body {
+    flex: 1 0 auto;
+    padding: 28px 48px 28px;
+    width: 100%;
+    max-width: 1620px;
+    margin: 0 auto;
+  }
+
+  /* hero: capsule tag + two-tone giant headline left, animated Basis mark
+     right — the editorial pattern read off Brand Guidelines pp.02/31/47
+     (§20.2) */
+  .hero-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 24px;
+  }
+  .hero-copy { display: flex; flex-direction: column; min-width: 0; }
+  .hero-title {
+    font-size: clamp(48px, 5.6vw, 96px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.96;
+    margin: 0;
+  }
+  .hero-word--ink { color: var(--text-strong); }
+  .hero-word--ghost { color: var(--text-strong); }
+  /* the hero Basis mark's weight-vocabulary cycle (dots → bars → dashes,
+     §20.2) — idles at LIGHT (dashes) always, subtly; hovering the hero
+     unlocks the full cycle, one weight per ~6s of the 18s loop. */
+  @keyframes hbBreathe {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+  }
+
+  /* Swiss rule-with-label: full-width dotted hairline, the label sits
+     inline with a small section-voice tick (guidelines pattern, §20.2) */
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 20px;
+  }
+  .rule-label {
+    flex: 0 0 auto;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  /* ---------- shared card language — flat hairline, no drop shadows (§20.2) ---------- */
+  .tile-card {
+    --accent: var(--brand-blue);
+    position: relative;
+    top: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--line-solid);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    min-width: 0;
+    cursor: pointer;
+    /* the lift below uses `top`, not `transform` — the entrance-choreography
+       keyframe (.tile-card { animation: rise ... both }, near the top of
+       this stylesheet) governs `transform` indefinitely once it settles
+       (fill-mode `both` keeps an animation's contribution to a property
+       outranking plain :hover rules on that same property), which would
+       silently swallow a transform-based hover lift. */
+    transition:
+      top 320ms var(--ease-out),
+      border-color 320ms var(--ease-out);
+  }
+  .tile-card:hover {
+    top: -2px;
+    border-color: var(--accent);
+  }
+
+  /* eyelid wipe — a flat card-ground veil slides off the art on
+     hover-start, 400ms; replaces the v1 sheen/saturate "awakening"
+     (gloss the flat system doesn't use), §20.2 */
+
+  .tile-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .tile-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  /* icon squares die — a small per-tile Omnicom Basis mark carries the
+     section accent instead (§20.2) */
+  .tile-icon svg { display: block; width: 100%; height: 100%; }
+  .tile-title {
+    font-weight: 650;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+    min-width: 0;
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--line-solid);
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--card-bg);
+    color: var(--text-strong);
+    line-height: 1.5;
+    transition: border-color 280ms var(--ease-out);
+  }
+  .tile-card:hover .chip {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--line-solid));
+  }
+
+  .tile-desc {
+    color: var(--desc-text);
+    margin: 0;
+  }
+
+  /* ---------- 01 · apps — feature cards, art bleeding to the left edge ---------- */
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px;
+    margin-bottom: 32px;
+  }
+  .card-feature { flex-direction: column; }
+  .card-feature .tile-content {
+    padding: 30px 32px 28px;
+    gap: 14px;
+    justify-content: center;
+  }
+  .card-feature .tile-title { font-size: 23px; }
+  .card-feature .chip { font-size: 12px; }
+  .card-feature .tile-desc { font-size: 15px; line-height: 1.6; max-width: 42ch; }
+
+  /* ---------- 02 · skills — uniform card grid (v3-cards) ----------
+     Replaces the old two-tier collection (4 .mode-tile + 8 .skill-chip)
+     with twelve compact cards, one visual language throughout. Each card
+     literally carries .tile-card (see the shared card language above) —
+     same white surface / hairline border / 16px radius / hover-lift —
+     with --accent overridden to var(--voice-skills) so the hover border
+     reads as the Skills section voice, and .skill-card layered on top
+     just swaps the row layout for a column one and adds padding. All
+     twelve wire through the same openTab/ROUTES system as the app cards
+     (see the card→tab→app script at the bottom of body) via the shared
+     `.tile-card[data-kind]` click wiring — no separate listener needed. */
+  .skills-grid {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .skills-grid { grid-template-columns: repeat(4, 1fr); }
+  /* app cards: icon-tile cards one step above the primary skills */
+  .app-icon-tile { width: 48px; height: 48px; font-size: 24px; border-radius: 11px; }
+  /* secondary skills: quiet white tiles, blue glyphs (Bryan) — the inline
+     --tile-accent stays in the markup but is fully overridden here */
+  .skill-card .chip-row { margin: 2px 0 4px; }
+  .skill-card .chip { font-size: 11.5px; padding: 2.5px 10px; }
+  .card-feature .tile-content { padding: 26px 20px 24px; gap: 14px; }
+  .skill-card {
+    --accent: var(--voice-skills);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    /* 20px inset shared with the app cards so icon/title columns align across sections */
+    padding: 20px;
+  }
+
+  /* v1 icon-tile formula, restored — driven per-card by --tile-accent
+     (set inline on each .skill-card, e.g. style="--tile-accent:#5DD3E0"). */
+  .skill-icon-tile {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tile-accent) 86%, #ffffff), var(--tile-accent));
+    color: color-mix(in srgb, var(--tile-accent) 22%, #0c1a24);
+    box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--tile-accent) 45%, transparent);
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .skill-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .skill-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-strong);
+    letter-spacing: -0.01em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .skill-card-desc {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--desc-text);
+    margin: 0;
+    /* no clamp — five of these descriptions are locked verbatim content and
+       must never truncate; rows stretch to the tallest card instead */
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1400px) {
+    .skills-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 1160px) {
+    .main-body { padding: 36px 28px 48px; }
+    .apps-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .hero-row { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .skills-grid { grid-template-columns: repeat(1, 1fr); }
+  }
+
+  /* ============ FOOTER — omni-manifest's footer, verbatim ============ */
+  .footer {
+    background: var(--pg-bg);
+    border-top: 1px dotted var(--line-solid);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 24px;
+    row-gap: 8px;
+    padding: 14px 24px;
+    min-height: 52px;
+    color: var(--text-subtle);
+    font-size: 11px;
+    letter-spacing: 0.01em;
+  }
+  .footer .copy { flex: 0 0 auto; }
+  .footer .omni-logo { flex: 0 0 auto; margin: 0 auto; }
+  .footer .links {
+    flex: 0 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 18px;
+    row-gap: 4px;
+    justify-content: flex-end;
+  }
+  .footer .links a {
+    color: var(--text-subtle);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .footer .links a:hover { color: var(--text-body); }
+  @media (max-width: 900px) {
+    .footer {
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px;
+    }
+    .footer .copy,
+    .footer .omni-logo,
+    .footer .links { justify-self: center; margin: 0; }
+    .footer .links { justify-content: center; column-gap: 16px; }
+  }
+
+  /* the v1 sheen/saturate "awakening" (zoom + filter boost) is retired —
+     the eyelid-wipe veil (.tile-veil, above) is the flat system's hover
+     reveal now; the SVG itself still resumes its own internal motion via
+     the play-state gate below (§20.2). */
+  /* wake-glow: each tile's hero accent glow blooms on hover — the unmistakable
+     "it's alive" cue (§15). !important beats the inlined per-theme opacity rules;
+     the transition still animates the computed change both directions. */
+
+  /* ============ PROFILE MENU + THEME ENGINE ============
+     Ported from /TINKER/themes/index.html (.ch-profile-* ≈ lines 20331–20740,
+     workspace theme rows ≈ 21456–21526) per tabula/PLAN.md §9. Stripped:
+     custom-accent editor ("Create your own"), saved/named custom themes,
+     icon picker, delete-confirm modal — tabula keeps only Omni Dark/Light +
+     the nine read-only workspace (brand) themes. */
+  .ch-profile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: transparent;
+    /* Pointer-blocker only — outside-click handled by JS. */
+  }
+  .ch-profile-menu {
+    position: absolute;
+    z-index: 9999;
+    width: 320px;
+    background:
+      radial-gradient(
+        140% 100% at 50% 0%,
+        color-mix(in srgb, var(--accent) 4%, var(--card-bg, #ffffff)) 0%,
+        var(--card-bg, #ffffff) 55%
+      );
+    border: 0.5px solid rgba(15, 23, 42, 0.08);
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 1px rgba(15, 23, 42, 0.02),
+      0 28px 80px -12px rgba(15, 23, 42, 0.22),
+      0 12px 32px -8px rgba(15, 23, 42, 0.14),
+      0 2px 6px rgba(15, 23, 42, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    padding: 32px 24px 16px;
+    transform-origin: top right;
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    animation: ch-profile-open 420ms cubic-bezier(0.19, 1, 0.22, 1) both;
+    will-change: transform, opacity, filter;
+  }
+  body[data-theme="dark"] .ch-profile-menu {
+    background:
+      radial-gradient(
+        140% 100% at 50% 0%,
+        color-mix(in srgb, var(--accent) 6%, #1d1f25) 0%,
+        #1d1f25 55%
+      );
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      0 28px 80px -12px rgba(0, 0, 0, 0.70),
+      0 12px 32px -8px rgba(0, 0, 0, 0.50),
+      0 2px 6px rgba(0, 0, 0, 0.40),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  /* Subtle gradient ring along the top edge of the menu — accent-tinted */
+  .ch-profile-menu::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+      transparent 45%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  @keyframes ch-profile-open {
+    0%   { opacity: 0; transform: translateY(-8px) scale(0.94); filter: blur(6px); }
+    60%  { opacity: 1; }
+    100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+  }
+  .ch-profile-menu.is-closing {
+    animation: ch-profile-close 240ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  @keyframes ch-profile-close {
+    0%   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-6px) scale(0.96); filter: blur(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-profile-menu,
+    .ch-profile-menu.is-closing { animation: none; }
+  }
+
+  /* Avatar — radial gradient + soft accent glow */
+  .ch-profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        80% 80% at 30% 25%,
+        color-mix(in srgb, var(--accent) 70%, #ffffff) 0%,
+        var(--accent) 50%,
+        color-mix(in srgb, var(--accent) 88%, #000) 100%
+      );
+    color: var(--text-button);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    align-self: center;
+    margin-bottom: 16px;
+    box-shadow:
+      0 8px 24px color-mix(in srgb, var(--accent) 30%, transparent),
+      0 2px 6px color-mix(in srgb, var(--accent) 22%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    position: relative;
+  }
+
+  .ch-profile-name {
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-strong);
+    text-align: center;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .ch-profile-email {
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-subtle);
+    text-align: center;
+    margin-top: 6px;
+    margin-bottom: 20px;
+    letter-spacing: 0;
+  }
+
+  /* Dividers — gradient hairline that fades out at the edges */
+  .ch-profile-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(15, 23, 42, 0.10) 12%,
+      rgba(15, 23, 42, 0.10) 88%,
+      transparent 100%
+    );
+    margin: 0 -4px;
+    border: 0;
+  }
+  body[data-theme="dark"] .ch-profile-divider {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.10) 12%,
+      rgba(255, 255, 255, 0.10) 88%,
+      transparent 100%
+    );
+  }
+
+  .ch-profile-row {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: var(--font-sans, 'Inter', system-ui);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-body);
+    cursor: pointer;
+    border-radius: 10px;
+    letter-spacing: 0;
+    transition:
+      background 220ms cubic-bezier(0.19, 1, 0.22, 1),
+      color 220ms cubic-bezier(0.19, 1, 0.22, 1),
+      transform 220ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .ch-profile-row:hover {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-profile-row:hover {
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+  .ch-profile-row:active { transform: scale(0.985); }
+  .ch-profile-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .ch-profile-row svg { flex-shrink: 0; transition: transform 220ms cubic-bezier(0.19, 1, 0.22, 1); }
+  .ch-profile-row.is-logout {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .ch-profile-row.is-link {
+    justify-content: flex-start;
+    padding: 14px 12px;
+  }
+  .ch-profile-row.is-link .ch-profile-row-chev {
+    margin-left: auto;
+    opacity: 0.4;
+    transition: transform 260ms cubic-bezier(0.19, 1, 0.22, 1), opacity 220ms ease;
+  }
+  .ch-profile-row.is-link:hover .ch-profile-row-chev {
+    transform: translateX(3px);
+    opacity: 0.8;
+  }
+
+  /* ── Sub-view stack ──
+     Both views (main + themes) live in the same grid cell so they
+     overlap. Inactive one fades + slides off-axis with pointer-events
+     disabled. Slides left when going into themes, right when going
+     back to main — directional via .ch-profile-menu.dir-* class. */
+  .ch-profile-stack {
+    display: grid;
+    grid-template-areas: 'stack';
+    position: relative;
+  }
+  /* Hidden views are absolutely positioned inside the grid area — they
+     fill the same visible space (so the cross-fade animation still lines
+     up) but DON'T contribute to the parent's height. That means the menu
+     opens sized to the current view (small for main, taller for themes)
+     rather than always sizing to the largest possible view. */
+  .ch-profile-view {
+    grid-area: stack;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute; inset: 0;
+    transition:
+      opacity 280ms cubic-bezier(0.19, 1, 0.22, 1),
+      transform 360ms cubic-bezier(0.19, 1, 0.22, 1),
+      filter 280ms cubic-bezier(0.19, 1, 0.22, 1);
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+  .ch-profile-view.is-visible {
+    position: relative; inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 60ms;
+  }
+  /* Going INTO themes — main slides left and out, themes comes in
+     from right. Going BACK — main comes in from left, themes slides
+     right and out. The dir class is set on the menu by JS. */
+  .ch-profile-menu.dir-forward .ch-profile-view-main:not(.is-visible) {
+    transform: translateX(-18px) scale(0.98);
+    filter: blur(3px);
+  }
+  .ch-profile-menu.dir-forward .ch-profile-view-themes:not(.is-visible) {
+    transform: translateX(18px) scale(0.98);
+    filter: blur(3px);
+  }
+  .ch-profile-menu.dir-back .ch-profile-view-main:not(.is-visible) {
+    transform: translateX(-18px) scale(0.98);
+    filter: blur(3px);
+  }
+  .ch-profile-menu.dir-back .ch-profile-view-themes:not(.is-visible) {
+    transform: translateX(18px) scale(0.98);
+    filter: blur(3px);
+  }
+  /* Default (no direction class set yet) — fade only */
+  .ch-profile-view:not(.is-visible) {
+    transform: translateX(8px) scale(0.99);
+    filter: blur(2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-profile-view {
+      transition: opacity 120ms ease !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+
+  /* ── Full-page theme switch animation (fallback for browsers
+       without View Transitions API). Animates color + bg + border
+       on common surfaces during the theme flip so it cross-fades
+       rather than snapping. */
+  body.ch-theme-transitioning,
+  body.ch-theme-transitioning *:not(svg):not(svg *) {
+    transition:
+      background-color 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      color 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      border-color 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      box-shadow 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      fill 380ms cubic-bezier(0.19, 1, 0.22, 1),
+      stroke 380ms cubic-bezier(0.19, 1, 0.22, 1) !important;
+  }
+
+  /* View Transitions API — theme SWEEP. The new theme draws down over
+     the old like a sheet: the new snapshot reveals through a feathered
+     vertical mask (300%-tall gradient, position 100% → 0% ≡ edge
+     travelling top → bottom) while the old state recedes with a
+     focus-pull blur. An accent filament (.ch-theme-sweep, spawned by
+     chThemeSweep inside the commit so it lives in the NEW snapshot)
+     rides just above the feather edge. Only fires where supported. */
+  @supports (view-transition-name: none) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      mix-blend-mode: normal;
+      animation-duration: 950ms;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.18, 1);
+      animation-fill-mode: both;
+    }
+    ::view-transition-old(root) {
+      animation-name: ch-vt-recede;
+    }
+    ::view-transition-new(root) {
+      animation-name: ch-vt-sweep;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 43%, transparent 57%, transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 0%, #000 43%, transparent 57%, transparent 100%);
+      -webkit-mask-size: 100% 300%;
+      mask-size: 100% 300%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    @keyframes ch-vt-recede {
+      to { filter: blur(9px) saturate(0.88); transform: scale(0.993); opacity: 0.88; }
+    }
+    @keyframes ch-vt-sweep {
+      from { -webkit-mask-position: 0 100%; mask-position: 0 100%; }
+      to { -webkit-mask-position: 0 0%; mask-position: 0 0%; }
+    }
+  }
+
+  /* The filament: a luminous accent hairline + soft trail that travels
+     with the sweep's reveal edge (identical 300%-tall gradient mechanics
+     and timing, so alignment is exact by construction). Sits INSIDE the
+     new snapshot, so the mask feather softens it as it arrives. */
+  .ch-theme-sweep {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    pointer-events: none;
+    background-image: linear-gradient(to bottom,
+      transparent 0%, transparent 40.5%,
+      color-mix(in srgb, var(--accent) 12%, transparent) 45.5%,
+      color-mix(in srgb, var(--accent) 46%, transparent) 47%,
+      var(--accent) 47.25%,
+      transparent 47.75%, transparent 100%);
+    background-size: 100% 300%;
+    background-repeat: no-repeat;
+    opacity: 0.85;
+    animation: ch-vt-sweep-filament 950ms cubic-bezier(0.45, 0, 0.18, 1) both;
+  }
+  @keyframes ch-vt-sweep-filament {
+    from { background-position: 0 100%; }
+    to { background-position: 0 0%; }
+  }
+
+  /* Themes sub-view */
+  .ch-profile-menu.is-themes { padding: 16px 8px 8px; }
+  .ch-profile-themes-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 14px 14px;
+  }
+  .ch-profile-themes-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+  .ch-profile-themes-close {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-subtle);
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 140ms ease, color 140ms ease;
+  }
+  .ch-profile-themes-close:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .ch-profile-themes-close:hover { background: rgba(255, 255, 255, 0.06); }
+  .ch-profile-theme-row {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    padding: 14px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-body);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 140ms ease, color 140ms ease;
+  }
+  .ch-profile-theme-row:hover { background: var(--accent-soft); }
+  .ch-profile-theme-row.is-active {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .ch-profile-theme-row.is-active svg { color: var(--accent); }
+  .ch-profile-theme-row svg { color: var(--text-body); flex-shrink: 0; }
+  /* Soft, non-boxy keyboard focus — accent tint + thin inset ring */
+  .ch-profile-theme-row:focus-visible {
+    outline: none;
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 42%, transparent);
+  }
+
+  .ch-saved-ico { width: 18px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ch-saved-ico .bx { font-size: 19px; }
+  /* Brand-logo icon — uses CSS mask-image so the underlying SVG's baked-in
+     fill is ignored and the icon inherits `color` (which we set to the
+     theme accent). Keeps the icon monochrome and on-palette per row. */
+  .ch-brand-ico {
+    width: 19px; height: 19px; display: inline-block;
+    background-color: currentColor;
+    -webkit-mask: var(--m) center / contain no-repeat;
+    mask: var(--m) center / contain no-repeat;
+  }
+
+  /* Brand WORDMARK in place of the live-text name: masked so it rides the
+     row's currentColor (ink at rest, accent when active). Width comes from
+     the artwork's aspect-ratio; height is a per-brand optical size (long
+     thin marks like PORSCHE run shorter than compact ones like NIKE). */
+  .ch-brand-wm {
+    display: inline-block; flex: 0 1 auto;
+    max-width: 132px;
+    background-color: currentColor;
+    -webkit-mask: var(--m) left center / contain no-repeat;
+    mask: var(--m) left center / contain no-repeat;
+  }
+
+  /* Section eyebrow — tight to its items below, generous space above so
+     the section reads as a distinct group instead of blending with the
+     prior list of rows. */
+  .ch-saved-head {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
+    text-transform: uppercase; color: var(--text-subtle);
+    padding: 18px 14px 4px;
+  }
+  /* One hover container for the whole row. No inter-row borders: sections
+     are grouped by proximity, and hover is enough to distinguish rows. */
+  .ch-saved-row {
+    display: flex; align-items: center;
+    border-radius: 9px;
+    transition: background 140ms ease;
+  }
+  .ch-saved-row:hover { background: var(--accent-soft); }
+  .ch-saved-apply {
+    flex: 1; min-width: 0;
+    appearance: none; background: transparent; border: 0;
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 6px 13px 14px;
+    font-family: inherit; font-size: 15px; color: var(--text-body);
+    cursor: pointer; border-radius: 9px 0 0 9px; text-align: left;
+  }
+  .ch-saved-name {
+    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ch-saved-apply.is-active { color: var(--accent); font-weight: 500; }
+
+  /* ============ TABS + VIEWPORT — working card→tab→app system (§16) ============
+     Additive only: nothing above this block (cover-art CSS, header chrome,
+     profile menu) is touched. Cards route into topnav tabs, each backed by
+     a lazily-created iframe kept alive in a fixed viewport under the topnav. */
+
+  /* Active-tab treatment, ported verbatim from canvas-workflows' own
+     topnav (.tab.active) — tabula never had it because it only ever had
+     one static decorative tab before this. */
+  .tab.active {
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: -0.08px;
+    background: var(--nav-selected);
+  }
+  .tab.active:hover { background: var(--nav-selected); }
+
+  /* Workflow has no source glyph among the five reused shell icons
+     (graphics/video/audio/text/canvas) — carries the same bx-network-chart
+     glyph already used on the Workflow card itself rather than inventing a
+     hand-drawn path; monochrome like every other tab-icon (§20.2). */
+  .tab-icon.workflow .bx { font-size: 13px; line-height: 1; }
+
+  /* A newly appended tab reads as "arriving" — the pre-existing static
+     Canvas tab never gets this class, only tabs created by openTab(). */
+  @keyframes tabPop {
+    0%   { opacity: 0; transform: scale(0.82); }
+    60%  { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .tab.tab-pop { animation: tabPop 240ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+  /* Launcher steps fully out of flow while a doc tab is active, so the
+     fixed viewport-stage below owns the screen and nothing scrolls
+     behind it. Restored the instant the class is removed — no persisted
+     state, so a refresh always lands back here (rule #1). */
+  body.tab-active .main-body,
+  body.tab-active .footer { display: none; }
+
+  .viewport-stage {
+    position: fixed;
+    top: 48px; left: 0; right: 0; bottom: 0;
+    background: var(--pg-bg);
+    z-index: 4;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms var(--ease-out);
+  }
+  .viewport-stage.is-active { opacity: 1; pointer-events: auto; }
+
+  .iframe-wrap { position: absolute; inset: 0; display: none; }
+  .iframe-wrap.is-active { display: block; }
+
+  .iframe-wrap iframe {
+    width: 100%; height: 100%;
+    border: 0; display: block;
+    background: var(--pg-bg);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 480ms var(--ease-out), transform 480ms var(--ease-out);
+    /* every chat-hat-lineage app carries a 48px topnav — slide it up behind
+       TABULA's own opaque nav so one nav is ever visible, no in-app surgery */
+    height: calc(100% + 48px);
+    margin-top: -48px;
+  }
+  .iframe-wrap iframe.is-risen {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 80ms;
+  }
+
+  .load-veil {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--pg-bg);
+    z-index: 2;
+    opacity: 1;
+    transition: opacity 500ms var(--ease-out);
+  }
+  .load-veil.is-hidden { opacity: 0; pointer-events: none; }
+  .veil-mark {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    animation: veilPulse 1600ms ease-in-out infinite;
+  }
+  @keyframes veilPulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.9; }
+  }
+
+  /* Card → viewport morph, same startViewTransition machinery the theme
+     sweep (§9) uses. Only the named group gets bespoke timing; the rest
+     of the page (the unnamed "root" group) is neutralized below so the
+     theme sweep's feathered mask doesn't fire on a card click. */
+  ::view-transition-group(card-morph) {
+    animation-duration: 650ms;
+    animation-timing-function: var(--ease-out);
+  }
+  html.ch-card-vt::view-transition-old(root),
+  html.ch-card-vt::view-transition-new(root) {
+    animation-duration: 300ms;
+    animation-timing-function: var(--ease-out);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  html.ch-card-vt::view-transition-old(root) { animation-name: ch-card-vt-out; }
+  html.ch-card-vt::view-transition-new(root) { animation-name: ch-card-vt-in; }
+  @keyframes ch-card-vt-out { to { opacity: 0; } }
+  @keyframes ch-card-vt-in { from { opacity: 0; } }
+</style>
+</head>
+<body>
+<!-- ============ THEME ENGINE + BOOT (ported from /TINKER/themes/index.html §9) ============
+     Workspace brand-reskin data + the palette/accent primitives live here, at the very
+     top of <body>, so the boot pass below can resolve + apply the saved theme before
+     first paint (no flash of the wrong theme). These are plain top-level declarations
+     (not IIFE-scoped) so the profile-menu controller script near the end of <body>
+     can reuse the same functions/consts without redeclaring them. -->
+<script>
+  // Workspace themes — real premium brand tokens across categories, baked-in and
+  // read-only (no edit pencil, not persisted as custom). Ordered auto → tech →
+  // luxury → streaming/watches/sport so the list reads like a category ladder.
+  // Each entry: palette = token map applied inline to <body> (surfaces, text,
+  // borders, hover tints) that overrides the base theme's tokens; font/fontStack
+  // swap the shell's typeface to match the brand. Palettes are Google-search
+  // grounded on each brand's real web guidelines; fonts pick the closest open
+  // equivalent — the exact brand faces are proprietary, nothing here reproduces them.
+  const WORKSPACE_THEMES = [
+    { id: 'ws:bmw', name: 'BMW', base: 'light', accent: '#1C69D4', logo: 'bmw.svg', wordmark: 'bmw.svg', wmAr: 3.036, wmScale: 0.85,
+      font: 'DM+Sans:wght@400;500;600;700', fontStack: '"DM Sans", "Helvetica Neue", Arial, sans-serif',
+      palette: {
+        '--pg-bg': '#F0F1F3',
+        '--card-bg': '#FFFFFF', '--nav-bg': '#FFFFFF', '--nav-selected': '#EAECEF',
+        '--text-strong': '#000000', '--text-body': '#262626', '--text-subtle': '#666666',
+        '--line': 'rgba(0,0,0,0.10)', '--line-solid': '#E5E7EA',
+        '--hover-soft': 'rgba(0,0,0,0.04)', '--hover-tint': 'rgba(0,0,0,0.025)'
+      } },
+    { id: 'ws:porsche', name: 'Porsche', base: 'light', accent: '#D5001C', logo: 'porsche.svg', wordmark: 'porsche.svg', wmAr: 14.556, wmScale: 0.65,
+      font: 'Manrope:wght@400;500;700;800', fontStack: '"Manrope", "Helvetica Neue", Arial, sans-serif',
+      palette: {
+        '--pg-bg': '#F1F1F1',
+        '--card-bg': '#FFFFFF', '--nav-bg': '#FFFFFF', '--nav-selected': '#E8E8E8',
+        '--text-strong': '#010205', '--text-body': '#252525', '--text-subtle': '#626669',
+        '--line': 'rgba(1,2,5,0.10)', '--line-solid': '#DFDFDF',
+        '--hover-soft': 'rgba(1,2,5,0.04)', '--hover-tint': 'rgba(1,2,5,0.025)'
+      } },
+    { id: 'ws:apple', name: 'Apple', base: 'light', accent: '#0071E3', logo: 'apple.svg', wordmark: 'apple.svg', wmAr: 2.77, wmScale: 1.0,
+      font: 'Inter:wght@400;500;600;700', fontStack: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif',
+      palette: {
+        '--pg-bg': '#F5F5F7',
+        '--card-bg': '#FFFFFF', '--nav-bg': '#FFFFFF', '--nav-selected': '#EDEDEF',
+        '--text-strong': '#1D1D1F', '--text-body': '#1D1D1F', '--text-subtle': '#6E6E73',
+        '--line': 'rgba(0,0,0,0.08)', '--line-solid': '#D2D2D7',
+        '--hover-soft': 'rgba(0,0,0,0.04)', '--hover-tint': 'rgba(0,0,0,0.02)'
+      } },
+    { id: 'ws:hermes', name: 'Hermès', base: 'light', accent: '#FF6900', logo: 'hermes.svg', wordmark: 'hermes.svg', wmAr: 5.684, wmScale: 0.8,
+      font: 'Cormorant+Garamond:wght@400;500;600;700', fontStack: '"Cormorant Garamond", "Garamond", "Times New Roman", serif',
+      palette: {
+        '--pg-bg': '#FDF8F2',
+        '--card-bg': '#FFFDFA', '--nav-bg': '#FFFDFA', '--nav-selected': '#F0E6D6',
+        '--text-strong': '#22221F', '--text-body': '#3B342D', '--text-subtle': '#6E655A',
+        '--line': 'rgba(34,34,31,0.12)', '--line-solid': '#EDE0C8',
+        '--hover-soft': 'rgba(255,105,0,0.06)', '--hover-tint': 'rgba(255,105,0,0.03)'
+      } },
+    { id: 'ws:rollsroyce', name: 'Rolls-Royce', base: 'dark', accent: '#B08B4C', logo: 'rollsroyce.svg', wordmark: 'rollsroyce.svg', wmAr: 7.213, wmScale: 0.8,
+      font: 'Bodoni+Moda:wght@400;500;600;700', fontStack: '"Bodoni Moda", "Didot", "Bodoni 72", "Playfair Display", "Times New Roman", serif',
+      palette: {
+        '--pg-bg': '#0A0A0A',
+        '--card-bg': '#141414', '--nav-bg': '#0A0A0A', '--nav-selected': '#1F1F1F',
+        '--text-strong': '#F5EBD5', '--text-body': '#D6C8A9', '--text-subtle': '#8A7E64',
+        '--line': 'rgba(176,139,76,0.20)', '--line-solid': '#2A2419',
+        '--hover-soft': 'rgba(176,139,76,0.08)', '--hover-tint': 'rgba(176,139,76,0.04)'
+      } },
+    { id: 'ws:spotify', name: 'Spotify', base: 'dark', accent: '#1DB954', logo: 'spotify.svg', wordmark: 'spotify.svg', wmAr: 3.621, wmScale: 1.0,
+      font: 'Manrope:wght@400;500;700;800', fontStack: '"Manrope", "Helvetica Neue", Arial, sans-serif',
+      palette: {
+        '--pg-bg': '#121212',
+        '--card-bg': '#181818', '--nav-bg': '#000000', '--nav-selected': '#282828',
+        '--text-strong': '#FFFFFF', '--text-body': '#E6E6E6', '--text-subtle': '#B3B3B3',
+        '--line': 'rgba(255,255,255,0.10)', '--line-solid': '#282828',
+        '--hover-soft': 'rgba(255,255,255,0.06)', '--hover-tint': 'rgba(255,255,255,0.03)'
+      } },
+    { id: 'ws:airbnb', name: 'Airbnb', base: 'light', accent: '#FF385C', logo: 'airbnb.svg', wordmark: 'airbnb.svg', wmAr: 3.62, wmScale: 0.92,
+      font: 'Nunito:wght@400;600;700;800', fontStack: '"Nunito", "Circular", -apple-system, "Helvetica Neue", Arial, sans-serif',
+      palette: {
+        '--pg-bg': '#FFFFFF',
+        '--card-bg': '#FFFFFF', '--nav-bg': '#FFFFFF', '--nav-selected': '#F7F7F7',
+        '--text-strong': '#222222', '--text-body': '#222222', '--text-subtle': '#717171',
+        '--line': 'rgba(0,0,0,0.08)', '--line-solid': '#DDDDDD',
+        '--hover-soft': 'rgba(0,0,0,0.05)', '--hover-tint': 'rgba(0,0,0,0.025)'
+      } },
+    { id: 'ws:ikea', name: 'IKEA', base: 'light', accent: '#0058A3', logo: 'ikea.svg', wordmark: 'ikea.svg', wmAr: 5.327, wmScale: 0.8,
+      font: 'Noto+Sans:wght@400;500;600;700', fontStack: '"Noto Sans", Verdana, "Helvetica Neue", Arial, sans-serif',
+      palette: {
+        '--pg-bg': '#F5F5F5',
+        '--card-bg': '#FFFFFF', '--nav-bg': '#FFFFFF', '--nav-selected': '#EDEDED',
+        '--text-strong': '#111111', '--text-body': '#333333', '--text-subtle': '#767676',
+        '--line': 'rgba(17,17,17,0.10)', '--line-solid': '#DFDFDF',
+        '--hover-soft': 'rgba(0,88,163,0.06)', '--hover-tint': 'rgba(0,88,163,0.03)'
+      } },
+    { id: 'ws:nike', name: 'Nike', base: 'dark', accent: '#FA5400', logo: 'nike.svg', wordmark: 'nike.svg', wmAr: 2.402, wmScale: 0.85,
+      font: 'Oswald:wght@400;500;600;700', fontStack: '"Oswald", "Trade Gothic Next", "Roboto Condensed", "Helvetica Neue", Arial, sans-serif',
+      palette: {
+        '--pg-bg': '#111111',
+        '--card-bg': '#1A1A1A', '--nav-bg': '#000000', '--nav-selected': '#2A2A2A',
+        '--text-strong': '#FFFFFF', '--text-body': '#F5F5F5', '--text-subtle': '#A8A8A8',
+        '--line': 'rgba(255,255,255,0.10)', '--line-solid': '#2A2A2A',
+        '--hover-soft': 'rgba(250,84,0,0.10)', '--hover-tint': 'rgba(250,84,0,0.05)'
+      } }
+  ];
+  const WORKSPACE_PALETTE_KEYS = Object.keys(WORKSPACE_THEMES[0].palette);
+  const _loadedFonts = new Set();
+  function loadWorkspaceFont(spec) {
+    // Inject Google Fonts <link> once per family. `display=swap` keeps
+    // paint immediate — the brand fallback stack renders until the
+    // remote font arrives, avoiding a flash of blank text.
+    if (!spec || _loadedFonts.has(spec)) return;
+    _loadedFonts.add(spec);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=' + spec + '&display=swap';
+    document.head.appendChild(link);
+  }
+  function applyWorkspacePalette(t) {
+    // Prime the font ahead of the paint swap so the fallback stack shows
+    // instantly and swaps to the real face when it arrives.
+    loadWorkspaceFont(t.font);
+    document.body.dataset.workspaceTheme = t.id.replace('ws:', '');
+    Object.entries(t.palette).forEach(([k, v]) => document.body.style.setProperty(k, v));
+    document.body.style.setProperty('--font-sans', t.fontStack);
+  }
+  function clearWorkspacePalette() {
+    if (!document.body.dataset.workspaceTheme) return;
+    delete document.body.dataset.workspaceTheme;
+    WORKSPACE_PALETTE_KEYS.forEach(k => document.body.style.removeProperty(k));
+    document.body.style.removeProperty('--font-sans');
+  }
+  function hexToRgb(h) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(h || '');
+    if (!m) return null;
+    const n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  // On-accent ink — pick whichever of near-black / white has the HIGHER
+  // WCAG contrast against the accent, so labels + icons sitting on the
+  // accent are always the accessible choice. Drives --text-button
+  // wherever an icon or label sits on an accent fill (the profile avatar).
+  function accentInk(rgb) {
+    const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    const L = 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2]);
+    const contrastWhite = (1.0 + 0.05) / (L + 0.05);
+    const contrastBlack = (L + 0.05) / (0.0 + 0.05);
+    return contrastBlack >= contrastWhite ? '#0a0a0a' : '#ffffff';
+  }
+  function applyAccent(hex) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return;
+    // Write onto <body>, NOT <html>: the dark theme re-declares --accent
+    // on body[data-theme="dark"], which shadows any <html>-level value
+    // for everything inside <body>. A body inline style outranks that
+    // rule, so one accent now drives highlights in BOTH light and dark.
+    const s = document.body.style;
+    s.setProperty('--accent', hex);
+    s.setProperty('--link', hex);
+    s.setProperty('--accent-soft', 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.12)');
+    s.setProperty('--text-button', accentInk(rgb));
+    document.body.classList.add('has-custom-accent');
+    try { localStorage.setItem('chatHatAccent', hex); } catch (e) {}
+  }
+  function clearAccent() {
+    const s = document.body.style;
+    s.removeProperty('--accent');
+    s.removeProperty('--link');
+    s.removeProperty('--accent-soft');
+    s.removeProperty('--text-button');
+    document.body.classList.remove('has-custom-accent');
+    try { localStorage.removeItem('chatHatAccent'); } catch (e) {}
+  }
+  function currentTheme() {
+    return document.body.dataset.theme === 'dark' ? 'dark' : 'light';
+  }
+  function activeThemeId() { try { return localStorage.getItem('chatHatActiveTheme') || null; } catch (e) { return null; } }
+  function setActiveThemeId(id) {
+    try { if (id) localStorage.setItem('chatHatActiveTheme', id); else localStorage.removeItem('chatHatActiveTheme'); } catch (e) {}
+  }
+
+  (function boot() {
+    // Base theme: ?theme= wins for QA (never persisted), else the last
+    // applied theme, else the OS preference — resolved here into an
+    // explicit body[data-theme] attribute so no CSS media-query duplicate
+    // is needed and there's no flash of the wrong theme on first paint.
+    // A ?theme= override also means QA wants a CLEAN Omni Light/Dark —
+    // it forces the base and skips restoring any persisted workspace
+    // (brand) reskin for this load, so a lingering BMW/Nike/etc. palette
+    // from an earlier session can't hide behind it.
+    const qTheme = new URLSearchParams(location.search).get('theme');
+    let theme;
+    let skipWorkspaceRestore = false;
+    if (qTheme === 'dark' || qTheme === 'light') {
+      theme = qTheme;
+      skipWorkspaceRestore = true;
+    } else {
+      // Bryan's standing rule: a fresh load ALWAYS lands on Omni Light and never
+      // inherits a theme chosen in an earlier session. We also CLEAR the keys:
+      // the sub-apps under apps/* are served from this same origin and read the
+      // same 'chatHatTheme', so without this an iframe restores dark on click.
+      // In-session picks still write the key, so an opened app matches the
+      // current theme until the next reload.
+      theme = 'light';
+      try {
+        localStorage.removeItem('chatHatTheme');
+        localStorage.removeItem('chatHatActiveTheme');
+      } catch (e) {}
+    }
+    document.body.dataset.theme = theme;
+
+    // Restore a workspace (brand) reskin across reloads — palette + font
+    // + accent, so the page looks identical to how it was left.
+    try {
+      const restoreId = skipWorkspaceRestore ? null : localStorage.getItem('chatHatActiveTheme');
+      if (restoreId && restoreId.indexOf('ws:') === 0) {
+        const restoreTheme = WORKSPACE_THEMES.find(x => x.id === restoreId);
+        if (restoreTheme) {
+          applyWorkspacePalette(restoreTheme);
+          applyAccent(restoreTheme.accent);
+        }
+      }
+    } catch (e) {}
+  })();
+</script>
+
+  <!-- ============ HEADER ============ -->
+  <div class="topnav">
+    <div class="nav-icon-cell" id="navMenuBtn" title="Menu" role="button" tabindex="0" aria-label="Open navigation panel" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="omni-cell">
+      <img class="omni-logo omni-logo--sm" src="/assets/omni-logo.png" alt="OMNI" />
+    </div>
+
+    <div class="nav-icon-cell nav-icon-cell--bordered" title="Home">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-8.5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <div class="workspace" id="workspaceBtn" title="Workspace" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false" aria-controls="workspaceMenu">
+      <span>Omnicom Precision Marketing</span>
+      <svg class="caret" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="workspace-menu" id="workspaceMenu" role="menu" aria-hidden="true">
+        <button class="workspace-menu-item active" role="menuitem" aria-current="true">
+          <span class="wsm-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M5 16 Q 5 8 9.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19 16 Q 19 8 14.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 16 L 12 8 L 15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="wsm-name">Omnicom Precision Marketing</span>
+        </button>
+        <button class="workspace-menu-item" role="menuitem">
+          <span class="wsm-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M5 16 Q 5 8 9.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19 16 Q 19 8 14.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 16 L 12 8 L 15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="wsm-name">Critical Mass</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tab" id="tabCanvas" data-kind="canvas" role="button" tabindex="0">
+      <span class="tab-icon canvas" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 11.6668 11.665" fill="none"><path d="M6.64962 0.0543193C5.68778 -0.0773318 4.70831 0.0312136 3.79864 0.370267C2.88897 0.70932 2.0774 1.26833 1.43637 1.9974C0.887745 2.62926 0.480685 3.3712 0.242533 4.17339C0.0043799 4.97559 -0.0593513 5.81946 0.0556197 6.64832C0.364786 8.91982 2.07279 10.8524 4.3052 11.4585C4.80286 11.5947 5.31641 11.6641 5.83237 11.665L5.9152 11.6644C6.2101 11.6606 6.49927 11.5824 6.75585 11.4369C7.01243 11.2915 7.22811 11.0836 7.38287 10.8326C7.53815 10.5829 7.62776 10.298 7.64336 10.0043C7.65897 9.7107 7.60006 9.4179 7.47212 9.15315L7.35604 8.91049C7.26675 8.73604 7.22483 8.54122 7.23445 8.34549C7.24407 8.14977 7.3049 7.96 7.41087 7.79515C7.56249 7.54886 7.80002 7.36752 8.07757 7.28617C8.35511 7.20483 8.65296 7.22926 8.91354 7.35474L9.15387 7.46965C9.3942 7.58515 9.6497 7.64407 9.91279 7.64407C10.3732 7.64171 10.8144 7.45931 11.1421 7.13588C11.4698 6.81245 11.6579 6.37366 11.6663 5.91332C11.6735 5.36965 11.6042 4.82767 11.4604 4.30332C10.8537 2.07149 8.92112 0.363486 6.64962 0.0543193ZM9.65845 6.4179L9.41812 6.30299C8.35179 5.79082 7.04395 6.18749 6.4227 7.17449C5.9922 7.86049 5.94845 8.67715 6.3037 9.41565L6.41979 9.65832C6.4633 9.74647 6.48341 9.84433 6.4782 9.9425C6.47299 10.0407 6.44263 10.1358 6.39004 10.2189C6.33878 10.3037 6.26658 10.374 6.18037 10.4229C6.09416 10.4719 5.99683 10.4978 5.8977 10.4983H5.83237C5.41953 10.4972 5.00863 10.4417 4.61029 10.3332C2.82354 9.84848 1.45854 8.30382 1.21179 6.4914C1.02454 5.11765 1.41712 3.79465 2.31604 2.76449C2.82747 2.17779 3.47748 1.72828 4.20695 1.45687C4.93641 1.18546 5.72216 1.10077 6.4927 1.21049C8.30512 1.45724 9.84979 2.82282 10.3345 4.60899C10.45 5.03482 10.5055 5.46882 10.499 5.8964C10.492 6.36715 10.0061 6.58649 9.65845 6.4179Z" fill="currentColor"/><circle cx="3.20794" cy="7.28996" r="0.875" fill="currentColor"/><circle cx="3.20794" cy="4.95662" r="0.875" fill="currentColor"/><circle cx="4.95794" cy="3.20662" r="0.875" fill="currentColor"/><circle cx="7.29127" cy="3.20662" r="0.875" fill="currentColor"/></svg>
+      </span>
+      Canvas
+    </div>
+
+    <div class="add-tab add-tab--active" id="addTabBtn" title="New tab" role="button" tabindex="0" aria-label="New tab">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1"/><path d="M9 5.5v7M5.5 9h7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-right">
+      <!-- v1/v2/v3 version-switch removed from the DOM on the Chat Hat
+           page. Bryan asked for them hidden + unselectable. The body
+           is hard-pinned to data-version="v3" above, and the page
+           never offers a way to switch off that version. -->
+
+      <div class="me">
+        <span class="avatar" aria-label="Bryan Cocco">BC</span>
+        <span>Bryan</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <button class="nav-menu-secondary" id="navMenuBtn2" type="button" aria-label="Open navigation panel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ============ BODY ============ -->
+  <main class="main-body">
+
+    <div class="hero-row">
+      <div class="hero-copy">
+        <h1 class="hero-title"><span class="hero-word hero-word--ink">New</span> <span class="hero-word hero-word--ghost">Tab</span></h1>
+      </div>
+    </div>
+
+    <!-- 01 · APPS -->
+    <div class="section-rule rule-apps">
+      <span class="rule-label">Apps</span>
+    </div>
+
+    <div class="apps-grid">
+
+      <!-- Canvas -->
+      <article class="tile-card card-feature card-canvas" style="--accent: var(--ic-canvas);" tabindex="0" role="button" data-kind="canvas">
+        <div class="tile-content">
+          <div class="tile-head">
+            <span class="skill-icon-tile app-icon-tile" style="--tile-accent: #2ec5c9;"><i class='bx bx-palette'></i></span>
+            <span class="tile-title">Canvas</span>
+          </div>
+          <div class="chip-row">
+            <span class="chip">Intelligence</span>
+            <span class="chip">Execution</span>
+          </div>
+          <p class="tile-desc">Turn intelligence into action in a collaborative space where strategy, assets, and performance live side by side.</p>
+        </div>
+      </article>
+
+      <!-- Workflow -->
+      <article class="tile-card card-feature card-workflow" style="--accent: var(--ic-workflow);" tabindex="0" role="button" data-kind="workflow">
+        <div class="tile-content">
+          <div class="tile-head">
+            <span class="skill-icon-tile app-icon-tile" style="--tile-accent: #4a7dfa;"><i class='bx bx-network-chart'></i></span>
+            <span class="tile-title">Workflow</span>
+          </div>
+          <div class="chip-row">
+            <span class="chip">Node Editor</span>
+            <span class="chip">Automation</span>
+          </div>
+          <p class="tile-desc">Build node-based workflows that chain skills together — design the flow once, then run it end to end.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- 02 · SKILLS -->
+    <div class="section-rule rule-skills">
+      <span class="rule-label">Core Skills</span>
+    </div>
+
+    <!-- Twelve uniform cards, one visual language (v1 icon-tile + v3 card
+         shell). First five descriptions are LOCKED verbatim (Bryan-approved
+         copy); the remaining seven (brief/moodboard/storyboard/persona/
+         mockups/plan/instagram) are PLACEHOLDER copy, swap when real copy
+         lands. All twelve data-kind values are already wired in ROUTES
+         (see the card→tab→app script at the bottom of body). -->
+    <div class="skills-grid">
+      <article class="tile-card skill-card skc-text" style="--tile-accent:#5DD3E0;" tabindex="0" role="button" data-kind="text">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><span class="t-glyph">T</span></span>
+          <span class="skill-card-title">Text</span>
+        </div>
+        <div class="chip-row"><span class="chip">Text Generation</span></div>
+        <p class="skill-card-desc">Make your message hit the mark. Generate copy that's tuned specifically to your audience.</p>
+      </article>
+      <article class="tile-card skill-card skc-graphics" style="--tile-accent:#7ED98C;" tabindex="0" role="button" data-kind="graphics">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-image"></i></span>
+          <span class="skill-card-title">Graphics</span>
+        </div>
+        <div class="chip-row"><span class="chip">Image Generation</span><span class="chip">Creative</span></div>
+        <p class="skill-card-desc">Skip the photoshoot and get client-right assets from the top image-generating models, all in one place.</p>
+      </article>
+      <article class="tile-card skill-card skc-video" style="--tile-accent:#FF7B6E;" tabindex="0" role="button" data-kind="video">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-video"></i></span>
+          <span class="skill-card-title">Video</span>
+        </div>
+        <div class="chip-row"><span class="chip">Image to Video</span><span class="chip">Creative</span></div>
+        <p class="skill-card-desc">So long, storyboards. Use an image to create high fidelity, cinematic quality video in near real-time.</p>
+      </article>
+      <article class="tile-card skill-card skc-audio" style="--tile-accent:#9B8AFB;" tabindex="0" role="button" data-kind="audio">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-equalizer"></i></span>
+          <span class="skill-card-title">Audio</span>
+        </div>
+        <div class="chip-row"><span class="chip">Text to Audio</span></div>
+        <p class="skill-card-desc">Turn text into life like human voices for voiceover, narration and more.</p>
+      </article>
+
+
+    </div>
+
+    <div class="section-rule rule-skills rule-skills-2">
+      <span class="rule-label">Skills</span>
+    </div>
+
+    <div class="skills-grid">
+      <article class="tile-card skill-card skill-quiet skc-research" style="--tile-accent:#F5C677;" tabindex="0" role="button" data-kind="research">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-search-alt-2"></i></span>
+          <span class="skill-card-title">Deep Research</span>
+        </div>
+        <div class="chip-row"><span class="chip">Research</span><span class="chip">All</span></div>
+        <p class="skill-card-desc">Deep Research powered by multi-agent collaboration.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-brief" style="--tile-accent:#4a7dfa;" tabindex="0" role="button" data-kind="brief">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-file-blank"></i></span>
+          <span class="skill-card-title">Creative Brief</span>
+        </div>
+        <div class="chip-row"><span class="chip">Strategy</span><span class="chip">Alignment</span></div>
+        <p class="skill-card-desc">Start with a brief that keeps everyone aligned — objectives, audience, and deliverables in one place.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-moodboard" style="--tile-accent:#F2B64C;" tabindex="0" role="button" data-kind="moodboard">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-collection"></i></span>
+          <span class="skill-card-title">Moodboard</span>
+        </div>
+        <div class="chip-row"><span class="chip">Curation</span><span class="chip">Creative</span></div>
+        <p class="skill-card-desc">Collect references, textures, and tone into a board that sets the creative direction.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-storyboard" style="--tile-accent:#2ec5c9;" tabindex="0" role="button" data-kind="storyboard">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-columns"></i></span>
+          <span class="skill-card-title">Storyboard</span>
+        </div>
+        <div class="chip-row"><span class="chip">Narrative</span><span class="chip">Pre-production</span></div>
+        <p class="skill-card-desc">Sketch the narrative shot by shot before production starts.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-persona" style="--tile-accent:#FF9F68;" tabindex="0" role="button" data-kind="persona">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-user"></i></span>
+          <span class="skill-card-title">Persona</span>
+        </div>
+        <div class="chip-row"><span class="chip">Audience</span><span class="chip">Insights</span></div>
+        <p class="skill-card-desc">Build rich audience personas grounded in real signals.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-mockups" style="--tile-accent:#6172f3;" tabindex="0" role="button" data-kind="mockups">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-window-alt"></i></span>
+          <span class="skill-card-title">Mockups</span>
+        </div>
+        <div class="chip-row"><span class="chip">Presentation</span><span class="chip">Creative</span></div>
+        <p class="skill-card-desc">Drop concepts into device frames and real-world scenes.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-plan" style="--tile-accent:#52d769;" tabindex="0" role="button" data-kind="plan">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-list-check"></i></span>
+          <span class="skill-card-title">Project Plan</span>
+        </div>
+        <div class="chip-row"><span class="chip">Planning</span><span class="chip">Operations</span></div>
+        <p class="skill-card-desc">Map the work — phases, owners, and timelines at a glance.</p>
+      </article>
+      <article class="tile-card skill-card skill-quiet skc-instagram" style="--tile-accent:#e17bd6;" tabindex="0" role="button" data-kind="instagram">
+        <div class="skill-card-head">
+          <span class="skill-icon-tile" aria-hidden="true"><i class="bx bx-share-alt"></i></span>
+          <span class="skill-card-title">Social Post</span>
+        </div>
+        <div class="chip-row"><span class="chip">Social</span><span class="chip">Creative</span></div>
+        <p class="skill-card-desc">Turn ideas into feed-ready posts, sized and styled for every platform.</p>
+      </article>
+    </div>
+  </main>
+
+  <!-- ============ VIEWPORT — working card→tab→app system (§16) ============
+       Fixed under the topnav; JS lazily creates one iframe-wrap per opened
+       tab kind and appends it here. Hidden/inert until the first tab opens. -->
+  <div class="viewport-stage" id="viewportStage" hidden aria-hidden="true"></div>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer">
+    <span class="copy">© 2026 Omnicom Group Inc.</span>
+    <img class="omni-logo omni-logo--sm" src="/assets/omni-logo.png" alt="OMNI" />
+    <span class="links">
+      <a href="#">FAQs</a>
+      <a href="#">Code of Conduct</a>
+      <a href="#">Acceptable Use Policy</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Data Subject Access Request</a>
+    </span>
+  </div>
+
+<script>
+  (() => {
+    const btn = document.getElementById('workspaceBtn');
+    const menu = document.getElementById('workspaceMenu');
+    if (!btn || !menu) return;
+    const set = (open) => {
+      btn.setAttribute('aria-expanded', String(open));
+      menu.setAttribute('aria-hidden', String(!open));
+      menu.classList.toggle('open', open);
+    };
+    btn.addEventListener('click', (e) => { e.stopPropagation(); set(!menu.classList.contains('open')); });
+    document.addEventListener('click', (e) => { if (!btn.contains(e.target)) set(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+  })();
+</script>
+
+<!-- ============ PROFILE MENU CONTROLLER (ported from /TINKER/themes/index.html §9) ============
+     Builds the popover on the topnav .me chip lazily on first open. Uses the
+     WORKSPACE_THEMES data + applyWorkspacePalette/applyAccent/etc. declared
+     in the boot script at the top of <body>. -->
+<script>
+(function () {
+  'use strict';
+  const meChip = document.querySelector('.me');
+  if (!meChip) return;
+
+  meChip.setAttribute('role', 'button');
+  meChip.setAttribute('tabindex', '0');
+  meChip.setAttribute('aria-haspopup', 'menu');
+  meChip.setAttribute('aria-expanded', 'false');
+  meChip.style.userSelect = 'none';
+
+  const SUN  = '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M14.5 8H13M3 8H1.5M12.6 3.4l-1.06 1.06M4.46 11.54L3.4 12.6M12.6 12.6l-1.06-1.06M4.46 4.46L3.4 3.4"/></svg>';
+  const MOON = '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 1 1 6.5 2.5a4 4 0 0 0 7 7z"/></svg>';
+  const PAL  = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="8" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="12.5" cy="8" r="1"/><path d="M9 2a7 7 0 1 0 0 14c1.5 0 1.5-1.5.5-2-1-.5-.5-2 1-2h1.5A4 4 0 0 0 16 8 7 7 0 0 0 9 2z"/></svg>';
+  const CHEV = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3l3 3-3 3"/></svg>';
+  const X    = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
+
+  let overlay = null, menu = null, isOpen = false;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  function build() {
+    overlay = document.createElement('div');
+    overlay.className = 'ch-profile-overlay';
+    overlay.addEventListener('click', close);
+
+    menu = document.createElement('div');
+    menu.className = 'ch-profile-menu';
+    menu.setAttribute('role', 'menu');
+    menu.setAttribute('aria-label', 'Profile');
+    menu.addEventListener('click', (e) => e.stopPropagation());
+
+    // Stack container holds both sub-views overlapped via CSS grid
+    // so they can cross-fade with directional slide on switch.
+    const stack = document.createElement('div');
+    stack.className = 'ch-profile-stack';
+
+    const main = document.createElement('div');
+    main.className = 'ch-profile-view ch-profile-view-main is-visible';
+    main.innerHTML =
+      '<div class="ch-profile-avatar" aria-hidden="true">BC</div>' +
+      '<div class="ch-profile-name">Bryan Cocco</div>' +
+      '<div class="ch-profile-email">bryan.cocco@omc.com</div>' +
+      '<div class="ch-profile-divider" aria-hidden="true"></div>' +
+      '<button class="ch-profile-row is-link" type="button" data-action="open-themes" role="menuitem">' +
+        '<span class="ch-profile-row-icon">' + PAL + '</span>' +
+        '<span class="ch-profile-row-label">Themes</span>' +
+        '<span class="ch-profile-row-chev" aria-hidden="true">' + CHEV + '</span>' +
+      '</button>' +
+      '<div class="ch-profile-divider" aria-hidden="true"></div>' +
+      '<button class="ch-profile-row is-logout" type="button" data-action="logout" role="menuitem">' +
+        '<span>Log out</span>' +
+        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3-3-3-3M12 8H4M6 14H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h2"/></svg>' +
+      '</button>';
+
+    const themes = document.createElement('div');
+    themes.className = 'ch-profile-view ch-profile-view-themes';
+    themes.innerHTML =
+      '<div class="ch-profile-themes-head">' +
+        '<span class="ch-profile-themes-title">Themes</span>' +
+        '<button class="ch-profile-themes-close" type="button" data-action="close-themes" aria-label="Close">' + X + '</button>' +
+      '</div>' +
+      '<div class="ch-profile-divider" aria-hidden="true"></div>' +
+      '<div class="ch-saved-head">Default</div>' +
+      '<div class="ch-profile-theme-list">' +
+        '<button class="ch-profile-theme-row" type="button" data-theme="dark" role="menuitem">' + MOON + '<span>Omni Dark</span></button>' +
+        '<button class="ch-profile-theme-row" type="button" data-theme="light" role="menuitem">' + SUN + '<span>Omni Light</span></button>' +
+      '</div>' +
+      '<div class="ch-profile-workspace" id="chWorkspaceThemes"></div>';
+
+    stack.appendChild(main);
+    stack.appendChild(themes);
+    menu.appendChild(stack);
+    overlay.appendChild(menu);
+    document.body.appendChild(overlay);
+
+    main.querySelector('[data-action="open-themes"]').addEventListener('click', showThemes);
+    main.querySelector('[data-action="logout"]').addEventListener('click', logout);
+    themes.querySelector('[data-action="close-themes"]').addEventListener('click', goBackToMain);
+    themes.querySelectorAll('[data-theme]').forEach(btn => {
+      btn.addEventListener('click', () => applyTheme(btn.getAttribute('data-theme')));
+    });
+  }
+  function position() {
+    if (!menu) return;
+    const r = meChip.getBoundingClientRect();
+    menu.style.top = Math.round(r.bottom + 8) + 'px';
+    menu.style.right = Math.round(window.innerWidth - r.right) + 'px';
+    menu.style.left = 'auto';
+  }
+  function resetToMain() {
+    if (!menu) return;
+    menu.classList.remove('is-themes', 'dir-forward', 'dir-back');
+    menu.querySelector('.ch-profile-view-main').classList.add('is-visible');
+    menu.querySelector('.ch-profile-view-themes').classList.remove('is-visible');
+  }
+  function showThemes() {
+    if (!menu) return;
+    menu.classList.add('is-themes');
+    menu.classList.remove('dir-back');
+    menu.classList.add('dir-forward');
+    menu.querySelector('.ch-profile-view-main').classList.remove('is-visible');
+    menu.querySelector('.ch-profile-view-themes').classList.add('is-visible');
+    renderWorkspaceThemes();
+    syncActive();
+    // Don't auto-focus a row — that flashed a heavy focus ring on open for
+    // mouse users. Keyboard users can Tab in; focus-visible stays subtle.
+  }
+  function goBackToMain() {
+    if (!menu) return;
+    menu.classList.remove('is-themes', 'dir-forward');
+    menu.classList.add('dir-back');
+    menu.querySelector('.ch-profile-view-themes').classList.remove('is-visible');
+    menu.querySelector('.ch-profile-view-main').classList.add('is-visible');
+    const themesRow = menu.querySelector('[data-action="open-themes"]');
+    if (themesRow) setTimeout(() => themesRow.focus({ preventScroll: true }), 360);
+  }
+  function syncActive() {
+    if (!menu) return;
+    const c = currentTheme();
+    const active = activeThemeId();
+    menu.querySelectorAll('.ch-profile-theme-row[data-theme]').forEach(row => {
+      row.classList.toggle('is-active', !active && row.getAttribute('data-theme') === c);
+    });
+    menu.querySelectorAll('.ch-saved-apply').forEach(row => {
+      const id = row.getAttribute('data-id') || row.getAttribute('data-ws');
+      row.classList.toggle('is-active', id === active);
+    });
+  }
+  function applyTheme(t) {
+    if (t !== 'dark' && t !== 'light') return;
+    // Skip the no-op only when the base already matches AND there's no
+    // workspace theme to strip. Otherwise fall through to the commit so
+    // Omni Dark/Light truly resets to defaults — no leftover workspace
+    // font, palette, or accent.
+    if (currentTheme() === t && !document.body.dataset.workspaceTheme && !activeThemeId()) return;
+
+    const commit = () => {
+      document.body.dataset.theme = t;
+      try { localStorage.setItem('chatHatTheme', t); } catch (e) {}
+      clearWorkspacePalette();
+      clearAccent();
+      setActiveThemeId(null);
+      syncActive();
+    };
+
+    chThemeSweep(commit);
+  }
+
+  // ── Theme sweep — ONE transition for every theme commit ──────
+  // Instead of the default View-Transition cross-fade (reads as a
+  // blink), the NEW theme draws DOWN over the old like a sheet: the
+  // new snapshot reveals through a feathered vertical mask while the
+  // old state recedes with a focus-pull blur, and an accent filament
+  // rides the reveal edge. The filament is spawned INSIDE the commit
+  // so it lives in the NEW snapshot (masked with it) and reads the NEW
+  // theme's accent. Falls back to a global color cross-fade class
+  // where View Transitions don't exist.
+  function chThemeSweep(commit) {
+    if (typeof document.startViewTransition !== 'function' ||
+        matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.body.classList.add('ch-theme-transitioning');
+      commit();
+      setTimeout(() => document.body.classList.remove('ch-theme-transitioning'), 450);
+      return;
+    }
+    let filament = null;
+    const vt = document.startViewTransition(() => {
+      commit();
+      filament = document.createElement('div');
+      filament.className = 'ch-theme-sweep';
+      filament.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(filament);
+    });
+    vt.finished.finally(() => { if (filament) filament.remove(); });
+  }
+
+  function applyWorkspaceTheme(t) {
+    // Same commit path as Omni Dark/Light, but stores the workspace id
+    // (`ws:*`) so re-highlighting works without persisting anything
+    // beyond that id. Read-only presets — no edit affordance rendered.
+    // Also swaps the full palette + typography via applyWorkspacePalette
+    // so the page truly rebrands, plus the accent via applyAccent.
+    const base = t.base === 'dark' ? 'dark' : 'light';
+    const commit = () => {
+      document.body.dataset.theme = base;
+      try { localStorage.setItem('chatHatTheme', base); } catch (e) {}
+      applyWorkspacePalette(t);
+      applyAccent(t.accent);
+      setActiveThemeId(t.id);
+      syncActive();
+    };
+    chThemeSweep(commit);
+  }
+  function renderWorkspaceThemes() {
+    if (!menu) return;
+    const host = menu.querySelector('#chWorkspaceThemes');
+    if (!host) return;
+    const active = activeThemeId();
+    const rows = WORKSPACE_THEMES.map(t =>
+      '<div class="ch-saved-row ch-saved-row--ws">' +
+        '<button class="ch-saved-apply' + (t.id === active ? ' is-active' : '') + '" type="button" role="menuitem" data-ws="' + esc(t.id) + '" aria-label="' + esc(t.name) + '">' +
+          '<span class="ch-saved-ico" style="color:' + esc(t.accent) + '">' +
+            '<span class="ch-brand-ico" style="--m:url(&quot;assets/brands/' + esc(t.logo) + '&quot;)"></span>' +
+          '</span>' +
+          // The name is the brand's REAL wordmark artwork (masked, so it takes
+          // the row's text color / accent), not live text — text fallback only
+          // for entries without a wordmark file.
+          (t.wordmark
+            ? '<span class="ch-brand-wm" role="img" aria-label="' + esc(t.name) + '" style="--m:url(&quot;assets/brands/wordmarks/' + esc(t.wordmark) + '&quot;); aspect-ratio:' + t.wmAr + '; height:' + (13 * (t.wmScale || 1)).toFixed(1) + 'px"></span>'
+            : '<span class="ch-saved-name">' + esc(t.name) + '</span>') +
+        '</button>' +
+      '</div>'
+    ).join('');
+    host.innerHTML = '<div class="ch-saved-head">Workspace themes</div>' + rows;
+    host.querySelectorAll('.ch-saved-apply').forEach(b => b.addEventListener('click', () => {
+      const t = WORKSPACE_THEMES.find(x => x.id === b.getAttribute('data-ws'));
+      if (t) applyWorkspaceTheme(t);
+    }));
+  }
+
+  function logout() {
+    // Log-out is a no-op in this prototype — there's no chat stream here
+    // to post a confirmation into, so this just closes the menu.
+    close();
+  }
+  function open() {
+    if (isOpen) return;
+    if (!menu) build(); else { resetToMain(); syncActive(); document.body.appendChild(overlay); }
+    position();
+    isOpen = true;
+    meChip.setAttribute('aria-expanded', 'true');
+    const first = menu.querySelector('.ch-profile-view.is-visible button');
+    if (first) setTimeout(() => first.focus({ preventScroll: true }), 30);
+  }
+  function close() {
+    if (!isOpen) return;
+    isOpen = false;
+    meChip.setAttribute('aria-expanded', 'false');
+    if (!menu || !overlay || !overlay.parentNode) return;
+    // Animated close — keep DOM mounted, fade/scale out, then detach.
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      overlay.parentNode.removeChild(overlay);
+      return;
+    }
+    menu.classList.add('is-closing');
+    setTimeout(() => {
+      menu.classList.remove('is-closing');
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 240);
+  }
+
+  meChip.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isOpen) close(); else open();
+  });
+  meChip.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (isOpen) close(); else open();
+    }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) close(); });
+  window.addEventListener('resize', () => { if (isOpen) position(); });
+  window.addEventListener('scroll', () => { if (isOpen) position(); }, true);
+})();
+</script>
+
+<!-- ============ CARD → TAB → APP SYSTEM (§16) ============
+     Routes every card into a topnav tab backed by a lazily-created,
+     kept-alive iframe in the fixed viewport-stage. No persistence
+     anywhere here — a refresh always drops back to the launcher with
+     only the static Canvas tab, per the page's rule #1. -->
+<script>
+(function () {
+  'use strict';
+
+  // ---- Routing table — every surface is an EXISTING build, reached
+  // through the apps/ symlinks (or the patched dist copy for workflow). ----
+  const ROUTES = {
+    canvas:   { src: 'https://omni-manifest.vercel.app/?mode=full',                      label: 'Canvas',        iconClass: 'canvas'   },
+    workflow: { src: 'https://canvas-workflows.vercel.app/?flow=1',             label: 'Workflow',      iconClass: 'workflow' },
+    text:     { src: 'https://omni-manifest.vercel.app/',                    label: 'Text',          iconClass: 'text'     },
+    graphics: { src: 'https://canvas-graphics.vercel.app/?state=styled',       label: 'Graphics',      iconClass: 'graphics' },
+    video:    { src: 'https://canvas-graphics.vercel.app/?state=video-create', label: 'Video',         iconClass: 'video'    },
+    audio:    { src: 'https://omni-manifest.vercel.app/?mode=full',                      label: 'Audio',         iconClass: 'audio'    },
+    research: { src: 'https://omni-manifest.vercel.app/?mode=full',                      label: 'Deep Research', iconClass: 'canvas'   },
+
+    // v3-cards — the remaining seven skill cards (§ chat-hat capabilities).
+    // No dedicated builds for these yet, so every one opens Canvas (same
+    // pattern as Audio/Deep Research above) under its own tab label,
+    // using the shell's own canvas tab-icon glyph.
+    brief:      { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Creative Brief', iconClass: 'canvas' },
+    moodboard:  { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Moodboard',      iconClass: 'canvas' },
+    storyboard: { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Storyboard',     iconClass: 'canvas' },
+    persona:    { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Persona',        iconClass: 'canvas' },
+    mockups:    { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Mockups',        iconClass: 'canvas' },
+    plan:       { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Project Plan',   iconClass: 'canvas' },
+    instagram:  { src: 'https://omni-manifest.vercel.app/?mode=full', label: 'Social Post', iconClass: 'canvas' }
+  };
+
+  // Reused verbatim from /TINKER/canvas-workflows/index.html's topnav —
+  // the shell's own tab-icon glyphs. Canvas serves both Canvas + Deep
+  // Research (no dedicated "research" glyph exists in the source).
+  const TAB_GLYPHS = {
+    canvas: '<svg width="12" height="12" viewBox="0 0 11.6668 11.665" fill="none"><path d="M6.64962 0.0543193C5.68778 -0.0773318 4.70831 0.0312136 3.79864 0.370267C2.88897 0.70932 2.0774 1.26833 1.43637 1.9974C0.887745 2.62926 0.480685 3.3712 0.242533 4.17339C0.0043799 4.97559 -0.0593513 5.81946 0.0556197 6.64832C0.364786 8.91982 2.07279 10.8524 4.3052 11.4585C4.80286 11.5947 5.31641 11.6641 5.83237 11.665L5.9152 11.6644C6.2101 11.6606 6.49927 11.5824 6.75585 11.4369C7.01243 11.2915 7.22811 11.0836 7.38287 10.8326C7.53815 10.5829 7.62776 10.298 7.64336 10.0043C7.65897 9.7107 7.60006 9.4179 7.47212 9.15315L7.35604 8.91049C7.26675 8.73604 7.22483 8.54122 7.23445 8.34549C7.24407 8.14977 7.3049 7.96 7.41087 7.79515C7.56249 7.54886 7.80002 7.36752 8.07757 7.28617C8.35511 7.20483 8.65296 7.22926 8.91354 7.35474L9.15387 7.46965C9.3942 7.58515 9.6497 7.64407 9.91279 7.64407C10.3732 7.64171 10.8144 7.45931 11.1421 7.13588C11.4698 6.81245 11.6579 6.37366 11.6663 5.91332C11.6735 5.36965 11.6042 4.82767 11.4604 4.30332C10.8537 2.07149 8.92112 0.363486 6.64962 0.0543193ZM9.65845 6.4179L9.41812 6.30299C8.35179 5.79082 7.04395 6.18749 6.4227 7.17449C5.9922 7.86049 5.94845 8.67715 6.3037 9.41565L6.41979 9.65832C6.4633 9.74647 6.48341 9.84433 6.4782 9.9425C6.47299 10.0407 6.44263 10.1358 6.39004 10.2189C6.33878 10.3037 6.26658 10.374 6.18037 10.4229C6.09416 10.4719 5.99683 10.4978 5.8977 10.4983H5.83237C5.41953 10.4972 5.00863 10.4417 4.61029 10.3332C2.82354 9.84848 1.45854 8.30382 1.21179 6.4914C1.02454 5.11765 1.41712 3.79465 2.31604 2.76449C2.82747 2.17779 3.47748 1.72828 4.20695 1.45687C4.93641 1.18546 5.72216 1.10077 6.4927 1.21049C8.30512 1.45724 9.84979 2.82282 10.3345 4.60899C10.45 5.03482 10.5055 5.46882 10.499 5.8964C10.492 6.36715 10.0061 6.58649 9.65845 6.4179Z" fill="currentColor"/><circle cx="3.20794" cy="7.28996" r="0.875" fill="currentColor"/><circle cx="3.20794" cy="4.95662" r="0.875" fill="currentColor"/><circle cx="4.95794" cy="3.20662" r="0.875" fill="currentColor"/><circle cx="7.29127" cy="3.20662" r="0.875" fill="currentColor"/></svg>',
+    graphics: '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="6" r="1" fill="currentColor"/><path d="M2 11l3-3 2.5 2.5L10 7l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    video: '<svg width="10" height="9" viewBox="0 0 10 9" fill="none"><path d="M8 4C8 3.5205 7.66 3.1195 7.2095 3.023C7.3895 2.7225 7.5 2.375 7.5 2C7.5 0.897 6.603 0 5.5 0C4.7415 0 4.0895 0.4285 3.75 1.052C3.4105 0.4285 2.7585 0 2 0C0.897 0 0 0.897 0 2C0 2.451 0.156 2.8635 0.4085 3.198C0.282294 3.29029 0.179562 3.41096 0.1086 3.55028C0.0376385 3.6896 0.000436979 3.84365 0 4V8C0 8.5515 0.4485 9 1 9H7C7.5515 9 8 8.5515 8 8V6.681L10 7.681V4.181L8 5.181V4ZM5.5 1C6.0515 1 6.5 1.4485 6.5 2C6.5 2.5515 6.0515 3 5.5 3C4.9485 3 4.5 2.5515 4.5 2C4.5 1.4485 4.9485 1 5.5 1ZM2 1C2.5515 1 3 1.4485 3 2C3 2.5515 2.5515 3 2 3C1.4485 3 1 2.5515 1 2C1 1.4485 1.4485 1 2 1ZM1 8V4H7L7.001 8H1Z" fill="currentColor"/></svg>',
+    audio: '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7v0M5.5 5v4M8 3.5v7M10.5 5v4M13 7v0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    text: '<svg width="9" height="10" viewBox="0 0 7 8" fill="none"><path d="M0 2H1V1H2.626L1.34 7H0V8H4V7H2.874L4.16 1H6V2H7V0H0V2Z" fill="currentColor"/></svg>'
+  };
+
+  const topnav = document.querySelector('.topnav');
+  const addTabBtn = document.getElementById('addTabBtn');
+  const canvasTabEl = document.getElementById('tabCanvas');
+  const launcherView = document.querySelector('.main-body');
+  const viewportStage = document.getElementById('viewportStage');
+  if (!topnav || !addTabBtn || !canvasTabEl || !launcherView || !viewportStage) return;
+
+  const openTabs = new Map(); // kind -> { el, wrap, iframe, veil }
+
+  function reduceMotion() {
+    return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function buildTabIcon(iconClass) {
+    const glyph = iconClass === 'workflow'
+      ? '<i class="bx bx-network-chart"></i>'
+      : (TAB_GLYPHS[iconClass] || '');
+    return '<span class="tab-icon ' + iconClass + '" aria-hidden="true">' + glyph + '</span>';
+  }
+
+  function createTabEl(kind, route) {
+    const el = document.createElement('div');
+    el.className = 'tab tab-pop';
+    el.dataset.kind = kind;
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.innerHTML = buildTabIcon(route.iconClass) + route.label;
+    topnav.insertBefore(el, addTabBtn);
+    return el;
+  }
+
+  function createFrame(kind, route) {
+    const wrap = document.createElement('div');
+    wrap.className = 'iframe-wrap';
+    wrap.dataset.kind = kind;
+
+    const veil = document.createElement('div');
+    veil.className = 'load-veil';
+    veil.setAttribute('aria-hidden', 'true');
+    veil.innerHTML = '<span class="veil-mark">OMNI</span>';
+
+    const iframe = document.createElement('iframe');
+    iframe.title = route.label;
+    iframe.loading = 'lazy';
+
+    iframe.addEventListener('load', () => {
+      veil.classList.add('is-hidden');
+      window.setTimeout(() => { iframe.classList.add('is-risen'); }, reduceMotion() ? 0 : 80);
+    }, { once: true });
+
+    wrap.appendChild(iframe);
+    wrap.appendChild(veil);
+    viewportStage.appendChild(wrap);
+
+    // Set src last so the load listener above is guaranteed attached first.
+    iframe.src = route.src;
+
+    return { wrap, iframe, veil };
+  }
+
+  function getOrCreateEntry(kind, route) {
+    let entry = openTabs.get(kind);
+    if (entry) return entry;
+    const el = kind === 'canvas' ? canvasTabEl : createTabEl(kind, route);
+    const frame = createFrame(kind, route);
+    entry = { el: el, wrap: frame.wrap, iframe: frame.iframe, veil: frame.veil };
+    openTabs.set(kind, entry);
+    return entry;
+  }
+
+  function activateTabVisual(kind) {
+    document.querySelectorAll('.tab[data-kind]').forEach((t) => {
+      t.classList.toggle('active', t.dataset.kind === kind);
+    });
+    addTabBtn.classList.remove('add-tab--active');
+  }
+
+  function switchFrame(kind) {
+    openTabs.forEach((entry, k) => {
+      entry.wrap.classList.toggle('is-active', k === kind);
+    });
+  }
+
+  function showViewport() {
+    document.body.classList.add('tab-active');
+    viewportStage.hidden = false;
+    viewportStage.setAttribute('aria-hidden', 'false');
+    void viewportStage.offsetWidth; // force reflow so the opacity transition runs from 0
+    viewportStage.classList.add('is-active');
+  }
+
+  function replayLauncherEntrance() {
+    if (reduceMotion()) return;
+    const els = launcherView.querySelectorAll('.hero-title, .section-rule, .tile-card');
+    els.forEach((el) => { el.style.animation = 'none'; });
+    void launcherView.offsetWidth; // force reflow
+    els.forEach((el) => { el.style.animation = ''; });
+  }
+
+  function goHome() {
+    if (!document.body.classList.contains('tab-active')) return;
+    document.querySelectorAll('.tab[data-kind]').forEach((t) => t.classList.remove('active'));
+    addTabBtn.classList.add('add-tab--active');
+    viewportStage.classList.remove('is-active');
+    document.body.classList.remove('tab-active');
+    viewportStage.setAttribute('aria-hidden', 'true');
+    replayLauncherEntrance();
+    window.setTimeout(() => {
+      if (!document.body.classList.contains('tab-active')) viewportStage.hidden = true;
+    }, reduceMotion() ? 0 : 320);
+  }
+
+  function openTab(kind, opts) {
+    const route = ROUTES[kind];
+    if (!route) return;
+    opts = opts || {};
+
+    const entry = getOrCreateEntry(kind, route);
+    activateTabVisual(kind);
+    switchFrame(kind);
+
+    if (document.body.classList.contains('tab-active')) {
+      // Viewport already on screen — switching between loaded surfaces
+      // is an instant swap (display toggle only, no transition).
+      return;
+    }
+
+    const commit = () => { showViewport(); };
+    const canMorph = opts.fromCard && typeof document.startViewTransition === 'function' && !reduceMotion();
+
+    if (canMorph) {
+      opts.fromCard.style.viewTransitionName = 'card-morph';
+      document.documentElement.classList.add('ch-card-vt');
+      const vt = document.startViewTransition(() => {
+        opts.fromCard.style.viewTransitionName = '';
+        entry.wrap.style.viewTransitionName = 'card-morph';
+        commit();
+      });
+      const cleanup = () => {
+        entry.wrap.style.viewTransitionName = '';
+        document.documentElement.classList.remove('ch-card-vt');
+      };
+      // Transitions can be legitimately aborted by the browser for reasons
+      // outside this page's control (superseded, visibility change, etc.) —
+      // `ready`/`finished` rejecting just means the morph animation didn't
+      // play. commit() above already ran synchronously either way, so the
+      // DOM is correct regardless; only swallow-and-cleanup is needed here.
+      vt.ready.catch(() => {});
+      vt.finished.then(cleanup, cleanup);
+    } else {
+      commit();
+    }
+  }
+
+  // ---- Wiring ----
+  // Covers the two app cards and the twelve skill cards — every clickable
+  // surface on the launcher shares one .tile-card[data-kind] selector, one
+  // routing table, and one activation path. Skill cards have no .tile-art
+  // (no card-morph source), so fromCard is null for them and openTab()
+  // just falls through to its non-morph commit() path.
+  document.querySelectorAll('.tile-card[data-kind]').forEach((card) => {
+    const trigger = () => openTab(card.dataset.kind, { fromCard: card.querySelector('.tile-art') });
+    card.addEventListener('click', trigger);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(); }
+    });
+  });
+
+  // Event delegation on the topnav covers both the static Canvas tab and
+  // every tab appended later by createTabEl — one listener, no re-wiring.
+  topnav.addEventListener('click', (e) => {
+    const tabEl = e.target.closest('.tab[data-kind]');
+    if (tabEl) openTab(tabEl.dataset.kind);
+  });
+  topnav.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const tabEl = e.target.closest('.tab[data-kind]');
+    if (tabEl) { e.preventDefault(); openTab(tabEl.dataset.kind); }
+  });
+
+  addTabBtn.addEventListener('click', goHome);
+  addTabBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goHome(); }
+  });
+})();
+</script>
+</body>
+</html>

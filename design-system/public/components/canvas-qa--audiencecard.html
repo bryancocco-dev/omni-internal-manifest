@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  OMNI component: audiencecard
+  Project: QA
+  Note: .qa-aud — audience list card: stats row + qa-aud-facts dl + capability qa-chips + qa-aud-cta action-row buttons
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA — audiencecard · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-qa.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="brief-stack">
+<article class="brief-board"><div class="sec-body">
+            <header class="qa-aud-header">
+              <h2 class="qa-h2">Audiences</h2>
+              <p class="qa-aud-count">12 audiences found</p>
+            </header>
+            <div class="qa-aud">
+              <div class="qa-aud-head">
+                <div>
+                  <p class="qa-aud-name">All Travelers</p>
+                  <p class="qa-aud-meta">SEED · ID 144642 · Universal Demo Client · Public</p>
+                </div>
+                <span class="qa-aud-status">Active</span>
+              </div>
+              <div class="qa-aud-stats">
+                <div class="qa-aud-stat"><span class="qa-aud-stat-v">186,654,504</span><span class="qa-aud-stat-k">Users</span></div>
+                <div class="qa-aud-stat"><span class="qa-aud-stat-v">120,469,417</span><span class="qa-aud-stat-k">Households</span></div>
+              </div>
+              <dl class="qa-aud-facts">
+                <div><dt>Created by</dt><dd>alexa.purdy.omc.com</dd></div>
+                <div><dt>Created</dt><dd>Jun 11, 2026</dd></div>
+                <div><dt>Market</dt><dd>US · Client 56078</dd></div>
+              </dl>
+              <div class="qa-aud-caps">
+                <span class="qa-aud-caps-label">Capabilities</span>
+                <span class="qa-chip qa-chip--cap">Persona Reportable</span>
+                <span class="qa-chip qa-chip--cap">Reportable</span>
+                <span class="qa-chip qa-chip--cap">Geo Reportable</span>
+              </div>
+              <div class="qa-aud-cta">
+                <p class="qa-aud-cta-label">Explore this audience</p>
+                <div class="qa-aud-cta-grid">
+                  <button class="qa-aud-action" type="button">
+                    <span class="qa-aud-action-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 14H5v-2h6v2zm8-4H5v-2h14v2zm0-4H5V7h14v2z"/></svg></span>
+                    <span class="qa-aud-action-body">
+                      <span class="qa-aud-action-name">Audience Details</span>
+                      <span class="qa-aud-action-sub">Full segment breakdown &amp; reach</span>
+                    </span>
+                    <span class="qa-aud-action-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span>
+                  </button>
+                  <button class="qa-aud-action" type="button">
+                    <span class="qa-aud-action-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2.051V11h8.949c-.47-4.717-4.232-8.479-8.949-8.949zm4.969 17.953c2.189-1.637 3.694-4.14 3.98-7.004h-8.183l4.203 7.004z"/><path d="M11 12V2.051C5.954 2.555 2 6.824 2 12c0 5.514 4.486 10 10 10a9.93 9.93 0 0 0 4.255-.964s-5.253-8.915-5.254-9.031A.02.02 0 0 0 11 12z"/></svg></span>
+                    <span class="qa-aud-action-body">
+                      <span class="qa-aud-action-name">Demographic Insights</span>
+                      <span class="qa-aud-action-sub">Age, geography &amp; affinity profile</span>
+                    </span>
+                    <span class="qa-aud-action-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div></article>
+</body>
+</html>

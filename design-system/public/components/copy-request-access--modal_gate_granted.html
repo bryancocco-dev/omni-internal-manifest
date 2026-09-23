@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  OMNI component: modal_gate_granted
+  Project: Access
+  Note: .qa-gate-card (granted) — auto-approve confirmation the gate advances to after the simulated wait; owner-approved row + Open canvas CTA
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access — modal_gate_granted · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/copy-request-access.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="qa-gate" style="position:static;background:transparent;padding:24px;">
+  <div class="qa-gate-card">
+    <img class="qa-gate-logo" src="/_assets/copy-request-access/omni-logo.png" alt="OMNI">
+    <div class="qa-gate-art granted">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>
+    </div>
+    <h1>Access granted</h1>
+    <div class="qa-gate-owner-row">
+      <span class="qa-gate-owner-avatar">BC</span>
+      <span><b>Bryan Cocco</b> approved your request</span>
+    </div>
+    <p>"<b>Outcomes Forecast</b>" is now shared with you as a viewer.</p>
+    <button class="qa-gate-btn" data-gate-open>Open canvas</button>
+  </div>
+</div>
+</body>
+</html>

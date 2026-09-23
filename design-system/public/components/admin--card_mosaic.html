@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+  OMNI component: card_mosaic
+  Project: Admin
+  Note: .gw-frame mosaic + .manifest table — live preview linked to the JSON editor (breakpoint toggle, image tiles, image manifest list); rendered output of renderLeadspace() for the same 5-image sample as code_jsoneditor
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — card_mosaic · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/admin.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ls-col ls-col-preview" data-preview-for="jsonCode">
+      <div class="gw-sticky">
+        <div class="code-label">PREVIEW
+          <span class="bp-toggle">
+            <button data-bp="lg" class="on" title="Desktop"><i class="ph ph-monitor"></i></button>
+            <button data-bp="md" title="Tablet"><i class="ph ph-device-tablet"></i></button>
+            <button data-bp="sm" title="Mobile"><i class="ph ph-device-mobile"></i></button>
+          </span>
+        </div>
+        <div class="gw-stage" data-bp="lg">
+          <div class="gw-frame">
+            <div class="gw-hero" id="prevGrid" style="--gw-cols:5">
+              <div class="gw-card" data-img="0" style="grid-column:span 1">
+                <img src="/_assets/admin/leadspace/01.png" alt="Aether — Performance Series" loading="lazy">
+                <span class="gw-idx">1</span>
+              </div>
+              <div class="gw-card" data-img="1" style="grid-column:span 1">
+                <img src="/_assets/admin/leadspace/02.png" alt="Translation Poster — Awe" loading="lazy">
+                <span class="gw-idx">2</span>
+              </div>
+              <div class="gw-card" data-img="2" style="grid-column:span 1">
+                <img src="/_assets/admin/leadspace/03.png" alt="Rear Diffuser Macro" loading="lazy">
+                <span class="gw-idx">3</span>
+              </div>
+              <div class="gw-card" data-img="3" style="grid-column:span 1">
+                <img src="/_assets/admin/leadspace/04.png" alt="Veyronyx GT Cover" loading="lazy">
+                <span class="gw-idx">4</span>
+              </div>
+              <div class="gw-card" data-img="4" style="grid-column:span 1">
+                <img src="/_assets/admin/leadspace/05.png" alt="Viotoj Tohe Key Art" loading="lazy">
+                <span class="gw-idx">5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="code-label sub">IMAGES <span class="label-note manifest-count">5 in this mosaic</span></div>
+      <table class="manifest">
+        <thead><tr><th>Image</th><th>Title</th><th>Type</th><th>Date</th><th style="text-align:center">Span</th></tr></thead>
+        <tbody>
+          <tr data-img="0">
+            <td style="width:34px"><img class="m-th" src="/_assets/admin/leadspace/01.png" alt="" loading="lazy"></td>
+            <td class="m-alt">Aether — Performance Series</td>
+            <td><span class="kind-chip graphics">Graphics</span></td>
+            <td class="m-date">Feb 14, 2026</td>
+            <td class="m-span">1</td>
+          </tr>
+          <tr data-img="1">
+            <td style="width:34px"><img class="m-th" src="/_assets/admin/leadspace/02.png" alt="" loading="lazy"></td>
+            <td class="m-alt">Translation Poster — Awe</td>
+            <td><span class="kind-chip graphics">Graphics</span></td>
+            <td class="m-date">Feb 13, 2026</td>
+            <td class="m-span">1</td>
+          </tr>
+          <tr data-img="2">
+            <td style="width:34px"><img class="m-th" src="/_assets/admin/leadspace/03.png" alt="" loading="lazy"></td>
+            <td class="m-alt">Rear Diffuser Macro</td>
+            <td><span class="kind-chip graphics">Graphics</span></td>
+            <td class="m-date">Feb 13, 2026</td>
+            <td class="m-span">1</td>
+          </tr>
+          <tr data-img="3">
+            <td style="width:34px"><img class="m-th" src="/_assets/admin/leadspace/04.png" alt="" loading="lazy"></td>
+            <td class="m-alt">Veyronyx GT Cover</td>
+            <td><span class="kind-chip graphics">Graphics</span></td>
+            <td class="m-date">Feb 12, 2026</td>
+            <td class="m-span">1</td>
+          </tr>
+          <tr data-img="4">
+            <td style="width:34px"><img class="m-th" src="/_assets/admin/leadspace/05.png" alt="" loading="lazy"></td>
+            <td class="m-alt">Viotoj Tohe Key Art</td>
+            <td><span class="kind-chip graphics">Graphics</span></td>
+            <td class="m-date">Feb 12, 2026</td>
+            <td class="m-span">1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</body>
+</html>

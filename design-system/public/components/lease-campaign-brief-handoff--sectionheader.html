@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+  OMNI component: sectionheader
+  Project: Brief
+  Note: .canvas-header — title breadcrumb (root / crumb + chevron), presence stack, Share
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — sectionheader · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="canvas-header" style="position:static">
+      <div class="title-wrap">
+        <div class="title">
+          <span class="root">Build Submarines</span>
+          <span class="sep">/</span>
+          <div class="crumb-row">
+            <span class="crumb">Roblox Racing Wrap Competition</span>
+            <button class="title-chevron" id="titleChevron" aria-haspopup="menu" aria-expanded="false" aria-label="Brief options">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="presence" title="3 collaborators in this canvas">
+          <div class="presence-stack">
+            <span class="pa pa-bc" tabindex="0" aria-label="Bryan Cocco, Owner">BC<span class="pa-card" role="tooltip"><span class="pa-card-circle pa-bc">BC</span><span class="pa-card-name">Bryan Cocco</span><span class="pa-card-role">Owner</span></span></span>
+            <span class="pa pa-img" style="background-image: url('https://i.pravatar.cc/80?img=47')" tabindex="0" aria-label="Lena Ortiz, Editor"><span class="pa-card" role="tooltip"><span class="pa-card-circle pa-card-circle--img" style="background-image: url('https://i.pravatar.cc/80?img=47')"></span><span class="pa-card-name">Lena Ortiz</span><span class="pa-card-role">Editor</span></span></span>
+            <span class="pa pa-img" style="background-image: url('https://i.pravatar.cc/80?img=33')" tabindex="0" aria-label="Jamal Reed, Editor"><span class="pa-card" role="tooltip"><span class="pa-card-circle pa-card-circle--img" style="background-image: url('https://i.pravatar.cc/80?img=33')"></span><span class="pa-card-name">Jamal Reed</span><span class="pa-card-role">Editor</span></span></span>
+          </div>
+          <span class="presence-count">3</span>
+        </div>
+        <button class="share-btn">
+          Share
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11.5 5.5L6 8.5M11.5 10.5L6 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="12.5" cy="4" r="1.6" stroke="currentColor" stroke-width="1.2"/><circle cx="3.5" cy="8" r="1.6" stroke="currentColor" stroke-width="1.2"/><circle cx="12.5" cy="12" r="1.6" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+      </div>
+    </div>
+</body>
+</html>

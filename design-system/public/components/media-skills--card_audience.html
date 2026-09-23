@@ -1,0 +1,106 @@
+<!doctype html>
+<!--
+  OMNI component: card_audience
+  Project: Media Skills
+  Note: .audl-card — audience list card: photo, rank + AI badge, boolean definition-builder (source chips + AND/OR/INCLUDE term rows), People/Households stat pair
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Skills — card_audience · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="ms.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media-skills.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="ms-app">
+<style>
+body.ms-app{--ms-mono:'Fira Code','JetBrains Mono',ui-monospace,monospace;--ms-chart-2:#7289ef;--ms-chart-3:#22b573;--ms-chart-6:#f59e0b}
+body.ms-app[data-theme="dark"]{--ms-chart-2:#5b7cfa;--ms-chart-3:#4ade9f;--ms-chart-6:#f5a623}
+.audl-card{display:flex;gap:24px;padding:24px;border-radius:8px;background:var(--card-bg);border:none;cursor:pointer;transition:background .18s ease}
+.audl-card:hover{background:var(--hover-tint)}
+.audl-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.audl-photo{flex:none;width:200px;height:200px;border-radius:6px;overflow:hidden;background:var(--panel-bg-3)}
+.audl-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+.audl-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.audl-rank{flex:none;font:500 13px/1 var(--ms-mono);color:var(--text-subtle)}
+.audl-name{margin:0;font-size:20px;font-weight:600;line-height:1.3;color:var(--text-strong)}
+.audl-chip-ai{display:inline-flex;align-items:center;gap:4px;padding:4px 8px 4px 4px;border-radius:4px;background:var(--accent-soft);color:var(--accent);font:400 10px/1.6 var(--ms-mono);text-transform:uppercase;letter-spacing:.14em}
+.audl-chip-ai svg{width:8px;height:8px}
+.audl-desc{margin:10px 0 0;font-size:14px;font-weight:400;line-height:1.6;color:var(--text-subtle);max-width:66ch}
+.audl-builder-row-wrap{display:flex;align-items:stretch;gap:16px;flex-wrap:wrap}
+.audl-builder{position:relative;flex:1 1 500px;display:flex;flex-direction:column;gap:8px;padding:12px 16px;border:.5px solid var(--line);border-radius:8px;background:var(--card-bg)}
+.audl-sources{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-bottom:8px}
+.audl-source-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px 4px 4px;border-radius:4px;background:var(--accent-soft);color:var(--accent);font:400 10px/1.6 var(--ms-mono)}
+.audl-source-chip svg{width:8px;height:10px;color:currentColor}
+.audl-dot{flex:none;width:4px;height:4px;border-radius:50%}
+.audl-dot[data-src="comscore"]{background:var(--ms-chart-6)}
+.audl-dot[data-src="acxiom"]{background:var(--ms-chart-2)}
+.audl-dot[data-src="corvache"]{background:var(--ms-chart-3)}
+.audl-term-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.audl-op{font:400 12px/1.6 var(--ms-mono);color:var(--text-strong)}
+.audl-term-chip{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:4px;background:var(--panel-bg-3);color:var(--text-subtle);font:400 10px/1.6 var(--ms-mono);text-transform:capitalize}
+.audl-term-chip .audl-ico-folder{width:10px;height:9px;color:var(--text-subtle)}
+.audl-term-chip .audl-ico-chevron{width:7px;height:4px;color:var(--text-subtle);margin:0 1px}
+.audl-stats{flex:1 1 220px;min-width:200px;display:flex;align-items:center;justify-content:flex-start;gap:32px;padding:15px 24px;border-radius:12px;background:var(--card-bg)}
+.audl-stat{display:flex;flex-direction:column;align-items:flex-start}
+.audl-stat-num{font-size:32px;font-weight:400;line-height:1.3;color:var(--text-strong);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.audl-stat-label{font:500 10px/1.6 var(--ms-mono);text-transform:uppercase;letter-spacing:.14em;color:var(--text-subtle)}
+</style>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="audl-ico-data" viewBox="0 0 8 10"><path d="M4 10C5.988 10 8 9.313 8 8V2C8 0.687 5.988 0 4 0C2.012 0 0 0.687 0 2V8C0 9.313 2.012 10 4 10ZM4 9C2.139 9 1 8.3525 1 8V7.366C1.7705 7.785 2.8885 8 4 8C5.1115 8 6.2295 7.785 7 7.366V8C7 8.3525 5.861 9 4 9ZM4 1C5.861 1 7 1.6475 7 2C7 2.3525 5.861 3 4 3C2.139 3 1 2.3525 1 2C1 1.6475 2.139 1 4 1ZM1 3.366C1.7705 3.785 2.8885 4 4 4C5.1115 4 6.2295 3.785 7 3.366V4C7 4.3525 5.861 5 4 5C2.139 5 1 4.3525 1 4V3.366ZM1 5.366C1.7705 5.785 2.8885 6 4 6C5.1115 6 6.2295 5.785 7 5.366V6C7 6.3525 5.861 7 4 7C2.139 7 1 6.3525 1 6V5.366Z" fill="currentColor"/></symbol>
+  <symbol id="audl-ico-folder" viewBox="0 0 10 9"><path d="M9 1H4.707L3.8535 0.1465C3.80713 0.100001 3.75203 0.0631219 3.69137 0.0379808C3.6307 0.0128398 3.56567 -6.75704e-05 3.5 2.66008e-07H1C0.4485 2.66008e-07 0 0.4485 0 1V8C0 8.5515 0.4485 9 1 9H9C9.5515 9 10 8.5515 10 8V2C10 1.4485 9.5515 1 9 1ZM1 8V2H9L9.001 8H1Z" fill="currentColor"/></symbol>
+  <symbol id="audl-ico-chevron" viewBox="0 0 7 4"><path d="M0.5 0.5L3.5 3.5L6.5 0.5" stroke="currentColor" stroke-width="0.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<article class="audl-card is-visible" data-reveal data-goto-view="overview" role="button" tabindex="0">
+  <div class="audl-photo"><div style="width:100%;height:100%;background:var(--panel-bg-3)" title="[photo placeholder — assets/img/audl-affluent.png not extracted (not a top-level project image)]"></div></div>
+  <div class="audl-body">
+    <div class="audl-head">
+      <span class="audl-rank">1</span>
+      <h3 class="audl-name">Affluent Travelers</h3>
+      <span class="audl-chip-ai">✦ AI</span>
+    </div>
+    <p class="audl-desc">Quality-seeking 45-64 year olds with high household incomes. Luxury-oriented, risk-averse, and highly receptive to premium brands across digital channels.</p>
+    <div class="audl-builder-row-wrap">
+      <div class="audl-builder">
+        <div class="audl-sources">
+          <span class="audl-source-chip" data-build="pop"><svg class="audl-ico-data"><use href="#audl-ico-data"></use></svg>Comscore</span>
+          <span class="audl-source-chip" data-build="pop"><svg class="audl-ico-data"><use href="#audl-ico-data"></use></svg>Acxiom</span>
+          <span class="audl-source-chip" data-build="pop"><svg class="audl-ico-data"><use href="#audl-ico-data"></use></svg>Corvache Data</span>
+        </div>
+        <div class="audl-term-row">
+          <span class="audl-term-chip" data-build="pop"><span class="audl-dot" data-src="comscore"></span><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Luxury Auto Intentions<svg class="audl-ico-chevron"><use href="#audl-ico-chevron"></use></svg></span>
+          <span class="audl-op">AND</span>
+          <span class="audl-term-chip" data-build="pop"><span class="audl-dot" data-src="acxiom"></span><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Tech Savvy<svg class="audl-ico-chevron"><use href="#audl-ico-chevron"></use></svg></span>
+          <span class="audl-op">AND</span>
+        </div>
+        <div class="audl-term-row">
+          <span class="audl-term-chip" data-build="pop"><span class="audl-dot" data-src="corvache"></span><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Mid-High Income<svg class="audl-ico-chevron"><use href="#audl-ico-chevron"></use></svg></span>
+          <span class="audl-op">OR</span>
+          <span class="audl-term-chip" data-build="pop"><span class="audl-dot" data-src="corvache"></span><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Existing US Corvache Customers<svg class="audl-ico-chevron"><use href="#audl-ico-chevron"></use></svg></span>
+        </div>
+        <div class="audl-term-row">
+          <span class="audl-op">INCLUDE</span>
+          <span class="audl-term-chip" data-build="pop"><span class="audl-dot" data-src="acxiom"></span><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Read 2026 EV Safety Reports<svg class="audl-ico-chevron"><use href="#audl-ico-chevron"></use></svg></span>
+          <span class="audl-op">AND</span>
+          <span class="audl-term-chip" data-build="pop"><span class="audl-dot" data-src="corvache"></span><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Safety Aware<svg class="audl-ico-chevron"><use href="#audl-ico-chevron"></use></svg></span>
+        </div>
+      </div>
+      <div class="audl-stats">
+        <div class="audl-stat"><span class="audl-stat-num" data-countup>2.1M</span><span class="audl-stat-label">People</span></div>
+        <div class="audl-stat"><span class="audl-stat-num" data-countup>889K</span><span class="audl-stat-label">Households</span></div>
+      </div>
+    </div>
+  </div>
+</article>
+</body>
+</html>

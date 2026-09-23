@@ -1,0 +1,368 @@
+/* ==========================================================================
+   RUN PHASE (R2) — RunPreview modal
+   PLAN.md "## RUN PHASE" -> "### R2" item 3. Opened from an Output node's
+   "View <format>" row once its generation finishes (nodes/OutputNode.jsx).
+   Imported straight from components/RunPreview.jsx (not main.jsx) — this
+   modal is only ever needed once a node exists, same reasoning as
+   chathat.css being imported from ChatHat.jsx instead of the main chain.
+
+   Portaled into #workflow-root (see RunPreview.jsx) so it escapes React
+   Flow's pan/zoom-transformed `.react-flow__viewport` and .cw-canvas-wrap's
+   overflow:hidden clip, while staying inside the theme scope every --cw-*
+   var here resolves against. Deliberately self-contained: no dependency on
+   nodes.css/app.css classes, just the shared --cw-* tokens + easing scale.
+   Every selector is scoped under #workflow-root (the .cw-runpreview- and
+   .cw-rp- prefixes) so nothing here can leak beyond the portal target
+   regardless of where in the DOM createPortal lands it.
+   ========================================================================== */
+
+#workflow-root .cw-runpreview-overlay {
+  position: fixed;
+  inset: 0;
+  /* Highest thing inside the builder's own stacking context (header 7,
+     header dropdown menu 20, issues pill 6) — this is a true modal, it must
+     clear all of them. Still fully contained by the shell's own
+     .workflow-overlay z-index (40) one level up, so it can never outrank
+     anything outside the builder. */
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(16, 24, 40, 0.32);
+  animation: cw-rp-backdrop-in var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+#workflow-root .cw-runpreview-overlay.is-leaving {
+  animation: cw-rp-backdrop-out var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+  pointer-events: none;
+}
+
+@keyframes cw-rp-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cw-rp-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+#workflow-root .cw-runpreview-card {
+  width: min(640px, 100%);
+  /* 560px was an arbitrary cap that had nothing to do with what the card
+     actually holds: head + artifact frame + caption + the version row add up
+     to ~660px, so every artifact deliverable opened already scrolled, and the
+     version stepper — the one control you open this overlay to USE — sat
+     below the fold (Bryan: "make these overlays tall enough that you dont
+     have to scroll down, we have enough room"). Sized to the content now,
+     still bounded by the overlay's own padded box on short windows. */
+  max-height: min(880px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 16px;
+  /* Deeper than a node card's rest shadow (this floats over the whole
+     builder, not just the canvas) — composed on top of --cw-shadow so the
+     hairline-adjacent tone still matches the rest of the app. */
+  box-shadow:
+    var(--cw-shadow),
+    0 24px 64px -20px rgba(16, 24, 40, 0.35);
+  font-family: var(--cw-font);
+  color: var(--cw-text);
+  overflow: hidden;
+  animation: cw-rp-card-in var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+
+/* Same reasoning as nodes.css's own E2-item-4 dark exception: the light-
+   tinted rgba(16,24,40,*) layer reads muddy on a dark surface, so dark keeps
+   the plain, already-tuned --cw-shadow token instead. */
+body[data-theme='dark'] #workflow-root .cw-runpreview-card {
+  box-shadow: var(--cw-shadow);
+}
+
+#workflow-root .cw-runpreview-overlay.is-leaving .cw-runpreview-card {
+  animation: cw-rp-card-out var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+}
+
+@keyframes cw-rp-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes cw-rp-card-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+/* ---- header -------------------------------------------------------------*/
+#workflow-root .cw-rp-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 14px 14px 16px;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  flex-shrink: 0;
+}
+
+#workflow-root .cw-rp-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--cw-accent) 12%, var(--cw-surface));
+  color: var(--cw-accent);
+}
+
+#workflow-root .cw-rp-format {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#workflow-root .cw-runpreview-close {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-runpreview-close:hover {
+  background: var(--cw-surface-2);
+  color: var(--cw-text);
+}
+
+/* ---- body -----------------------------------------------------------------*/
+#workflow-root .cw-rp-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px 22px 24px;
+}
+
+/* Text / Doc / Templated Output — prose w/ heading ------------------------*/
+#workflow-root .cw-rp-heading {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cw-text);
+}
+#workflow-root .cw-rp-para {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cw-text-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+#workflow-root .cw-rp-para:last-child {
+  margin-bottom: 0;
+}
+#workflow-root .cw-rp-empty {
+  color: var(--cw-text-3);
+  font-style: italic;
+}
+
+/* Email — From/To/Subject header block + body -----------------------------*/
+#workflow-root .cw-rp-email-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+#workflow-root .cw-rp-email-row {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+}
+#workflow-root .cw-rp-email-label {
+  flex-shrink: 0;
+  width: 52px;
+  padding-top: 1px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+#workflow-root .cw-rp-email-value {
+  color: var(--cw-text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Presentation — 4-6 slide title cards in a grid --------------------------*/
+#workflow-root .cw-rp-slides {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+#workflow-root .cw-rp-slide {
+  padding: 14px 12px 12px;
+  border-radius: 10px;
+  background: var(--cw-field);
+  min-height: 84px;
+}
+#workflow-root .cw-rp-slide-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  padding: 2px 5px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  background: var(--cw-surface);
+  color: var(--cw-accent);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+#workflow-root .cw-rp-slide-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--cw-text);
+}
+#workflow-root .cw-rp-slide-body {
+  margin-top: 6px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--cw-text-3);
+}
+
+/* Spreadsheet — a real small <table> (parsed via R3's parseMarkdownTable) -*/
+#workflow-root .cw-rp-table-wrap {
+  overflow-x: auto;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 10px;
+}
+#workflow-root .cw-rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+#workflow-root .cw-rp-table th,
+#workflow-root .cw-rp-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  white-space: nowrap;
+}
+#workflow-root .cw-rp-table th {
+  background: var(--cw-field);
+  color: var(--cw-text-3);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+#workflow-root .cw-rp-table td {
+  color: var(--cw-text-2);
+}
+#workflow-root .cw-rp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Teams — chat bubble --------------------------------------------------- */
+#workflow-root .cw-rp-chat {
+  display: flex;
+}
+#workflow-root .cw-rp-chat-bubble {
+  max-width: 82%;
+  padding: 12px 14px;
+  border-radius: 14px 14px 14px 4px;
+  background: var(--cw-field);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--cw-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Graphic / Video / Audio — labeled placeholder frame ---------------------*/
+#workflow-root .cw-rp-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: 24px;
+  border: 1.5px dashed var(--cw-border);
+  border-radius: 12px;
+  color: var(--cw-text-3);
+}
+#workflow-root .cw-rp-placeholder-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cw-text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+#workflow-root .cw-rp-placeholder-caption {
+  margin: 0;
+  max-width: 340px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--cw-text-3);
+}
+
+/* ---- prefers-reduced-motion ------------------------------------------------
+   Global rule (PLAN.md "MOTION PHASE" -> "Global rules", carried into this
+   phase): every entrance collapses to an instant appearance, same convention
+   nodes.css/app.css already use for their own materialize/spring-in rules —
+   `animation: none` rather than swapping in a substitute fade. ------------- */
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-runpreview-overlay,
+  #workflow-root .cw-runpreview-overlay.is-leaving,
+  #workflow-root .cw-runpreview-card,
+  #workflow-root .cw-runpreview-overlay.is-leaving .cw-runpreview-card {
+    animation: none;
+  }
+  #workflow-root .cw-runpreview-overlay {
+    opacity: 1;
+  }
+  #workflow-root .cw-runpreview-card {
+    opacity: 1;
+    transform: none;
+  }
+}

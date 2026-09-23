@@ -1,0 +1,270 @@
+<svg viewBox="0 0 716 716" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* pulse family: §14 ladder — MID 9s, sine token, -1.9s stagger steps */
+    .pulse { animation: pulse 9s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    .pulse.d1 { animation-delay: -1.9s; }
+    .pulse.d2 { animation-delay: -3.8s; }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 0.9; }
+    }
+    /* bespoke ambient layers on the §14 ladder: the chart's value-dot pulses
+       (family .pulse above, MID), accent-panel glow breathing (SLOW).
+       Scan-shimmer removed (§15.5 item 4) — replaced by the bar charts
+       dancing + (§19) the hero line self-drawing below. */
+    .panel-glow-breathe {
+      transform-origin: 255px 225px;
+      animation: panelBreathe 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes panelBreathe {
+      0%, 100% { opacity: 0.21; transform: scale(1); }
+      50%      { opacity: 0.38; transform: scale(1.012); }
+    }
+    /* §15.5 item 4 / §18 amplitude crank: both bar charts dance scaleY from
+       their own baselines (fill-box, origin = bottom-center of each bar) —
+       MID 9s, -1.9s steps, range 0.55–1.40 (widened from §15.5's original
+       0.82–1.12 — too subtle at ~30% display scale, per §18's hard minimum
+       "Bar/wave scaleY range: 0.55–1.40"). Anchored at each bar's own
+       baseline so growth reads upward only — bars never detach from base. */
+    .bar-dance {
+      transform-box: fill-box;
+      transform-origin: center bottom;
+      animation: barDance 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    .bar-dance.d1 { animation-delay: -1.9s; }
+    .bar-dance.d2 { animation-delay: -3.8s; }
+    .bar-dance.d3 { animation-delay: -5.7s; }
+    .bar-dance.d4 { animation-delay: -7.6s; }
+    @keyframes barDance {
+      0%, 100% { transform: scaleY(1); }
+      25%      { transform: scaleY(1.40); }
+      75%      { transform: scaleY(0.55); }
+    }
+    /* §19 THE CHART DRAWS ITSELF — subject-motion rework: the FAST dash-flow
+       traveler (a small dash sliding along an already-complete line) is
+       replaced by an actual self-drawing line — dasharray = [L,L] (L=376,
+       ≈ the real polyline arc length 375.18) so dashoffset 376→0 reveals the
+       line from its first point onward. Draws over ~60% of the cycle, holds
+       complete, then resets; the always-on .chart-ghost baseline underneath
+       means that reset never reads as an empty chart (PLAN's "wrap values"
+       instruction — 0%/100% both = offset 376, identical, so the loop seam
+       is invisible: the bright layer is simply gone and the ghost carries
+       the shape through it). */
+    .chart-ghost { opacity: 0.32; }
+    .chart-draw {
+      stroke-dasharray: 376 376;
+      animation: chartDraw 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes chartDraw {
+      0%      { stroke-dashoffset: 376; }     /* undrawn, matches 100% */
+      26.44%  { stroke-dashoffset: 210.68; }  /* reaches dot1 (240,230) */
+      50.37%  { stroke-dashoffset: 61.03; }   /* reaches dot2 (320,205) */
+      60%     { stroke-dashoffset: 0; }       /* fully drawn — reaches dot3/tip */
+      90%     { stroke-dashoffset: 0; }       /* hold, complete */
+      100%    { stroke-dashoffset: 376; }     /* reset, masked by the ghost */
+    }
+    /* §17/§19 choreography — LIVE DATA: dots pop as the draw itself reaches
+       them (re-anchored from the old traveler to the new draw-front). Arc
+       fractions unchanged (real polyline math: total 375.18, dot1 @44.06%
+       of path ⇒ 26.44% of the 60%-wide draw window, dot2 @83.94% ⇒ 50.37%,
+       dot3 @100% ⇒ 60% exactly — the tip pings right as the draw completes).
+       Since none of these sit near the loop seam any more, the old arriveE-
+       style wrap on dot3/ring3 is gone — a plain envelope like dot1/2's.
+       §18 amplitudes unchanged: dot scale 1.65 (≥1.6), ring 3.2× (≥3×). */
+    .dot-ping, .ring-ping {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation-duration: 5s;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+      animation-iteration-count: infinite;
+    }
+    .dp1 { animation-name: dotPing1; } .rp1 { animation-name: ringPing1; }
+    .dp2 { animation-name: dotPing2; } .rp2 { animation-name: ringPing2; }
+    .dp3 { animation-name: dotPing3; } .rp3 { animation-name: ringPing3; }
+    @keyframes dotPing1 { 0%, 17.44%, 100% { transform: scale(1); } 26.44% { transform: scale(1.65); } 46.44% { transform: scale(1); } }
+    @keyframes dotPing2 { 0%, 41.37%, 100% { transform: scale(1); } 50.37% { transform: scale(1.65); } 70.37% { transform: scale(1); } }
+    @keyframes dotPing3 { 0%, 51%, 100%    { transform: scale(1); } 60%    { transform: scale(1.65); } 80%    { transform: scale(1); } }
+    @keyframes ringPing1 { 0%, 17.44%, 100% { opacity: 0; transform: scale(0.6); } 26.44% { opacity: 0.7; transform: scale(1); } 46.44% { opacity: 0; transform: scale(3.2); } }
+    @keyframes ringPing2 { 0%, 41.37%, 100% { opacity: 0; transform: scale(0.6); } 50.37% { opacity: 0.7; transform: scale(1); } 70.37% { opacity: 0; transform: scale(3.2); } }
+    @keyframes ringPing3 { 0%, 51%, 100%    { opacity: 0; transform: scale(0.6); } 60%    { opacity: 0.7; transform: scale(1); } 80%    { opacity: 0; transform: scale(3.2); } }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse, .panel-glow-breathe, .bar-dance, .chart-draw, .dot-ping, .ring-ping { animation: none; }
+    }
+
+    /* light ("blueprint on paper") palette — dark above stays default/unmodified */
+    @media (prefers-color-scheme: light) {
+      .lp-bg { fill: url(#bgL); }
+      .lp-ambient { fill: url(#ambientGlowL); }
+      .lp-dot { fill: #64748b; opacity: 0.10; }
+      .lp-shadow { fill: #eef1f5; stroke: #b9c2cd; }
+      .lp-nf { fill: url(#nodeFillL); }
+      .lp-node { fill: url(#nodeFillL); stroke: #b9c2cd; }
+      .lp-inset { fill: #f2f4f7; stroke: #b9c2cd; }
+      .lp-bar[fill] { fill: #c3ccd6; }
+      .lp-bar[stroke] { stroke: #c3ccd6; }
+      .lp-line1 { stroke: #64748b; }
+      .lp-line2 { stroke: #8b95a3; }
+      .lp-glow-u { opacity: 0.20; }
+      /* near-white draw layer reads fine on dark but wants a saturated hue on
+         paper, same fix pattern as the other tiles' pale travelers */
+      .chart-draw { stroke: #2ec5c9; }
+      .chart-ghost { opacity: 0.4; }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.37; }
+        50%      { opacity: 0.68; }
+      }
+      @keyframes panelBreathe {
+        0%, 100% { opacity: 0.12; transform: scale(1); }
+        50%      { opacity: 0.22; transform: scale(1.012); }
+      }
+    }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#1a1c20"/>
+      <stop offset="55%" stop-color="#101114"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </radialGradient>
+    <radialGradient id="bgL" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f5f7fa"/>
+      <stop offset="100%" stop-color="#eef1f5"/>
+    </radialGradient>
+    <radialGradient id="ambientGlow" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#2ec5c9" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#2ec5c9" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#2ec5c9" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientGlowL" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#2ec5c9" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#2ec5c9" stop-opacity="0.035"/>
+      <stop offset="100%" stop-color="#2ec5c9" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#202226"/>
+      <stop offset="100%" stop-color="#121316"/>
+    </linearGradient>
+    <linearGradient id="nodeFillL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f2f4f7"/>
+    </linearGradient>
+    <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle class="lp-dot" cx="2" cy="2" r="1" fill="#8a97a8" opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect class="lp-bg" width="716" height="716" fill="url(#bg)"/>
+  <rect width="716" height="716" fill="url(#dots)"/>
+  <rect class="lp-ambient" width="716" height="716" fill="url(#ambientGlow)"/>
+
+  <!-- board "thickness" shadows: one slab-offset duplicate behind each panel -->
+  <g class="lp-shadow" fill="#101114" stroke="#2a313c" stroke-width="1.5" opacity="0.9">
+    <rect x="98" y="118" width="330" height="230" rx="16"/>
+    <rect x="448" y="118" width="186" height="100" rx="14"/>
+    <rect x="448" y="236" width="186" height="112" rx="14"/>
+    <rect x="98" y="368" width="250" height="246" rx="16"/>
+    <rect x="368" y="368" width="266" height="246" rx="16"/>
+  </g>
+
+  <!-- Panel P1 (hero, accent-stroked): chart card -->
+  <!-- ambient layer: accent-panel glow, breathing -->
+  <rect class="panel-glow-breathe wake-glow" x="90" y="110" width="330" height="230" rx="16" fill="none" stroke="#2ec5c9" stroke-width="3" opacity="0.18" filter="url(#glow)"/>
+  <rect class="lp-nf" x="90" y="110" width="330" height="230" rx="16" fill="url(#nodeFill)" stroke="#2ec5c9" stroke-width="2.5"/>
+  <rect class="lp-bar" x="96" y="116" width="318" height="1" fill="#7c8794" opacity="0.2"/>
+  <g class="lp-line2" stroke="#3a4350" stroke-width="1" opacity="0.3">
+    <line x1="110" y1="200" x2="410" y2="200"/>
+    <line x1="110" y1="240" x2="410" y2="240"/>
+    <line x1="110" y1="280" x2="410" y2="280"/>
+  </g>
+  <!-- §19: glow underlay stays a static ambient wash; the once-permanent
+       crisp line is now the dim GHOST baseline (always fully present, so
+       the self-drawing layer below never has an "empty chart" moment); the
+       bright layer actually draws/redraws continuously -->
+  <polyline class="lp-glow-u" points="120,300 160,260 200,280 240,230 280,250 320,205 360,225 400,180"
+            fill="none" stroke="#2ec5c9" stroke-width="6" opacity="0.28" filter="url(#glow)"/>
+  <polyline class="chart-ghost" points="120,300 160,260 200,280 240,230 280,250 320,205 360,225 400,180"
+            fill="none" stroke="#7fe3e7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline class="chart-draw" points="120,300 160,260 200,280 240,230 280,250 320,205 360,225 400,180"
+            fill="none" stroke="#eafcff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ambient layer: chart value-dots pulse (family signature, staggered) -->
+  <g filter="url(#dotGlow)">
+    <circle class="pulse d1" cx="240" cy="230" r="5" fill="#2ec5c9" opacity="0.4"/>
+    <circle class="pulse d2" cx="320" cy="205" r="5" fill="#2ec5c9" opacity="0.4"/>
+    <circle class="pulse" cx="400" cy="180" r="6" fill="#2ec5c9" opacity="0.4"/>
+  </g>
+  <circle class="lp-nf dot-ping dp1" cx="240" cy="230" r="4" fill="#121316" stroke="#2ec5c9" stroke-width="2"/>
+  <circle class="lp-nf dot-ping dp2" cx="320" cy="205" r="4" fill="#121316" stroke="#2ec5c9" stroke-width="2"/>
+  <circle class="lp-nf dot-ping dp3" cx="400" cy="180" r="5" fill="#121316" stroke="#2ec5c9" stroke-width="2.5"/>
+  <!-- §17: one-ring ripple per dot, timed to the same traveler arrival % -->
+  <circle class="ring-ping rp1" cx="240" cy="230" r="6" fill="none" stroke="#2ec5c9" stroke-width="3"/>
+  <circle class="ring-ping rp2" cx="320" cy="205" r="6" fill="none" stroke="#2ec5c9" stroke-width="3"/>
+  <circle class="ring-ping rp3" cx="400" cy="180" r="7" fill="none" stroke="#2ec5c9" stroke-width="3"/>
+
+  <!-- Panel P2: title + text-line ticks -->
+  <rect class="lp-node" x="440" y="110" width="186" height="100" rx="14" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+  <line class="lp-bar" x1="456" y1="138" x2="530" y2="138" stroke="#7c8794" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <line class="lp-bar" x1="456" y1="162" x2="580" y2="162" stroke="#3a4350" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <line class="lp-bar" x1="456" y1="182" x2="556" y2="182" stroke="#3a4350" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- Panel P3: mini bar indicators — dance from their shared baseline (y326) -->
+  <rect class="lp-node" x="440" y="228" width="186" height="112" rx="14" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+  <line class="lp-bar" x1="456" y1="248" x2="520" y2="248" stroke="#7c8794" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <!-- §17: WAVE, not random — phase order verified by simulating each bar's
+       actual peak time (peak_time = 25%·9s + delay, mod 9s); left→right
+       needs ascending peak time, which here is d1(-1.9s)→base(0s)→d2(-3.8s) -->
+  <g fill="#2ec5c9" opacity="0.3">
+    <rect class="bar-dance d1" x="456" y="286" width="14" height="40" rx="3"/>
+    <rect class="bar-dance" x="486" y="262" width="14" height="64" rx="3"/>
+    <rect class="bar-dance d2" x="516" y="298" width="14" height="28" rx="3"/>
+  </g>
+
+  <!-- Panel P4: thumbnail + text-line ticks -->
+  <rect class="lp-node" x="90" y="360" width="250" height="246" rx="16" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+  <rect class="lp-inset" x="106" y="376" width="218" height="110" rx="8" fill="#121316" stroke="#3a4350" stroke-width="1.5" opacity="0.85"/>
+  <g class="lp-line1" stroke="#48525f" stroke-width="1.5" opacity="0.25">
+    <line x1="106" y1="376" x2="324" y2="486"/>
+    <line x1="324" y1="376" x2="106" y2="486"/>
+  </g>
+  <line class="lp-bar" x1="106" y1="510" x2="220" y2="510" stroke="#7c8794" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <line class="lp-bar" x1="106" y1="530" x2="300" y2="530" stroke="#3a4350" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <line class="lp-bar" x1="106" y1="548" x2="260" y2="548" stroke="#3a4350" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- Panel P5: bar chart -->
+  <rect class="lp-node" x="360" y="360" width="266" height="246" rx="16" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+  <line class="lp-line2" x1="380" y1="560" x2="606" y2="560" stroke="#3a4350" stroke-width="1" opacity="0.4"/>
+  <!-- §17: WAVE, not random — same verified-monotonic phase order as P3
+       above, extended to 6 bars: d1(-1.9s)→[-9.5s]→base(0s)→d4(-7.6s)→
+       d3(-5.7s)→d2(-3.8s); the 4th bar reuses the -1.9s "d1" step size (per
+       §14's stagger vocabulary) via an explicit inline delay since no d5
+       class exists yet -->
+  <g class="lp-line1" fill="none" stroke="#4b5563" stroke-width="1.5" opacity="0.8">
+    <rect class="bar-dance d1" x="380" y="500" width="16" height="60" rx="3"/>
+    <rect class="bar-dance" style="animation-delay: -9.5s" x="416" y="470" width="16" height="90" rx="3"/>
+    <rect class="bar-dance" x="452" y="510" width="16" height="50" rx="3"/>
+    <rect class="bar-dance d4" x="488" y="450" width="16" height="110" rx="3"/>
+    <rect class="bar-dance d3" x="524" y="485" width="16" height="75" rx="3"/>
+    <rect class="bar-dance d2" x="560" y="465" width="16" height="95" rx="3"/>
+  </g>
+  <g class="lp-line2" stroke="#3a4350" stroke-width="1" opacity="0.4">
+    <line x1="388" y1="560" x2="388" y2="566"/>
+    <line x1="424" y1="560" x2="424" y2="566"/>
+    <line x1="460" y1="560" x2="460" y2="566"/>
+    <line x1="496" y1="560" x2="496" y2="566"/>
+    <line x1="532" y1="560" x2="532" y2="566"/>
+    <line x1="568" y1="560" x2="568" y2="566"/>
+  </g>
+</svg>

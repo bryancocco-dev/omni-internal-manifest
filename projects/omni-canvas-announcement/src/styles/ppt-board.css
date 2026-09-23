@@ -1,0 +1,439 @@
+/* ------------------------------------------------------------------
+   PPT-BOARD — "here's what you made": the finished Coastline campaign
+   board, injected as a scrollable document INSIDE the app shell's own
+   canvas pane (cs-canvas-stage). Hero image + stat cards + channel
+   chart + launch copy, all pre-built (no generation beat — this
+   content already exists), under a document head (eyebrow/title/
+   meta). Prefix `xpb2-` throughout (xpb- is taken by prompt-beat.js).
+   Strict OMNI light theme, existing tokens only.
+------------------------------------------------------------------ */
+
+/* ---- scroller: the pane's own content, panned via translateY ---- */
+.xpb2-scroller {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  will-change: transform;
+}
+
+.xpb2-doc {
+  width: 1000px;             /* pane is 1096px — ~48px canvas air each side */
+  margin: 0 auto;
+  padding: 100px 0 180px;    /* 56px under-glass header + the same 44px air */
+}
+
+/* ---- document head: quiet + structural, no card, no floating chips */
+.xpb2-doc-head {
+  border-bottom: 0.5px solid var(--omni-line);
+  padding-bottom: 13px;
+}
+.xpb2-doc-eyebrow {
+  display: block;
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.xpb2-doc-title {
+  /* tight lockup: less air below the headline than above it */
+  margin: 7px 0 6px;
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--omni-text-strong);
+}
+.xpb2-doc-meta {
+  display: flex;
+  align-items: center;
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.xpb2-doc-meta span + span::before {
+  content: '·';
+  margin: 0 10px;
+}
+
+/* ---- modules: absolutely-positioned — GSAP owns left/top/width/
+   height for every direct child, morphing between the full-width
+   stacked-document reading order and the bento lockup. ---- */
+.xpb2-modules {
+  position: relative;
+  margin-top: 26px;
+}
+
+.xpb2-hero {
+  position: absolute;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+}
+.xpb2-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center;
+}
+.xpb2-hero-cap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 24px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 100%);
+}
+.xpb2-hero-title {
+  color: #ffffff;
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.05px;
+}
+.xpb2-hero-chip {
+  flex-shrink: 0;
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  border: 0.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  padding: 5px 11px;
+}
+
+.xpb2-stat-row {
+  position: absolute;
+  display: flex;
+  gap: 26px;
+  height: 100%;
+}
+.xpb2-stat-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 22px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+}
+.xpb2-stat-num-wrap {
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--omni-brand-500);
+  font-variant-numeric: tabular-nums;
+}
+.xpb2-stat-label {
+  font-family: var(--omni-font-sans);
+  font-size: 13px;
+  color: var(--omni-text-subtle);
+}
+
+.xpb2-chart-card {
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+}
+.xpb2-card-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 14px;
+}
+.xpb2-card-title {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
+  color: var(--omni-text-strong);
+}
+.xpb2-card-badge {
+  flex-shrink: 0;
+  font-family: var(--omni-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 11px;
+  padding: 4px 10px;
+}
+.xpb2-chart-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  column-gap: 10px;
+  row-gap: 9px;
+}
+.xpb2-yaxis {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: var(--omni-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  color: var(--omni-text-subtle);
+  opacity: 0.7;
+  text-align: right;
+  min-width: 18px;
+}
+.xpb2-yaxis span { line-height: 0; }
+.xpb2-plot-wrap { grid-column: 2; grid-row: 1; min-width: 0; position: relative; }
+.xpb2-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.xpb2-gridlines i { display: block; height: 1px; background: rgba(15, 23, 42, 0.055); }
+.xpb2-gridlines i:last-child { background: rgba(15, 23, 42, 0.14); }
+.xpb2-chart-plot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.xpb2-bar-col {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.xpb2-bar-track {
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  width: 60%;                /* fills the full-width card's columns… */
+  max-width: 132px;          /* …without going slab-wide */
+  display: flex;
+  align-items: flex-end;
+}
+.xpb2-bar-fill {
+  position: relative;
+  width: 100%;
+  border-radius: 5px 5px 0 0;
+  background: var(--omni-brand-500);
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+}
+/* value sits above the bar; counter-scaled so the bar's scaleY grow
+   doesn't squash the number with it */
+.xpb2-bar-value {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+  font-family: var(--omni-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--omni-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.xpb2-labels-row {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.xpb2-bar-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--omni-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  opacity: 0;
+}
+.xpb2-bar-label em {
+  font-style: normal;
+  font-size: 9px;
+  color: var(--omni-brand-500);
+  opacity: 0.85;
+}
+.xpb2-chart-foot {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 0.5px solid var(--omni-line);
+  font-family: var(--omni-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  opacity: 0.75;
+}
+
+/* ---- launch copy card + flight plan card --------------------------- */
+.xpb2-copy-card {
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 30px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+}
+.xpb2-copy-lines {
+  display: flex;
+  flex-direction: column;
+}
+.xpb2-copy-line {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 13px 0;
+  border-top: 0.5px solid var(--omni-line);
+  opacity: 0;
+  transform: translateY(8px);
+}
+.xpb2-copy-num {
+  flex-shrink: 0;
+  font-family: var(--omni-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--omni-brand-500);
+}
+.xpb2-copy-text {
+  font-family: var(--omni-font-sans);
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: -0.15px;
+  color: var(--omni-text-strong);
+  min-height: 1.35em;
+}
+
+/* ---- flight plan card ---------------------------------------------- */
+.xpb2-flight-card {
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+}
+.xpb2-flight-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.xpb2-flight-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.xpb2-flight-name {
+  flex-shrink: 0;
+  width: 58px;
+  font-family: var(--omni-font-sans);
+  font-size: 12.5px;
+  color: var(--omni-text-body);
+}
+.xpb2-flight-track {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(15, 23, 42, 0.05);
+}
+.xpb2-flight-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 5px;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+.xpb2-flight-foot {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 9px;
+  padding-left: 72px;      /* 58px name column + 14px gap — aligns ticks to tracks */
+  border-top: 0.5px solid var(--omni-line);
+  font-family: var(--omni-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  opacity: 0.75;
+}
+
+/* ---- body copy card (stacked-document row, beside launch copy) --- */
+.xpb2-body-card {
+  position: absolute;        /* GSAP owns left/top/width/height, like every module */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 26px 30px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.16);
+}
+.xpb2-body-text { padding-top: 4px; }
+.xpb2-body-text p {
+  margin: 0 0 12px;
+  font-family: var(--omni-font-sans);
+  font-size: 14px;
+  line-height: 1.62;
+  letter-spacing: -0.05px;
+  color: var(--omni-text-body);
+}
+.xpb2-body-text p:last-child { margin-bottom: 0; }

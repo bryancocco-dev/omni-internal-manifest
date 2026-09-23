@@ -1,0 +1,69 @@
+<svg viewBox="0 0 716 716" xmlns="http://www.w3.org/2000/svg">
+  <!-- PLAN §20.3 v2.2 — WORKFLOW, hand-rebuilt (Fable). The staircase draft read as
+       stairs, not process. ONE figure that can only mean "workflow": a route that
+       SPLITS and MERGES — A branches to B or C, both reconverge on D. Flat: four
+       ink nodes, two 8u routes drawn under them, ONE accent (the Innovation Blue
+       comet). ONE motion: the comet runs the top branch, then the bottom branch,
+       alternating each cycle (10s = two 5s runs — same dual-run technique as the v1
+       routing, §18.5 seam-wrapped visibility). Figure spans x136–580 (62% of 716),
+       optically centered. Light default; body[data-theme="dark"] inverts ground/ink
+       only (blue theme-constant). Reduced-motion: comet rests at the split. -->
+  <style>
+    .wf-bg { fill: #ffffff; }
+    .wf-node { fill: #000000; }
+    .wf-route { fill: none; stroke: #000000; stroke-width: 8; }
+    .wf-comet { fill: #4F7FF2; }
+
+    .wf-c1 {
+      offset-path: path("M256,358 C282,358 272,260 298,260 L418,260 C444,260 434,358 460,358");
+      offset-rotate: 0deg;
+      animation: wfRun1 10s linear infinite;
+    }
+    .wf-c2 {
+      offset-path: path("M256,358 C282,358 272,456 298,456 L418,456 C444,456 434,358 460,358");
+      offset-rotate: 0deg;
+      animation: wfRun2 10s linear infinite;
+    }
+    /* run 1 owns the first half, run 2 the second; each fades at its hand-off so
+       the baton pass reads, and 0%/100% match for a seamless wrap */
+    @keyframes wfRun1 {
+      0%   { offset-distance: 0%;   opacity: 1; }
+      44%  { offset-distance: 100%; opacity: 1; }
+      47%  { offset-distance: 100%; opacity: 0; }
+      97%  { offset-distance: 0%;   opacity: 0; }
+      100% { offset-distance: 0%;   opacity: 1; }
+    }
+    @keyframes wfRun2 {
+      0%   { offset-distance: 0%;   opacity: 0; }
+      47%  { offset-distance: 0%;   opacity: 0; }
+      50%  { offset-distance: 0%;   opacity: 1; }
+      94%  { offset-distance: 100%; opacity: 1; }
+      97%  { offset-distance: 100%; opacity: 0; }
+      100% { offset-distance: 0%;   opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wf-c1, .wf-c2 { animation: none; }
+      /* comet 1's static offset-distance 0 leaves it resting at the split */
+    }
+
+    body[data-theme="dark"] .wf-bg { fill: #000000; }
+    body[data-theme="dark"] .wf-node { fill: #ffffff; }
+    body[data-theme="dark"] .wf-route { stroke: #ffffff; }
+  </style>
+
+  <rect class="wf-bg" width="716" height="716"/>
+
+  <!-- both routes, drawn under the nodes so through-node segments stay hidden -->
+  <path class="wf-route" d="M256,358 C282,358 272,260 298,260 L418,260 C444,260 434,358 460,358"/>
+  <path class="wf-route" d="M256,358 C282,358 272,456 298,456 L418,456 C444,456 434,358 460,358"/>
+
+  <!-- comets ride between routes and nodes -->
+  <circle class="wf-comet wf-c1" r="15"/>
+  <circle class="wf-comet wf-c2" r="15" opacity="0"/>
+
+  <!-- nodes: A (source) · B/C (branches) · D (merge) -->
+  <rect class="wf-node" x="136" y="326" width="120" height="64" rx="12"/>
+  <rect class="wf-node" x="298" y="228" width="120" height="64" rx="12"/>
+  <rect class="wf-node" x="298" y="424" width="120" height="64" rx="12"/>
+  <rect class="wf-node" x="460" y="326" width="120" height="64" rx="12"/>
+</svg>

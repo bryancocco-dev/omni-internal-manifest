@@ -1,0 +1,3777 @@
+  :root {
+    /* AL.3 — the one inset shared by the bar's Back pill (AE.6) and
+       the sheet's own left-aligned content (centerCanvasSections),
+       so the two can never drift into two different numbers again. */
+    --pt-stage-inset: 28px;
+    /* QA pass 2026-09-09 — chrome vars re-pointed onto the OMNI
+       token ladder (tokens.css linked in <head>). Exact-hex matches
+       noted inline; everything else lands within a shade of the
+       original literal on purpose (parity, not a reskin). The four
+       --tag-* skill-badge colors are a pastel set with no close OMNI
+       equivalent (remapping would visibly shift them) — left as
+       literals except --tag-palette, an exact hex match. */
+    --bg-canvas: var(--omni-panel-bg, #ffffff);
+    --pg-bg: var(--omni-panel-bg, #ffffff);
+    --panel-bg-general: var(--omni-panel-bg, #ffffff);
+    --panel-bg-chat: #f1f2f7; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --panel-bg-3: #e8e9ee; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --line: var(--omni-rule-line-hairline, rgba(15, 23, 42, 0.1)); /* exact match */
+    /* Opaque pre-composited equivalent of var(--line) painted once
+       over var(--canvas-bg). Use this anywhere a hairline can be
+       overpainted by multiple stacked elements (e.g., bleed pseudo-
+       elements that span across many cells in the same row) so the
+       rendered weight stays constant. */
+    --line-solid: #DEE1E5; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --nav-bg: var(--omni-nav-bg, #ffffff); /* exact match */
+    --nav-selected: #eaebf1; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --footer-bg: #f5f6fa; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --text-body: #1b1d21; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --text-subtle: #6b6d7a; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --text-button: var(--omni-text-button, #ffffff); /* exact match */
+    --accent: var(--omni-accent-primary, #1858ee); /* exact match */
+    --accent-soft: #e8eefd; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --link: var(--omni-accent-primary, #1858ee); /* exact match */
+    --tag-graphics: #87ffaf;
+    --tag-video: #ff8787;
+    --tag-text: #4ac9f1;
+    --tag-audio: #7289ef;
+    --tag-palette: var(--omni-primitive-brand-cyan01, #0de0e1); /* exact match */
+
+    --card-bg: var(--omni-panel-bg-02, #ffffff); /* exact match */
+    --canvas-bg: #F5F7FA; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --canvas-header-bg: rgba(245, 247, 250, 0.65); /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --text-strong: #0a0a0a; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --bib-row-line: #eef0f4; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --hover-soft: rgba(15, 23, 42, 0.04); /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --hover-tint: rgba(15, 23, 42, 0.025); /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --shadow-card: rgba(0, 0, 0, 0.06); /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+    --avatar-border: #F5F7FA; /* canvas-graphics parity (9/9) — the OMNI token here reads differently from the reference build */
+
+    --rail-w: 80px;
+    --chat-default-w: 560px;
+    --chat-min-w: 560px;
+    --chat-max-w: 920px;
+  }
+
+  /* Dark theme — palette matched to Figma OAI 2026 handoff */
+  body[data-theme="dark"] {
+    --bg-canvas: var(--omni-panel-bg, #131517);
+    --pg-bg: var(--omni-panel-bg, #131517);
+    --panel-bg-general: var(--omni-panel-bg, #131517);
+    --panel-bg-chat: var(--omni-neutral-semantic-surface, #2f3038);
+    --panel-bg-3: var(--omni-rule-line, #33353e);
+    --line: var(--omni-rule-line-hairline, rgba(255, 255, 255, 0.1)); /* exact match */
+    --line-solid: var(--omni-rule-line, #33353e);
+    --nav-bg: var(--omni-nav-bg, #2a2b32);
+    --nav-selected: var(--omni-nav-selected-tab, #1b1d21); /* exact match */
+    --footer-bg: var(--omni-neutral-semantic-surface, #2f3038);
+    --text-body: var(--omni-text-body, #e8e9ed);
+    --text-subtle: var(--omni-text-subtle-01, #9b9dac); /* exact match */
+    --text-button: var(--omni-text-button, #131517);
+    --accent: var(--omni-accent-primary, #0de0e1); /* exact match */
+    --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--card-bg));
+    --link: var(--omni-accent-primary, #0de0e1); /* exact match */
+
+    --card-bg: var(--omni-panel-bg-02, #23242a); /* exact match */
+    --canvas-bg: var(--omni-page-bg, #1b1d21);
+    --canvas-header-bg: color-mix(in srgb, var(--canvas-bg) 72%, transparent);
+    --text-strong: var(--omni-text-body-high-contrast, #f7f7f7);
+    --bib-row-line: var(--omni-rule-line, #33353e);
+    --hover-soft: color-mix(in srgb, var(--text-body) 5%, transparent);
+    --hover-tint: color-mix(in srgb, var(--text-body) 3%, transparent);
+    --shadow-card: rgba(0, 0, 0, 0.5);
+    --avatar-border: var(--omni-page-bg, #1b1d21); /* exact match */
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--pg-bg);
+    color: var(--text-body);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+
+  .app {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 48px 1fr auto;
+  }
+
+  /* ---------- Top nav (row 1) ---------- */
+  .topnav {
+    display: flex;
+    align-items: stretch;
+    background: var(--nav-bg);
+    border-bottom: 0.5px solid var(--line);
+  }
+  .omni-cell {
+    width: 80px;
+    background: var(--nav-bg);
+    border-right: 0.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .omni-logo { display: block; height: auto; }
+  .omni-logo--sm { height: 12px; }
+  .omni-logo--lg { height: 64px; }
+  .omni-logo--md { height: 18px; }
+  body[data-theme="dark"] .omni-logo {
+    filter: brightness(0) invert(1);
+  }
+  .nav-icon-cell {
+    width: 44px;
+    background: var(--nav-bg);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-body); cursor: pointer;
+    transition: background 200ms ease;
+  }
+  .nav-icon-cell:hover { background: var(--hover-soft); }
+  .nav-icon-cell--bordered { border-right: 0.5px solid var(--line); }
+
+  /* Left hamburger — floating white circle with layered drop shadow at every breakpoint */
+  #navMenuBtn {
+    width: 36px;
+    height: 36px;
+    align-self: center;
+    margin: 0 12px 0 14px;
+    flex: 0 0 36px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--accent);
+    border: 0.5px solid var(--line);
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.04),
+                0 3px 6px rgba(15, 18, 24, 0.06),
+                0 8px 20px rgba(15, 18, 24, 0.06);
+    transition: background 200ms ease, box-shadow 200ms ease, transform 160ms ease;
+  }
+  #navMenuBtn:hover {
+    background: var(--card-bg);
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.05),
+                0 4px 8px rgba(15, 18, 24, 0.08),
+                0 12px 28px rgba(15, 18, 24, 0.10);
+  }
+  #navMenuBtn:active { transform: scale(0.96); }
+  body[data-theme="dark"] #navMenuBtn {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+                0 2px 10px rgba(0, 0, 0, 0.45);
+  }
+  body[data-theme="dark"] #navMenuBtn:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5),
+                0 4px 16px rgba(0, 0, 0, 0.55);
+  }
+
+  .workspace {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border-right: 0.5px solid var(--line);
+    color: var(--text-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: -0.05px;
+    min-width: 0;          /* permits the span to truncate when constrained */
+    transition: background 200ms ease;
+  }
+  .workspace > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .workspace { position: relative; }
+  .workspace:hover { background: var(--hover-soft); }
+  .workspace svg.caret {
+    color: var(--text-subtle);
+    flex-shrink: 0;
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .workspace[aria-expanded="true"] svg.caret { transform: rotate(180deg); }
+
+  /* Workspace dropdown — list of workspaces with the active one highlighted */
+  .workspace-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 280px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.04),
+                0 6px 14px rgba(15, 18, 24, 0.06),
+                0 24px 48px rgba(15, 18, 24, 0.10);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity 200ms ease,
+                transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 60;
+    text-align: left;
+    cursor: default;
+  }
+  .workspace-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .workspace-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-body);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.05px;
+    text-align: left;
+    font-family: inherit;
+    transition: background 160ms ease;
+  }
+  .workspace-menu-item:hover { background: var(--hover-soft); }
+  .workspace-menu-item.active { background: var(--nav-selected); }
+  .wsm-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wsm-icon svg { display: block; }
+  .wsm-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Mobile: pin the menu to the viewport so it doesn't overflow at narrow widths */
+  @media (max-width: 640px) {
+    .workspace-menu {
+      position: fixed;
+      top: 56px;
+      left: 16px;
+      right: 16px;
+      width: auto;
+      transform-origin: top center;
+    }
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    background: transparent;
+    color: var(--text-subtle);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;          /* never compress below content size */
+    min-width: 48px;
+    max-width: 320px;
+    white-space: nowrap;
+    position: relative;
+    letter-spacing: -0.05px;
+    border: 0;
+    border-right: 0.5px solid var(--line);
+    transition: color 280ms ease,
+                letter-spacing 280ms ease,
+                background 240ms ease;
+  }
+  .tab-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tab-icon svg { display: block; }
+  /* De-colored, ported verbatim from canvas-workflows-v3 (Bryan's own ruling
+     recorded there: "the teal icon container ... should be white with a grey
+     hairline outline with a blue icon" + "these icons should have a grey
+     hairline, and blue icon" on the hat's Graphics/Video/Audio tiles). ONE
+     treatment for the whole family — white tile, hairline ring, accent-blue
+     glyph. The old per-kind color coding (green/coral/violet/cyan/teal/amber)
+     is retired; the per-kind classes are kept so every existing call site and
+     the attach-chip badge palette that references them still resolve. */
+  .tab-icon {
+    background: #ffffff;
+    border: 1px solid var(--line, rgba(15, 23, 42, 0.10));
+    color: var(--accent, #1858ee);
+  }
+  .tab-icon.graphics, .tab-icon.video, .tab-icon.audio,
+  .tab-icon.text, .tab-icon.canvas, .tab-icon.tbl { background: #ffffff; color: var(--accent, #1858ee); }
+  .tab:hover {
+    color: var(--text-body);
+    background: var(--hover-tint);
+  }
+  .tab.active {
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: -0.08px;
+    background: var(--nav-selected);
+  }
+  .tab.active:hover { background: var(--nav-selected); }
+  .tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+    border-radius: 4px;
+  }
+
+  .add-tab {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    align-self: center;
+    margin-left: 6px;
+    padding: 0;
+    background: transparent;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                background 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .add-tab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(24, 88, 238, 0.16);
+    transition: box-shadow 520ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .add-tab svg {
+    transition: transform 540ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .add-tab:hover {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.10);
+    transform: scale(1.06);
+  }
+  .add-tab:hover::before {
+    box-shadow: 0 0 0 2px rgba(24, 88, 238, 0.07),
+                0 0 0 4px rgba(24, 88, 238, 0.03);
+  }
+  .add-tab:hover svg {
+    transform: rotate(90deg);
+  }
+  .add-tab:active {
+    transform: scale(0.94);
+    transition-duration: 120ms;
+  }
+
+  .nav-spacer { flex: 1; background: transparent; }
+
+  .nav-right {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 12px;
+  }
+  .avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent);
+    color: #ffffff; font-size: 10px; font-weight: 600;
+    letter-spacing: -0.2px;
+    display: flex; align-items: center; justify-content: center;
+    object-fit: cover;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-body);
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 200ms ease;
+  }
+  .me:hover { background: var(--hover-soft); }
+  .me svg { color: var(--text-subtle); }
+  /* AL.12 (Bryan, on the copper "BC" circle: "make this something
+     more OMNI branded colorwise") — this used to override .avatar
+     with an orange-brown gradient to match .av-nick's own copper.
+     Both drop the copper now (see .avatar/.av-nick/.pa-bc/.avatar-bc
+     below), so the topnav chip just wears the base .avatar treatment
+     — no override needed. */
+
+  /* Top-nav link back to the OAI · Site Experience index page
+     (site/index.html, one level up) — styled to match .me's pill treatment. */
+  .nav-site-exp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-body);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 200ms ease;
+  }
+  .nav-site-exp-link:hover { background: var(--hover-soft); }
+  .nav-site-exp-link svg { color: var(--text-subtle); flex-shrink: 0; }
+
+  /* Right-side menu icon — visible only at ≤640px (mobile) */
+  .nav-menu-secondary {
+    display: none;
+    opacity: 0;
+    width: 32px;
+    height: 32px;
+    align-self: center;
+    margin: 0 14px 0 10px;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    flex: 0 0 32px;
+    transition: background 200ms ease;
+  }
+  .nav-menu-secondary:hover { background: var(--hover-soft); }
+  .nav-menu-secondary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Sub nav (row 2) ---------- */
+  .subnav {
+    background: var(--nav-selected);
+    border-bottom: 0.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    background: var(--panel-bg-3);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-body); cursor: pointer; border: 0;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { background: var(--panel-bg-3); }
+  .breadcrumb {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    gap: 12px; color: var(--text-body);
+  }
+  .breadcrumb .title { font-weight: 600; font-size: 16px; }
+  .breadcrumb .sep   { color: var(--text-subtle); transform: rotate(20deg); }
+  .breadcrumb .crumb { color: var(--link); font-style: italic; font-weight: 700; }
+
+  .avatars { display: flex; align-items: center; }
+  .avatars .a {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--nav-selected);
+    margin-left: -8px;
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 10px; font-weight: 700;
+  }
+  .avatars .a:first-child { margin-left: 0; }
+  .a1 { background: linear-gradient(135deg,#f5a97f,#a17b56); }
+  .a2 { background: linear-gradient(135deg,#c98c63,#5a3a24); }
+  .a3 { background: linear-gradient(135deg,#e85d75,#7a1f2f); }
+  .share-btn {
+    background: var(--accent);
+    color: #ffffff;
+    border: 0;
+    border-radius: 8px;
+    height: 32px;
+    padding: 0 16px;
+    display: inline-flex; align-items: center; gap: 10px;
+    font-weight: 500; cursor: pointer; font-size: 13.5px;
+    letter-spacing: -0.05px;
+    transition: background 200ms ease,
+                color 200ms ease,
+                box-shadow 200ms ease,
+                transform 160ms ease;
+  }
+  .share-btn svg {
+    width: 14px; height: 14px;
+    color: #ffffff;
+    transition: color 200ms ease, transform 200ms ease;
+  }
+  .share-btn:hover {
+    box-shadow: 0 2px 8px rgba(24, 88, 238, 0.22),
+                0 6px 18px rgba(24, 88, 238, 0.14);
+  }
+  .share-btn:active { transform: scale(0.97); }
+  .share-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  /* AB.1 amendment — the eye/"View as read-only" ghost button, ported
+     from /TINKER/coke-skin/canvas-edit/index.html ~L532 (.view-btn):
+     same height/radius/font as .share-btn, transparent fill, hairline
+     border, soft-accent hover. Mounted in the header's own actions
+     row and again in the Media bar's copy of it (AB.1 amendment) —
+     this shell has no read-only viewer mode of its own to toggle
+     (its nearest relative, body.is-painter-shared, is a bigger thing
+     — an actual shared-link session, not a preview a canvas owner
+     flips on and off) — present and inert with its tooltip rather
+     than wired to invent one. Token-based colors throughout, so no
+     separate dark-theme override is needed the way .share-btn's
+     filled version carries below. */
+  .view-btn {
+    background: transparent;
+    color: var(--text-strong);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    height: 32px;
+    padding: 0 14px;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 500; cursor: pointer; font-size: 13.5px;
+    letter-spacing: -0.05px;
+    transition: background 200ms ease, border-color 200ms ease, transform 160ms ease;
+  }
+  .view-btn svg { width: 16px; height: 16px; color: currentColor; }
+  .view-btn:hover { background: var(--hover-soft); }
+  .view-btn:active { transform: scale(0.97); }
+  .view-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- Main row (row 3) ----------
+     Single-row grid. Canvas-header and canvas overlap in the same grid cell —
+     canvas-header anchors to the top via align-self: start and canvas has
+     padding-top equal to the header height, so brief content starts below
+     the header but scrolls behind it (frosted blur effect). */
+  .main {
+    display: grid;
+    grid-template-columns: var(--rail-w) var(--chat-default-w) 6px 1fr;
+    /* minmax(0, 1fr), never bare 1fr: a bare fr track's floor is its
+       items' min-content height, so one tall descendant grows the row
+       past the shell and the whole row runs under the footer. */
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+    min-height: 0;
+    position: relative;
+  }
+  .main > .side-rail     { grid-column: 1; grid-row: 1; }
+  .main > .chat          { grid-column: 2; grid-row: 1; }
+  .main > .splitter      { grid-column: 3; grid-row: 1; }
+  .main > #canvas        { grid-column: 4; grid-row: 1; }
+  .main > .canvas-header {
+    grid-column: 4;
+    grid-row: 1;
+    align-self: start;
+    height: var(--canvas-header-h, 64px);
+  }
+  :root { --panel-w: 220px; }
+
+  /* side rail with vertical title */
+  .side-rail {
+    background: var(--pg-bg);
+    border-right: 0.5px solid var(--line);
+    position: relative;
+    z-index: 15;
+  }
+  .rail-title {
+    position: absolute;
+    /* Bottom clearance = 56*8 + 12 = 460 so the title clears the eight
+       tool buttons (56px tall each: Agents / Knowledge / Tools / Skills /
+       Instructions / Light Canvas / Canvas view / Workflow builder) plus
+       the 12px bottom padding on the .rail-tools module. */
+    top: 64px; bottom: 460px; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0;
+    color: var(--text-strong);
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* === Side-rail tools: Agents / Knowledge / Instructions ======
+     Stacked icon buttons framed as a self-contained module at the
+     bottom of the side-rail. Top hairline + faint slate surface
+     tint distinguish the cluster from the chapter scroll above;
+     12px bottom padding lifts the icons off the rail's bottom edge
+     so the module reads as placed rather than stuck. Each tool is
+     56px tall, centered icon, transparent bg with accent-soft
+     hover. Tooltip pops to the right of the rail on hover
+     (data-tooltip attr). Each icon has its own thematic hover
+     animation defined further below. */
+  .rail-tools {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-bottom: 12px;
+    /* No background fill — the top hairline alone divides the
+       tool cluster from the chapter scroll above. Icons sit on
+       the rail's bare surface. */
+    background: transparent;
+    border-top: 0.5px solid var(--line);
+  }
+  .rail-tool {
+    position: relative;
+    width: 100%;
+    height: 56px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: color 240ms ease, background 240ms ease;
+  }
+  .rail-tool:hover {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.05);
+  }
+  .rail-tool:active svg { transform: scale(0.92); }
+  .rail-tool:focus { outline: none; }
+  .rail-tool:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .rail-tool.active {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.08);
+  }
+  .rail-tool svg {
+    display: block;
+    transition: transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Light Canvas bolt — a single charge-up flicker on hover. */
+  .rail-tool-light:hover .rail-tool-bolt-path {
+    animation: rail-bolt-charge 1200ms ease-in-out infinite;
+  }
+  @keyframes rail-bolt-charge {
+    0%, 100% { opacity: 1; }
+    45%      { opacity: 0.45; }
+    55%      { opacity: 1; }
+  }
+
+  /* Skills sparkle — the star holds still, the two small sparks twinkle
+     out of phase on hover (same "icon has its own character" idea as the
+     bot's blink and the toolbox lid). */
+  .rail-tool-skills .rail-tool-skill-spark {
+    opacity: 0.45;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .rail-tool-skills:hover .rail-tool-skill-spark-a {
+    animation: rail-skill-twinkle 1500ms ease-in-out infinite;
+  }
+  .rail-tool-skills:hover .rail-tool-skill-spark-b {
+    animation: rail-skill-twinkle 1500ms ease-in-out 500ms infinite;
+  }
+  .rail-tool-skills:hover .rail-tool-skill-star {
+    animation: rail-skill-breathe 1800ms ease-in-out infinite;
+  }
+  @keyframes rail-skill-twinkle {
+    0%, 100% { opacity: 0.35; scale: 0.9; }
+    50%      { opacity: 1;    scale: 1.12; }
+  }
+  @keyframes rail-skill-breathe {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.75; }
+  }
+
+  /* Tooltip — pops to the right of the rail on hover, showing the
+     full button name. Uses data-tooltip attr; pointer-events:none
+     so it never blocks the click. */
+  .rail-tool::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    background: var(--card-bg);
+    color: var(--text-strong);
+    border: 1px solid var(--line);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 120;
+    box-shadow: 0 4px 14px var(--shadow-card);
+  }
+  .rail-tool:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  /* Buttons with data-tip="rich" use a real DOM child instead of the
+     attr-based ::after so the message can wrap, carry accent-colored
+     count tokens, and be updated live from JS. Suppress the default
+     ::after on those. */
+  .rail-tool[data-tip="rich"]::after { content: none; }
+
+  /* Rich tooltip — appears to the right of the rail button on hover.
+     Title row + subtext row inside a light card that matches the
+     rest of the canvas surface (themes via --card-bg / --line /
+     --text-* tokens so it flips automatically in dark mode). */
+  .rail-tool-tip {
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    width: 224px;
+    background: var(--card-bg);
+    color: var(--text-body);
+    border: 1px solid var(--line);
+    padding: 10px 12px 11px;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    text-align: left;
+    white-space: normal;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 120;
+    box-shadow: 0 6px 18px var(--shadow-card);
+  }
+  .rail-tool:hover .rail-tool-tip {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  .rail-tool-tip-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-strong);
+    letter-spacing: -0.1px;
+    line-height: 1.2;
+  }
+  .rail-tool-tip-body {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.42;
+    letter-spacing: -0.02px;
+    color: var(--text-subtle);
+  }
+  .rail-tool-tip strong {
+    /* Theme-aware accent for count tokens — reads as the canonical
+       accent in light, and the cyan family in dark. */
+    color: var(--accent);
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0 1px;
+  }
+
+  /* --- Agents animation: antenna tip pulses, eyes blink in
+     sequence on hover. The bot "boots up". */
+  .rail-tool-agents:hover .rail-tool-bot-antenna-tip {
+    animation: rail-bot-pulse 900ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .rail-tool-agents:hover .rail-tool-bot-eye-l {
+    animation: rail-bot-blink 1400ms ease-in-out infinite;
+  }
+  .rail-tool-agents:hover .rail-tool-bot-eye-r {
+    animation: rail-bot-blink 1400ms ease-in-out infinite;
+    animation-delay: 120ms;
+  }
+  @keyframes rail-bot-pulse {
+    0%, 100% { opacity: 1; transform-origin: center; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.4); }
+  }
+  @keyframes rail-bot-blink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+
+  /* Workflow-builder tool — on hover a signal draws itself along the wire
+     from node A to node B, and B pulses as it "receives". Same hover-anim
+     grammar as the agents bot / toolbox lid / knowledge stack. Wire path
+     length ≈ 11px; dasharray 12 covers it. */
+  .rail-tool-workflow .rail-tool-wf-wire {
+    stroke-dasharray: 12;
+    stroke-dashoffset: 0;
+  }
+  .rail-tool-workflow:hover .rail-tool-wf-wire {
+    animation: rail-wf-signal 1400ms ease-in-out infinite;
+  }
+  .rail-tool-workflow:hover .rail-tool-wf-node-b {
+    animation: rail-wf-receive 1400ms ease-in-out infinite;
+  }
+  @keyframes rail-wf-signal {
+    0% { stroke-dashoffset: 12; }
+    45%, 75% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -12; }
+  }
+  @keyframes rail-wf-receive {
+    0%, 42% { opacity: 1; }
+    56% { opacity: 0.4; }
+    72%, 100% { opacity: 1; }
+  }
+  .rail-tool-agents svg {
+    transform-origin: center;
+  }
+  .rail-tool-agents .rail-tool-bot-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .rail-tool-agents .rail-tool-bot-antenna-tip {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  /* Lightning bolts above the bot's head — hidden by default, then
+     flash out + scale up + drift upward on hover. Left + right bolts
+     are staggered 180ms apart so they crackle alternately, not in
+     unison, which reads more like sparks than a strobe. */
+  .rail-tool-agents .rail-tool-bot-bolt {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .rail-tool-agents:hover .rail-tool-bot-bolt-l {
+    animation: rail-bot-bolt 700ms ease-out infinite;
+  }
+  .rail-tool-agents:hover .rail-tool-bot-bolt-r {
+    animation: rail-bot-bolt 700ms ease-out 180ms infinite;
+  }
+  @keyframes rail-bot-bolt {
+    0%   { opacity: 0; transform: scale(0.4) translateY(2px); }
+    25%  { opacity: 1; transform: scale(1)   translateY(0); }
+    60%  { opacity: 0.8; transform: scale(1.25) translateY(-1px); }
+    100% { opacity: 0; transform: scale(1.6) translateY(-2.5px); }
+  }
+
+  /* --- Knowledge base animation: cylinder shape stays — a "new
+     layer" ellipse drops onto the top from above, the top ellipse
+     pulses to acknowledge the addition, and the bottom ring
+     briefly fades to suggest data cycling out. Reads as
+     "stacking on top + bottom rolling off" without redrawing the
+     icon as separate bricks. */
+  .rail-tool-kb-incoming,
+  .rail-tool-kb-top,
+  .rail-tool-kb-bot,
+  .rail-tool-kb-outgoing {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .rail-tool-kb-incoming,
+  .rail-tool-kb-outgoing { opacity: 0; }
+  .rail-tool-knowledge:hover .rail-tool-kb-incoming {
+    animation: rail-kb-incoming 1800ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .rail-tool-knowledge:hover .rail-tool-kb-top {
+    animation: rail-kb-top-pulse 1800ms ease-out infinite;
+  }
+  .rail-tool-knowledge:hover .rail-tool-kb-bot {
+    animation: rail-kb-bot-pulse 1800ms ease-out infinite;
+  }
+  .rail-tool-knowledge:hover .rail-tool-kb-outgoing {
+    animation: rail-kb-outgoing 1800ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  /* Incoming ellipse: floats 5px above the icon and rapidly slides
+     down to land on the top ellipse, then dissolves into it. */
+  @keyframes rail-kb-incoming {
+    0%   { transform: translateY(-5px); opacity: 0; }
+    25%  { transform: translateY(-3px); opacity: 0.85; }
+    45%  { transform: translateY(0);    opacity: 0.9; }
+    60%  { transform: translateY(0);    opacity: 0; } /* merged into top */
+    100% { transform: translateY(-5px); opacity: 0; }
+  }
+  /* Top ellipse: tiny scale + brightness pulse RIGHT when the
+     incoming layer lands (~45% of cycle), then settles. */
+  @keyframes rail-kb-top-pulse {
+    0%, 30%, 100% { transform: scale(1);    opacity: 1; }
+    45%           { transform: scale(1.05); opacity: 1; }
+    55%           { transform: scale(1);    opacity: 1; }
+  }
+  /* Bottom ring: time-shifted mirror of the top pulse — fires at
+     55% of the cycle when the outgoing layer separates from the
+     stack, then settles. Matches the top's scale magnitude + curve
+     so the two ends of the cylinder read as one symmetric system. */
+  @keyframes rail-kb-bot-pulse {
+    0%, 40%, 80%, 100% { transform: scale(1);    opacity: 1; }
+    55%                { transform: scale(1.05); opacity: 1; }
+    65%                { transform: scale(1);    opacity: 1; }
+  }
+  /* Outgoing ellipse: starts flush with the bottom ring (y=0,
+     hidden), separates at 55%, slides DOWN +5px while fading out.
+     Time-shifted + direction-flipped twin of the incoming animation
+     so the in-out flow reads as one continuous motion. */
+  @keyframes rail-kb-outgoing {
+    0%,  40% { transform: translateY(0);   opacity: 0; }
+    55%      { transform: translateY(0);   opacity: 0.9; }
+    75%      { transform: translateY(3px); opacity: 0.85; }
+    100%     { transform: translateY(5px); opacity: 0; }
+  }
+
+  /* --- Tools animation: the lid (handle + top half of the box)
+     lifts up and lowers back down on a continuous 1.4s loop so the
+     hover reads as the toolbox opening and closing. Brief hold at
+     the open and closed extremes gives the motion a recognizable
+     rhythm rather than a pure sine wave. */
+  .rail-tool-tools .rail-tool-tb-lid {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+  }
+  .rail-tool-tools:hover .rail-tool-tb-lid {
+    animation: rail-tb-open-close 1400ms ease-in-out infinite;
+  }
+  @keyframes rail-tb-open-close {
+    0%       { transform: translateY(0); }
+    10%, 45% { transform: translateY(-4px); }
+    55%, 100%{ transform: translateY(0); }
+  }
+
+  /* --- Instructions animation: the three text lines "write
+     themselves" in sequence on hover, then erase and re-type in a
+     continuous loop. Each line cycles write → hold → erase using
+     stroke-dashoffset: 7 (empty) → 0 (drawn) → -7 (empty again),
+     and since both offsets land the dash outside the visible range
+     the loop seam is invisible. Staggered delays make the three
+     lines feel like rapid typing. */
+  .rail-tool-instructions .rail-tool-ins-line {
+    stroke-dasharray: 7;
+    stroke-dashoffset: 0;
+  }
+  .rail-tool-instructions:hover .rail-tool-ins-line-1 {
+    animation: rail-ins-write 2000ms ease-in-out infinite;
+  }
+  .rail-tool-instructions:hover .rail-tool-ins-line-2 {
+    animation: rail-ins-write 2000ms ease-in-out 200ms infinite;
+  }
+  .rail-tool-instructions:hover .rail-tool-ins-line-3 {
+    animation: rail-ins-write 2000ms ease-in-out 400ms infinite;
+  }
+  @keyframes rail-ins-write {
+    0%   { stroke-dashoffset: 7; }
+    25%  { stroke-dashoffset: 0; }
+    75%  { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -7; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail-tool-agents:hover .rail-tool-bot-antenna-tip,
+    .rail-tool-agents:hover .rail-tool-bot-eye-l,
+    .rail-tool-agents:hover .rail-tool-bot-eye-r,
+    .rail-tool-agents:hover .rail-tool-bot-bolt-l,
+    .rail-tool-agents:hover .rail-tool-bot-bolt-r,
+    .rail-tool-knowledge:hover .rail-tool-kb-incoming,
+    .rail-tool-knowledge:hover .rail-tool-kb-top,
+    .rail-tool-knowledge:hover .rail-tool-kb-bot,
+    .rail-tool-knowledge:hover .rail-tool-kb-outgoing,
+    .rail-tool-tools:hover .rail-tool-tb-lid,
+    .rail-tool-instructions:hover .rail-tool-ins-line { animation: none; }
+  }
+  .rail-back {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px; height: 32px;
+    background: transparent;
+    border: 0;
+    color: var(--text-body);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: color 240ms ease;
+  }
+  .rail-back svg { transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .rail-back:hover { color: var(--accent); }
+  .rail-back:hover svg { transform: translateX(-4px); }
+  .rail-back:active svg { transform: translateX(-6px) scale(0.92); }
+  .rail-back:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .rail-handle {
+    position: absolute;
+    left: var(--rail-w);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 44px;
+    background: var(--canvas-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    cursor: pointer;
+    /* Above the chat-energy-ring (z-index 51) so the model-switch
+       glow + orbital comet don't paint over the chevron pill that
+       straddles the chat's left edge. */
+    z-index: 60;
+    padding: 0;
+    box-shadow: 0 1px 2px var(--hover-soft);
+    transition: left 480ms cubic-bezier(0.32, 0.72, 0, 1),
+                transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                background 220ms ease,
+                color 220ms ease,
+                box-shadow 220ms ease,
+                border-color 220ms ease,
+                height 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .rail-handle:hover {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    height: 60px;
+    box-shadow: 0 2px 8px rgba(24, 88, 238, 0.22),
+                0 8px 20px rgba(24, 88, 238, 0.16);
+  }
+  .rail-handle:active { transform: translate(-50%, -50%) scale(0.94); }
+  .rail-handle:focus,
+  .rail-handle:focus-visible {
+    outline: none;
+  }
+  .rail-handle svg {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    display: block;
+    transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .main.panel-open .rail-handle { left: calc(var(--rail-w) + var(--panel-w)); }
+  .main.panel-open .rail-handle svg { transform: rotate(180deg); }
+
+  .rail-panel {
+    position: absolute;
+    left: var(--rail-w);
+    top: 0; bottom: 0;
+    width: var(--panel-w);
+    background: var(--card-bg);
+    border-right: 0.5px solid var(--line);
+    z-index: 11;
+    transform: translateX(calc(-1 * var(--panel-w) - 1px));
+    transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1),
+                box-shadow 480ms cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    gap: 4px;
+    overflow-y: auto;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  .rail-hotkeys {
+    display: none;
+  }
+  .rail-hotkeys-shown {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 64px;
+    padding: 0 20px;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    color: var(--text-subtle);
+    user-select: none;
+  }
+  .rail-hotkeys-keys {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rail-hotkey {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0.5px solid var(--line);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: color 240ms ease, background 240ms ease, border-color 240ms ease, transform 120ms ease;
+  }
+  .rail-hotkey:hover:not(:disabled) {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(24, 88, 238, 0.05);
+  }
+  .rail-hotkey:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+  .rail-hotkey:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .rail-hotkey.lit {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(24, 88, 238, 0.08);
+  }
+  body[data-theme="dark"] .rail-hotkey:hover:not(:disabled) {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(13, 224, 225, 0.06);
+  }
+  body[data-theme="dark"] .rail-hotkey.lit {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(13, 224, 225, 0.10);
+  }
+  body[data-theme="dark"] .rail-hotkey:hover:not(:disabled) {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(13, 224, 225, 0.07);
+  }
+  body[data-theme="dark"] .rail-hotkey.lit {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(13, 224, 225, 0.10);
+  }
+  .main.panel-open .rail-panel {
+    transform: translateX(0);
+    box-shadow: 6px 0 24px rgba(15, 23, 42, 0.06);
+  }
+  .panel-back {
+    position: absolute;
+    top: 16px; left: 16px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .panel-back:hover { background: var(--accent-soft); }
+
+  .rail-nav, .rail-actions {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .rail-actions li {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-body);
+    font-size: 14px;
+    line-height: 1.4;
+    user-select: none;
+    transition: color 240ms ease, background 240ms ease;
+  }
+  .rail-actions li:hover { background: var(--hover-soft); }
+  .rail-actions li.active { color: var(--accent); font-weight: 700; }
+  .rail-actions li svg { color: currentColor; }
+  .rail-divider { height: 0.5px; background: var(--line); margin: 16px 6px; }
+
+  /* Rail nav with expandable chapters */
+  .rail-nav { gap: 4px; }
+  .rail-nav > li { list-style: none; display: flex; flex-direction: column; }
+  .rail-nav .nav-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    min-height: 36px;
+    border-radius: 6px;
+    cursor: default;
+    color: var(--text-body);
+    font-size: 14px;
+    line-height: 1.4;
+    user-select: none;
+    flex-shrink: 0;
+    transition: color 240ms ease, background 240ms ease;
+  }
+  .rail-nav > li > .nav-row { cursor: pointer; }
+  .rail-nav > li:hover > .nav-row { background: var(--hover-soft); }
+  .rail-nav > li.active > .nav-row,
+  .rail-nav > li.active:hover > .nav-row { color: var(--accent); font-weight: 700; }
+  .rail-nav .caret {
+    color: currentColor;
+    opacity: 0.7;
+    font-weight: 400;
+    display: inline-block;
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Section-number prefix in the rail (matches the on-page 01/02/03 anchors).
+     Fira Code mono, muted by default, lights up to accent when its row is active. */
+  .rail-nav .rn-num {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--text-subtle);
+    font-weight: 500;
+    margin-right: 2px;
+    transition: color 240ms ease;
+  }
+  .rail-nav > li.active > .nav-row .rn-num { color: var(--accent); }
+  .rail-nav > li.has-children.expanded > .nav-row .caret {
+    transform: rotate(90deg);
+  }
+  .sub-wrap {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .rail-nav > li.expanded > .sub-wrap { max-height: 400px; }
+  .rail-subnav {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0 6px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .rail-subnav > li {
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--text-subtle);
+    cursor: pointer;
+    border-radius: 6px;
+    line-height: 1.35;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: color 200ms ease,
+                background 200ms ease,
+                opacity 220ms ease,
+                transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .rail-nav > li.expanded .rail-subnav > li {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .rail-nav > li.expanded .rail-subnav > li:nth-child(1) { transition-delay: 60ms; }
+  .rail-nav > li.expanded .rail-subnav > li:nth-child(2) { transition-delay: 100ms; }
+  .rail-nav > li.expanded .rail-subnav > li:nth-child(3) { transition-delay: 140ms; }
+  .rail-nav > li.expanded .rail-subnav > li:nth-child(4) { transition-delay: 180ms; }
+  .rail-subnav > li:hover { background: var(--hover-soft); color: var(--text-body); }
+  .rail-subnav > li.active,
+  .rail-subnav > li.active:hover { color: var(--accent); font-weight: 600; }
+  /* chat column */
+  .chat {
+    background: var(--pg-bg);
+    border-right: 0.5px solid var(--line);
+    display: flex; flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    /* Establish a stacking context so the chat-energy-ring (z-index 51
+       inside) stays contained. Without this, the inset glow + orbital
+       comet escape into the parent and paint over the rail-panel
+       (z-index 11) when the left nav is open. */
+    z-index: 1;
+  }
+  /* Model-switch glow — two layered effects on a 1.4s timeline:
+       1. Inset accent breath: the panel's interior edge picks up an
+          accent-color halo that intensifies twice (peaks at ~25% and
+          ~65%) before fading. Reads as the chat "warming up."
+       2. Orbital comet: a short arc of accent light traces once
+          around the panel's outer border, anchored to the model
+          selector corner. Conic gradient driven by an animated
+          custom property; masked to a 2px-wide ring so the panel's
+          surface stays untouched. */
+  @property --energy-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+  .chat-energy-ring {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 51;
+    border-radius: inherit;
+    opacity: 0;
+  }
+  .chat.model-switching .chat-energy-ring {
+    animation: chat-energy-breath 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .chat-energy-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--energy-angle, 0deg),
+      transparent 0deg,
+      color-mix(in srgb, var(--accent) 70%, transparent) 14deg,
+      color-mix(in srgb, var(--accent) 35%, transparent) 28deg,
+      transparent 44deg,
+      transparent 360deg);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    filter: blur(0.5px);
+  }
+  .chat.model-switching .chat-energy-ring::before {
+    animation: chat-energy-orbit 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes chat-energy-breath {
+    0%   { opacity: 0;
+           box-shadow: inset 0 0 0 0 transparent,
+                       inset 0 0 0 0 transparent; }
+    20%  { opacity: 1;
+           box-shadow: inset 0 0 0 0.5px color-mix(in srgb, var(--accent) 40%, transparent),
+                       inset 0 0 28px color-mix(in srgb, var(--accent) 14%, transparent); }
+    45%  { box-shadow: inset 0 0 0 1px   color-mix(in srgb, var(--accent) 55%, transparent),
+                       inset 0 0 52px color-mix(in srgb, var(--accent) 22%, transparent); }
+    70%  { box-shadow: inset 0 0 0 0.5px color-mix(in srgb, var(--accent) 32%, transparent),
+                       inset 0 0 36px color-mix(in srgb, var(--accent) 12%, transparent); }
+    100% { opacity: 0;
+           box-shadow: inset 0 0 0 0 transparent,
+                       inset 0 0 0 0 transparent; }
+  }
+  @keyframes chat-energy-orbit {
+    0%   { --energy-angle: -10deg; opacity: 0; }
+    15%  { opacity: 1; }
+    85%  { opacity: 1; }
+    100% { --energy-angle: 370deg; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat.model-switching .chat-energy-ring,
+    .chat.model-switching .chat-energy-ring::before { animation: none; }
+  }
+  .chat-stream {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 32px 16px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  /* Custom chat-stream scrollbar removed — global premium scrollbar applies. */
+
+  .msg { display: flex; flex-direction: column; gap: 8px; }
+  .msg-head { display: flex; align-items: center; gap: 12px; }
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 12px;
+  }
+  /* AL.12 — drops the copper gradient for the OMNI accent (one rule
+     with .avatar/.pa-bc/.avatar-bc: ground --accent, white initials,
+     600 weight — the filled counterpart to .av-corv's outlined
+     accent circle below, so the two read as one system). */
+  .av-nick  { background: var(--accent); font-weight: 600; overflow: hidden; }
+  .av-nick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .av-corv  { background: var(--accent-soft); border: 0.5px solid var(--line); color: var(--accent); font-size: 14px; }
+  .msg-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .msg-name { font-weight: 700; }
+  .msg-dot  { width: 2px; height: 2px; border-radius: 50%; background: var(--text-subtle); }
+  .msg-time { color: var(--text-subtle); }
+
+  .msg.user .bubble {
+    background: var(--panel-bg-chat);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    border: 1px solid transparent;
+  }
+  .msg.user .bubble.alt {
+    background: transparent;
+    border-color: var(--line);
+  }
+  .msg.user .msg-head { padding: 0; }
+  .msg.user > .bubble { display: flex; flex-direction: column; gap: 6px; }
+
+  .msg.bot .body {
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--text-body);
+  }
+  .msg.bot .actions {
+    display: flex; gap: 14px; color: var(--text-subtle);
+    margin-top: 4px;
+  }
+  .msg.bot .actions .ic { width: 16px; height: 16px; cursor: pointer; }
+  .msg.bot .actions .ic:hover { color: var(--text-body); }
+
+  /* Thinking indicator — OMNI orbital sparkle loader */
+  .thinking {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 0;
+    margin-top: 4px;
+  }
+  .thinking-mark {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .orb-core {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .orb-core svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+    filter: drop-shadow(0 0 6px rgba(24, 88, 238, 0.25));
+    animation: orb-pulse-spin 4.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .orb-track {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .orb-track-1 { animation: orbit-cw 3.4s linear infinite; }
+  .orb-track-2 { inset: 5px; animation: orbit-ccw 5.2s linear infinite; }
+  .orb-sat {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .orb-sat svg {
+    width: 7px;
+    height: 7px;
+    display: block;
+    filter: drop-shadow(0 0 3px rgba(24, 88, 238, 0.45));
+  }
+  .thinking-text {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    animation: thinking-text-breath 2.4s ease-in-out infinite;
+  }
+  @keyframes orb-pulse-spin {
+    0%   { transform: scale(0.85) rotate(0deg); }
+    50%  { transform: scale(1.22) rotate(180deg); }
+    100% { transform: scale(0.85) rotate(360deg); }
+  }
+  @keyframes orbit-cw {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes orbit-ccw {
+    from { transform: rotate(180deg); }
+    to   { transform: rotate(-180deg); }
+  }
+  @keyframes thinking-text-breath {
+    0%, 100% {
+      opacity: 0.3;
+      letter-spacing: 0.04em;
+      transform: translateY(0);
+    }
+    50% {
+      opacity: 1;
+      letter-spacing: 0.22em;
+      transform: translateY(-1px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orb-core svg, .orb-track, .thinking-text { animation: none; }
+  }
+
+  /* Chat aux panel — secondary panel that sits ABOVE the composer
+     inside the chat column. Holds generation-context controls
+     (currently aspect + count for edit mode). Collapsed by default
+     so it reads as a quiet header; expands to show its body. JS
+     adds .is-active when the panel is inert (collapsed-only, no
+     caret response) outside edit mode, and .is-edit-active when
+     edit mode opens (caret toggles freely + auto-expand). */
+  .chat-aux-wrap {
+    /* No bottom padding — the hat sits flush against the composer
+       below so they read as one connected piece. */
+    padding: 0 32px 0;
+    flex-shrink: 0;
+  }
+  .chat-aux-panel {
+    position: relative;
+    /* Match the .chat container's bg (--pg-bg) instead of --canvas-bg
+       so the rounded top corners blend seamlessly into the chat
+       column behind them. With --canvas-bg, the rounded corner notch
+       revealed a different shade and read as a visible dark cutout/
+       gap at the hairline corner. */
+    background: var(--pg-bg);
+    border: 0.5px solid var(--line);
+    /* Bottom border dropped + bottom-radius zeroed so the hat's
+       bottom edge merges with the composer's top edge — single
+       seam, no double hairline. */
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+    transition:
+      border-color 220ms ease,
+      box-shadow 220ms ease,
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Closed-state hover — the hat and the composer (orchestrator) warm
+     up together as ONE connected surface. An earlier version lifted the
+     panel -2px to "peek up", but that lift opened a 2px gap that exposed
+     the white .chat column behind the panel — a white-space break the
+     box-shadow patch never fully hid. No lift now: the header tint
+     (below) and a matching wash on the composer light up in unison, so
+     the accent color flows continuously across the seam with no gap.
+     Uses :has() to reach the sibling composer when the closed hat is
+     hovered; the composer's own background transition fades it in. */
+  /* Composer wash on closed-hat hover removed — Bryan wants only
+     the chat hat itself to color on hover. The composer below it
+     should stay in its neutral resting state regardless of where
+     the cursor is on the chat hat. */
+  .chat-aux-panel.is-edit-active {
+    border-color: rgba(15, 23, 42, 0.18);
+  }
+  body[data-theme="dark"] .chat-aux-panel.is-edit-active {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .chat-aux-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 14px;
+    user-select: none;
+    cursor: pointer;
+    overflow: hidden;
+    /* Smooth bg fade so the hover never snaps on/off. */
+    transition: background 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Layered accent-tinted glow that sweeps in from the left on hover.
+     Reads as the panel briefly "warming up" rather than flipping a
+     flat background color. */
+  .chat-aux-head::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 4%,  transparent) 45%,
+      transparent 100%
+    );
+    opacity: 0;
+    transform: translateX(-12%);
+    pointer-events: none;
+    transition:
+      opacity 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 480ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  /* 9/9 — no wash on hover: the chevron is the only thing that answers
+     the cursor (accent + a nudge in the direction it points). The
+     sweeping ::before stays defined but never shows. */
+  .chat-aux-head:hover { background: transparent; }
+  .chat-aux-head:hover::before { opacity: 0; }
+  /* Subtle accent ramp on the title + chevron so the whole row reads
+     as "warmed" rather than just a bg swap. */
+  .chat-aux-title,
+  .chat-aux-toggle {
+    transition: color 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .chat-aux-head:hover .chat-aux-toggle {
+    color: var(--accent);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-head:hover .chat-aux-toggle svg {
+    transform: translateY(-2px) rotate(180deg); /* open: points up, nudges up */
+  }
+  /* Title's accent dot brightens its halo on hover for an extra
+     hint of life — the dot already breathes via the existing
+     chat-aux-dot-breath animation; this just nudges its peak. */
+  body[data-theme="dark"] .chat-aux-head:hover { background: transparent; }
+  /* While the hat is locked (intro choreography running, title shows
+     "Getting your persona ready…"), the chevron + click + hover
+     states are all neutralized so the user can't toggle the body or
+     warm the head. The hat reads as "thinking" without interactive
+     affordance. */
+  .chat-aux-panel.is-locked .chat-aux-head { cursor: default; pointer-events: none; }
+  .chat-aux-panel.is-locked .chat-aux-head:hover,
+  .chat-aux-panel.is-locked .chat-aux-head:hover::before,
+  .chat-aux-panel.is-locked .chat-aux-head:hover .chat-aux-title,
+  .chat-aux-panel.is-locked .chat-aux-head:hover .chat-aux-toggle,
+  .chat-aux-panel.is-locked .chat-aux-head:hover .chat-aux-title::before {
+    background: transparent !important;
+    color: inherit !important;
+    opacity: 1 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .chat-aux-panel.is-locked .chat-aux-toggle {
+    /* Fully hide the chevron during the "Getting your persona
+       ready…" locked state — there's nothing to expand/collapse
+       at that moment, so even a dim caret reads as a stranded
+       control. visibility:hidden keeps layout stable so the
+       title doesn't reflow when the panel re-enables. */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .chat-aux-panel.is-locked .chat-aux-toggle svg {
+    transform: translateY(0) rotate(0deg) !important;
+  }
+  body[data-theme="dark"] .chat-aux-head::before {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 18%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 6%,  transparent) 45%,
+      transparent 100%
+    );
+  }
+  .chat-aux-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-strong);
+  }
+  /* 9/9 — the breathing accent dot is gone from every state (review). The
+     rule keeps its box off the flex row entirely so the title sits flush. */
+  .chat-aux-title::before { content: none; display: none; }
+  /* Hide the accent breath-dot whenever the title is rendering
+     the task-list head marker ("◯ N of M: …"). The orb spinner
+     inside the marker is already the "alive" indicator for that
+     state; the small breath-dot to its left reads as a stranded
+     extra glyph. :has() scopes the hide to titles with the
+     marker child, so the dot returns on every other state. */
+  .chat-aux-title:has(.ch-task-head-marker)::before {
+    display: none;
+  }
+  /* Hide the accent breath-dot while the Media wizard is active
+     (.pt-wizard-active on the panel). The dot's box is a flex item
+     inside .chat-aux-title (gap: 8px), so display:none collapses
+     that gap along with it — the title text lands flush at the
+     title's own left edge, which is already 8px after #ptHatBack
+     (the .chat-aux-head-left gap), i.e. exactly where the dot used
+     to start. No extra offset needed. */
+  .chat-aux-panel.pt-wizard-active .chat-aux-title::before {
+    display: none;
+  }
+  @keyframes chat-aux-dot-breath {
+    0%, 100% {
+      opacity: 0.55;
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+  }
+  .chat-aux-toggle {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    color: var(--text-body);
+    cursor: pointer;
+    padding: 0;
+    transition: color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-aux-toggle:hover {
+    color: var(--text-strong);
+  }
+  .chat-aux-toggle:focus,
+  .chat-aux-toggle:focus-visible { outline: none; }
+  .chat-aux-toggle svg {
+    width: 14px;
+    height: 14px;
+    /* Normalized base transform — explicit translateY(0) + rotate(0)
+       so the matrix interpolates cleanly when either state changes.
+       Without this, the transition jumped between translateY-only
+       (hover) and rotate-only (expanded) and the chevron animation
+       looked muted/missing. */
+    transform: translateY(0) rotate(0deg);
+    transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Chevron peek-down on panel hover (closed state) — subtle hint
+     the click direction. Color shifts to accent + chevron nudges
+     down 2px to telegraph the "expand down" intent. */
+  .chat-aux-panel:not(.is-expanded):hover .chat-aux-toggle {
+    color: var(--accent);
+  }
+  .chat-aux-panel:not(.is-expanded):hover .chat-aux-toggle svg {
+    transform: translateY(2px) rotate(0deg);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-toggle svg {
+    transform: translateY(0) rotate(180deg);
+  }
+  .chat-aux-body {
+    max-height: 0;
+    overflow: hidden;
+    /* Body's collapse curve matched to .sub-wrap on the left nav —
+       same 380ms duration + same cubic-bezier(0.16, 1, 0.3, 1). */
+    transition: max-height 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-body {
+    /* DELIBERATELY overshoots the real content (~246px: chips + See-all
+       footer row). Counter-intuitive but load-bearing, and measured:
+       the body's height is min(content, max-height), so the animation is
+       only VISIBLE until max-height passes the content — the rest of the
+       curve runs invisibly. `cubic-bezier(0.16, 1, 0.3, 1)` is extremely
+       front-loaded, so its tail crawls: snugging this to 250 (9/1) made
+       the clamp land at 246/250 = 0.98 of the curve, i.e. t≈235ms, and the
+       last 21px crept in at 4.2→0.8px per frame — a visible slow creep
+       exactly where the See-all row is revealed. THAT was the "stutter",
+       not a discontinuity (panel top + See-all track body height 1:1 —
+       verified frame by frame). At 300 the clamp lands at 0.82 of the
+       curve (~t65-105ms), truncating the crawl, which is the snappy feel
+       the hat has always had (pre-See-all it was content ~192 vs cap 220,
+       the same 0.87 ratio). Keep this comfortably ABOVE content if the
+       hat's contents ever grow. */
+    max-height: 300px;
+  }
+  /* During the transition's tail end (after max-height reaches its
+     target), bump overflow to visible so the pill dropdowns can
+     paint past the body's clip rect. JS toggles .is-fully-open. */
+  .chat-aux-panel.is-fully-open .chat-aux-body { overflow: visible; }
+  /* …except when a prompt is active and the option list has more
+     cards than fit in the 230px max-height. Then overflow needs to
+     be auto so the body itself scrolls (with the soft glass 4px
+     scrollbar). The dropdowns in this state aren't pills — they're
+     prompt cards — so giving up the visible-overflow escape hatch
+     is fine. */
+  .chat-aux-panel.ch-prompt-active.is-fully-open .chat-aux-body {
+    /* `overflow-y: scroll` (not auto) forces the gutter to be
+       reserved AND forces the styled ::-webkit-scrollbar to paint
+       even on macOS systems set to "Show scrollbars automatically"
+       (which otherwise use overlay scrollbars that ignore custom
+       styling). With this + the 4px glass pill rules above, the
+       thumb is always visible inside the chat hat body. */
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  /* Force the 4px soft-glass scrollbar specifically inside the chat
+     hat body. The global rule at line ~19161 sets this for every
+     scrollable element, but if any other rule (legacy or specific)
+     wins by specificity for this surface, we want this scoped one
+     to claim it back. */
+  /* (No scrollbar-color here either — see note above. The
+     ::-webkit-scrollbar rules below handle the styling.) */
+  .chat-aux-panel .chat-aux-body::-webkit-scrollbar { width: 2px; height: 2px; }
+  .chat-aux-panel .chat-aux-body::-webkit-scrollbar-track { background: transparent; }
+  .chat-aux-panel .chat-aux-body::-webkit-scrollbar-thumb {
+    background-color: rgba(15, 23, 42, 0.32);
+    border-radius: 999px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-aux-panel .chat-aux-body::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(15, 23, 42, 0.48);
+  }
+  .chat-aux-panel .chat-aux-body::-webkit-scrollbar-thumb:active {
+    background-color: rgba(15, 23, 42, 0.60);
+  }
+  body[data-theme="dark"] .chat-aux-panel .chat-aux-body::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.28);
+  }
+  /* Hairline divider — sits at the EXACT position where the
+     composer (orchestrator) top edge meets the chat-hat bottom
+     edge when the panel is closed. Gives the prompt subtitle and
+     options a structural anchor instead of just floating below
+     the header text. Only shown when prompt-active. */
+  .chat-aux-panel.ch-prompt-active.is-expanded .chat-aux-body {
+    border-top: 0.5px solid var(--line);
+  }
+  .chat-aux-body-inner {
+    padding: 4px 14px 14px;
+  }
+  /* Extra air above the subtitle so it breathes from the hairline
+     instead of sitting close under it. */
+  .chat-aux-panel.ch-prompt-active .chat-aux-body-inner {
+    padding-top: 26px;
+  }
+
+  /* Mode tiles — the premium tier of the Chat Hat (ported from
+     canvas-graphics S7). Graphics / Video / Audio, reusing the
+     topnav's own .tab-icon.graphics/video/audio blocks verbatim so
+     the treatment matches — that family is now DE-COLORED per v3
+     (white tile, hairline ring, accent glyph; see .tab-icon above).
+     Deliberately larger + more finished
+     than the chips underneath — the size contrast IS the hierarchy. */
+  .chat-aux-modes {
+    display: grid;
+    /* minmax(0, 1fr), not a bare 1fr — a bare 1fr's automatic minimum
+       is content-based, so at narrower panel widths the longer
+       "Graphics" label forces that track wider than "Video"/"Audio".
+       Stock 3 columns — Media moved out to a chip (see .chat-aux-chips
+       below), this row is back to the starter's Graphics/Video/Audio. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .chat-aux-panel.is-edit-active .chat-aux-modes {
+    display: none;
+  }
+  .chat-aux-mode-tile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    position: relative;
+    padding: 7px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    /* No entrance animation (9/1b — one entrance sequence for the whole
+       hat). Tiles rest at opacity 1 / transform none always; the body's
+       single max-height movement is the only motion that reveals them.
+       transform/opacity stay in the transition list below only because
+       :hover/:active reuse them — that hover/press choreography is
+       untouched. */
+    transition:
+      border-color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      box-shadow 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      opacity 220ms ease 0s;
+  }
+  .chat-aux-mode-tile:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+  }
+  body[data-theme="dark"] .chat-aux-mode-tile:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+  /* Scoped under .is-expanded (4-class specificity) so the press
+     scale reliably beats the entrance rule's own translateX(0). */
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile:active {
+    transform: scale(0.97);
+    box-shadow: none;
+  }
+  .chat-aux-mode-tile:focus,
+  .chat-aux-mode-tile:focus-visible { outline: none; }
+  .chat-aux-mode-label {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-body);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Quick-start chips — shown when the panel is expanded outside
+     edit mode. Hidden when .is-edit-active is on the panel (edit
+     mode shows the aspect + count pills instead). Ported from
+     canvas-graphics' design-review treatment: sans label in the mode
+     tiles' own font vocabulary, a muted hairline leading glyph, and
+     the "opens something" chevron living only in hover. */
+  .chat-aux-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chat-aux-panel.is-edit-active .chat-aux-chips,
+  .chat-aux-panel.is-edit-active .pt-seeall-link {
+    display: none;
+  }
+  .chat-aux-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 32px;
+    padding: 0 14px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.10));
+    border-radius: 8px;
+    color: var(--text-body);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    /* No entrance animation (9/1b — one entrance sequence for the whole
+       hat). Chips rest at opacity 1 / transform none always, revealed
+       only by the body's single max-height movement — same model as
+       .pt-seeall-link below, and now the mode tiles above. Hover props
+       (bg/border/color) get snappy 140ms transitions; transform stays
+       in the list only because :active reuses it for the press scale —
+       that hover/press choreography is untouched. */
+    transition:
+      background 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      border-color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      opacity 220ms ease 0s,
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1) 0s;
+  }
+  /* Rest/hover box treatment ported verbatim from canvas-workflows-v3's
+     chip redesign — inset highlight at rest, accent color-mix tint on
+     hover (no lift; the highlight alone reads as "raised"). */
+  body[data-theme="dark"] .chat-aux-chip {
+    background: rgba(255, 255, 255, 0.035);
+    border-color: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-chip:hover {
+    background: color-mix(in srgb, var(--accent) 7%, var(--card-bg));
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--line-solid, rgba(15, 23, 42, 0.10)));
+    color: var(--text-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  body[data-theme="dark"] .chat-aux-panel.is-expanded .chat-aux-chip:hover {
+    background: color-mix(in srgb, var(--accent) 12%, rgba(255, 255, 255, 0.04));
+    border-color: color-mix(in srgb, var(--accent) 45%, rgba(255, 255, 255, 0.10));
+    color: var(--text-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-chip:active {
+    transform: scale(0.97);
+  }
+  .chat-aux-chip:focus,
+  .chat-aux-chip:focus-visible { outline: none; }
+  .chat-aux-chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  /* Leading glyph — one bespoke icon per chip, same 24x24 hairline
+     stroke family as the composer add-menu icons, shrunk to 14px and
+     held at --text-subtle so it reads as quiet metadata. */
+  .chat-aux-chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--text-subtle);
+    transition: color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s;
+  }
+  .chat-aux-chip-icon svg { width: 100%; height: 100%; display: block; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:hover .chat-aux-chip-icon {
+    color: var(--text-strong);
+  }
+  .chat-aux-chip-label {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+  }
+  /* Media chip's own "a session is live" indicator (8/25 redesign,
+     replaces the old floating hat-summary pill) — a quiet dot baked
+     into the chip's own label, matching this file's existing
+     status-dot convention (.pt-nightly-dot etc, #2fb463 = "live").
+     Sits inert (display:none, zero footprint in the label's flow)
+     until body carries is-painter-resolved. */
+  .pt-chip-dot {
+    display: none;
+    width: 6px; height: 6px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: #2fb463;
+    vertical-align: middle;
+  }
+  body.is-painter-resolved #ptModeTile .pt-chip-dot { display: inline-block; }
+  /* Same dot, same rule, extended to the "Banner Ads" card inside the
+     skills overlay (#ptSkillsOverlay) — it carries the live Media
+     mapping (see TABULA_SKILLS/live in initSkillsOverlay()), so it
+     should carry the same session indicator when one exists, exactly
+     like the brief asks. */
+  body.is-painter-resolved #ptSkillsOverlay [data-kind="banner-ads"] .pt-chip-dot,
+  body.is-painter-resolved #ptCreateScreen [data-kind="banner-ads"] .pt-chip-dot { display: inline-block; }
+  /* V3 (PLAN.md §V) — Legal's own chip badge stops pretending to be a
+     count (it could only ever read '' or '1'); this dot says "a line
+     is set" the same shape and colour the Media chip already uses to
+     say "a session is live" — JS toggles .is-set per keystroke rather
+     than a body class, since this is the one badge driven by a single
+     field instead of session state. */
+  .pt-chip-dot.is-set { display: inline-block; }
+  /* On the Legal rail button the dot means "a line is set", not
+     "live" — the green is the session's own signal (the Media chip),
+     so this one takes the accent. AB.2 moved the dot from #ptLegalBtn
+     (retired with the old toolbar) into the rail; id-scoped so the
+     rule doesn't care where it lives. */
+  #ptLegalCount.is-set { background: var(--accent); }
+  /* Chevron — the "opens something" affordance, living only in hover.
+     Zero width/opacity at rest so the chip widens ~14px on hover
+     rather than the row keeping permanent dead space for it. */
+  .chat-aux-chip-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: var(--accent);
+    transition:
+      width 200ms cubic-bezier(0.16, 1, 0.3, 1) 0s,
+      margin-left 200ms cubic-bezier(0.16, 1, 0.3, 1) 0s,
+      opacity 200ms cubic-bezier(0.16, 1, 0.3, 1) 0s;
+  }
+  .chat-aux-chip-chevron svg { width: 10px; height: 10px; display: block; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:hover .chat-aux-chip-chevron {
+    width: 10px;
+    margin-left: 4px;
+    opacity: 1;
+  }
+  /* --- "See all skills" trigger (8/25 redesign — replaces the old
+     dashed .chat-aux-chip-seeall chip + its in-place #ptCatalogChips
+     expansion entirely). Bryan's ask: a quiet accent-colored TEXT
+     link + small arrow glyph, no chip border, sitting right after the
+     chip rows — opens the searchable #ptSkillsOverlay instead of
+     growing the hat body in place. */
+  /* A real footer ROW, not an inline link crowded under the last chip
+     (Bryan, 9/1: "it feels cramped"). Full width with the label left and
+     the arrow pushed to the far right, separated from the chips by the
+     hat's own hairline + real air above it — the same list-row affordance
+     language the rest of this shell uses, so it reads as the deliberate
+     end of the hat rather than a leftover. */
+  .pt-seeall-link {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    /* Arrow sits immediately after the text, not pushed to the far edge
+       (Bryan, 9/1). width:100% stays so the hairline + hit area span the
+       row; flex-start just keeps the label+arrow together on the left. */
+    justify-content: flex-start;
+    gap: 6px;
+    /* Real vertical air (Bryan, 9/1: "it's too close to the stuff around
+       it"). Measured before: 16px chips→hairline, 14px hairline→text, and
+       only 3px under the text. Now 20 / 18 / 6 — with .chat-aux-body-inner's
+       own 14px bottom padding that lands ~20px under the label, so the row
+       breathes evenly between the hairline above and the panel edge below. */
+    margin-top: 20px;
+    padding: 18px 2px 6px;
+    background: none;
+    border: 0;
+    border-top: 0.5px solid var(--line);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    text-align: left;
+    /* NO own entrance animation — same model the mode tiles and chips now
+       share (9/1b). The row is revealed by the body's single max-height
+       opening — the growing (overflow:hidden) body uncovers it from the
+       bottom, exactly like the hairline above it, so it's part of the ONE
+       smooth movement. It previously faded + slid in on a 560ms delay,
+       which fired after the body had already settled and read as a
+       trailing "move the last few px" (Bryan, 9/1); the chips carried
+       their own per-chip stagger until 9/1b stripped that too, for the
+       same reason. Only the hover color transition remains. */
+    transition: color 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pt-seeall-link:hover { color: var(--text-strong); }
+  .pt-seeall-link:hover .pt-seeall-link-arrow { transform: translateX(2px); }
+  .pt-seeall-link:focus, .pt-seeall-link:focus-visible { outline: none; }
+  .pt-seeall-link-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 11px; height: 11px;
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1) 0s;
+  }
+  .pt-seeall-link-arrow svg { width: 100%; height: 100%; display: block; }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel.is-expanded .chat-aux-chip:hover,
+    .chat-aux-panel.is-expanded .chat-aux-chip:active,
+    .chat-aux-mode-tile:hover,
+    .chat-aux-panel.is-expanded .chat-aux-mode-tile:active {
+      transform: none !important;
+    }
+    .chat-aux-chip-chevron {
+      transition: opacity 120ms ease 0s !important;
+    }
+    .pt-seeall-link:hover .pt-seeall-link-arrow {
+      transform: none !important;
+    }
+  }
+
+  /* Aspect + count wraps inside the aux body — hidden by default
+     (so the chips show on non-edit expand), revealed when the
+     panel flips to .is-edit-active. */
+  .chat-aux-body .image-aspect-selector-wrap,
+  .chat-aux-body .image-count-selector-wrap {
+    display: none;
+  }
+  .chat-aux-panel.is-edit-active .chat-aux-body .image-aspect-selector-wrap,
+  .chat-aux-panel.is-edit-active .chat-aux-body .image-count-selector-wrap {
+    display: inline-flex;
+    max-width: none;
+    pointer-events: auto;
+    margin-right: 0;
+    /* Same entrance choreography as the chips — slide-in from
+       translateX(-6px) + opacity 0, staggered. */
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms ease,
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-aux-panel.is-edit-active.is-expanded .chat-aux-body .image-aspect-selector-wrap {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 60ms;
+  }
+  .chat-aux-panel.is-edit-active.is-expanded .chat-aux-body .image-count-selector-wrap {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 100ms;
+  }
+  .chat-aux-panel.is-edit-active .chat-aux-body .image-aspect-btn,
+  .chat-aux-panel.is-edit-active .chat-aux-body .image-count-btn {
+    opacity: 1;
+    transform: none;
+    transition:
+      background 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+  /* In edit mode the body-inner is a flex row again to lay out the
+     two pills side-by-side. */
+  .chat-aux-panel.is-edit-active .chat-aux-body-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* composer */
+  .composer-wrap {
+    /* No top padding — the hat above sits flush against the
+       composer's top edge, so they read as a single stacked block. */
+    padding: 0 32px 24px;
+    flex-shrink: 0;
+    display: flex; align-items: flex-end; gap: 12px;
+  }
+  .composer {
+    flex: 1;
+    background: var(--canvas-bg);
+    border: 0.5px solid var(--line);
+    /* Top-radius zeroed so the composer's top edge meets the hat's
+       bottom edge cleanly. Bottom keeps the rounded card shape. */
+    border-radius: 0 0 16px 16px;
+    /* min-height locks the floor at the historical fixed height so the
+       composer can never shrink below current default. `height` sets the
+       default at the same value; drag handle bumps it up from there. */
+    min-height: 130px;
+    height: 130px;
+    max-height: 70vh;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative;
+    /* Fades the accent wash in/out when the closed chat hat is hovered
+       (see the :has() rule above) so the orchestrator warms in step with
+       the hat's header — matches the header's 320ms bg fade. */
+    transition: background 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Resize handle — small grip pill at the top-center of the composer.
+     Drag up to grow, drag down to shrink (clamped at min-height). The
+     hit area is wider than the visible grip so it's still easy to grab. */
+  /* Invisible drag-only hit zone — cursor flips to ns-resize on hover,
+     so the affordance is discoverable but doesn't add any visual chrome. */
+  .composer-resize-handle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 10px;
+    cursor: ns-resize;
+    user-select: none;
+    touch-action: none;
+    z-index: 2;
+  }
+  body[data-theme="dark"] .composer {
+    background: #0f1115;
+  }
+  .composer textarea {
+    flex: 1;
+    background: transparent;
+    border: 0; outline: 0;
+    color: var(--text-body);
+    font: inherit;
+    resize: none;
+    font-size: 14px;
+    /* Auto-grow: JS sets height to match scrollHeight on input, so
+       the textarea never shows its native scrollbar — overflow:hidden
+       suppresses the scrollbar while it briefly overflows during the
+       size pass between input → measure → apply. */
+    overflow: hidden;
+    line-height: 1.45;
+  }
+  .composer textarea::placeholder { color: var(--text-subtle); }
+  /* When typing in option 4's inline input, the composer textarea
+     is disabled — give it subtle visual feedback so the block is
+     obvious without changing the composer's overall layout. */
+  .composer textarea:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transition: opacity 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .composer-actions {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .composer-left { color: var(--text-subtle); cursor: pointer; }
+  .composer-right { display: flex; align-items: center; gap: 8px; }
+
+  /* === Model selector — pill chip that lives left of Send in the
+     composer's action row. Shows the current model's name; click opens
+     a dropdown above the chip with the full list. Same height as the
+     round Send button (32px) so they read as a paired action set. */
+  .model-selector-wrap {
+    position: relative;
+    display: inline-flex;
+    /* Explicit max-width gives the .is-edit-hidden collapse a real
+       numeric endpoint to transition FROM (auto/none doesn't
+       animate). 220px comfortably covers any chat-model label. */
+    max-width: 220px;
+    opacity: 1;
+    transition:
+      max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms ease,
+      margin-right 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* In image edit mode the chat-model pill collapses out — the
+     image-model pill takes its slot for generation routing. JS
+     toggles .is-edit-hidden on the wrap; the timing mirrors the
+     image-edit pills' slide-in so the two motions feel paired. */
+  .model-selector-wrap.is-edit-hidden {
+    max-width: 0;
+    opacity: 0;
+    pointer-events: none;
+    margin-right: -8px;
+    overflow: hidden;
+  }
+  .model-selector-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px 0 12px;
+    border: 0.5px solid var(--line);
+    border-radius: 16px;
+    background: transparent;
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: -0.05px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition:
+      background 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .model-selector-btn:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    color: var(--text-strong);
+    background: rgba(15, 23, 42, 0.03);
+  }
+  body[data-theme="dark"] .model-selector-btn:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .model-selector-btn[aria-expanded="true"] {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.20);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .model-selector-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+  .model-selector-btn:focus,
+  .model-selector-btn:focus-visible { outline: none; }
+  .model-selector-caret {
+    color: var(--text-subtle);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+  }
+  .model-selector-btn[aria-expanded="true"] .model-selector-caret {
+    transform: rotate(180deg);
+    color: var(--text-strong);
+  }
+
+  /* Dropdown card — anchored above the chip (composer is at the bottom
+     of the viewport), right-aligned so it cascades inward away from the
+     Send button on its right. */
+  .model-selector-menu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    width: 260px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 10px;
+    box-shadow:
+      0 1px 1px rgba(15, 18, 24, 0.04),
+      0 6px 14px rgba(15, 18, 24, 0.06),
+      0 24px 48px rgba(15, 18, 24, 0.10);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    transform-origin: bottom right;
+    pointer-events: none;
+    transition:
+      opacity 200ms ease,
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 60;
+    text-align: left;
+  }
+  body[data-theme="dark"] .model-selector-menu {
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.32),
+      0 6px 14px rgba(0, 0, 0, 0.36),
+      0 24px 48px rgba(0, 0, 0, 0.50);
+  }
+  .model-selector-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .model-selector-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 11px;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: -0.05px;
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .model-selector-menu-item:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+  .model-selector-menu-item.active {
+    color: var(--text-strong);
+    font-weight: 500;
+  }
+  .model-selector-menu-item:focus,
+  .model-selector-menu-item:focus-visible { outline: none; }
+  .msm-label { flex: 1; }
+  .msm-check {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+  .model-selector-menu-item.active .msm-check { opacity: 1; }
+
+  /* === Image-model selector ====================================
+     A sibling pill to the chat-model selector. Hidden by default
+     (max-width: 0, opacity: 0) so it doesn't take layout space in
+     normal chat mode. When the user enters image edit mode, JS
+     adds .is-active to the wrap and it slides + fades in to the
+     left of the chat-model pill with a satisfying spring curve.
+     The inner button has its own delayed opacity/translate so the
+     text appears AFTER the wrap finishes expanding — prevents the
+     button label from peeking before the slot is ready. */
+  .image-model-selector-wrap {
+    position: relative;
+    display: inline-flex;
+    max-width: 0;
+    opacity: 0;
+    pointer-events: none;
+    margin-right: -8px;
+    transition:
+      max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms ease,
+      margin-right 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .image-model-selector-wrap.is-active {
+    max-width: 240px;
+    opacity: 1;
+    pointer-events: auto;
+    margin-right: 0;
+  }
+  .image-model-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px 0 12px;
+    border: 0.5px solid var(--line);
+    border-radius: 16px;
+    background: transparent;
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: -0.05px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      background 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .image-model-selector-wrap.is-active .image-model-btn {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0s, 0s, 0s, 140ms, 120ms, 0s;
+  }
+  .image-model-btn:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    color: var(--text-strong);
+    background: rgba(15, 23, 42, 0.03);
+  }
+  body[data-theme="dark"] .image-model-btn:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .image-model-btn[aria-expanded="true"] {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.20);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .image-model-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+  .image-model-btn:focus,
+  .image-model-btn:focus-visible { outline: none; }
+  .image-model-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
+    /* No locked width — the pill hugs the label so each model name
+       reads at its natural size. The dropdown is anchored to the
+       wrap's RIGHT edge below (see .image-model-menu), so even
+       though the wrap's left edge shifts when the label changes,
+       the open menu's position stays put — no bounce. */
+  }
+  .image-aspect-label,
+  .image-count-label {
+    display: inline-block;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+  }
+  .image-aspect-label { min-width: 32px; }
+  .image-count-label  { min-width: 10px; }
+  .image-model-caret {
+    color: var(--text-subtle);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+    flex-shrink: 0;
+  }
+  .image-model-btn[aria-expanded="true"] .image-model-caret {
+    transform: rotate(180deg);
+    color: var(--text-strong);
+  }
+
+  /* Dropdown card — escaped to position:fixed so it lives on the
+     viewport, not the composer's containing block. That way no
+     overflow:hidden ancestor clips it AND z-index can stack above
+     anything else in the chat panel. JS positions top/left when
+     the menu opens (centered horizontally on the button, anchored
+     above it). The pill's wrap is also width-locked during the
+     open state so changing models doesn't reflow the button and
+     drift the centered anchor. */
+  .image-model-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 320px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    box-shadow:
+      0 1px 1px rgba(15, 18, 24, 0.04),
+      0 6px 14px rgba(15, 18, 24, 0.06),
+      0 24px 48px rgba(15, 18, 24, 0.12);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    transform-origin: bottom center;
+    pointer-events: none;
+    transition:
+      opacity 200ms ease,
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+    text-align: left;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+  body[data-theme="dark"] .image-model-menu {
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.32),
+      0 6px 14px rgba(0, 0, 0, 0.36),
+      0 24px 48px rgba(0, 0, 0, 0.5);
+  }
+  .image-model-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .image-model-menu::-webkit-scrollbar { width: 6px; }
+  .image-model-menu::-webkit-scrollbar-thumb {
+    background: var(--line-solid);
+    border-radius: 6px;
+  }
+
+  .image-model-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 14px;
+    padding: 11px 12px;
+    border-radius: 8px;
+    background: transparent;
+    border: 0;
+    color: var(--text-body);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 180ms ease;
+    width: 100%;
+  }
+  .image-model-item:hover {
+    background: var(--hover-soft);
+  }
+  body[data-theme="dark"] .image-model-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .image-model-item:focus,
+  .image-model-item:focus-visible { outline: none; }
+  .image-model-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+  .image-model-item-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    color: var(--text-strong);
+    transition: color 200ms ease;
+  }
+  .image-model-item-desc {
+    font-size: 12px;
+    color: var(--text-subtle);
+    line-height: 1.4;
+    letter-spacing: -0.03px;
+  }
+  .image-model-item.is-active .image-model-item-title {
+    color: var(--accent);
+  }
+
+  /* === Dip switch ============================================
+     iOS-style toggle. The thumb uses a back-out cubic-bezier so it
+     overshoots slightly on flip, giving the action a satisfying
+     mechanical landing. On-state bloom: a soft accent ring blooms
+     out then settles on a single keyframe pass — keeps the toggle
+     feeling "alive" without being noisy. Track + thumb get an
+     inset / drop-shadow pair so the thumb reads as a physical
+     puck sitting in a recessed track. */
+  .dip-switch {
+    --dip-w: 38px;
+    --dip-h: 22px;
+    --dip-pad: 2px;
+    position: relative;
+    width: var(--dip-w);
+    height: var(--dip-h);
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--line-solid);
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12);
+    transition:
+      background 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body[data-theme="dark"] .dip-switch {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+  .dip-switch::after {
+    content: '';
+    position: absolute;
+    top: var(--dip-pad);
+    left: var(--dip-pad);
+    width: calc(var(--dip-h) - var(--dip-pad) * 2);
+    height: calc(var(--dip-h) - var(--dip-pad) * 2);
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.16),
+      0 2px 6px rgba(15, 23, 42, 0.16);
+    transition:
+      transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 240ms ease,
+      width 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .dip-switch:hover::after {
+    box-shadow:
+      0 1px 3px rgba(15, 23, 42, 0.18),
+      0 3px 10px rgba(15, 23, 42, 0.20);
+  }
+  /* Subtle press feedback — the track squeezes 96% and the thumb
+     stretches horizontally for a frame. Reads as mechanical
+     compression on click. */
+  .dip-switch:active { transform: scale(0.96); }
+  .dip-switch:active::after { width: calc(var(--dip-h) - var(--dip-pad) * 2 + 4px); }
+  .dip-switch.is-on {
+    background: var(--accent);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.18),
+      0 0 0 0 transparent;
+  }
+  .dip-switch.is-on::after {
+    transform: translateX(calc(var(--dip-w) - var(--dip-h)));
+  }
+  .dip-switch:focus,
+  .dip-switch:focus-visible { outline: none; }
+  /* Bloom on toggle-on — the accent ring blooms outward and dissolves.
+     JS adds .just-toggled briefly then removes it. */
+  @keyframes c4-dip-bloom {
+    0%   { box-shadow: inset 0 1px 2px rgba(0,0,0,0.18), 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+    65%  { box-shadow: inset 0 1px 2px rgba(0,0,0,0.18), 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); }
+    100% { box-shadow: inset 0 1px 2px rgba(0,0,0,0.18), 0 0 0 0 transparent; }
+  }
+  .dip-switch.is-on.just-toggled {
+    animation: c4-dip-bloom 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Off-state toggle feedback — gentle inset deepen + thumb settle. */
+  @keyframes c4-dip-settle {
+    0%   { box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.20); }
+    100% { box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12); }
+  }
+  .dip-switch.just-toggled-off { animation: c4-dip-settle 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+  /* === Image edit controls — shared slide-in for the aspect-ratio
+     and count pills. Both ride the same enter/exit choreography as
+     the image-model pill but with a small per-pill stagger so the
+     three pills don't slam in at the exact same instant. The
+     transition-delay only applies on .is-active (enter direction);
+     on exit the base rule's 0ms delay applies so all three collapse
+     in sync. */
+  .image-aspect-selector-wrap,
+  .image-count-selector-wrap {
+    position: relative;
+    display: inline-flex;
+    max-width: 0;
+    opacity: 0;
+    pointer-events: none;
+    margin-right: -8px;
+    transition:
+      max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms ease,
+      margin-right 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .image-aspect-selector-wrap.is-active {
+    max-width: 110px;
+    opacity: 1;
+    pointer-events: auto;
+    margin-right: 0;
+    transition-delay: 70ms;
+  }
+  .image-count-selector-wrap.is-active {
+    max-width: 90px;
+    opacity: 1;
+    pointer-events: auto;
+    margin-right: 0;
+    transition-delay: 140ms;
+  }
+  .image-aspect-btn,
+  .image-count-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px 0 12px;
+    border: 0.5px solid var(--line);
+    border-radius: 16px;
+    background: transparent;
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: -0.05px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      background 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .image-aspect-selector-wrap.is-active .image-aspect-btn,
+  .image-count-selector-wrap.is-active .image-count-btn {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0s, 0s, 0s, 200ms, 180ms;
+  }
+  .image-count-selector-wrap.is-active .image-count-btn {
+    transition-delay: 0s, 0s, 0s, 260ms, 240ms;
+  }
+  .image-aspect-btn:hover,
+  .image-count-btn:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    color: var(--text-strong);
+    background: rgba(15, 23, 42, 0.03);
+  }
+  body[data-theme="dark"] .image-aspect-btn:hover,
+  body[data-theme="dark"] .image-count-btn:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .image-aspect-btn[aria-expanded="true"],
+  .image-count-btn[aria-expanded="true"] {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.20);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .image-aspect-btn[aria-expanded="true"],
+  body[data-theme="dark"] .image-count-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+  .image-aspect-btn:focus,
+  .image-aspect-btn:focus-visible,
+  .image-count-btn:focus,
+  .image-count-btn:focus-visible { outline: none; }
+
+  /* The pill button shows a tiny icon (ratio preview for aspect,
+     count-stack for count) next to the label. Icons live in a
+     16x16 box; stroke uses currentColor so they inherit theme. */
+  .image-pill-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--text-subtle);
+    transition: color 200ms ease;
+  }
+  .image-aspect-btn:hover .image-pill-icon,
+  .image-count-btn:hover .image-pill-icon,
+  .image-aspect-btn[aria-expanded="true"] .image-pill-icon,
+  .image-count-btn[aria-expanded="true"] .image-pill-icon {
+    color: var(--text-strong);
+  }
+
+  .image-aspect-caret,
+  .image-count-caret {
+    color: var(--text-subtle);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+    flex-shrink: 0;
+  }
+  .image-aspect-btn[aria-expanded="true"] .image-aspect-caret,
+  .image-count-btn[aria-expanded="true"] .image-count-caret {
+    transform: rotate(180deg);
+    color: var(--text-strong);
+  }
+
+  /* Aspect dropdown — narrower than the model menu since each row
+     is just an icon + ratio + name. Anchored bottom-left like the
+     model menu so it cascades down-and-right. */
+  .image-aspect-menu,
+  .image-count-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    box-shadow:
+      0 1px 1px rgba(15, 18, 24, 0.04),
+      0 6px 14px rgba(15, 18, 24, 0.06),
+      0 24px 48px rgba(15, 18, 24, 0.12);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    transform-origin: bottom center;
+    pointer-events: none;
+    transition:
+      opacity 200ms ease,
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+    text-align: left;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+  .image-aspect-menu { width: 240px; }
+  .image-count-menu  { width: 220px; }
+  body[data-theme="dark"] .image-aspect-menu,
+  body[data-theme="dark"] .image-count-menu {
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.32),
+      0 6px 14px rgba(0, 0, 0, 0.36),
+      0 24px 48px rgba(0, 0, 0, 0.5);
+  }
+  .image-aspect-menu.open,
+  .image-count-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .image-aspect-menu::-webkit-scrollbar,
+  .image-count-menu::-webkit-scrollbar { width: 6px; }
+  .image-aspect-menu::-webkit-scrollbar-thumb,
+  .image-count-menu::-webkit-scrollbar-thumb {
+    background: var(--line-solid);
+    border-radius: 6px;
+  }
+
+  .image-aspect-item,
+  .image-count-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    column-gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: transparent;
+    border: 0;
+    color: var(--text-body);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 180ms ease;
+    width: 100%;
+  }
+  .image-aspect-item:hover,
+  .image-count-item:hover {
+    background: var(--hover-soft);
+  }
+  body[data-theme="dark"] .image-aspect-item:hover,
+  body[data-theme="dark"] .image-count-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .image-aspect-item:focus,
+  .image-aspect-item:focus-visible,
+  .image-count-item:focus,
+  .image-count-item:focus-visible { outline: none; }
+
+  /* The visual icon column — a mini preview rectangle for aspect,
+     a stack-of-tiles for count. Both centered in a 24x16 box so
+     the icon column reads as a single visual lane. */
+  .image-aspect-preview {
+    width: 22px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subtle);
+  }
+  .image-aspect-preview svg { display: block; }
+  .image-aspect-preview rect {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.1;
+  }
+  .image-aspect-item.is-active .image-aspect-preview {
+    color: var(--accent);
+  }
+
+  .image-count-icon {
+    width: 22px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subtle);
+  }
+  .image-count-icon svg { display: block; }
+  .image-count-icon rect {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.1;
+  }
+  .image-count-item.is-active .image-count-icon {
+    color: var(--accent);
+  }
+
+  .image-aspect-label-pair,
+  .image-count-label-pair {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+  .image-aspect-ratio {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text-strong);
+    letter-spacing: 0;
+    transition: color 200ms ease;
+  }
+  .image-aspect-name,
+  .image-count-name {
+    font-size: 12px;
+    color: var(--text-subtle);
+    letter-spacing: -0.03px;
+  }
+  .image-count-num {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-strong);
+    transition: color 200ms ease;
+  }
+  .image-aspect-item.is-active .image-aspect-ratio,
+  .image-count-item.is-active .image-count-num {
+    color: var(--accent);
+  }
+
+  .round-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    max-width: 32px;
+    max-height: 32px;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    flex-grow: 0;
+    padding: 0;
+    line-height: 0;
+    -webkit-appearance: none;
+            appearance: none;
+    border-radius: 50%;
+    background: var(--panel-bg-3);
+    color: var(--text-body);
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .round-btn.primary { background: var(--accent); color: var(--text-button); }
+  .round-btn.ghost { background: transparent; }
+  .round-btn:hover { filter: brightness(1.1); }
+
+  /* ── Send button SUBMIT morph ──
+     When option 4 is being edited, the send button morphs from a
+     round sparkle circle into a pill-shaped SUBMIT button. One
+     smooth motion: width + padding + border-radius grow together;
+     icon and label cross-fade in place via absolute positioning so
+     no intrinsic-sizing reflow can jitter the shape. */
+  .round-btn.primary {
+    position: relative;       /* anchor for the absolute label below */
+    overflow: hidden;
+    /* All shape values animate on the same 480ms quart-out curve so
+       the morph reads as ONE motion, not several. Width MUST be a
+       fixed value (not `auto`) for the browser to interpolate it
+       smoothly — see .is-submit override. */
+    transition:
+      width 480ms cubic-bezier(0.16, 1, 0.3, 1),
+      min-width 480ms cubic-bezier(0.16, 1, 0.3, 1),
+      max-width 480ms cubic-bezier(0.16, 1, 0.3, 1),
+      padding 480ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-radius 480ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 480ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .round-btn.primary > svg {
+    flex-shrink: 0;
+    transition: opacity 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .round-btn.primary .send-btn-label {
+    /* Absolutely centered so it occupies no layout space — that means
+       the icon and label cross-fade in the same spot without the
+       button having to recompute width based on content. */
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    /* Match the model-selector pill exactly: same font-family
+       inheritance, same 12.5px / 500 weight / tight letter-spacing. */
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    line-height: 1;
+    color: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1) 180ms;
+  }
+  .round-btn.primary.is-submit {
+    /* Fixed width (88px) instead of `auto` — animatable, no reflow
+       jitter. Snug fit for "Submit" at 12.5/500/-0.05 letter-spacing
+       with 14px padding each side. Aspect-ratio: auto unlocks the
+       base's 1/1 ratio so height stays 32px instead of stretching. */
+    width: 88px;
+    min-width: 88px;
+    max-width: 88px;
+    aspect-ratio: auto;
+    padding: 0 14px;
+    border-radius: 16px;
+  }
+  .round-btn.primary.is-submit > svg {
+    opacity: 0;
+  }
+  .round-btn.primary.is-submit .send-btn-label {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .round-btn.primary,
+    .round-btn.primary > svg,
+    .round-btn.primary .send-btn-label {
+      transition: opacity 120ms ease !important;
+    }
+  }
+
+  /* Add button + menu */
+  .add-wrap { position: relative; display: inline-flex; }
+  #addBtn {
+    transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                color 200ms ease,
+                background 200ms ease,
+                filter 200ms ease;
+  }
+  #addBtn:hover {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.08);
+    transform: rotate(90deg) scale(1.08);
+  }
+  #addBtn.open {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.10);
+    transform: rotate(45deg);
+  }
+  #addBtn.open:hover { transform: rotate(45deg) scale(1.05); }
+
+  .add-menu {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: -4px;
+    /* Was 248px. 312 is the measured floor at which the longest label
+       ("Choose imagery from your gallery") still sets on one line —
+       below it that row alone goes to two and breaks the even rhythm
+       the other three keep. */
+    width: 312px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12),
+                0 4px 12px rgba(15, 23, 42, 0.06);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    transform-origin: bottom left;
+    pointer-events: none;
+    transition: opacity 200ms ease,
+                transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+  }
+  .add-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .add-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px 9px 8px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+    text-align: left;
+    width: 100%;
+    letter-spacing: -0.05px;
+    opacity: 0;
+    transition: background 160ms ease,
+                color 160ms ease,
+                opacity 200ms ease;
+  }
+  .add-menu-item:hover {
+    background: rgba(24, 88, 238, 0.06);
+    color: var(--accent);
+  }
+  .ami-icon {
+    width: 28px; height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: var(--hover-soft);
+    color: var(--text-body);
+    flex-shrink: 0;
+    transition: background 160ms ease,
+                color 160ms ease,
+                transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .ami-icon svg { width: 14px; height: 14px; display: block; }
+  .add-menu-item:hover .ami-icon {
+    background: var(--accent);
+    color: #ffffff;
+    transform: scale(1.08);
+  }
+  .ami-label { flex: 1; }
+  .ami-shortcut {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--text-subtle);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+  .add-menu-item:hover .ami-shortcut { color: var(--accent); opacity: 0.7; }
+
+  /* Dark theme overrides for the composer + menu */
+  body[data-theme="dark"] .add-menu {
+    background: rgba(35, 36, 42, 0.92);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5),
+                0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  body[data-theme="dark"] .add-menu-item:hover {
+    background: rgba(13, 224, 225, 0.10);
+    color: var(--accent);
+  }
+  body[data-theme="dark"] .add-menu-item:hover .ami-icon {
+    color: #0e0f10;
+  }
+
+  @keyframes ami-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .add-menu.open .add-menu-item {
+    animation: ami-rise 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  /* Group rule between the choose/upload pairs and the catch-all. */
+  .ami-sep {
+    height: 0;
+    border-top: 0.5px solid var(--line);
+    margin: 5px 8px;
+  }
+  /* 30ms/item cascade. nth-of-type(button) rather than nth-child, so
+     the two .ami-sep rules don't consume cascade slots and leave the
+     items after them starting late. */
+  .add-menu.open .add-menu-item:nth-of-type(1) { animation-delay: 30ms; }
+  .add-menu.open .add-menu-item:nth-of-type(2) { animation-delay: 60ms; }
+  .add-menu.open .add-menu-item:nth-of-type(3) { animation-delay: 90ms; }
+  .add-menu.open .add-menu-item:nth-of-type(4) { animation-delay: 120ms; }
+  .add-menu.open .add-menu-item:nth-of-type(5) { animation-delay: 150ms; }
+  @media (prefers-reduced-motion: reduce) {
+    .add-menu, .add-menu.open .add-menu-item, #addBtn { animation: none; transition: opacity 0.2s ease; }
+  }
+
+  .round-btn.primary {
+    /* Combined transition list — hover/press lift + the SUBMIT morph
+       properties (width/padding/border-radius/background) all need to
+       interpolate. Earlier this rule overrode the morph block above
+       with just transform/filter/box-shadow, which is why the morph
+       was snapping to its end state instead of animating. */
+    transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 200ms ease,
+                box-shadow 280ms ease,
+                width 480ms cubic-bezier(0.16, 1, 0.3, 1),
+                min-width 480ms cubic-bezier(0.16, 1, 0.3, 1),
+                max-width 480ms cubic-bezier(0.16, 1, 0.3, 1),
+                padding 480ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-radius 480ms cubic-bezier(0.16, 1, 0.3, 1),
+                background 480ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .round-btn.primary:hover {
+    transform: scale(1.06);
+    box-shadow: 0 4px 14px rgba(24, 88, 238, 0.32),
+                0 8px 24px rgba(24, 88, 238, 0.18);
+  }
+  body[data-theme="dark"] .round-btn.primary:hover {
+    box-shadow: 0 4px 14px rgba(13, 224, 225, 0.22),
+                0 8px 24px rgba(13, 224, 225, 0.12);
+  }
+  .round-btn.primary:active {
+    transform: scale(0.96);
+    transition-duration: 120ms;
+  }
+  .round-btn.primary svg path {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 320ms ease;
+  }
+  .round-btn.primary:hover svg path:nth-child(1) {
+    animation: star-big-fun 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .round-btn.primary:hover svg path:nth-child(2) {
+    animation: star-small-fun 800ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes star-big-fun {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.18); }
+    60%  { transform: scale(0.96); }
+    100% { transform: scale(1.06); }
+  }
+  @keyframes star-small-fun {
+    0%   { transform: scale(1) rotate(0); opacity: 1; }
+    20%  { transform: scale(1.42) rotate(22deg); opacity: 0.7; }
+    45%  { transform: scale(1.6) rotate(-16deg); opacity: 0.6; }
+    70%  { transform: scale(1.38) rotate(10deg); opacity: 0.8; }
+    100% { transform: scale(1.25) rotate(0); opacity: 0.9; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .round-btn.primary:hover svg path:nth-child(1) { animation: none; transform: scale(1.06); }
+    .round-btn.primary:hover svg path:nth-child(2) { animation: none; transform: scale(1.25); opacity: 0.85; }
+  }
+
+  .scroll-stack {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .scroll-stack .round-btn { width: 32px; height: 32px; }
+
+  /* splitter */
+  .splitter {
+    /* 9/10 — transparent and above the canvas: #canvas now reaches 6px
+       under this column (see #canvas), so the sheet's full-bleed rules
+       run through here to the chat's border, the way the header's rule
+       always has via ::after below. z-index keeps the drag handle and
+       that segment on top. */
+    background: transparent;
+    cursor: col-resize;
+    position: relative;
+    z-index: 2;
+  }
+  .splitter::after {
+    content: '';
+    position: absolute;
+    top: 63.5px;
+    left: 0; right: 0;
+    height: 0.5px;
+    background: var(--line);
+    pointer-events: none;
+  }
+
+  /* canvas — scoped to #canvas to avoid clashing with .tab-icon.canvas */
+  #canvas {
+    background: var(--canvas-bg);
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    min-width: 0;
+    /* 9/10 (Bryan: "the hairlines do not connect to the left side
+       hairline") — the pane's clip box reaches 6px left, under the
+       splitter, so a rule that overshoots the column (the sheet's
+       toolbar rule, the rules between concepts) is cut at the chat's
+       border rather than 6px short of it. Margin and padding cancel:
+       nothing inside moves. */
+    margin-left: -6px;
+    padding-left: 6px;
+    /* Top padding compensates for the canvas-header that overlaps the cell */
+    padding-top: var(--canvas-header-h, 64px);
+    /* Smooth-scroll any programmatic scroll AND anchor-link / fragment
+       navigation through the brief — pairs with the chapter-nav's
+       scrollTo({behavior: 'smooth'}) for chapter jumps. */
+    scroll-behavior: smooth;
+  }
+  .canvas-header {
+    /* Shares its grid cell with .canvas (anchored to the top via align-self).
+       Canvas content scrolls behind it; the backdrop-filter blurs through
+       — frosted-glass effect works at every breakpoint. position: relative
+       so the .panel-switch bars anchor to its bottom edge. */
+    position: relative;
+    z-index: 4;
+    background: var(--canvas-header-bg);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-bottom: 0.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: var(--canvas-header-h, 64px);
+    gap: 16px;
+    width: 100%;
+  }
+  /* Header v2: transparent overlay, brief content sits flush under topnav stroke;
+     a frosted blur bar fades in once the user scrolls past the top */
+  body[data-header="v2"] .canvas-header {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: none;
+    height: 72px;
+    margin-bottom: -72px;
+    pointer-events: none;
+    overflow: visible;
+  }
+  body[data-header="v2"] .canvas-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--canvas-header-bg);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    z-index: 0;
+  }
+  body[data-header="v2"] .canvas-header.scrolled::before {
+    opacity: 1;
+  }
+  body[data-header="v2"] .canvas-header > * {
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+  }
+  body[data-header="v2"] .canvas-header .title-wrap {
+    max-width: calc(100% - 140px);
+    min-width: 0;
+  }
+  body[data-header="v2"] .splitter::after {
+    display: none;
+  }
+  .canvas-header .title-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: 60%;
+  }
+  .canvas-header .title {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    color: var(--text-body);
+    min-width: 0;
+  }
+  .title-chevron {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 0;
+    flex-shrink: 0;
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .title-chevron:hover {
+    color: var(--text-body);
+    background: var(--hover-soft);
+  }
+  .title-chevron svg {
+    transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .title-chevron.open {
+    color: var(--accent);
+    background: rgba(24, 88, 238, 0.08);
+  }
+  .title-chevron.open svg {
+    transform: rotate(180deg);
+  }
+  .title-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    width: 248px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px var(--shadow-card),
+                0 4px 12px var(--shadow-card);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity 200ms ease,
+                transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+  }
+  .title-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .title-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+    text-align: left;
+    width: 100%;
+    letter-spacing: -0.05px;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .title-menu-item:hover {
+    background: rgba(24, 88, 238, 0.06);
+    color: var(--accent);
+  }
+  .title-menu-item.title-menu-item--muted { color: var(--text-subtle); }
+  .title-menu-item.title-menu-item--muted:hover {
+    color: #d54343;
+    background: rgba(213, 67, 67, 0.08);
+  }
+  .tmi-icon {
+    width: 24px; height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: var(--hover-soft);
+    color: var(--text-body);
+    flex-shrink: 0;
+    transition: background 160ms ease, color 160ms ease, transform 200ms ease;
+  }
+  .tmi-icon svg { width: 14px; height: 14px; display: block; }
+  .title-menu-item:hover .tmi-icon {
+    background: var(--accent);
+    color: #ffffff;
+    transform: scale(1.05);
+  }
+  .title-menu-item--muted:hover .tmi-icon {
+    background: #d54343;
+    color: #ffffff;
+  }
+  .tmi-label { flex: 1; }
+  .tmi-shortcut {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--text-subtle);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+  .title-menu-item:hover .tmi-shortcut { color: var(--accent); opacity: 0.7; }
+  .title-menu-item--muted:hover .tmi-shortcut { color: #d54343; opacity: 0.7; }
+  .title-menu-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 4px 6px;
+  }
+  /* Dark theme hover overrides for title menu */
+  body[data-theme="dark"] .title-menu-item:hover {
+    background: rgba(13, 224, 225, 0.10);
+    color: var(--accent);
+  }
+  body[data-theme="dark"] .title-menu-item:hover .tmi-icon {
+    color: #0e0f10;
+  }
+  body[data-theme="dark"] .title-menu-item--muted:hover {
+    background: rgba(213, 67, 67, 0.16);
+    color: #ff6b6b;
+  }
+  body[data-theme="dark"] .title-menu-item--muted:hover .tmi-shortcut {
+    color: #ff6b6b;
+  }
+  /* Dark theme: swap blue accent-tint hovers for cyan */
+  body[data-theme="dark"] .add-tab:hover {
+    background: rgba(13, 224, 225, 0.10);
+  }
+  body[data-theme="dark"] .add-tab:hover::before {
+    box-shadow: 0 0 0 2px rgba(13, 224, 225, 0.08),
+                0 0 0 4px rgba(13, 224, 225, 0.035);
+  }
+  body[data-theme="dark"] #addBtn:hover {
+    background: rgba(13, 224, 225, 0.10);
+  }
+  body[data-theme="dark"] #addBtn.open {
+    background: rgba(13, 224, 225, 0.14);
+  }
+  body[data-theme="dark"] .share-btn {
+    color: #0e0f10;
+  }
+  body[data-theme="dark"] .share-btn svg { color: #0e0f10; }
+  body[data-theme="dark"] .share-btn:hover {
+    box-shadow: 0 2px 8px rgba(13, 224, 225, 0.26),
+                0 6px 18px rgba(13, 224, 225, 0.18);
+  }
+  /* AO.3 — .pt-generate-btn now shares .share-btn's accent recipe,
+     so it needs the same dark-theme text-contrast override. */
+  body[data-theme="dark"] .pt-generate-btn { color: #0e0f10; }
+  body[data-theme="dark"] .pt-generate-btn:hover {
+    box-shadow: 0 2px 8px rgba(13, 224, 225, 0.26),
+                0 6px 18px rgba(13, 224, 225, 0.18);
+  }
+  body[data-theme="dark"] .rail-handle:hover {
+    color: #0e0f10;
+    box-shadow: 0 2px 8px rgba(13, 224, 225, 0.26),
+                0 8px 20px rgba(13, 224, 225, 0.20);
+  }
+  .canvas-header .title .root {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-subtle);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .canvas-header .title .sep { display: none; }
+  .canvas-header .crumb-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .canvas-header .title .crumb {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-body);
+    font-style: normal;
+    letter-spacing: -0.1px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .canvas-header .actions { display: flex; align-items: center; gap: 12px; }
+  /* AB.1 amendment — the Media bar's own copy of this row (same
+     .actions class, verbatim markup); a second scope since the bar
+     is a sibling of .canvas-header, not a descendant of it. */
+  #ptMediaTopbar .actions { display: flex; align-items: center; gap: 12px; }
+
+  /* Presence lockup — collaborators in canvas */
+  .presence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    transition: gap 220ms ease;
+  }
+  .presence-stack {
+    display: inline-flex;
+    align-items: center;
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: width 220ms ease, opacity 220ms ease;
+  }
+  /* Reveal the facepile while hovering anywhere in the actions cluster
+     (share button OR facepile itself), so the user can move into the tiles */
+  .actions:hover .presence { gap: 10px; }
+  .actions:hover .presence-stack {
+    width: 56px;
+    opacity: 1;
+    pointer-events: auto;
+    overflow: visible;
+  }
+  .presence-stack .pa {
+    position: relative;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--canvas-bg);
+    margin-left: -6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    color: #000;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), z-index 0s 180ms;
+  }
+  .presence-stack .pa:first-child { margin-left: 0; }
+  .presence-stack .pa:hover {
+    transform: translateY(-1px) scale(1.08);
+    z-index: 60;
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
+  }
+  .pa.pa-bc, .pa-card-circle.pa-bc { background: var(--accent); color: #ffffff; font-weight: 600; }
+  .pa.pa-lo, .pa-card-circle.pa-lo { background: #FFB877; color: #3a1f00; }
+  .pa.pa-jr, .pa-card-circle.pa-jr { background: #B7A3FF; color: #1a0d4d; }
+  .pa.pa-img,
+  .pa-card-circle.pa-card-circle--img {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-size: 0;
+    color: transparent;
+  }
+
+  /* Hover card — collaborator detail */
+  .pa-card {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 6px 18px 6px 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 1px rgba(15, 18, 24, 0.04),
+                0 4px 10px rgba(15, 18, 24, 0.06),
+                0 16px 36px rgba(15, 18, 24, 0.10);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 80;
+  }
+  .pa:hover .pa-card,
+  .pa:focus-visible .pa-card {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .pa-card-circle {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+  }
+  .pa-card-name {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: #1a1d22;
+    letter-spacing: -0.1px;
+  }
+  .pa-card-role {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: #6b7280;
+    margin-left: 16px;
+    letter-spacing: -0.05px;
+  }
+  body[data-theme="dark"] .pa-card {
+    background: #1c1e22;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5),
+                0 10px 28px rgba(0, 0, 0, 0.55);
+  }
+  body[data-theme="dark"] .pa-card-name { color: #e6e8ec; }
+  body[data-theme="dark"] .pa-card-role { color: #8b91a0; }
+  .presence-count {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .presence-count::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+    animation: presence-pulse 2.4s ease-out infinite;
+  }
+  @keyframes presence-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45); }
+    70%  { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Wide tables in PDF export — before and after</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0a0a; --ink-2:#3d3d3d; --ink-3:#6f6f6f; --ink-4:#9d9d9d;
+  --line:#e4e4e4; --brand:#1858ee; --bad:#c62828; --good:#1a7f4b;
+  --sans:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'Fira Code','SF Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; padding:44px 46px 46px;
+  font-family:var(--sans); background:#f4f4f5; color:var(--ink);
+  width:1440px;
+}
+.hd{border-bottom:1.5px solid #111;padding-bottom:20px;margin-bottom:30px;}
+.hd-k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);margin:0 0 12px;}
+h1{font-size:37px;letter-spacing:-.025em;font-weight:700;margin:0 0 11px;line-height:1.06;}
+.hd-d{font-size:17.5px;color:var(--ink-2);margin:0;max-width:104ch;line-height:1.5;}
+.hd-d b{color:var(--ink);font-weight:600;}
+
+.panel{margin-bottom:30px;}
+.p-head{display:flex;align-items:baseline;gap:14px;margin-bottom:4px;}
+.p-tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:#fff;padding:5px 11px;
+}
+.p-tag.bad{background:var(--bad);}
+.p-tag.good{background:var(--good);}
+.p-t{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0;}
+.p-d{font-size:15.5px;color:var(--ink-3);margin:7px 0 16px;max-width:100ch;line-height:1.5;}
+
+.paper{
+  background:#fff;padding:.42in .5in .5in;
+  box-shadow:0 1px 2px rgba(0,0,0,.09),0 8px 26px rgba(0,0,0,.07);
+  display:inline-block;
+}
+.paper-w{overflow-x:auto;padding-bottom:4px;}
+.scaled{zoom:1.34;}
+.pw-portrait{width:7.14in;}
+.pw-landscape{width:9.64in;}
+
+.xp-k{font-family:var(--sans);font-size:7.6pt;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--brand);margin:0 0 6px;}
+.xp-t{font-size:17pt;font-weight:700;letter-spacing:-.02em;margin:0 0 4px;line-height:1.1;}
+.xp-s{font-size:8.6pt;color:#5c5c5c;margin:0 0 11px;}
+.xp-r{border:0;border-top:1.3px solid #111;margin:0 0 15px;}
+
+/* ── broken ─────────────────────────────────────────── */
+.bk{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.4pt;}
+.bk th{
+  font-family:var(--mono);font-size:6.8pt;letter-spacing:.06em;text-transform:uppercase;
+  color:#6f6f6f;font-weight:400;text-align:left;vertical-align:top;
+  padding:0 0 8px;border-bottom:1px solid #e0e0e0;white-space:nowrap;overflow:visible;
+}
+.bk td{
+  vertical-align:middle;padding:10px 3px;border-bottom:1px solid #eee;
+  word-break:break-all;hyphens:auto;-webkit-hyphens:auto;
+}
+.bk td.ovf{white-space:nowrap;overflow:visible;word-break:normal;hyphens:none;}
+.bk td.notes{vertical-align:top;word-break:normal;}
+.bk .num{color:#9a9a9a;font-size:7.6pt;}
+
+/* ── fixed ──────────────────────────────────────────── */
+.fx{width:100%;border-collapse:collapse;table-layout:auto;font-size:8.4pt;}
+.fx th{
+  font-family:var(--mono);font-size:6.6pt;letter-spacing:.05em;text-transform:uppercase;
+  color:#6f6f6f;font-weight:400;text-align:left;vertical-align:bottom;
+  padding:0 11px 7px 0;border-bottom:1px solid #111;
+}
+.fx th:last-child,.fx td:last-child{padding-right:0;}
+.fx td{vertical-align:top;padding:8px 11px 8px 0;border-bottom:1px solid #ededed;overflow-wrap:break-word;}
+.fx .nb{white-space:nowrap;}
+.fx .ta-r{text-align:right;padding-right:11px;}
+.fx th.ta-r{text-align:right;}
+.fx .num{color:#9a9a9a;font-size:7.6pt;white-space:nowrap;}
+.fx tbody.rec > tr.data > td{border-bottom:0;}
+.fx td.note{padding:0 0 10px 0;border-bottom:1px solid #ededed;color:#4a4a4a;font-size:8pt;line-height:1.45;}
+.note-label{font-family:var(--mono);font-size:6.4pt;letter-spacing:.07em;text-transform:uppercase;color:#a8a8a8;margin-right:7px;}
+
+/* ── callouts ───────────────────────────────────────── */
+.calls{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);}
+.calls li{padding:15px 24px 15px 0;display:grid;grid-template-columns:24px minmax(0,1fr);gap:0 11px;align-items:start;}
+.cn{
+  width:21px;height:21px;border-radius:50%;color:#fff;
+  font-family:var(--mono);font-size:10.5px;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.cn.bad{background:var(--bad);}
+.cn.good{background:var(--good);}
+.ct{font-weight:600;font-size:15px;display:block;margin-bottom:3px;line-height:1.3;}
+.cd{font-size:14px;color:var(--ink-3);line-height:1.5;}
+.cd code{font-family:var(--mono);font-size:12.5px;background:#f0f0f2;padding:1px 4px;border-radius:2px;color:var(--ink-2);}
+
+.dot{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:13px;height:13px;border-radius:50%;background:var(--bad);color:#fff;
+  font-family:var(--mono);font-size:7.5px;vertical-align:middle;margin-left:4px;position:relative;top:-1px;
+}
+
+.foot{
+  margin-top:6px;border-top:1.5px solid #111;padding-top:22px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0 30px;
+}
+.step-n{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--brand);margin-bottom:7px;}
+.step-t{font-size:17.5px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px;}
+.step-d{font-size:14.5px;color:var(--ink-3);line-height:1.5;margin:0;}
+.tail{
+  margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+  font-size:14px;color:var(--ink-4);font-family:var(--mono);letter-spacing:.02em;
+}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <p class="hd-k">OMNI+ Canvas · PDF export of wide data tables</p>
+  <h1>Why the columns collide — and what fixes it</h1>
+  <p class="hd-d">
+    On screen a wide table can scroll sideways, so it never has to fit. <b>A PDF page can't scroll.</b>
+    The export currently keeps the on-screen column grid and divides one fixed page width between all
+    eleven columns — so columns end up narrower than their own headings, and print on top of each other.
+  </p>
+</div>
+
+<!-- ══════════════ BEFORE ══════════════ -->
+<div class="panel">
+  <div class="p-head">
+    <span class="p-tag bad">Now</span>
+    <h2 class="p-t">Eleven columns squeezed onto a portrait page</h2>
+  </div>
+  <p class="p-d">Research Source Inventory, exactly as it exports today.</p>
+
+  <div class="paper-w"><div class="scaled"><div class="paper pw-portrait">
+    <p class="xp-k">OMNI+ CANVAS — DATA EXPORT</p>
+    <h3 class="xp-t">Research Source Inventory</h3>
+    <p class="xp-s">Campaign planning · FIFA World Cup 2026</p>
+    <hr class="xp-r">
+    <table class="bk">
+      <colgroup>
+        <col style="width:3.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:8%">
+        <col style="width:7.5%"><col style="width:6%"><col style="width:9%"><col style="width:5.5%">
+        <col style="width:7.5%"><col style="width:6%"><col style="width:31%">
+      </colgroup>
+      <thead><tr>
+        <th>#</th><th>METHOD</th><th>VENDOR / SOURCE</th><th>AUDIENCE</th>
+        <th>GEOGRAPHY<span class="dot">1</span></th><th>SAMPLE</th><th>WINDOW</th><th>SPEND</th>
+        <th>OUTPUT</th><th>OWNER</th><th>NOTES</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="num">1</td><td>Survey</td><td>Kantar</td><td>Adults 18-34</td>
+          <td>US</td><td>1,200</td><td>Apr-May 2026</td><td>$18-K<span class="dot">2</span></td>
+          <td>Deck + data</td><td>J. Reyes</td>
+          <td class="notes">Quant survey covering fandom depth and viewing intent for the World Cup. Weighted to census benchmarks and fielded in two waves to track shift ahead of kickoff.<span class="dot">3</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td><td class="ovf">Secondary research</td><td class="ovf">Nielsen / GWI</td><td class="ovf">General population</td>
+          <td>Global</td><td>n/a</td><td>Ongoing</td><td>$6K</td>
+          <td class="ovf">Slide summary</td><td>K. Park</td>
+          <td class="notes">Desk research synthesizing existing syndicated data on streaming habits and major event viewership trends.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div></div></div>
+
+  <ul class="calls">
+    <li><span class="cn bad">1</span><span><span class="ct">Headings print on top of each other</span><span class="cd"><code>GEOGRAPHY</code> and <code>SAMPLE</code> come out as one word. So do the values below — <code>Secondary research</code> and <code>Nielsen / GWI</code> run together.</span></span></li>
+    <li><span class="cn bad">2</span><span><span class="ct">Numbers break in half</span><span class="cd"><code>$18K</code> prints as <code>$18-</code> and then <code>K</code> on the next line. Worse than being cut off, because it still looks like a number.</span></span></li>
+    <li><span class="cn bad">3</span><span><span class="ct">Notes gets ~14 characters</span><span class="cd">It's given whatever width is left over, so one ordinary sentence becomes a fourteen-line column — and stretches the whole row to match.</span></span></li>
+  </ul>
+</div>
+
+<!-- ══════════════ AFTER ══════════════ -->
+<div class="panel">
+  <div class="p-head">
+    <span class="p-tag good">Fixed</span>
+    <h2 class="p-t">Same eleven columns, reshaped to fit the page</h2>
+  </div>
+  <p class="p-d">Nothing removed and nothing shrunk — Notes moved out of the grid, and the page turned sideways.</p>
+
+  <div class="paper-w"><div class="scaled"><div class="paper pw-landscape">
+    <p class="xp-k">OMNI+ CANVAS — DATA EXPORT</p>
+    <h3 class="xp-t">Research Source Inventory</h3>
+    <p class="xp-s">Campaign planning · FIFA World Cup 2026</p>
+    <hr class="xp-r">
+    <table class="fx">
+      <thead><tr>
+        <th class="ta-r">#</th><th>Method</th><th>Vendor / Source</th><th>Audience</th><th>Geography</th>
+        <th class="ta-r">Sample</th><th>Window</th><th class="ta-r">Spend</th><th>Output</th><th>Owner</th>
+      </tr></thead>
+      <tbody class="rec">
+        <tr class="data">
+          <td class="num ta-r">1</td><td>Survey</td><td>Kantar</td><td>Adults 18-34</td><td>US</td>
+          <td class="nb ta-r">1,200</td><td class="nb">Apr-May 2026</td><td class="nb ta-r">$18K</td><td>Deck + data</td><td class="nb">J. Reyes</td>
+        </tr>
+        <tr><td class="note" colspan="10"><span class="note-label">Notes</span>Quant survey covering fandom depth and viewing intent for the World Cup. Weighted to census benchmarks and fielded in two waves to track shift ahead of kickoff.</td></tr>
+      </tbody>
+      <tbody class="rec">
+        <tr class="data">
+          <td class="num ta-r">2</td><td>Secondary research</td><td>Nielsen / GWI</td><td>General population</td><td>Global</td>
+          <td class="nb ta-r">n/a</td><td class="nb">Ongoing</td><td class="nb ta-r">$6K</td><td>Slide summary</td><td class="nb">K. Park</td>
+        </tr>
+        <tr><td class="note" colspan="10"><span class="note-label">Notes</span>Desk research synthesizing existing syndicated data on streaming habits and major event viewership trends. Used to validate assumptions before commissioning primary research.</td></tr>
+      </tbody>
+    </table>
+  </div></div></div>
+
+  <ul class="calls">
+    <li><span class="cn good">1</span><span><span class="ct">Every column has room</span><span class="cd">Widths come from the content itself, so no two columns can ever touch — and headings wrap instead of colliding.</span></span></li>
+    <li><span class="cn good">2</span><span><span class="ct">Values stay whole</span><span class="cd"><code>$18K</code>, <code>n/a</code> and <code>1,200</code> are treated as single units that can never be split across a line.</span></span></li>
+    <li><span class="cn good">3</span><span><span class="ct">Notes gets the full width</span><span class="cd">It prints as a line underneath its own row, keeping its label — so rows go back to being one line tall.</span></span></li>
+  </ul>
+</div>
+
+<!-- ══════════════ THE RULE ══════════════ -->
+<div class="foot">
+  <div>
+    <div class="step-n">Step 1</div>
+    <h3 class="step-t">Measure, then draw</h3>
+    <p class="step-d">Work out how wide each column actually needs to be before printing anything, instead of splitting the page evenly.</p>
+  </div>
+  <div>
+    <div class="step-n">Step 2</div>
+    <h3 class="step-t">Long text leaves the grid</h3>
+    <p class="step-d">Any column of sentences prints full-width under its row. This one change fixes most tables on its own.</p>
+  </div>
+  <div>
+    <div class="step-n">Step 3</div>
+    <h3 class="step-t">Turn the page sideways</h3>
+    <p class="step-d">If it's still too wide, that table's pages go landscape. Only that table — the rest of the document stays upright.</p>
+  </div>
+</div>
+
+<p class="tail">Nothing is ever dropped, nothing overlaps, no value breaks in half, and nothing prints below 8pt.</p>
+
+</body>
+</html>

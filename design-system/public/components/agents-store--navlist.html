@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+  OMNI component: navlist
+  Project: Agents Store
+  Note: .nav-list — the rail tab list (active + divider states)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agents Store — navlist · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/agents-store.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<ul class="nav-list" role="tablist">
+        <li class="nav-item active" data-section="featured" data-no-status role="tab"><i class="bx bx-star nav-item-icon" aria-hidden="true"></i>Featured</li>
+        <li class="nav-item" data-section="browse" data-no-status role="tab"><i class="bx bx-grid-alt nav-item-icon" aria-hidden="true"></i>Browse all</li>
+        <li class="nav-item" data-section="new" data-no-status role="tab"><i class="bx bx-rocket nav-item-icon" aria-hidden="true"></i>New this week</li>
+        <li class="nav-item" data-section="trending" data-no-status role="tab"><i class="bx bx-trending-up nav-item-icon" aria-hidden="true"></i>Trending</li>
+        <li class="nav-item" data-section="categories" data-no-status role="tab"><i class="bx bx-category nav-item-icon" aria-hidden="true"></i>Categories</li>
+        <li class="nav-divider" aria-hidden="true"></li>
+        <li class="nav-item" data-section="library" data-no-status role="tab"><i class="bx bx-bookmark nav-item-icon" aria-hidden="true"></i>My library</li>
+        <li class="nav-item" data-section="installed" data-no-status role="tab"><i class="bx bx-download nav-item-icon" aria-hidden="true"></i>Installed</li>
+      </ul>
+</body>
+</html>

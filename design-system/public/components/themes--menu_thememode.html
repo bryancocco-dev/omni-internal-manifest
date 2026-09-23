@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  OMNI component: menu_thememode
+  Project: Themes
+  Note: .ch-profile-theme-row — profile-menu Themes panel: Default Omni Dark/Light rows (light/dark toggle chrome) + Create-your-own action
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Themes — menu_thememode · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/themes.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ch-profile-menu is-themes" style="position:static;opacity:1;visibility:visible;transform:none;">
+      <div class="ch-profile-stack">
+        <div class="ch-profile-view ch-profile-view-themes is-visible">
+          <div class="ch-profile-themes-head">
+            <span class="ch-profile-themes-title">Themes</span>
+            <button class="ch-profile-themes-close" type="button" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg></button>
+          </div>
+          <div class="ch-profile-divider" aria-hidden="true"></div>
+          <div class="ch-saved-head">Default</div>
+          <div class="ch-profile-theme-list">
+            <button class="ch-profile-theme-row" type="button" data-theme="dark" role="menuitem"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 1 1 6.5 2.5a4 4 0 0 0 7 7z"/></svg><span>Omni Dark</span></button>
+            <button class="ch-profile-theme-row is-active" type="button" data-theme="light" role="menuitem"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M14.5 8H13M3 8H1.5M12.6 3.4l-1.06 1.06M4.46 11.54L3.4 12.6M12.6 12.6l-1.06-1.06M4.46 4.46L3.4 3.4"/></svg><span>Omni Light</span></button>
+          </div>
+          <button class="ch-profile-theme-row ch-profile-theme-row--custom" type="button" data-action="open-editor" role="menuitem"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5v9M3.5 8h9"/></svg><span>Create your own</span></button>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

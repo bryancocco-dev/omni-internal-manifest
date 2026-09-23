@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+  OMNI component: modal_share
+  Project: Access
+  Note: .qa-share-modal — Share flyout (people typeahead, invite-role bar, People-with-access list, General access, footer actions)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access — modal_share · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/copy-request-access.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="qa-share-scrim open" style="position:static;opacity:1;pointer-events:auto;background:transparent;padding:24px;display:flex;justify-content:center;">
+  <div class="qa-share-modal" role="dialog" aria-modal="true">
+    <h3>Share "Outcomes Forecast"</h3>
+    <div class="qa-share-people-wrap">
+      <div class="qa-share-field" data-share-field>
+        <input class="qa-share-people" type="text" placeholder="Add people, groups, or agents" autocomplete="off">
+      </div>
+      <div class="qa-share-suggest" role="listbox" aria-hidden="true"></div>
+    </div>
+    <div class="qa-share-invite-bar" data-invite-bar hidden>
+      <span>Invite as</span>
+      <div class="qa-share-role-wrap">
+        <button class="qa-share-role-btn" type="button" data-role-btn aria-haspopup="menu"><span data-role-label>Viewer</span><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></button>
+        <div class="qa-share-role-menu" role="menu" aria-hidden="true">
+          <button role="menuitem" class="scope-table-menu-item" data-role="Viewer"><span>Viewer</span></button>
+          <button role="menuitem" class="scope-table-menu-item" data-role="Commenter"><span>Commenter</span></button>
+          <button role="menuitem" class="scope-table-menu-item" data-role="Editor"><span>Editor</span></button>
+        </div>
+      </div>
+      <span data-invite-count style="margin-left:auto;"></span>
+    </div>
+    <div class="qa-share-label">People with access</div>
+    <div class="qa-share-list">
+      <div class="qa-share-row qa-share-row-owner">
+        <span class="qa-share-avatar">BC</span>
+        <span><span class="qa-share-row-name">Bryan Cocco (you)</span><span class="qa-share-row-mail">bryanc.cocco@omc.com</span></span>
+        <span class="qa-share-row-role">Owner</span>
+      </div>
+      <div data-share-invited>
+        <div class="qa-share-row">
+          <span class="qa-share-avatar" style="background:#92400e;">SB</span>
+          <span><span class="qa-share-row-name">Sofia Brandt</span><span class="qa-share-row-mail">sofiab.brandt@omc.com</span></span>
+          <span class="qa-share-row-role">Editor</span>
+          <button class="qa-share-row-remove" type="button" aria-label="Remove Sofia Brandt" data-remove="0">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+        <div class="qa-share-row">
+          <span class="qa-share-avatar" style="background:#a21caf;">KS</span>
+          <span><span class="qa-share-row-name">Kenji Sato</span><span class="qa-share-row-mail">kenjis.sato@omc.com</span></span>
+          <span class="qa-share-row-role">Editor</span>
+          <button class="qa-share-row-remove" type="button" aria-label="Remove Kenji Sato" data-remove="1">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+        <div class="qa-share-row">
+          <span class="qa-share-avatar" style="background:#1858ee;">AK</span>
+          <span><span class="qa-share-row-name">Alex Khang</span><span class="qa-share-row-mail">alexk.khang@omc.com</span></span>
+          <span class="qa-share-row-role">Commenter</span>
+          <button class="qa-share-row-remove" type="button" aria-label="Remove Alex Khang" data-remove="2">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+        <div class="qa-share-row">
+          <span class="qa-share-avatar" style="background:#7c3aed;">LF</span>
+          <span><span class="qa-share-row-name">Luca Ferrante</span><span class="qa-share-row-mail">lucaf.ferrante@omc.com</span></span>
+          <span class="qa-share-row-role">Viewer</span>
+          <button class="qa-share-row-remove" type="button" aria-label="Remove Luca Ferrante" data-remove="3">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="qa-share-label">General access</div>
+    <div class="qa-share-access-wrap">
+      <div class="qa-share-access" role="button" tabindex="0" aria-haspopup="menu">
+        <span class="qa-share-access-icon"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg></span>
+        <span><span class="qa-share-access-name"><span data-access-name>Restricted</span><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></span>
+        <span class="qa-share-access-sub" data-access-sub>Only people with access can open with the link</span></span>
+      </div>
+    </div>
+    <div class="qa-share-footer">
+      <button class="qa-share-btn qa-share-btn-secondary" data-share-copy><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 9.2a2.8 2.8 0 0 0 4 0l1.9-1.9a2.83 2.83 0 1 0-4-4l-.95.95"/><path d="M9.2 6.8a2.8 2.8 0 0 0-4 0L3.3 8.7a2.83 2.83 0 1 0 4 4l.95-.95"/></svg><span>Copy link</span></button>
+      <button class="qa-share-btn qa-share-btn-primary" data-share-done>Done</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

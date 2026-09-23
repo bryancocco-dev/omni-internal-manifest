@@ -1,0 +1,71 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <!-- PLAN §20.3 v2.2 "seven figures, one language." ONE figure, zero decoration:
+       a single picture-frame rect (LIGHT hairline, 3u) containing ONE flat black
+       mountain silhouette (lower third) and a single arc-traveling coral sun dot —
+       frame + mountain + sun read together as ONE figure (a picture), not three.
+       (Coordinator note 2026-08-18: an empty frame + floating dot read as a blank,
+       not a picture — the content has to live INSIDE the frame.) Nothing renders
+       outside the frame rect. Figure width 656 = 60.5% of 1085 (58-64% band),
+       optically centered at cx=542.5 cy=358 (exact viewBox center) — same centering
+       math as its sibling tiles for "identical margin feel."
+       Theme rekey: this file authors LIGHT as the unmodified default (ground white,
+       ink black) because the page always sets body[data-theme] explicitly and never
+       relies on prefers-color-scheme; body[data-theme="dark"] below inverts ground/ink
+       only — the accent coral is brand-constant across both themes (§20.1). Selectors
+       here stay UNSCOPED (bare classnames), matching how the pre-existing canonical
+       assets/*.svg files are authored standalone (one <svg> per document, so no
+       cross-tile collision risk yet) — the §11 inliner adds the `svg.cover-gfx …`
+       scope prefix itself when this file is merged into index.html alongside its six
+       siblings; doing that here too would just be redundant work the generator
+       already owns. Because a standalone SVG document has no <body> element, this
+       body[data-theme="dark"] rule can never match when the file is opened on its own
+       (e.g. via /_seek.html) — by construction only the light/default rules ever
+       render outside the inlined page, which is why review strips only need "light
+       scheme." -->
+  <style>
+    .gfx-bg { fill: #ffffff; }
+    .gfx-frame { fill: none; stroke: #000000; stroke-width: 3; }
+    .gfx-mountain { fill: #000000; }
+    .gfx-sun { fill: #1858EE; }
+
+    /* ONE motion: the sun dot arcs INSIDE the frame's sky (above the mountain's
+       peak, y=430 — the lower-third line), on a closed elliptical loop centered on
+       that same line, MID 9s, linear (continuous traveler — exempt from the
+       zero-velocity rule). Visible while tracing the upper (day) half of the
+       ellipse, hidden while tracing the lower (night) half that dips below the
+       peak-height line behind the mountain — same instant opacity-toggle-at-the-
+       path-seam technique as cover-workflow.svg's comets (`arriveE`/`wfCometMain`),
+       not a bloom envelope, so no §18.5 attack/decay math applies here; the toggle
+       itself is the whole beat. Ellipse extents (x 262.5-822.5, y 299.7-559.7) stay
+       inside the frame rect (x 214.5-870.5, y 143-573) on every frame, including the
+       invisible half, per the coordinator's "nothing outside the frame" note. */
+    .gfx-sun-path {
+      offset-path: path("M 262.5,430 A 280,130 0 0 1 822.5,430 A 280,130 0 0 1 262.5,430");
+      offset-rotate: 0deg;
+      animation: gfxSunTravel 9s linear infinite;
+    }
+    @keyframes gfxSunTravel {
+      0%     { offset-distance: 0%;   opacity: 1; }
+      50%    { offset-distance: 50%;  opacity: 1; }
+      50.01% { opacity: 0; }
+      100%   { offset-distance: 100%; opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gfx-sun-path { animation: none; offset-distance: 25%; opacity: 1; }
+    }
+
+    body[data-theme="dark"] .gfx-bg { fill: #000000; }
+    body[data-theme="dark"] .gfx-frame { stroke: #ffffff; }
+    body[data-theme="dark"] .gfx-mountain { fill: #ffffff; }
+  </style>
+
+  <rect class="gfx-bg" width="1085" height="716"/>
+
+  <!-- one flat mountain silhouette, base on the frame's bottom edge, single
+       off-center peak at the lower-third line (y=430) -->
+  <polygon class="gfx-mountain" points="214.5,573 424,430 870.5,573"/>
+
+  <circle class="gfx-sun gfx-sun-path" r="10"/>
+
+  <rect class="gfx-frame" x="214.5" y="143" width="656" height="430"/>
+</svg>

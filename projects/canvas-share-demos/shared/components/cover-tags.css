@@ -1,0 +1,318 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   cover-tags.css — the 8 micro-graphic tag lockups for the generative
+   cover hero. Ported from canvas-book-ends/index.html (PLAN-COVERS.md §3):
+
+     V1 INSTRUMENT (.cbe-mgs) ....... book-ends 21692–21725
+     reveal keyframes + .cbe-tag-live staging .. book-ends 21742–21833
+     reduced-motion block ........... book-ends 21870–21897
+     V2 SPEC ......................... book-ends 21899–21929
+     V3 ORBIT ........................ book-ends 21936–21944
+     V5 BARCODE / V6 LEDGER / V7 REGISTRY / V4 SEAL .. book-ends 21950–22065
+
+   Scale: book-ends micro-type is 7.5px on the 567px book-cover frame.
+   Every px value below (font-size, padding, gap, margin, width/height —
+   NOT borders, which stay literal hairline 1px, and NOT letter-spacing/
+   line-height, which were already em-relative in the source and carry
+   over unchanged) is re-expressed as (source-px ÷ 7.5)em against the one
+   --tag-em variable, so the whole lockup scales as a single object.
+
+   Adaptations (§3 "this space, not the book cover"):
+   - #cbeFrontBoard / .cbe-f-39 / .cbe-f39-frame scoping stripped to
+     .doc-hero__tag; every `position: absolute; left/right/bottom` rail
+     the book cover used to place a tag within its own card is dropped —
+     the mount (.doc-hero__tag, owned by cover-gen.css) is already
+     positioned and shrink-wraps to its content, so a plain flow layout
+     inside it reads as right-aligned for free.
+   - V1 INSTRUMENT: collapsed from a full-width rail to an intrinsic-width
+     row.
+   - V4 SEAL / V8 MARK: re-laid as right-aligned sign-off lockups (no card
+     border here to straddle) — SEAL's badge 64px → 4.5em, MARK's
+     120px → 7.5em, both explicit new sizes for this layout, not ÷7.5
+     conversions. Their inner omni-logo.png sizing is kept proportional
+     via percentages instead, so it isn't a second rounding pass.
+   - Vestigial per-piece z-index dropped throughout: the book cover
+     layered tag/photo-slot/graphics on one card, but only one tag is ever
+     mounted here, so nothing overlaps.
+   - --tag-reveal-delay + the .doc--intro-init/body.is-gated pause rule
+     are new — see the "reveal armed on the hero timeline" section below.
+   - Tokens: --accent → var(--doc-accent), --text-strong → var(--doc-ink-
+     strong), --text-subtle → var(--doc-ink-subtle), --font-sans → var(
+     --doc-font-body), Fira Code → var(--doc-font-mono).
+   - Assets: brand-assets/p49-a11.svg → ../../shared/assets/covers/
+     p49-a11.svg (resolved relative to this stylesheet's own location).
+   ───────────────────────────────────────────────────────────────────── */
+
+/* ---- scale ---- */
+.doc-hero__tag {
+  /* Bryan, on a 2549px-wide display: "make this text the size it is from the
+     original example, look big now." The viewport-relative clamp resolved to
+     its 11px ceiling there — 1.47x the source's own 7.5px base — so the whole
+     lockup read a register too loud. Pinned to the book-ends value itself, so
+     every multiplier below now lands on the source's exact px (b 10, hcity 8,
+     client 9.5, glyph 11, tag8 box 158). Deliberately NOT viewport-relative:
+     this is a fixed micro-register mark, and it should be the same physical
+     size on a laptop and on a 27" display, exactly like the original. */
+  --tag-em: 7.5px;
+  /* Meta rail's own docHeroUp fires at 520ms (hero.css) — the tag cascade
+     starts here so it reads as the next beat in that same stagger, not a
+     separate, earlier-firing entrance. Single number, tune by eye. */
+  --tag-reveal-delay: 520ms;
+  /* FIX 2 (PLAN-COVERS.md): --doc-ink-subtle is tuned for reading on plain
+     paper; at this micro scale, over the ring's busy moving field, that mix
+     washes out (worst where the tag crosses a bright ray). The tag needs
+     its own stronger subtle tone — every "subtle" piece below reads this
+     instead of --doc-ink-subtle directly. Still visibly softer than the
+     100%-strong spans (keeps the strong/subtle distinction the source
+     draws), just not to the point of disappearing. */
+  --tag-ink-subtle: color-mix(in srgb, var(--doc-ink-strong) 72%, transparent);
+  font-size: var(--tag-em);
+}
+
+/* ---- shared root for V2/V3/V5/V6/V7 (SPEC/ORBIT/BARCODE/LEDGER/REGISTRY) ---- */
+.doc-hero__tag .cbe-tag {
+  font-family: var(--doc-font-mono);
+  color: var(--doc-ink-strong);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   V1 INSTRUMENT (.cbe-mgs) — collapsed to an intrinsic-width row.
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-mgs {
+  display: flex;
+  align-items: center;
+  gap: 1.8667em;
+  color: var(--tag-ink-subtle);
+}
+.doc-hero__tag .cbe-mgs-glyph {
+  width: 1.7333em; height: 1.7333em; flex: none;
+  background: var(--doc-accent);
+  -webkit-mask: url('../../shared/assets/covers/p49-a11.svg') center/contain no-repeat;
+          mask: url('../../shared/assets/covers/p49-a11.svg') center/contain no-repeat;
+}
+.doc-hero__tag .cbe-mgs-read {
+  flex: none;
+  font-family: var(--doc-font-mono);
+  font-size: 1.0667em; letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+.doc-hero__tag .cbe-mgs-read b { color: var(--doc-accent); font-weight: 500; }
+.doc-hero__tag .cbe-mgs-serial {
+  flex: none;
+  font-family: var(--doc-font-mono);
+  font-size: 1.0667em; letter-spacing: .14em;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   V2 SPEC (.cbe-tag2)
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag2-grid { display: flex; align-items: flex-end; gap: 3.2em; }
+.doc-hero__tag .cbe-tag2-head { display: inline-flex; align-items: stretch; margin-bottom: .6667em; }
+.doc-hero__tag .cbe-tag2-head .hbox { display: inline-flex; align-items: center; gap: .8em; border: 1px solid var(--doc-ink-strong); padding: .2667em 1.0667em; }
+.doc-hero__tag .cbe-tag2-head .hbox b { font-family: var(--doc-font-body); font-weight: 700; font-size: 1.3333em; letter-spacing: .02em; }
+.doc-hero__tag .cbe-tag2-head .hcity { display: inline-flex; align-items: center; border: 1px solid var(--doc-ink-strong); border-left: 0; padding: .2667em 1.2em; font-size: 1.0667em; letter-spacing: .34em; }
+/* Sprite-cropped to omni-logo.png's own sparkle mark (cols 317–397 of the
+   400×84 wordmark), same technique as book-ends round 46 — real asset
+   geometry, not a redrawn substitute. */
+.doc-hero__tag .cbe-tag2-glyph { width: 1.4667em; height: 1.4667em; overflow: hidden; position: relative; display: inline-block; flex: none; }
+.doc-hero__tag .cbe-tag2-glyph img { position: absolute; left: -5.8133em; top: 0; width: 7.3333em; height: auto; filter: brightness(0); }
+.doc-hero__tag .cbe-tag2-line { margin: 0 0 .2667em; font-size: 1.0em; letter-spacing: .12em; }
+.doc-hero__tag .cbe-tag2-line i { font-style: normal; color: var(--tag-ink-subtle); }
+.doc-hero__tag .cbe-tag2-client { display: inline-block; border: 1px dashed var(--tag-ink-subtle); padding: .4em 1.2em; margin-top: .4em; font-family: var(--doc-font-body); font-size: 1.2667em; }
+.doc-hero__tag .cbe-tag2-tools { font-size: 1.0em; letter-spacing: .1em; line-height: 1.65; white-space: nowrap; padding-top: .2667em; }
+.doc-hero__tag .cbe-tag2-tools i { font-style: normal; color: var(--tag-ink-subtle); margin-left: .9333em; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   V3 ORBIT (.cbe-tag3)
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag3-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: .4em; }
+.doc-hero__tag .cbe-tag3-name { display: flex; align-items: baseline; gap: 1.2em; font-size: 1.0em; letter-spacing: .1em; }
+.doc-hero__tag .cbe-tag3-name b { font-family: var(--doc-font-body); font-weight: 700; font-size: 1.4667em; letter-spacing: .01em; }
+.doc-hero__tag .cbe-tag3-meta { display: flex; align-items: flex-start; gap: 1.8667em; font-size: 1.0em; letter-spacing: .1em; line-height: 1.6; color: var(--doc-ink-strong); }
+.doc-hero__tag .cbe-tag3-meta .yr { text-align: right; color: var(--tag-ink-subtle); }
+
+/* ══════════════════════════════════════════════════════════════════════
+   V4 SEAL (.cbe-tag6-*) — §3 re-lay: serial left of badge, badge flush
+   right. `.cbe-tag6-relay` is a new wrapper (not in book-ends); the badge
+   and serial keep their own independent .cbe-tag-live roots underneath it.
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag6-relay { display: flex; align-items: center; justify-content: flex-end; gap: 1.2em; }
+.doc-hero__tag .cbe-tag6-badge {
+  width: 4.5em; height: 4.5em; flex: none; border-radius: 50%;
+  background: var(--doc-accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.doc-hero__tag .cbe-tag6-badge img { width: 53%; height: auto; display: block; filter: brightness(0) invert(1); }
+body[data-theme="dark"] .doc-hero__tag .cbe-tag6-badge img { filter: brightness(0); }
+.doc-hero__tag .cbe-tag6-serial {
+  font-family: var(--doc-font-mono);
+  font-size: 1.0667em; letter-spacing: .14em; color: var(--tag-ink-subtle);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   V5 BARCODE (.cbe-tag7)
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag7 svg { display: block; color: var(--doc-ink-strong); }
+.doc-hero__tag .cbe-tag7-bars { width: 16em; height: 2.9333em; }
+.doc-hero__tag .cbe-tag7-line { margin-top: .8em; font-size: 1.0667em; letter-spacing: 0.14em; white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   V6 LEDGER (.cbe-tag8)
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag8-box { border: 1px solid var(--doc-ink-strong); padding: 1.0667em 1.3333em .9333em; min-width: 21.0667em; }
+.doc-hero__tag .cbe-tag8-title { display: flex; justify-content: space-between; align-items: baseline; gap: 2.4em; padding-bottom: .8em; border-bottom: 1px solid var(--doc-ink-strong); }
+.doc-hero__tag .cbe-tag8-title b { font-family: var(--doc-font-body); font-weight: 700; font-size: 1.3333em; letter-spacing: .02em; }
+.doc-hero__tag .cbe-tag8-title span { font-size: .9333em; letter-spacing: .22em; }
+.doc-hero__tag .cbe-tag8-box .row { display: flex; justify-content: space-between; gap: 2.4em; padding: .5333em 0; border-bottom: 1px dotted color-mix(in srgb, var(--doc-ink-strong) 35%, transparent); font-size: 1.0em; letter-spacing: .18em; }
+.doc-hero__tag .cbe-tag8-box .row i { font-style: normal; color: var(--doc-accent); }
+.doc-hero__tag .cbe-tag8-foot { padding-top: .8em; font-size: .9333em; letter-spacing: .12em; color: var(--tag-ink-subtle); white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   V7 REGISTRY (.cbe-tag9) — brutalist-globe registration mark.
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag9 { display: flex; align-items: center; gap: 1.6em; }
+.doc-hero__tag .cbe-tag9-mark { flex: none; color: var(--doc-ink-strong); width: 3.2em; height: 3.2em; }
+.doc-hero__tag .cbe-tag9-text { display: flex; flex-direction: column; gap: .4em; }
+.doc-hero__tag .cbe-tag9-text b { font-family: var(--doc-font-body); font-weight: 700; font-size: 1.2em; letter-spacing: .06em; }
+.doc-hero__tag .cbe-tag9-text span { font-size: 1.0em; letter-spacing: .14em; color: var(--tag-ink-subtle); }
+/* Energy comet layer: kept in the DOM, never shown (book-ends round 68 —
+   "just make it the solid dark color"). No opacity:1 rule, no animation;
+   base hidden state below is permanent. */
+.doc-hero__tag .cbe-tag9-energy { stroke: var(--doc-accent); stroke-dasharray: 14 86; stroke-linecap: round; }
+.doc-hero__tag .cbe-tag9-core { transform-box: fill-box; transform-origin: center; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   V8 MARK (.cbe-tag10) — §3 re-lay: badge only, no type, flush right.
+   ══════════════════════════════════════════════════════════════════════ */
+.doc-hero__tag .cbe-tag10 {
+  width: 7.5em; height: 7.5em; border-radius: 50%;
+  background: var(--doc-accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.doc-hero__tag .cbe-tag10 img { width: 41.7%; height: auto; display: block; filter: brightness(0) invert(1); }
+body[data-theme="dark"] .doc-hero__tag .cbe-tag10 img { filter: brightness(0); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Reveal — shared motion grammar (three keyframes, reused everywhere):
+   DRAW for hairline/stroke reveals, RESOLVE for text/blocks, POP for the
+   one accent element per lockup, always last. Verbatim from book-ends.
+   ───────────────────────────────────────────────────────────────────── */
+@keyframes cbeTagDraw    { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes cbeTagResolve { from { opacity: 0; filter: blur(3px); transform: translateY(5px); } to { opacity: 1; filter: blur(0); transform: translateY(0); } }
+@keyframes cbeTagPop     { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes cbeTag6Pop    { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+@keyframes cbeTag9CorePop{ from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+
+/* ---- base pre-live hidden states — one rule per piece that gets a
+   build-in; `.cbe-tag-live` (added by armTagReveal) is what makes the
+   corresponding animation exist at all. ---- */
+.doc-hero__tag .cbe-mgs-glyph,
+.doc-hero__tag .cbe-mgs-read,
+.doc-hero__tag .cbe-mgs-serial { opacity: 0; }
+.doc-hero__tag .cbe-tag2-head,
+.doc-hero__tag .cbe-tag2-line,
+.doc-hero__tag .cbe-tag2-client,
+.doc-hero__tag .cbe-tag2-tools { opacity: 0; }
+.doc-hero__tag .cbe-tag3-name,
+.doc-hero__tag .cbe-tag3-meta { opacity: 0; }
+.doc-hero__tag .cbe-tag6-badge { opacity: 0; transform: scale(0.7); }
+.doc-hero__tag .cbe-tag6-serial { opacity: 0; }
+.doc-hero__tag .cbe-tag10 { opacity: 0; transform: scale(0.7); }
+.doc-hero__tag .cbe-tag7-bars { clip-path: inset(0 100% 0 0); }
+.doc-hero__tag .cbe-tag7-line { opacity: 0; }
+.doc-hero__tag .cbe-tag8-title,
+.doc-hero__tag .cbe-tag8-box .row,
+.doc-hero__tag .cbe-tag8-foot { opacity: 0; }
+.doc-hero__tag .cbe-tag9-mark { opacity: 0; }
+.doc-hero__tag .cbe-tag9-energy,
+.doc-hero__tag .cbe-tag9-core,
+.doc-hero__tag .cbe-tag9-text { opacity: 0; }
+
+/* ---- reveal armed on the hero's own entrance timeline (§3 adaptation) —
+   NOT book-ends' scroll-triggered IntersectionObserver (the hero tag is
+   always in view). armTagReveal flips `.cbe-tag-live` on immediately;
+   these two ancestor-guarded rules hold the actual animation at frame 0
+   for as long as the branded intro cover or the access gate owns the
+   screen — identical mechanism, identical selectors, to hero.css's own
+   title/subtitle/meta hold. `.doc-hero__tag` mounts ONLY tag-lockup
+   content, so the broad descendant selector is exact, not overreaching. */
+.doc--intro-init .doc-hero__tag *,
+body.is-gated .doc-hero__tag * {
+  animation-play-state: paused;
+}
+
+/* ---- V1 INSTRUMENT — glyph pops, accent readout + serial resolve. ---- */
+.doc-hero__tag .cbe-mgs.cbe-tag-live .cbe-mgs-glyph  { animation: cbeTagPop 0.45s cubic-bezier(0.34,1.56,0.64,1) calc(var(--tag-reveal-delay) + 250ms) both; }
+.doc-hero__tag .cbe-mgs.cbe-tag-live .cbe-mgs-read   { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 400ms) both; }
+.doc-hero__tag .cbe-mgs.cbe-tag-live .cbe-mgs-serial { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 600ms) both; }
+
+/* ---- V2 SPEC — head resolves, then the meta column cascades. ---- */
+.doc-hero__tag .cbe-tag2.cbe-tag-live .cbe-tag2-head              { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) var(--tag-reveal-delay) both; }
+.doc-hero__tag .cbe-tag2.cbe-tag-live .cbe-tag2-line:nth-of-type(1) { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 80ms) both; }
+.doc-hero__tag .cbe-tag2.cbe-tag-live .cbe-tag2-line:nth-of-type(2) { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 160ms) both; }
+.doc-hero__tag .cbe-tag2.cbe-tag-live .cbe-tag2-client              { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 240ms) both; }
+.doc-hero__tag .cbe-tag2.cbe-tag-live .cbe-tag2-tools               { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 320ms) both; }
+
+/* ---- V3 ORBIT — name, then meta. ---- */
+.doc-hero__tag .cbe-tag3.cbe-tag-live .cbe-tag3-name { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) var(--tag-reveal-delay) both; }
+.doc-hero__tag .cbe-tag3.cbe-tag-live .cbe-tag3-meta { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 80ms) both; }
+
+/* ---- V4 SEAL — badge and serial are each their OWN top-level tag root
+   (never shared a `.cbe-tag` wrapper — the new .cbe-tag6-relay div around
+   them is layout-only), so `.cbe-tag-live` lands directly on them. ---- */
+.doc-hero__tag .cbe-tag6-badge.cbe-tag-live  { animation: cbeTag6Pop 0.45s cubic-bezier(0.34,1.56,0.64,1) var(--tag-reveal-delay) both; }
+.doc-hero__tag .cbe-tag6-serial.cbe-tag-live { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 120ms) both; }
+
+/* ---- V8 MARK — a single element, `.cbe-tag-live` lands directly on it. ---- */
+.doc-hero__tag .cbe-tag10.cbe-tag-live { animation: cbeTag6Pop 0.45s cubic-bezier(0.34,1.56,0.64,1) var(--tag-reveal-delay) both; }
+
+/* ---- V5 BARCODE — bars DRAW L→R, then the serial line resolves. ---- */
+.doc-hero__tag .cbe-tag7.cbe-tag-live .cbe-tag7-bars { animation: cbeTagDraw 0.7s cubic-bezier(0.16,1,0.3,1) var(--tag-reveal-delay) both; }
+.doc-hero__tag .cbe-tag7.cbe-tag-live .cbe-tag7-line { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 250ms) both; }
+
+/* ---- V6 LEDGER — title, then each row in turn, foot last. ---- */
+.doc-hero__tag .cbe-tag8.cbe-tag-live .cbe-tag8-title                 { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) var(--tag-reveal-delay) both; }
+.doc-hero__tag .cbe-tag8.cbe-tag-live .cbe-tag8-box .row:nth-child(2) { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 90ms) both; }
+.doc-hero__tag .cbe-tag8.cbe-tag-live .cbe-tag8-box .row:nth-child(3) { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 135ms) both; }
+.doc-hero__tag .cbe-tag8.cbe-tag-live .cbe-tag8-box .row:nth-child(4) { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 180ms) both; }
+.doc-hero__tag .cbe-tag8.cbe-tag-live .cbe-tag8-box .row:nth-child(5) { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 225ms) both; }
+.doc-hero__tag .cbe-tag8.cbe-tag-live .cbe-tag8-foot                  { animation: cbeTagResolve 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 310ms) both; }
+
+/* ---- V7 REGISTRY — the whole mark pops as one unit, then the core dot
+   lands as its own second beat, text resolves alongside it. ---- */
+.doc-hero__tag .cbe-tag9.cbe-tag-live .cbe-tag9-mark {
+  transform-box: fill-box; transform-origin: center;
+  animation: cbeTagPop 0.38s cubic-bezier(0.34,1.56,0.64,1) var(--tag-reveal-delay) both;
+}
+.doc-hero__tag .cbe-tag9.cbe-tag-live .cbe-tag9-core {
+  transform-box: fill-box; transform-origin: center;
+  animation: cbeTag9CorePop 0.3s cubic-bezier(0.34,1.56,0.64,1) calc(var(--tag-reveal-delay) + 140ms) both;
+}
+.doc-hero__tag .cbe-tag9.cbe-tag-live .cbe-tag9-text { animation: cbeTagResolve 0.35s cubic-bezier(0.16,1,0.3,1) calc(var(--tag-reveal-delay) + 180ms) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-hero__tag .cbe-mgs-glyph,
+  .doc-hero__tag .cbe-mgs-read,
+  .doc-hero__tag .cbe-mgs-serial,
+  .doc-hero__tag .cbe-tag2-head,
+  .doc-hero__tag .cbe-tag2-line,
+  .doc-hero__tag .cbe-tag2-client,
+  .doc-hero__tag .cbe-tag2-tools,
+  .doc-hero__tag .cbe-tag3-name,
+  .doc-hero__tag .cbe-tag3-meta,
+  .doc-hero__tag .cbe-tag6-badge,
+  .doc-hero__tag .cbe-tag6-serial,
+  .doc-hero__tag .cbe-tag10,
+  .doc-hero__tag .cbe-tag7-bars,
+  .doc-hero__tag .cbe-tag7-line,
+  .doc-hero__tag .cbe-tag8-title,
+  .doc-hero__tag .cbe-tag8-box .row,
+  .doc-hero__tag .cbe-tag8-foot,
+  .doc-hero__tag .cbe-tag9-mark,
+  .doc-hero__tag .cbe-tag9-core,
+  .doc-hero__tag .cbe-tag9-text {
+    animation: none; opacity: 1; clip-path: none; transform: none; stroke-dashoffset: 0;
+  }
+  .doc-hero__tag .cbe-tag9-energy { display: none; }
+}

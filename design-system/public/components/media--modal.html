@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+  OMNI component: modal
+  Project: Media
+  Note: .app-modal — instructions dialog (head + maximize/close + textarea body + resize handles)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — modal · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="app-modal open" id="instructionsModal" role="dialog" aria-modal="true" aria-labelledby="instructionsModalTitle" style="position:static;display:flex">
+    <div class="app-modal-card app-modal-card-instructions" role="document">
+      <header class="app-modal-head" data-drag-handle>
+        <h2 class="app-modal-title" id="instructionsModalTitle">Additional Orchestrator Instructions</h2>
+        <div class="app-modal-head-actions">
+          <button class="app-modal-maximize" type="button" aria-label="Maximize" id="instructionsModalMaximize">
+            <svg class="app-modal-maxicon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <svg class="app-modal-restoreicon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 3 9 9 3 9"/><polyline points="15 21 15 15 21 15"/><line x1="9" y1="9" x2="3" y2="3"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+          </button>
+          <button class="app-modal-close" type="button" aria-label="Close" id="instructionsModalClose">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="app-modal-instr-body">
+        <div class="app-modal-instr-frame">
+          <div class="app-modal-instr-gutter" id="instructionsModalGutter" aria-hidden="true"></div>
+          <textarea class="app-modal-instr-input" id="instructionsModalInput" placeholder="Describe any account specific ways the orchestrator agent should manage the other agents, data sets and workflow." aria-label="Orchestrator instructions"></textarea>
+        </div>
+      </div>
+      <span class="app-modal-resize app-modal-resize-n" data-resize="n" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-s" data-resize="s" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-e" data-resize="e" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-w" data-resize="w" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-ne" data-resize="ne" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-nw" data-resize="nw" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-se" data-resize="se" aria-hidden="true"></span>
+      <span class="app-modal-resize app-modal-resize-sw" data-resize="sw" aria-hidden="true"></span>
+    </div>
+  </div>
+</body>
+</html>

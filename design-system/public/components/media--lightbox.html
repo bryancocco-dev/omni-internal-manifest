@@ -1,0 +1,73 @@
+<!doctype html>
+<!--
+  OMNI component: lightbox
+  Project: Media
+  Note: .c4-edit-mode — image edit-mode takeover (topbar tools + stage + revision rail)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — lightbox · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="c4-edit-mode" id="c4EditMode" data-visible="1" style="position:static">
+    <header class="c4-edit-topbar">
+      <button class="c4-edit-back" type="button" aria-label="Exit edit mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Back</span>
+      </button>
+      <div class="c4-edit-meta">
+        <span class="c4-edit-rev"><strong data-edit-rev-current>1</strong> <span class="c4-edit-rev-sep">/</span> <strong data-edit-rev-total>1</strong></span>
+        <span class="c4-edit-meta-dot">·</span>
+        <span class="c4-edit-prompt-mini" data-edit-prompt-mini>Cyberpunk samurai sitting on a glowing neon ring throne, red and white armor.</span>
+      </div>
+      <div class="c4-edit-toolbar" role="toolbar" aria-label="Edit controls">
+        <button class="c4-edit-tool" type="button" data-edit-action="undo" aria-label="Undo" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6.7 3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="redo" aria-label="Redo" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="revert" aria-label="Revert to original">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        </button>
+        <span class="c4-edit-tool-sep"></span>
+        <button class="c4-edit-tool" type="button" data-edit-action="download" aria-label="Download current revision">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="fullscreen" aria-label="Fullscreen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="c4-edit-stage">
+      <div class="c4-edit-frame" data-mode="single">
+        <img class="c4-edit-img c4-edit-img-current" alt="" draggable="false">
+        <img class="c4-edit-img c4-edit-img-prev" alt="" draggable="false">
+        <div class="c4-edit-skeleton" data-edit-skeleton aria-hidden="true"></div>
+        <div class="c4-edit-pins" data-edit-pins></div>
+        <div class="c4-edit-cursor-dot" data-edit-cursor aria-hidden="true"></div>
+      </div>
+      <p class="c4-edit-hint">Click the image to pin a region · Describe the edit in chat to generate the next revision</p>
+    </div>
+    <aside class="c4-edit-rail" aria-label="Revision history">
+      <button class="c4-edit-rail-resize" type="button" aria-label="Resize history panel" data-edit-rail-resize></button>
+      <header class="c4-edit-rail-head">
+        <span class="c4-edit-rail-eyebrow">History</span>
+        <span class="c4-edit-rail-count"><strong data-edit-rail-count>1</strong> revision<span data-edit-rail-plural></span></span>
+      </header>
+      <ul class="c4-edit-rail-list" data-edit-rail-list></ul>
+    </aside>
+  </div>
+</body>
+</html>

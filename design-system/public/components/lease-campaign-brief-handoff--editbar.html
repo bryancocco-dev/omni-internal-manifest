@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+  OMNI component: editbar
+  Project: Brief
+  Note: .c4-edit-topbar — image-edit toolbar (Back, revision meta, undo/redo/revert/compare/fit/download/fullscreen)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — editbar · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<header class="c4-edit-topbar">
+      <button class="c4-edit-back" type="button" aria-label="Exit edit mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Back</span>
+      </button>
+      <div class="c4-edit-meta">
+        <span class="c4-edit-rev"><strong data-edit-rev-current>1</strong> <span class="c4-edit-rev-sep">/</span> <strong data-edit-rev-total>1</strong></span>
+        <span class="c4-edit-meta-dot">·</span>
+        <span class="c4-edit-prompt-mini" data-edit-prompt-mini></span>
+      </div>
+      <div class="c4-edit-toolbar" role="toolbar" aria-label="Edit controls">
+        <button class="c4-edit-tool" type="button" data-edit-action="undo" aria-label="Undo" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6.7 3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="redo" aria-label="Redo" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="revert" aria-label="Revert to original">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        </button>
+        <span class="c4-edit-tool-sep"></span>
+        <button class="c4-edit-tool" type="button" data-edit-action="compare" aria-label="Compare with previous revision" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="fit" aria-label="Fit / 100%">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 9 4 4 9 4"/><polyline points="20 9 20 4 15 4"/><polyline points="4 15 4 20 9 20"/><polyline points="20 15 20 20 15 20"/></svg>
+        </button>
+        <span class="c4-edit-tool-sep"></span>
+        <button class="c4-edit-tool" type="button" data-edit-action="download" aria-label="Download current revision">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="c4-edit-tool" type="button" data-edit-action="fullscreen" aria-label="Fullscreen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </header>
+</body>
+</html>

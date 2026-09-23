@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email Template — Options</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:#ffffff; }
+  body {
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    color:#1b1d21; padding:96px 48px;
+  }
+  .wrap { max-width:520px; margin:0 auto; }
+  .eyebrow {
+    font-family:'Fira Code','Courier New',Courier,monospace; font-size:10px;
+    text-transform:uppercase; letter-spacing:0.16em; color:#9b9dac;
+    padding-bottom:14px; border-bottom:1px solid rgba(15,23,42,0.10);
+  }
+  h1 { font-size:22px; font-weight:600; letter-spacing:-0.01em; margin:20px 0 40px; }
+  ol { list-style:none; counter-reset:opt; }
+  li { counter-increment:opt; border-bottom:1px solid rgba(15,23,42,0.10); }
+  li a {
+    display:flex; align-items:baseline; gap:20px; text-decoration:none;
+    color:#1b1d21; padding:20px 0; transition:color 120ms ease;
+  }
+  li a::before {
+    content:"0" counter(opt);
+    font-family:'Fira Code','Courier New',Courier,monospace; font-size:11px; color:#9b9dac;
+  }
+  li a:hover { color:#1858ee; }
+  .name { font-size:16px; font-weight:600; letter-spacing:-0.005em; }
+  .desc { font-size:12px; color:#6b6d7a; margin-left:auto; text-align:right; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Email Template · Options</div>
+    <h1>White-bg email template</h1>
+    <ol>
+      <li><a href="option-1.html"><span class="name">Ledger</span><span class="desc">Swiss sans, hairline structure</span></a></li>
+      <li><a href="option-2.html"><span class="name">Gazette</span><span class="desc">Editorial serif, centered axis</span></a></li>
+      <li><a href="option-4.html"><span class="name">Janda</span><span class="desc">Numbered poster, two-column</span></a></li>
+      <li><a href="option-6.html"><span class="name">Matrix</span><span class="desc">Dot-matrix minimal, generated dither</span></a></li>
+      <li><a href="all.html"><span class="name">All</span><span class="desc">Every option, with + without image</span></a></li>
+    </ol>
+  </div>
+</body>
+</html>

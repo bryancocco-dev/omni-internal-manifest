@@ -1,0 +1,99 @@
+<!doctype html>
+<!--
+  OMNI component: ladder
+  Project: PDF Tables
+  Note: .ladder — the 4-step "fit ladder" for wide tables on paper: measure → demote prose → rotate landscape → column-group continuation, each rung stating its rule set and its "fits when" threshold
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — ladder · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ladder">
+          <div class="rung">
+            <div class="rung-id">Step 0<br>Always on</div>
+            <div>
+              <h3 class="rung-t">Measure first, then draw</h3>
+              <p class="rung-d">
+                Everything here applies to every table regardless of width, and on its own repairs three of
+                the five failures. Most narrow tables need nothing else.
+              </p>
+              <ul class="rung-rules">
+                <li>Column widths come from measured content, not from an even split</li>
+                <li>Header labels wrap to two lines rather than running into their neighbour</li>
+                <li>Currency, dates and short codes are marked unbreakable</li>
+                <li>The header row repeats at the top of every page</li>
+                <li>A row is atomic — it never splits across a page break</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits when</b>measured width ≤ 7.3in and no prose column is squeezed under ~2in</div>
+          </div>
+
+          <div class="rung">
+            <div class="rung-id">Step 1<br>Demote prose</div>
+            <div>
+              <h3 class="rung-t">Long text leaves the grid</h3>
+              <p class="rung-d">
+                Any column whose typical cell runs past roughly 48 characters is not really a column — it is
+                an annotation. It drops out of the grid and prints full-width beneath its own row, where it
+                has the whole page to be readable in. This single move is what kills the skyscraper rows.
+              </p>
+              <ul class="rung-rules">
+                <li>Prose is detected by measured median cell length, not by column name</li>
+                <li>The note keeps its label so nothing is ambiguous</li>
+                <li>Row and note are one unit — they never separate across pages</li>
+                <li>The canvas already hints at this with clamped cells and "Expand all" — print just resolves it permanently</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits when</b>remaining short columns measure ≤ 7.3in</div>
+          </div>
+
+          <div class="rung">
+            <div class="rung-id">Step 2<br>Rotate</div>
+            <div>
+              <h3 class="rung-t">That table's pages turn landscape</h3>
+              <p class="rung-d">
+                Worth 2.5 more inches — about a third more width. A PDF can mix orientations page by page,
+                so only the wide table rotates; the surrounding document stays portrait. The reader gets one
+                sideways page in an otherwise normal file, which is a long-established convention for wide data.
+              </p>
+              <ul class="rung-rules">
+                <li>Applied per table, not per document</li>
+                <li>Prose stays demoted from Step 1 — the two compound</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits when</b>remaining short columns measure ≤ 9.8in</div>
+          </div>
+
+          <div class="rung">
+            <div class="rung-id">Step 3<br>Continue</div>
+            <div>
+              <h3 class="rung-t">Split the columns, repeat the identity</h3>
+              <p class="rung-d">
+                For genuinely enormous tables, the columns break into groups. The identity columns — the
+                ones that tell you which row you are looking at — repeat at the head of each group, and the
+                remaining columns continue underneath marked "continued". This is how wide financial tables
+                have always been printed, and it guarantees any width fits.
+              </p>
+              <ul class="rung-rules">
+                <li>Identity columns repeat so a row is always identifiable</li>
+                <li>Groups stay adjacent — a row's continuation is never on another page</li>
+                <li>No column is dropped, so the export stays complete</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits</b>always — this is the floor</div>
+          </div>
+        </div>
+</body>
+</html>

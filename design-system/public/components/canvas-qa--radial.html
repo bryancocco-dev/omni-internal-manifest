@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+  OMNI component: radial
+  Project: QA
+  Note: .qa-radial — Chart.js multi-ring doughnut container + custom qa-radial-legend (dot + big number + label); canvas is blank without the Chart.js init script, legend renders standalone
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA — radial · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-qa.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="brief-stack">
+<article class="brief-board"><div class="sec-body">
+            <header class="qa-head">
+              <p class="qa-eyebrow">Measurement Framework · Results</p>
+              <h2 class="qa-h2">Consolidated Framework Target Alignment: 94%</h2>
+            </header>
+            <div class="qa-chart">
+              <div class="qa-radial">
+                <div class="qa-radial-canvas"><canvas id="alignRadial"></canvas></div>
+                <ul class="qa-radial-legend">
+                  <li><span class="dot" style="--dot:#1858ee"></span><div class="meta"><b>98</b><span>Approved Accounts</span></div></li>
+                  <li><span class="dot" style="--dot:#5681f0"></span><div class="meta"><b>94</b><span>Blended CPA Index</span></div></li>
+                  <li><span class="dot" style="--dot:#86a5f5"></span><div class="meta"><b>101</b><span>Early Activation Rate</span></div></li>
+                  <li><span class="dot" style="--dot:#b3c5fa"></span><div class="meta"><b>96</b><span>Active Traveler Reach</span></div></li>
+                </ul>
+              </div>
+            </div>
+          </div></article>
+</body>
+</html>

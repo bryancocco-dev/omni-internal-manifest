@@ -1,0 +1,195 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Premium OMNI footer — a Swiss "end-card" that closes the shared canvas,
+   plus a utility strip beneath it. Mirrors publish-to-workspace's
+   .bib-finale end-card: accent-gradient panel, grain overlay, OMNI+ mark,
+   masked shape graphic, mono meta columns. Generic + data-driven.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Matches the real .bib-finale-tagline's structure (top row / big centered
+   shape / meta row, no competing headline) but NOT its literal
+   aspect-ratio:5/6 + max-height:880px sizing — at our fixed 940px board
+   width that rule computes width FROM the capped height (correct CSS
+   spec behavior), which would narrow the card below the content column
+   and break the "match content width" requirement. Width stays 100% of
+   the column; generous shape-row padding stands in for the tall aspect
+   ratio's breathing room instead. */
+.doc-endcard {
+  position: relative;
+  overflow: hidden;
+  margin-top: var(--doc-section-gap);
+  /* No bottom margin + squared bottom corners so the blue panel extends down
+     and connects flush to the colophon's top hairline. */
+  margin-bottom: 0;
+  border-radius: var(--doc-card-radius) var(--doc-card-radius) 0 0;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  /* Flat accent, like the real .bib-finale end-card (background-color:
+     var(--accent)) — no gradient. The grain overlay below adds the only
+     texture. */
+  background: var(--doc-accent);
+}
+
+/* fine film grain, same fractal-noise technique as .bib-finale */
+.doc-endcard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 170px 170px;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.doc-endcard__top,
+.doc-endcard__shape-row,
+.doc-endcard__meta {
+  position: relative;
+  z-index: 2;
+}
+
+.doc-endcard__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+.doc-endcard__mark { width: 84px; height: auto; display: block; filter: brightness(0) invert(1); flex: none; }
+
+.doc-endcard__eyebrow {
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+  align-self: center;
+  text-align: right;
+}
+
+/* The shape IS the hero of the middle row — no competing headline text.
+   Generous vertical padding stands in for the real component's tall
+   aspect-ratio, giving the shape the same breathing room. */
+.doc-endcard__shape-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(40px, 8vw, 96px) 0;
+}
+
+.doc-endcard__shape {
+  position: relative;
+  width: min(58%, 400px);
+  aspect-ratio: 1 / 1;
+  background: #fff;
+  -webkit-mask: url('../assets/bib-shape.png') center / contain no-repeat;
+          mask: url('../assets/bib-shape.png') center / contain no-repeat;
+}
+
+/* The orbit mark rotates slowly + continuously, like the reveal in the other
+   OMNI projects. Paused for reduced-motion users. */
+@media (prefers-reduced-motion: no-preference) {
+  .doc-endcard__shape {
+    animation: doc-endcard-spin 32s linear infinite;
+    will-change: transform;
+  }
+}
+@keyframes doc-endcard-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.doc-endcard__meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+.doc-endcard__col {
+  display: grid;
+  grid-template-columns: 8px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.doc-endcard__col-bullet { width: 8px; height: 8px; background: #fff; margin-top: 7px; flex-shrink: 0; }
+
+.doc-endcard__col p {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 720px) {
+  .doc-endcard__meta { grid-template-columns: 1fr; gap: 16px; }
+}
+
+/* ── Standard OMNI footer bar (verbatim .footer from lease-campaign /
+   corvache): copyright left · centered logo · links right, sans 11px,
+   hairline top rule. Runs the FULL page width — content sits at the same edge
+   gutters as the header. ─────────────────────────────────────────────────── */
+.doc-colophon {
+  width: 100%;
+  border-top: 1px solid var(--doc-rule);
+}
+.doc-colophon__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 16px var(--doc-edge-gutter);
+  min-height: 52px;
+  font-family: var(--doc-font-body);
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  color: var(--doc-ink-subtle);
+}
+
+/* Left group — copyright + the themed signature, kept as ONE flex child so the
+   centred logo (margin:0 auto) stays optically centred. */
+.doc-colophon__left { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 16px; }
+.doc-colophon__copy { flex: 0 0 auto; }
+
+/* Centered co-brand lockup — the header's OMNI × brand grammar, mirrored. */
+.doc-colophon__lockup {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 auto;
+}
+.doc-colophon__cobrand-slot { display: inline-flex; align-items: center; min-width: 0; }
+
+.doc-colophon__logo { flex: 0 0 auto; height: 17px; width: auto; translate: 0 1px; }
+/* Colophon sits on --doc-page-bg — same matched pair as the header/intro. */
+.doc-colophon__logo { filter: brightness(0); }
+[data-theme='dark'] .doc-colophon__logo { filter: brightness(0) invert(1); }
+
+.doc-colophon__links {
+  flex: 0 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  justify-content: flex-end;
+}
+
+.doc-colophon__links a {
+  color: var(--doc-ink-subtle);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--omni-transition-duration-fast) ease;
+}
+
+.doc-colophon__links a:hover { color: var(--doc-ink); }

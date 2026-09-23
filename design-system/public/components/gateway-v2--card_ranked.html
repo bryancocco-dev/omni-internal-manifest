@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  OMNI component: card_ranked
+  Project: Gateway
+  Note: .gw-card .pop-split — ranked asset manifest (lead tile + numbered rows: thumbnail, name, usage bar, user count); the closest analog to a "manifest row" pattern in this project — the literal manifest integration lives in omni-dashboard's SECTIONS list, outside this file
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gateway — card_ranked · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/gateway-v2.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<section class="gw-card">
+
+  <div class="gwc-head">
+    <div><h3 class="gwc-title">Most popular assets</h3></div>
+    <div class="gwc-right"><button class="row-more" type="button" aria-label="More options" aria-haspopup="menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button></div>
+  </div>
+          <div class="pop-split">
+            <div class="pop-lead">
+              <img src="./assets/55366157bc73ee2e9b3cea5990ddf7bf2ea2c353.png" alt="">
+              <div class="pop-lead-shade"></div>
+              <div class="pop-lead-meta">
+                <span class="pop-lead-rank">01</span>
+                <span class="pop-lead-name">CVCH_AD_FILM_01</span>
+                <span class="pop-lead-users">156 users</span>
+              </div>
+            </div>
+            <div class="pop-rows">
+              <div class="pop-row">
+                <span class="pop-rank">02</span>
+                <img src="./assets/daab494b81d633b8e4aa83f55406e1b816826438.png" alt="">
+                <span class="pop-row-main"><span class="nm">CVCH_KEYART_02</span><span class="bar"><i style="width:96%"></i></span></span>
+                <span class="users">149</span>
+              </div>
+              <div class="pop-row">
+                <span class="pop-rank">03</span>
+                <img src="./assets/4fe4507007be330fc43ce73e3c5ffadc25ac5247.png" alt="">
+                <span class="pop-row-main"><span class="nm">CVCH_CUTDOWN_15</span><span class="bar"><i style="width:84%"></i></span></span>
+                <span class="users">131</span>
+              </div>
+              <div class="pop-row">
+                <span class="pop-rank">04</span>
+                <img src="./assets/8918f52f1107dee852c5f26f709c4c68d4d47ac8.png" alt="">
+                <span class="pop-row-main"><span class="nm">CVCH_STILL_04</span><span class="bar"><i style="width:76%"></i></span></span>
+                <span class="users">118</span>
+              </div>
+              <div class="pop-row">
+                <span class="pop-rank">05</span>
+                <img src="./assets/unsplash-night-range.jpg" alt="">
+                <span class="pop-row-main"><span class="nm">CVCH_SOCIAL_09</span><span class="bar"><i style="width:67%"></i></span></span>
+                <span class="users">104</span>
+              </div>
+              <div class="pop-row">
+                <span class="pop-rank">06</span>
+                <img src="./assets/6c4d32831ef735d3f7cce5f0d23a9084e80af885.png" alt="">
+                <span class="pop-row-main"><span class="nm">CVCH_BTS_07</span><span class="bar"><i style="width:62%"></i></span></span>
+                <span class="users">97</span>
+              </div>
+            </div>
+          </div>
+          <span class="fg-link">Browse all assets <svg viewBox="0 0 24 24"><path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg></span>
+        </section>
+</body>
+</html>

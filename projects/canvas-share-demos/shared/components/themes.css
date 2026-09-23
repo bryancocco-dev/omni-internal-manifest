@@ -1,0 +1,337 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Themes picker — panel anchored to the OMNI mark in the header, plus the
+   theme signature. Structure follows /TINKER/themes' profile-themes panel;
+   the treatment is this project's (its radii, hairlines, elevation + the
+   460ms expo-out motion language), which wins on conflict.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.doc-header__logo.is-theme-trigger {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity var(--omni-transition-duration-fast) ease, transform var(--omni-transition-duration-fast) ease;
+}
+.doc-header__logo.is-theme-trigger:hover { opacity: 0.72; }
+.doc-header__logo.is-theme-trigger:active { transform: scale(0.96); }
+.doc-header__logo.is-theme-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--doc-page-bg), 0 0 0 4px var(--doc-accent-line);
+}
+
+.doc-th-overlay { position: fixed; inset: 0; z-index: 300; background: transparent; }
+
+.doc-th-panel {
+  position: fixed;
+  z-index: 301;
+  width: 296px;
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+  padding: 14px 8px 8px;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.02),
+    0 24px 70px -14px rgba(15, 23, 42, 0.28),
+    0 10px 28px -8px rgba(15, 23, 42, 0.16);
+  transform-origin: top left;
+  animation: docThIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.doc-th-panel.is-closing { animation: docThOut 150ms ease forwards; }
+
+@keyframes docThIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes docThOut {
+  to { opacity: 0; transform: translateY(-4px) scale(0.985); }
+}
+
+.doc-th-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 10px 10px;
+}
+.doc-th-title {
+  font-family: var(--doc-font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.15px;
+  color: var(--doc-ink-strong);
+}
+.doc-th-close {
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: var(--omni-radius-small);
+  background: transparent; color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition: background var(--omni-transition-duration-fast) ease, color var(--omni-transition-duration-fast) ease;
+}
+.doc-th-close:hover { background: var(--doc-nested-bg); color: var(--doc-ink-strong); }
+.doc-th-close svg { width: 15px; height: 15px; }
+
+.doc-th-divider { height: 1px; background: var(--doc-rule); margin: 0 6px 2px; }
+
+/* Group eyebrow — the project's mono micro-label. */
+.doc-th-group {
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+  padding: 16px 10px 5px;
+}
+
+.doc-th-row {
+  display: flex;
+  align-items: center;
+  border-radius: 9px;
+  transition: background var(--omni-transition-duration-fast) ease;
+}
+.doc-th-row:hover { background: var(--doc-accent-soft); }
+
+.doc-th-apply {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px 10px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 9px 0 0 9px;
+  font-family: var(--doc-font-body);
+  font-size: 14px;
+  color: var(--doc-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--omni-transition-duration-fast) ease;
+}
+.doc-th-apply.is-active { color: var(--doc-accent); font-weight: 600; }
+.doc-th-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Brand WORDMARK in the name slot — the real logotype as an alpha mask, so it
+   rides the row's currentColor (ink at rest, accent when active). Height is
+   set inline per brand (optical size); width follows the artwork's ratio. */
+.doc-th-wm {
+  flex: 0 1 auto;
+  max-width: 128px;
+  background: currentColor;
+  -webkit-mask: var(--m) left center / contain no-repeat;
+  mask: var(--m) left center / contain no-repeat;
+}
+
+/* Mark slot — brand SVGs are masked so they take the theme's own accent
+   (the shipped files carry hardcoded brand fills we deliberately discard). */
+.doc-th-ico {
+  width: 20px; height: 20px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.doc-th-ico svg { width: 17px; height: 17px; }
+.doc-th-brand {
+  width: 18px; height: 18px; display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: var(--m) center / contain no-repeat;
+  mask: var(--m) center / contain no-repeat;
+}
+.doc-th-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(15,23,42,0.15); }
+
+.doc-th-edit {
+  width: 34px; height: 38px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--doc-ink-subtle);
+  cursor: pointer; border-radius: 0 9px 9px 0;
+  transition: color var(--omni-transition-duration-fast) ease, transform var(--omni-transition-duration-fast) ease;
+}
+.doc-th-edit:hover { color: var(--doc-accent); transform: scale(1.12); }
+.doc-th-edit svg { width: 15px; height: 15px; }
+
+.doc-th-create {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 10px 10px;
+  border: none;
+  border-top: 1px solid var(--doc-rule);
+  background: transparent;
+  font-family: var(--doc-font-body);
+  font-size: 14px;
+  color: var(--doc-ink);
+  cursor: pointer;
+  border-radius: 0 0 9px 9px;
+  transition: background var(--omni-transition-duration-fast) ease, color var(--omni-transition-duration-fast) ease;
+}
+.doc-th-create svg { width: 17px; height: 17px; color: var(--doc-ink-subtle); flex: none; }
+.doc-th-create:hover { background: var(--doc-accent-soft); color: var(--doc-accent); }
+.doc-th-create:hover svg { color: var(--doc-accent); }
+
+/* ── brand lockup — OMNI × <brand>, in the nav ─────────────────────────────
+   THE CANONICAL LOCKUP. Every other surface carrying this motif (intro
+   cover, share email) mirrors these proportions em-scaled off the mark
+   size M = 22px here: OMNI 0.773M (17px, +1px seat) · × 0.59M (13px)
+   light @ 0.5, 16px before / 10px after · mark 1M (apple +1px) ·
+   name 0.795M (17.5px)/700. Change here → change the ratios everywhere. */
+.doc-cobrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.doc-cobrand[hidden] { display: none; }
+
+/* The × is the join, not a character to read: optically small, quiet, and
+   nudged to sit on the marks' optical centre rather than the text baseline. */
+.doc-cobrand__x {
+  font-family: var(--doc-font-body);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--doc-ink-subtle);
+  opacity: 0.5;
+  transform: translateY(-0.5px);
+  flex: none;
+}
+
+/* Masked, so the mark takes the theme accent and never fights the OMNI mark
+   with its own brand fill. Same 22px footprint as the OMNI mark so the two
+   sides of the lockup carry equal weight. */
+.doc-cobrand__mark {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  background-color: var(--doc-accent);
+  -webkit-mask: var(--m) center / contain no-repeat;
+  mask: var(--m) center / contain no-repeat;
+  translate: 0 var(--cobrand-mark-nudge, 0px);
+}
+
+/* Per-brand optical nudges — glyphs whose visual mass sits off their
+   bounding-box center (the Apple leaf is light; the body reads low-slung
+   next to the wordmark's descenders). */
+[data-brand='apple'] .doc-cobrand__mark { --cobrand-mark-nudge: 1px; }
+
+/* Name is set in the brand's OWN display face — the theme paying itself off.
+   Sized/weighted as a WORDMARK, peer to the OMNI logotype (which is a heavy
+   ~22px silhouette), not a caption beside it. */
+.doc-cobrand__name {
+  font-family: var(--doc-font-display);
+  font-size: 17.5px;
+  font-weight: 700;
+  letter-spacing: var(--doc-heading-tracking, -0.45px);
+  color: var(--doc-ink-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Wordmark variant of the name slot: the brand's real logotype, masked to the
+   same ink as .doc-cobrand__name. 12.5px = the cap band of the canon
+   17.5px/700 name, so swapping text → artwork holds the ratio table; the
+   per-brand --wm-scale is the same optical factor the picker rows use. */
+.doc-cobrand__wm {
+  height: calc(12.5px * var(--wm-scale, 1));
+  flex: 0 1 auto;
+  max-width: 150px;
+  background: var(--doc-ink-strong);
+  -webkit-mask: var(--m) left center / contain no-repeat;
+  mask: var(--m) left center / contain no-repeat;
+}
+
+.doc-cobrand.is-in { animation: docCobrandIn 460ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes docCobrandIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-cobrand.is-in { animation: none; }
+}
+/* The doc context is the first thing to go when the nav gets tight — the
+   lockup is the payoff and should outlive it. */
+@media (max-width: 860px) {
+  .doc-cobrand__name, .doc-cobrand__wm { display: none; }
+}
+
+/* ── theme SWEEP — the picker's transition (see sweepTheme in themes.js). The
+   new theme draws DOWN over the old like a sheet: the View Transition's new
+   snapshot reveals through a feathered vertical mask (300%-tall gradient,
+   position 100% → 0% ≡ edge travelling top → bottom) while the old state
+   recedes with a focus-pull blur — the doc's blur-resolve signature. ─────── */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    mix-blend-mode: normal;
+    animation-duration: 950ms;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.18, 1);
+    animation-fill-mode: both;
+  }
+  ::view-transition-old(root) { animation-name: doc-vt-recede; }
+  ::view-transition-new(root) {
+    animation-name: doc-vt-sweep;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 43%, transparent 57%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 43%, transparent 57%, transparent 100%);
+    -webkit-mask-size: 100% 300%;
+    mask-size: 100% 300%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  @keyframes doc-vt-recede {
+    to { filter: blur(9px) saturate(0.88); transform: scale(0.993); opacity: 0.88; }
+  }
+  @keyframes doc-vt-sweep {
+    from { -webkit-mask-position: 0 100%; mask-position: 0 100%; }
+    to { -webkit-mask-position: 0 0%; mask-position: 0 0%; }
+  }
+}
+
+/* The filament: a luminous accent hairline + soft trail riding the sweep's
+   reveal edge (identical 300%-tall gradient mechanics + timing → aligned by
+   construction). Spawned inside the commit, so it lives in the NEW snapshot,
+   reads the NEW theme's accent, and the mask feather softens its arrival —
+   the same trailing-edge grammar as the intro sheet-lift. */
+.doc-theme-sweep {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom,
+    transparent 0%, transparent 40.5%,
+    color-mix(in srgb, var(--doc-accent) 12%, transparent) 45.5%,
+    color-mix(in srgb, var(--doc-accent) 46%, transparent) 47%,
+    var(--doc-accent) 47.25%,
+    transparent 47.75%, transparent 100%);
+  background-size: 100% 300%;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  animation: doc-vt-sweep-filament 950ms cubic-bezier(0.45, 0, 0.18, 1) both;
+}
+@keyframes doc-vt-sweep-filament {
+  from { background-position: 0 100%; }
+  to { background-position: 0 0%; }
+}
+
+/* ── theme signature — quiet themed attribution in the colophon ──────────── */
+/* Mono micro-label, but NOT uppercase-transformed: brand names render in their
+   own casing (Corvache, Hermès, Rolls-Royce) rather than being shouted. Tracking
+   is tuned for mixed case — 0.14em is uppercase tracking and reads loose here. */
+.doc-th-signature {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--doc-ink-subtle);
+  white-space: nowrap;
+}
+.doc-th-sig-mark {
+  width: 12px; height: 12px; display: inline-block; flex: none;
+  background-color: var(--doc-accent);
+  -webkit-mask: var(--m) center / contain no-repeat;
+  mask: var(--m) center / contain no-repeat;
+}
+.doc-th-sig-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--doc-accent); flex: none; }
+.doc-th-sig-text { color: var(--doc-ink-subtle); }

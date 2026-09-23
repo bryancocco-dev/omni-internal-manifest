@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  OMNI component: progress
+  Project: Agent Builder
+  Note: .vh-row — version-history timeline row (avatar + title + date + Restore + kebab menu) (from JS template)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — progress · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="vh-modal-body" style="display:block">
+      <div class="vh-row" data-title="v35 — refined output schema" data-author="noah fielding">
+        <span class="vh-row-avatar" style="background:#6b6d7a" aria-hidden="true">AC</span>
+        <div class="vh-row-info">
+          <div class="vh-row-title">v35 — Refined output schema</div>
+          <div class="vh-row-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Jun 3, 2026, 4:17 PM · Noah Fielding</span></div>
+        </div>
+        <div class="vh-row-actions">
+          <button type="button" class="vh-row-restore">Restore</button>
+          <button type="button" class="vh-row-kebab" aria-label="More actions" aria-haspopup="menu" aria-expanded="false" data-menu-trigger="0"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+          <div class="vh-row-menu" role="menu" data-menu-id="0"><button class="vh-row-menu-item" role="menuitem" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>Preview</span></button><button class="vh-row-menu-item" role="menuitem" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg><span>Save as Version</span></button></div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

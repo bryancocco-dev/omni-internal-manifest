@@ -1,0 +1,1312 @@
+<style>
+/* aud-overview-b — Audience overview, lower half (node 19:14221) */
+
+.audob-frag { display: flex; flex-direction: column; gap: 32px; }
+.audob-module { display: flex; flex-direction: column; gap: 8px; }
+.audob-eyebrow {
+  font-size: 14px; font-weight: 600; color: var(--text-subtle);
+}
+.audob-card {
+  background: var(--card-bg);
+  border: 0.5px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 24px 16px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.audob-divider { height: 1px; background: var(--line); width: 100%; flex: none; }
+.audob-card-title {
+  font-size: 14px; font-weight: 600; color: var(--text-strong);
+}
+.audob-card-sub {
+  font-size: 14px; line-height: 1.6; color: var(--text-body);
+}
+.audob-ai-icon { color: var(--accent); flex: none; }
+.audob-card-headrow { display: flex; align-items: center; gap: 8px; }
+
+/* ---- Media channel & platform interests: 4-col index bars ---- */
+.audob-plat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  padding-top: 4px;
+}
+.audob-plat-col { display: flex; flex-direction: column; gap: 12px; }
+.audob-plat-colhead { font-size: 14px; font-weight: 600; color: var(--text-subtle); }
+.audob-plat-rows { display: flex; flex-direction: column; gap: 12px; }
+.audob-plat-row { display: flex; flex-direction: column; gap: 8px; }
+.audob-plat-rowtop { display: flex; align-items: center; justify-content: space-between; }
+.audob-plat-name { font-size: 14px; font-weight: 400; color: var(--text-body); }
+.audob-plat-chip {
+  font-family: var(--ms-mono);
+  font-size: 10px; color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 4px; padding: 3px 6px;
+}
+.audob-plat-track {
+  height: 6px; border-radius: 4px;
+  background: color-mix(in srgb, var(--text-subtle) 22%, transparent);
+  overflow: hidden;
+}
+.audob-plat-fill { height: 100%; border-radius: 4px; background: var(--accent); }
+
+/* ---- Tall audience-index vertical bar chart ---- */
+.audob-idx-wrap { display: flex; gap: 8px; padding-top: 16px; }
+.audob-idx-axis-l {
+  display: flex; align-items: center; gap: 8px; flex: none;
+}
+.audob-idx-axis-l-ticks {
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 300px;
+  font-family: var(--ms-mono);
+  font-size: 12px; color: var(--text-body); text-align: right;
+}
+.audob-idx-axis-l-label {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 12px; color: var(--text-strong); white-space: nowrap;
+}
+.audob-idx-plot {
+  flex: 1; position: relative; height: 300px;
+  display: flex; align-items: flex-end; justify-content: space-around;
+  gap: 18px; padding: 0 8px;
+}
+.audob-idx-grid {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between;
+  pointer-events: none;
+}
+.audob-idx-grid span { display: block; height: 1px; background: var(--line); }
+.audob-idx-barwrap {
+  position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 10px; height: 100%; justify-content: flex-end; flex: 1;
+}
+.audob-idx-bar {
+  width: 28px; max-width: 60%; background: var(--accent); border-radius: 2px 2px 0 0;
+}
+.audob-idx-bar-label {
+  font-family: var(--ms-mono);
+  font-size: 11px; color: var(--text-body); text-align: center; line-height: 1.4;
+}
+.audob-idx-axis-r {
+  display: flex; align-items: center; gap: 8px; flex: none;
+}
+.audob-idx-axis-r-ticks {
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 300px;
+  font-family: var(--ms-mono);
+  font-size: 12px; color: var(--accent);
+}
+.audob-idx-axis-r-label {
+  writing-mode: vertical-rl;
+  font-size: 12px; color: var(--accent); white-space: nowrap;
+}
+
+/* ---- Channel breakdown Sankey ---- */
+.audob-sk-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.audob-sk-tab {
+  font-family: var(--ms-mono);
+  font-size: 12px; color: var(--text-body);
+  background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+  border: 2px solid transparent;
+  border-radius: 36px; padding: 8px 12px;
+}
+.audob-sk-tab.is-active {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
+}
+.audob-sk-scroll { overflow-x: auto; padding-bottom: 4px; }
+.audob-sk-svg { display: block; width: 100%; max-width: 1020px; height: auto; }
+.audob-sk-ribbon { transition: fill-opacity 150ms ease; }
+.audob-sk-node { }
+.audob-sk-colhead {
+  font-family: var(--ms-mono);
+  font-size: 12px; fill: var(--text-subtle);
+}
+.audob-sk-label {
+  font-family: var(--ms-mono);
+  font-size: 12px; font-weight: 500; fill: var(--text-body);
+}
+.audob-sk-sub {
+  font-family: var(--ms-mono);
+  font-size: 11px; fill: var(--text-subtle);
+}
+.audob-sk-chip text {
+  font-family: var(--ms-mono);
+  font-size: 10px; text-transform: capitalize;
+}
+.audob-sk-legend { display: flex; flex-wrap: wrap; gap: 16px; padding-top: 4px; }
+.audob-sk-legend-item { display: flex; align-items: center; gap: 6px; }
+.audob-sk-legend-swatch { width: 14px; height: 14px; border-radius: 4px; flex: none; }
+.audob-sk-legend-label { font-size: 14px; font-weight: 600; color: var(--text-body); }
+
+/* ---- Sankey pill nav (round 7): Audio Streaming is the board-exact
+   resting state (untouched markup below); Video/Social/News are
+   runtime-generated sibling states in the identical column grammar. ---- */
+.audob-sk-tab {
+  appearance: none; -webkit-appearance: none;
+  font: 500 12px/1 var(--ms-mono);
+  color: var(--text-body);
+  background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+  border: 2px solid transparent;
+  border-radius: 36px; padding: 8px 12px;
+  cursor: pointer;
+  transition: background 250ms ease, border-color 250ms ease, color 250ms ease;
+}
+.audob-sk-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.audob-sk-tab.is-active {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
+}
+.audob-sk-tabs.is-busy .audob-sk-tab { pointer-events: none; opacity: 0.7; }
+
+.audob-sk-panel { position: relative; }
+/* Per-column groups inside the swappable state <g>: outgoing fades/blurs
+   the whole state uniformly; incoming cascades column-by-column via
+   --sk-col-delay (set inline per group at render time). */
+.audob-sk-colgrp {
+  transform-box: fill-box;
+  transition:
+    opacity 340ms cubic-bezier(.16,1,.3,1) var(--sk-col-delay, 0ms),
+    transform 340ms cubic-bezier(.16,1,.3,1) var(--sk-col-delay, 0ms),
+    filter 340ms cubic-bezier(.16,1,.3,1) var(--sk-col-delay, 0ms);
+}
+.audob-sk-state.is-out .audob-sk-colgrp {
+  opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(6px);
+  transition: opacity 180ms cubic-bezier(.16,1,.3,1), transform 180ms cubic-bezier(.16,1,.3,1), filter 180ms cubic-bezier(.16,1,.3,1);
+}
+.audob-sk-state.is-in-pre .audob-sk-colgrp {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(8px);
+  transition: none;
+}
+.audob-sk-state.is-in .audob-sk-colgrp {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .audob-sk-tab { transition: none; }
+  .audob-sk-colgrp,
+  .audob-sk-state.is-out .audob-sk-colgrp,
+  .audob-sk-state.is-in-pre .audob-sk-colgrp,
+  .audob-sk-state.is-in .audob-sk-colgrp {
+    transition: none !important; opacity: 1 !important; transform: none !important; filter: none !important;
+  }
+}
+body.ms-motion-off .audob-sk-tab { transition: none !important; }
+body.ms-motion-off .audob-sk-colgrp,
+body.ms-motion-off .audob-sk-state.is-out .audob-sk-colgrp,
+body.ms-motion-off .audob-sk-state.is-in-pre .audob-sk-colgrp,
+body.ms-motion-off .audob-sk-state.is-in .audob-sk-colgrp {
+  transition: none !important; opacity: 1 !important; transform: none !important; filter: none !important;
+}
+
+/* ---- Geo report / US choropleth + CA county drill-down (round 8) ---- */
+.audob-geo-card {
+  --audob-geo-1: color-mix(in srgb, var(--accent) 20%, var(--panel-bg-3) 80%);
+  --audob-geo-2: color-mix(in srgb, var(--accent) 38%, var(--panel-bg-3) 62%);
+  --audob-geo-3: color-mix(in srgb, var(--accent) 56%, var(--panel-bg-3) 44%);
+  --audob-geo-4: color-mix(in srgb, var(--accent) 76%, var(--panel-bg-3) 24%);
+  --audob-geo-5: color-mix(in srgb, var(--accent) 96%, var(--panel-bg-3) 4%);
+}
+.audob-geo-head { display: flex; flex-direction: column; }
+.audob-geo-title { margin-top: 8px; font-size: 16px; font-weight: 600; color: var(--text-strong); }
+.audob-geo-sub { margin-top: 6px; font-size: 13px; font-weight: 400; color: var(--text-subtle); }
+
+.audob-geo-legend { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; align-self: flex-end; }
+.audob-geo-legend-row { display: flex; align-items: center; justify-content: space-between; width: 160px; }
+.audob-geo-legend-label {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-strong); font-family: var(--font-sans);
+}
+.audob-geo-legend-bar {
+  width: 160px; height: 8px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--audob-geo-1), var(--audob-geo-2), var(--audob-geo-3), var(--audob-geo-4), var(--audob-geo-5));
+}
+.audob-geo-map-wrap { position: relative; max-width: 900px; }
+.audob-geo-stage { position: relative; width: 100%; aspect-ratio: 959 / 593; }
+.audob-geo-svg { display: block; width: 100%; height: auto; }
+.audob-geo-svg-us, .audob-geo-svg-ca {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform-origin: 9% 46%;
+  transition: opacity 500ms cubic-bezier(.16,1,.3,1), transform 500ms cubic-bezier(.16,1,.3,1), filter 500ms cubic-bezier(.16,1,.3,1);
+}
+.audob-geo-svg-us { opacity: 1; transform: scale(1); filter: blur(0); }
+.audob-geo-svg-ca { opacity: 0; transform: scale(0.22); filter: blur(6px); pointer-events: none; }
+.audob-geo-map-wrap[data-geo-level="county"] .audob-geo-svg-us {
+  opacity: 0; transform: scale(2.4); filter: blur(8px); pointer-events: none;
+}
+.audob-geo-map-wrap[data-geo-level="county"] .audob-geo-svg-ca {
+  opacity: 1; transform: scale(1); filter: blur(0); pointer-events: auto;
+}
+.audob-geo-svg .state { fill: var(--audob-geo-3); stroke: var(--canvas-bg); stroke-width: 1; }
+.audob-geo-svg .borders path { fill: none; stroke: var(--canvas-bg); stroke-width: 1; }
+.audob-geo-svg .separator1 { fill: none; stroke: color-mix(in srgb, var(--text-subtle) 50%, transparent); stroke-width: 2; }
+/* tier 1 — darkest / lowest */
+.audob-geo-svg .or, .audob-geo-svg .ut, .audob-geo-svg .wy, .audob-geo-svg .nd,
+.audob-geo-svg .ar, .audob-geo-svg .wi, .audob-geo-svg .in, .audob-geo-svg .oh,
+.audob-geo-svg .tn, .audob-geo-svg .fl, .audob-geo-svg .wv, .audob-geo-svg .nj,
+.audob-geo-svg .ak { fill: var(--audob-geo-1); }
+/* tier 2 */
+.audob-geo-svg .nv, .audob-geo-svg .tx, .audob-geo-svg .mn, .audob-geo-svg .al,
+.audob-geo-svg .mi, .audob-geo-svg .ky, .audob-geo-svg .pa, .audob-geo-svg .de { fill: var(--audob-geo-2); }
+/* tier 3 — medium (also default) */
+.audob-geo-svg .id, .audob-geo-svg .az, .audob-geo-svg .co, .audob-geo-svg .nm,
+.audob-geo-svg .ne, .audob-geo-svg .mo, .audob-geo-svg .la, .audob-geo-svg .ga,
+.audob-geo-svg .va, .audob-geo-svg .md, .audob-geo-svg .ct, .audob-geo-svg .nh,
+.audob-geo-svg .vt, .audob-geo-svg .dc { fill: var(--audob-geo-3); }
+/* tier 4 */
+.audob-geo-svg .mt, .audob-geo-svg .sd, .audob-geo-svg .ok, .audob-geo-svg .il,
+.audob-geo-svg .sc, .audob-geo-svg .nc, .audob-geo-svg .ma, .audob-geo-svg .me,
+.audob-geo-svg .ri { fill: var(--audob-geo-4); }
+/* tier 5 — brightest / highest */
+.audob-geo-svg .wa, .audob-geo-svg .ca, .audob-geo-svg .ks, .audob-geo-svg .ia,
+.audob-geo-svg .ms, .audob-geo-svg .ny, .audob-geo-svg .hi { fill: var(--audob-geo-5); }
+
+/* CA is the only drillable state */
+.audob-geo-svg-us .ca {
+  cursor: pointer;
+  transform-box: fill-box; transform-origin: center;
+  transition: filter 200ms ease, transform 200ms ease;
+}
+.audob-geo-svg-us .ca:hover, .audob-geo-svg-us .ca:focus-visible {
+  filter: brightness(1.18);
+  transform: scale(1.015);
+}
+.audob-geo-svg-us .ca:focus-visible { outline: none; }
+
+/* California county choropleth (58 vendored county paths, assets/ca-counties.svg) */
+.audob-geo-svg-ca path { stroke: var(--canvas-bg); stroke-width: 0.35; }
+.audob-geo-svg-ca .cty-t1 { fill: var(--audob-geo-1); }
+.audob-geo-svg-ca .cty-t2 { fill: var(--audob-geo-2); }
+.audob-geo-svg-ca .cty-t3 { fill: var(--audob-geo-3); }
+.audob-geo-svg-ca .cty-t4 { fill: var(--audob-geo-4); }
+.audob-geo-svg-ca .cty-t5 { fill: var(--audob-geo-5); }
+
+.audob-geo-back {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  appearance: none; -webkit-appearance: none;
+  font: 500 11px/1 var(--ms-mono);
+  letter-spacing: 0.02em;
+  color: var(--text-subtle);
+  background: color-mix(in srgb, var(--canvas-bg) 70%, transparent);
+  border: 0.5px solid var(--line);
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  opacity: 0; transform: translateY(-4px); pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease, color 150ms ease, border-color 150ms ease;
+}
+.audob-geo-back:hover { color: var(--text-strong); border-color: var(--accent); }
+.audob-geo-map-wrap[data-geo-level="county"] .audob-geo-back {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .audob-geo-svg-us, .audob-geo-svg-ca, .audob-geo-back, .audob-geo-svg-us .ca { transition: none !important; }
+}
+body.ms-motion-off .audob-geo-svg-us,
+body.ms-motion-off .audob-geo-svg-ca,
+body.ms-motion-off .audob-geo-back,
+body.ms-motion-off .audob-geo-svg-us .ca { transition: none !important; }
+
+/* ═══ OUR-WORLD PASS (Bryan, 2026-08-05) — Swiss integration over
+   the original layout. Structure/copy retained; typography, numbering,
+   hairlines, and restraint are ours. Delete this block to restore
+   the original treatment. ═══ */
+
+/* module heading rows: mono uppercase tracked eyebrows, existing copy
+   only. Gap-below (.audob-module gap: 8px) already < gap-above
+   (.audob-frag gap: 32px), so the rhythm holds without extra rules.
+   Each module's own card-title + divider is its real header row and
+   already carries a hairline underneath — nothing to add there. */
+.audob-eyebrow {
+  font: 500 10px/1.6 var(--ms-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-subtle);
+}
+
+/* module-root cards now sit directly on their own split matte (see
+   data-matte="split" below) — drop the outer border, calm the radius.
+   Interior boxes (.audob-divider) keep their hairlines untouched. */
+.audob-card { border-radius: 8px; border: none; }
+
+/* numerals: tabular alignment wherever a value is doing work */
+.audob-plat-chip,
+.audob-idx-axis-l-ticks,
+.audob-idx-axis-r-ticks,
+.audob-sk-sub { font-variant-numeric: tabular-nums; }
+</style>
+
+<section class="audob-frag" data-matte="split">
+
+<section class="audob-module" data-reveal>
+  <span class="audob-eyebrow">Media channel &amp; platform interests</span>
+  <div class="audob-card">
+    <div class="audob-plat-grid">
+
+      <div class="audob-plat-col" data-reveal>
+        <span class="audob-plat-colhead">Social</span>
+        <div class="audob-plat-rows">
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Instagram</span><span class="audob-plat-chip" data-build="pop">+167</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:94.36%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Pinterest</span><span class="audob-plat-chip" data-build="pop">+165</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:92.55%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Facebook</span><span class="audob-plat-chip" data-build="pop">+85</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:31.15%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">LinkedIn</span><span class="audob-plat-chip" data-build="pop">+52</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:23.48%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Reddit</span><span class="audob-plat-chip" data-build="pop">+6</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:2.26%"></div></div></div>
+        </div>
+        <span class="ms-source">Source: Google</span>
+      </div>
+
+      <div class="audob-plat-col" data-reveal>
+        <span class="audob-plat-colhead">Streaming Video</span>
+        <div class="audob-plat-rows">
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Youtube</span><span class="audob-plat-chip" data-build="pop">+167</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:94.36%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Netflix</span><span class="audob-plat-chip" data-build="pop">+165</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:92.55%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Hulu</span><span class="audob-plat-chip" data-build="pop">+85</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:31.15%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">HBO Max</span><span class="audob-plat-chip" data-build="pop">+52</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:23.48%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Apple TV+</span><span class="audob-plat-chip" data-build="pop">+6</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:2.26%"></div></div></div>
+        </div>
+        <span class="ms-source">Source: Google</span>
+      </div>
+
+      <div class="audob-plat-col" data-reveal>
+        <span class="audob-plat-colhead">Streaming Audio</span>
+        <div class="audob-plat-rows">
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Apple Music</span><span class="audob-plat-chip" data-build="pop">+167</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:94.36%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Pandora</span><span class="audob-plat-chip" data-build="pop">+165</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:92.55%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">iHeart</span><span class="audob-plat-chip" data-build="pop">+85</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:31.15%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Spotify</span><span class="audob-plat-chip" data-build="pop">+52</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:23.48%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Amazon Music</span><span class="audob-plat-chip" data-build="pop">+6</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:2.26%"></div></div></div>
+        </div>
+        <span class="ms-source">Source: Google</span>
+      </div>
+
+      <div class="audob-plat-col" data-reveal>
+        <span class="audob-plat-colhead">News &amp; Business</span>
+        <div class="audob-plat-rows">
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">NY Times</span><span class="audob-plat-chip" data-build="pop">+167</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:94.36%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">CNN</span><span class="audob-plat-chip" data-build="pop">+165</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:92.55%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Bloomberg</span><span class="audob-plat-chip" data-build="pop">+85</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:31.15%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Wall Street Journal</span><span class="audob-plat-chip" data-build="pop">+52</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:23.48%"></div></div></div>
+          <div class="audob-plat-row"><div class="audob-plat-rowtop"><span class="audob-plat-name">Forbes</span><span class="audob-plat-chip" data-build="pop">+6</span></div><div class="audob-plat-track"><div class="audob-plat-fill" data-build="bar-h" style="width:2.26%"></div></div></div>
+        </div>
+        <span class="ms-source">Source: Google</span>
+      </div>
+
+    </div>
+
+    <div class="audob-divider"></div>
+
+    <div class="audob-idx-wrap">
+      <div class="audob-idx-axis-l">
+        <span class="audob-idx-axis-l-label">Audience Index</span>
+        <div class="audob-idx-axis-l-ticks">
+          <span>400</span><span>350</span><span>300</span><span>250</span><span>200</span><span>150</span><span>100</span><span>50</span><span>0</span>
+        </div>
+      </div>
+      <div class="audob-idx-plot">
+        <div class="audob-idx-grid" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">social<br>(twitter)</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">forums &amp;<br>blogs</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">social<br>(pinterest)</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">social<br>(meta)</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:213px"></div><div class="audob-idx-bar-label">social<br>(reddit)</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">streaming<br>audio</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">magazines</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:80px"></div><div class="audob-idx-bar-label">streaming<br>video</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:147px"></div><div class="audob-idx-bar-label">cable tv</div></div>
+        <div class="audob-idx-barwrap"><div class="audob-idx-bar" data-build="bar-v" style="height:164px"></div><div class="audob-idx-bar-label">streaming tv<br>(netflix)</div></div>
+      </div>
+      <div class="audob-idx-axis-r">
+        <div class="audob-idx-axis-r-ticks">
+          <span>100%</span><span>90%</span><span>80%</span><span>70%</span><span>60%</span><span>50%</span><span>40%</span><span>30%</span><span>20%</span><span>10%</span><span>0%</span>
+        </div>
+        <span class="audob-idx-axis-r-label">% of Audience</span>
+      </div>
+    </div>
+    <span class="ms-source">Source: Google</span>
+  </div>
+</section>
+
+<section class="audob-module" data-reveal>
+  <div class="audob-card">
+    <div class="audob-card-headrow">
+      <svg class="audob-ai-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0 9.4 6.6 16 8 9.4 9.4 8 16 6.6 9.4 0 8 6.6 6.6Z"/></svg>
+      <span class="audob-card-title">Recommendation</span>
+    </div>
+    <p class="audob-card-sub">Streaming audio shows the highest index concentration (Apple Music +321) with relatively low audience reach — a classic niche signal. Prioritize podcast pre-rolls and Apple Music placements for precision targeting. Pair with NY Times and CNN for broader reach without sacrificing affinity. Deprioritize Reddit and linear TV — high cost, low return for this segment.</p>
+    <div class="ms-ai-attr">Generated by claude-opus-4.5 based on: Google, MRI-Simmons 2024, Nielsen Audio</div>
+  </div>
+</section>
+
+<section class="audob-module" data-reveal>
+  <span class="audob-eyebrow">Channel breakdown</span>
+  <div class="audob-card">
+    <div class="audob-card-title">Channel Breakdown</div>
+    <p class="audob-card-sub">Interested vs not interested — over &amp; under indexed</p>
+    <div class="audob-divider"></div>
+    <div class="audob-sk-tabs" role="tablist" aria-label="Channel breakdown view">
+      <button type="button" class="audob-sk-tab is-active" role="tab" aria-selected="true" tabindex="0" id="audob-sk-tab-audio" aria-controls="audob-sk-panel" data-sk-tab="audio">Audio Streaming</button>
+      <button type="button" class="audob-sk-tab" role="tab" aria-selected="false" tabindex="-1" id="audob-sk-tab-video" aria-controls="audob-sk-panel" data-sk-tab="video">Video Streaming</button>
+      <button type="button" class="audob-sk-tab" role="tab" aria-selected="false" tabindex="-1" id="audob-sk-tab-social" aria-controls="audob-sk-panel" data-sk-tab="social">Social</button>
+      <button type="button" class="audob-sk-tab" role="tab" aria-selected="false" tabindex="-1" id="audob-sk-tab-news" aria-controls="audob-sk-panel" data-sk-tab="news">News &amp; Business</button>
+    </div>
+    <div class="audob-sk-scroll">
+      <div class="audob-sk-panel" id="audob-sk-panel" role="tabpanel" aria-labelledby="audob-sk-tab-audio" data-sk-panel>
+      <svg class="audob-sk-svg" viewBox="-8 -34 1020 1160" width="1020" height="1160">
+<text class="audob-sk-colhead" x="0" y="-14">Channel</text>
+<text class="audob-sk-colhead" x="183" y="-14">Interest</text>
+<text class="audob-sk-colhead" x="323" y="-14">Index</text>
+<text class="audob-sk-colhead" x="483" y="-14">Media Property</text>
+<text class="audob-sk-colhead" x="643" y="-14">Program</text>
+<text class="audob-sk-colhead" x="810" y="-14">Nugget</text>
+<g class="audob-sk-state" data-sk-state="audio">
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 0ms" d="M18.0,0.0 C81.5,0.0 81.5,0.0 145.0,0.0 L145.0,601.0 C81.5,601.0 81.5,616.6 18.0,616.6 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 0ms" d="M18.0,616.6 C81.5,616.6 81.5,629.0 145.0,629.0 L145.0,1104.0 C81.5,1104.0 81.5,1104.0 18.0,1104.0 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 90ms" d="M163.0,0.0 C224.0,0.0 224.0,0.0 285.0,0.0 L285.0,347.0 C224.0,347.0 224.0,367.2 163.0,367.2 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 90ms" d="M163.0,367.2 C224.0,367.2 224.0,380.0 285.0,380.0 L285.0,601.0 C224.0,601.0 224.0,601.0 163.0,601.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 90ms" d="M163.0,629.0 C224.0,629.0 224.0,629.0 285.0,629.0 L285.0,850.0 C224.0,850.0 224.0,866.5 163.0,866.5 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 90ms" d="M163.0,866.5 C224.0,866.5 224.0,883.0 285.0,883.0 L285.0,1104.0 C224.0,1104.0 224.0,1104.0 163.0,1104.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,0.0 C374.0,0.0 374.0,0.0 445.0,0.0 L445.0,95.0 C374.0,95.0 374.0,115.7 303.0,115.7 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,115.7 C374.0,115.7 374.0,126.0 445.0,126.0 L445.0,221.0 C374.0,221.0 374.0,231.3 303.0,231.3 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,231.3 C374.0,231.3 374.0,252.0 445.0,252.0 L445.0,347.0 C374.0,347.0 374.0,347.0 303.0,347.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,380.0 C374.0,380.0 374.0,380.0 445.0,380.0 L445.0,475.0 C374.0,475.0 374.0,490.5 303.0,490.5 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,490.5 C374.0,490.5 374.0,506.0 445.0,506.0 L445.0,601.0 C374.0,601.0 374.0,601.0 303.0,601.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,629.0 C374.0,629.0 374.0,629.0 445.0,629.0 L445.0,724.0 C374.0,724.0 374.0,739.5 303.0,739.5 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,739.5 C374.0,739.5 374.0,755.0 445.0,755.0 L445.0,850.0 C374.0,850.0 374.0,850.0 303.0,850.0 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,883.0 C374.0,883.0 374.0,883.0 445.0,883.0 L445.0,978.0 C374.0,978.0 374.0,993.5 303.0,993.5 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 180ms" d="M303.0,993.5 C374.0,993.5 374.0,1009.0 445.0,1009.0 L445.0,1104.0 C374.0,1104.0 374.0,1104.0 303.0,1104.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,0.0 C534.0,0.0 534.0,0.0 605.0,0.0 L605.0,53.0 C534.0,53.0 534.0,47.5 463.0,47.5 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,47.5 C534.0,47.5 534.0,95.0 605.0,95.0 L605.0,148.0 C534.0,148.0 534.0,95.0 463.0,95.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,126.0 C534.0,126.0 534.0,191.0 605.0,191.0 L605.0,244.0 C534.0,244.0 534.0,221.0 463.0,221.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,252.0 C534.0,252.0 534.0,286.0 605.0,286.0 L605.0,339.0 C534.0,339.0 534.0,347.0 463.0,347.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,380.0 C534.0,380.0 534.0,380.0 605.0,380.0 L605.0,433.0 C534.0,433.0 534.0,475.0 463.0,475.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,506.0 C534.0,506.0 534.0,475.0 605.0,475.0 L605.0,528.0 C534.0,528.0 534.0,601.0 463.0,601.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,629.0 C534.0,629.0 534.0,629.0 605.0,629.0 L605.0,677.0 C534.0,677.0 534.0,676.5 463.0,676.5 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,676.5 C534.0,676.5 534.0,715.0 605.0,715.0 L605.0,763.0 C534.0,763.0 534.0,724.0 463.0,724.0 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,755.0 C534.0,755.0 534.0,802.0 605.0,802.0 L605.0,850.0 C534.0,850.0 534.0,850.0 463.0,850.0 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,883.0 C534.0,883.0 534.0,883.0 605.0,883.0 L605.0,931.0 C534.0,931.0 534.0,978.0 463.0,978.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 270ms" d="M463.0,1009.0 C534.0,1009.0 534.0,969.0 605.0,969.0 L605.0,1017.0 C534.0,1017.0 534.0,1104.0 463.0,1104.0 Z" fill="var(--ms-chart-8)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,0.0 C701.5,0.0 701.5,0.0 780.0,0.0 L780.0,53.0 C701.5,53.0 701.5,53.0 623.0,53.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,95.0 C701.5,95.0 701.5,95.0 780.0,95.0 L780.0,148.0 C701.5,148.0 701.5,148.0 623.0,148.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,191.0 C701.5,191.0 701.5,191.0 780.0,191.0 L780.0,244.0 C701.5,244.0 701.5,244.0 623.0,244.0 Z" fill="var(--ms-pos)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,380.0 C701.5,380.0 701.5,380.0 780.0,380.0 L780.0,433.0 C701.5,433.0 701.5,433.0 623.0,433.0 Z" fill="var(--text-subtle)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,629.0 C701.5,629.0 701.5,629.0 780.0,629.0 L780.0,677.0 C701.5,677.0 701.5,677.0 623.0,677.0 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,715.0 C701.5,715.0 701.5,715.0 780.0,715.0 L780.0,763.0 C701.5,763.0 701.5,763.0 623.0,763.0 Z" fill="var(--ms-neg)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,883.0 C701.5,883.0 701.5,883.0 780.0,883.0 L780.0,931.0 C701.5,931.0 701.5,931.0 623.0,931.0 Z" fill="var(--text-subtle)" fill-opacity="0.16"/>
+<path class="audob-sk-ribbon" data-build="fade" style="--build-d: 360ms" d="M623.0,969.0 C701.5,969.0 701.5,969.0 780.0,969.0 L780.0,1017.0 C701.5,1017.0 701.5,1017.0 623.0,1017.0 Z" fill="var(--text-subtle)" fill-opacity="0.16"/>
+<rect class="audob-sk-node" x="0.0" y="0.0" width="18" height="1104.0" rx="2" fill="var(--ms-chart-2)"/>
+<text class="audob-sk-label" x="32" y="557.0">Audio Streaming</text>
+<rect class="audob-sk-node" x="145.0" y="0.0" width="18" height="601.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="177" y="297.5">Interested</text>
+<text class="audob-sk-sub" x="177" y="313.5">41%</text>
+<rect class="audob-sk-node" x="145.0" y="629.0" width="18" height="475.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="177" y="863.5">Not Interested</text>
+<text class="audob-sk-sub" x="177" y="879.5">59%</text>
+<rect class="audob-sk-node" x="285.0" y="0.0" width="18" height="347.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="317" y="170.5">Over-indexed</text>
+<text class="audob-sk-sub" x="317" y="186.5">high affinity</text>
+<rect class="audob-sk-node" x="285.0" y="380.0" width="18" height="221.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="317" y="487.5">Under-indexed</text>
+<text class="audob-sk-sub" x="317" y="503.5">weak signal</text>
+<rect class="audob-sk-node" x="285.0" y="629.0" width="18" height="221.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="317" y="736.5">Over-indexed</text>
+<text class="audob-sk-sub" x="317" y="752.5">resistant</text>
+<rect class="audob-sk-node" x="285.0" y="883.0" width="18" height="221.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="317" y="990.5">Under-indexed</text>
+<text class="audob-sk-sub" x="317" y="1006.5">low signal</text>
+<rect class="audob-sk-node" x="445.0" y="0.0" width="18" height="95.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="477" y="44.5">Apple Music</text>
+<text class="audob-sk-sub" x="477" y="60.5">420lx</text>
+<rect class="audob-sk-node" x="445.0" y="126.0" width="18" height="95.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="477" y="170.5">Pandora</text>
+<text class="audob-sk-sub" x="477" y="186.5">214lx</text>
+<rect class="audob-sk-node" x="445.0" y="252.0" width="18" height="95.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="477" y="296.5">iHeart</text>
+<text class="audob-sk-sub" x="477" y="312.5">188lx</text>
+<rect class="audob-sk-node" x="445.0" y="380.0" width="18" height="95.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="477" y="424.5">Spotify</text>
+<text class="audob-sk-sub" x="477" y="440.5">162lx</text>
+<rect class="audob-sk-node" x="445.0" y="506.0" width="18" height="95.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="477" y="550.5">Amazon Music</text>
+<text class="audob-sk-sub" x="477" y="566.5">89lx</text>
+<rect class="audob-sk-node" x="445.0" y="629.0" width="18" height="95.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="477" y="673.5">SiriusXM</text>
+<text class="audob-sk-sub" x="477" y="689.5">112lx</text>
+<rect class="audob-sk-node" x="445.0" y="755.0" width="18" height="95.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="477" y="799.5">Tidal</text>
+<text class="audob-sk-sub" x="477" y="815.5">74lx</text>
+<rect class="audob-sk-node" x="445.0" y="883.0" width="18" height="95.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="477" y="927.5">Deezer</text>
+<text class="audob-sk-sub" x="477" y="943.5">58lx</text>
+<rect class="audob-sk-node" x="445.0" y="1009.0" width="18" height="95.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="477" y="1053.5">YouTube Music</text>
+<text class="audob-sk-sub" x="477" y="1069.5">61lx</text>
+<rect class="audob-sk-node" x="605.0" y="0.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="637" y="31.5">Classical & Jazz</text>
+<rect class="audob-sk-node" x="605.0" y="95.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="637" y="126.5">True crime pods</text>
+<rect class="audob-sk-node" x="605.0" y="191.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="637" y="222.5">Finance podcasts</text>
+<rect class="audob-sk-node" x="605.0" y="286.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<text class="audob-sk-label" x="637" y="317.5">News / NPR</text>
+<rect class="audob-sk-node" x="605.0" y="380.0" width="18" height="53.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="637" y="411.5">Pop / top 40</text>
+<rect class="audob-sk-node" x="605.0" y="475.0" width="18" height="53.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="637" y="506.5">Hip-hop / R&B</text>
+<rect class="audob-sk-node" x="605.0" y="629.0" width="18" height="48.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="637" y="658.0">Sports talk</text>
+<rect class="audob-sk-node" x="605.0" y="715.0" width="18" height="48.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="637" y="744.0">Country</text>
+<rect class="audob-sk-node" x="605.0" y="802.0" width="18" height="48.0" rx="2" fill="var(--ms-neg)"/>
+<text class="audob-sk-label" x="637" y="831.0">Latin Music</text>
+<rect class="audob-sk-node" x="605.0" y="883.0" width="18" height="48.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="637" y="912.0">Comedy pods</text>
+<rect class="audob-sk-node" x="605.0" y="969.0" width="18" height="48.0" rx="2" fill="var(--ms-chart-8)"/>
+<text class="audob-sk-label" x="637" y="998.0">Gaming content</text>
+<rect class="audob-sk-node" x="780.0" y="0.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<g class="audob-sk-chip" transform="translate(808.0,15.5)"><rect width="165" height="22" rx="4" fill="var(--ms-pos)" fill-opacity="0.16"/><text x="83" y="15" text-anchor="middle" fill="var(--ms-pos)">Finance Pods 3.2x Avg Time</text></g>
+<rect class="audob-sk-node" x="780.0" y="95.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<g class="audob-sk-chip" transform="translate(808.0,110.5)"><rect width="132" height="22" rx="4" fill="var(--ms-pos)" fill-opacity="0.16"/><text x="66" y="15" text-anchor="middle" fill="var(--ms-pos)">Morning Commute Peak</text></g>
+<rect class="audob-sk-node" x="780.0" y="191.0" width="18" height="53.0" rx="2" fill="var(--ms-pos)"/>
+<g class="audob-sk-chip" transform="translate(808.0,206.5)"><rect width="104" height="22" rx="4" fill="var(--ms-pos)" fill-opacity="0.16"/><text x="52" y="15" text-anchor="middle" fill="var(--ms-pos)">NPR News: 348lx</text></g>
+<rect class="audob-sk-node" x="780.0" y="380.0" width="18" height="53.0" rx="2" fill="var(--text-subtle)"/>
+<g class="audob-sk-chip" transform="translate(808.0,395.5)"><rect width="132" height="22" rx="4" fill="var(--text-subtle)" fill-opacity="0.16"/><text x="66" y="15" text-anchor="middle" fill="var(--text-subtle)">Weekend Listen Spike</text></g>
+<rect class="audob-sk-node" x="780.0" y="629.0" width="18" height="48.0" rx="2" fill="var(--ms-neg)"/>
+<g class="audob-sk-chip" transform="translate(808.0,642.0)"><rect width="132" height="22" rx="4" fill="var(--ms-neg)" fill-opacity="0.16"/><text x="66" y="15" text-anchor="middle" fill="var(--ms-neg)">Weekend Listen Spike</text></g>
+<rect class="audob-sk-node" x="780.0" y="715.0" width="18" height="48.0" rx="2" fill="var(--ms-neg)"/>
+<g class="audob-sk-chip" transform="translate(808.0,728.0)"><rect width="132" height="22" rx="4" fill="var(--ms-neg)" fill-opacity="0.16"/><text x="66" y="15" text-anchor="middle" fill="var(--ms-neg)">Weekend Listen Spike</text></g>
+<rect class="audob-sk-node" x="780.0" y="883.0" width="18" height="48.0" rx="2" fill="var(--text-subtle)"/>
+<g class="audob-sk-chip" transform="translate(808.0,896.0)"><rect width="93" height="22" rx="4" fill="var(--text-subtle)" fill-opacity="0.16"/><text x="46" y="15" text-anchor="middle" fill="var(--text-subtle)">Skip Rate 68%</text></g>
+<rect class="audob-sk-node" x="780.0" y="969.0" width="18" height="48.0" rx="2" fill="var(--text-subtle)"/>
+<g class="audob-sk-chip" transform="translate(808.0,982.0)"><rect width="143" height="22" rx="4" fill="var(--text-subtle)" fill-opacity="0.16"/><text x="71" y="15" text-anchor="middle" fill="var(--text-subtle)">Wrong Age Demo - Avoid</text></g>
+</g>
+      </svg>
+      </div>
+    </div>
+    <div class="audob-sk-legend">
+      <div class="audob-sk-legend-item"><span class="audob-sk-legend-swatch" style="background:var(--ms-pos)"></span><span class="audob-sk-legend-label">Interested, over-indexed</span></div>
+      <div class="audob-sk-legend-item"><span class="audob-sk-legend-swatch" style="background:var(--ms-chart-8)"></span><span class="audob-sk-legend-label">Interested, under-indexed</span></div>
+      <div class="audob-sk-legend-item"><span class="audob-sk-legend-swatch" style="background:var(--ms-neg)"></span><span class="audob-sk-legend-label">Not Interested, over-indexed</span></div>
+      <div class="audob-sk-legend-item"><span class="audob-sk-legend-swatch" style="background:var(--ms-chart-8)"></span><span class="audob-sk-legend-label">Not Interested, under-indexed</span></div>
+    </div>
+    <span class="ms-source">Source: Google</span>
+  </div>
+</section>
+
+<section class="audob-module" data-reveal>
+  <div class="audob-card audob-geo-card">
+    <div class="audob-geo-head">
+      <span class="audob-eyebrow">Geo report</span>
+      <div class="audob-card-title audob-geo-title" data-geo-title>United States — Index by State</div>
+      <p class="audob-card-sub audob-geo-sub">Darker = Higher index concentration of affluent travelers</p>
+    </div>
+    <div class="audob-divider"></div>
+    <div class="audob-geo-legend">
+      <div class="audob-geo-legend-row">
+        <span class="audob-geo-legend-label">Low Reach</span>
+        <span class="audob-geo-legend-label">High Reach</span>
+      </div>
+      <div class="audob-geo-legend-bar" aria-hidden="true"></div>
+    </div>
+    <div class="audob-geo-map-wrap" data-geo-level="us">
+      <button type="button" class="audob-geo-back" data-geo-back aria-label="Back to United States map">◂ United States</button>
+      <div class="audob-geo-stage">
+      <svg class="audob-geo-svg audob-geo-svg-us" data-geo-us viewBox="0 0 959 593" role="img" aria-label="United States choropleth, index by state">
+<g class="state">
+
+<path class="al" data-build="fade" d="m 643,467.4 .4,-7.3 -.9,-1.2 -1.7,-.7 -2.5,-2.8 .5,-2.9 48.8,-5.1 -.7,-2.2 -1.5,-1.5 -.5,-1.4 .6,-6.3 -2.4,-5.7 .5,-2.6 .3,-3.7 2.2,-3.8 -.2,-1.1 -1.7,-1 v -3.2 l -1.8,-1.9 -2.9,-6.1 -12.9,-45.8 -45.7,4 1.3,2 -1.3,67 4.4,33.2 .9,-.5 1.3,.1 .6,.4 .8,-.1 2,-3.8 v -2.3 l 1.1,-1.1 1.4,.5 3.4,6.4 v .9 l -3.3,2.2 3.5,-.4 4.9,-1.6 z">
+<title>Alabama</title></path>
+
+<!-- The scale of Alaska is 42% that of the contiguous United States, so its area is reduced to about 17.6%. The Islands of Four Mountains, Andreanof Islands, Rat Islands and Near Islands are not shown. -->
+<path class="ak" data-build="fade" d="m 15.8,572 h 2.4 l .7,.7 -1,1.2 -1.9,.2 -2.5,1.3 -3.7,-.1 2.2,-.9 .3,-1.1 2.5,-.3 z m 8.3,-1.7 1.3,.5 h .9 l .5,1.2 .3,-.6 .9,.2 1.1,1.5 0,.5 -4.2,1.9 -2.4,-.1 -1,-.5 -1.1,.7 -2,0 -1.1,-1.4 4.7,-.5 z m 5.4,-.1 1,.1 .7,.7 v 1 l -1.3,.1 -.9,-1.1 z m 2.5,.3 1.3,-.1 -.1,1 -1.1,.6 z m .3,2.2 3.4,-.1 .2,1.1 -1.3,.1 -.3,-.5 -.8,.6 -.4,-.6 -.9,-.2 z m 166.3,7.6 2.1,.1 -1,1.9 -1.1,-.1 -.4,-.8 .5,-1.3 m -1.1,-2.9 .6,-1.3 -.2,-2.3 2.4,-.5 4.5,4.4 1.3,3.4 1.9,1.6 .3,5.1 -1.4,0 -1.3,-2.3 -3.1,-2.4 h -.6 l 1.1,2.8 1.7,.2 .2,2.1 -.9,.1 -4.1,-4.4 -.1,-.9 1.9,-1 0,-1 -.5,-.8 -1.6,-.6 -1.7,-1.3 1.4,.1 .5,-.4 -.6,-.9 -.6,.5 z m -3.6,-9.1 1.3,.1 2.4,2.5 -.2,.8 -.8,-.1 -.1,1.8 .5,.5 0,1.5 -.8,.3 -.4,1.2 -.8,-.4 -.4,-2.2 1.1,-1.4 -2.1,-2.2 .1,-1.2 z m 1.5,-1.5 1.9,.2 2.5,.1 3.4,3.2 -.2,.5 -1.1,.6 -1.1,-.2 -.1,-.7 -1.2,-1.6 -.3,.7 1,1.3 -.2,1.2 -.8,-.1 -1.3,.2 -.1,-1.7 -2.6,-2.8 z m -12.7,-8.9 .9,-.4 h 1.6 l .7,-.5 4.1,2.2 .1,1.5 -.5,.5 h -.8 l -1.4,-.7 1.1,1.3 1.8,0 .5,2 -.9,0 -2.2,-1.5 -1.1,-.2 .6,1.3 .1,.9 .8,-.6 1.7,1.2 1.3,-.1 -.2,.8 1.9,4.3 0,3.4 .4,2.1 -.8,.3 -1.2,-2 -.5,-1.5 -1.6,-1.6 -.2,-2.7 -.6,-1.7 h -.7 l .3,1.1 0,.5 -1.4,1 .1,-3.3 -1.6,-1.6 -1.3,-2.3 -1.2,-1.2 z m 7.2,-2.3 1.1,1.8 2.4,-.1 1,2.1 -.6,.6 2,3.2 v 1.3 l -1.2,.8 v .7 l -2,1.9 -.5,-1.4 -.1,-1.3 .6,-.7 v -1.1 l -1.5,-1.9 -.5,-3.7 -.9,-1.5 z m -56.7,-18.3 -4,4.1 v 1.6 l 2.1,-.8 .8,-1.9 2.2,-2.4 z m -31.6,16.6 0,.6 1.8,1.2 .2,-1.4 .6,.9 3.5,.1 .7,-.6 .2,-1.8 -.5,-.7 -1.4,0 0,-.8 .4,-.6 v -.4 l -1.5,-.3 -3.3,3.6 z m -8.1,6.2 1.5,5.8 h 2.1 l 2.4,-2.5 .3,1.2 6.3,-4 .7,-1 -1,-1.1 v -.7 l .5,-1.3 -.9,-.1 -2,1 0,-1.2 -2.7,-.6 -2.4,.3 -.2,3.4 -.8,-2 -1.5,-.1 -1,.6 z m -2.2,8.2 .1,-.7 2.1,-1.3 .6,.3 1.3,.2 1.3,1.2 -2.2,-.2 -.4,-.6 -1,.6 z m -5.2,3.3 -1.1,.8 1.5,1.4 .8,-.7 -.1,-1.3 z m -6.3,-7.9 1.4,.1 .4,.6 -1.8,.1 z m -13.9,11.9 v .5 l .7,.1 -.1,-.6 z m -.4,-3.2 -1,1 v .5 l .7,1.1 1,-1 -.7,-.1 z m -2,-.8 -.3,1 -1.3,.1 -.4,.2 0,1.3 -.5,.9 .6,0 .7,-.9 .8,-.1 .9,-1 .2,-1.3 z m -4.4,-2 -.2,1.8 1.4,.8 1.2,-.6 0,-1 1.7,-.3 -.1,-.6 -.9,-.2 -.7,.6 -.9,-.5 z m -4.9,-.1 1,.7 -.3,1.2 -1.4,-1.1 z m -4.2,1.3 1.4,.1 -.7,.8 z m -3.5,3 1.8,1.1 -1.7,.1 z m -25.4,-31.2 1.2,.6 -.8,.6 z m -.7,-6.3 .4,1.2 .8,-1.2 z m 24.3,-19.3 1.5,-.1 .9,.4 1.1,-.5 1.3,-.1 1.6,.8 .8,1.9 -.1,.9 -1.2,2 -2.4,-.2 -2.1,-1.8 -1,-.4 -1.1,-2 z m -21.1,-14.4 .1,1.9 2,2 v .5 l -.8,-.2 -1.7,-.8 -.3,-1.1 -.3,-1.6 z m 18.3,-23.3 v 1.2 l 1.9,1.8 h 2.3 l .6,1.1 v 1.6 l 2.1,1.9 1.8,1.2 -.1,.7 -.7,1.1 -1.4,-1.2 -2.1,.1 -.8,-.8 -.9,-2.1 -1.5,-2.2 -2.6,-.1 -1,-.7 1,-2.1 z m 16.8,-4.5 1,0 .1,1.1 h -1 z m 16.2,19.7 .9,.1 0,1.2 -1.7,-.5 z m 127.8,77.7 -1.2,.4 -.1,1.1 h 1.2 z m -157.6,-4.5 -1.3,-.4 -4.1,.6 -2.8,1.4 -.1,1.9 1.9,.7 1.5,-.9 1.7,-.1 4.7,1.4 .1,-1.3 -1.6,-1.1 z m 2.1,2.3 -.4,-1.4 1.2,.2 .1,1.4 1.8,0 .4,-2.5 .3,2.4 2.5,-.1 3.2,-3.3 .8,.1 -.7,1.3 1.4,.9 4.2,-.2 2.6,-1.2 1.4,-.1 .3,1.5 .6,-.5 .4,-1.4 5.9,.2 1.9,-1.6 -1.3,-1.1 .6,-1.2 2.6,.2 -.2,-1.2 2.5,.2 .7,-1.1 1.1,.2 4.6,-1.9 .2,-1.7 5.6,-2.4 2,-1.9 1.2,-.6 1.3,.8 2.3,-.9 1.1,-1.9 .5,-1.3 1.7,-.9 1.5,-.7 .4,-1.4 -1.1,-1.7 -2.2,-.2 -.2,-1.3 .8,-1.6 1.4,-.2 1.3,-1.5 1.9,-.1 3.4,-3.2 .4,-1.4 1.5,-2.3 3.8,-4.1 2.5,-.9 1.9,-.9 2.1,.8 1.4,2.6 -1.5,0 -1.4,-1.5 -3,2 -1.7,.1 -.2,3.1 -3.1,4.9 .6,2 2.3,0 -.6,1 -1.4,.1 -2.4,1.8 0,.9 1.9,1 3.4,-.6 1.4,-1.7 1.4,.1 3,-1.7 .5,-2.3 1.6,-.1 6.3,.8 1,-1.1 1,-4.5 -1.6,1.1 .6,-2.2 -1.6,-1.4 .8,-1.5 .1,1.5 3.4,0 .7,-1 1.6,-.1 -.3,1.7 1.9,.1 -1.9,1.3 4.1,1.1 -3.5,.4 -1.3,1.2 .9,1.4 4.6,-1.7 2.3,1.7 .7,-.9 .6,1.4 4,2.3 h 2.9 l 3.9,-.5 4.3,1.1 2,1.9 4.5,.4 1.8,-1.5 .8,2.4 -1.8,.7 1.2,1.2 7.4,3.8 1.4,2.5 5.4,4.1 3.3,-2 -.6,-2.2 -3.5,-2 3.1,1.2 .5,-.7 .9,1.3 0,2.7 2.1,-.6 2.1,1.8 -2.5,-9.8 1.2,1.3 1.4,6 2.2,2.5 2.4,-.4 1.8,3.5 h .9 l .6,5.6 3.4,.5 1.6,2.2 1.8,1.1 .4,2.8 -1.8,2.6 2.9,1.6 1.2,-2.4 -.2,3.1 -.8,.9 1.4,1.7 .7,-2.4 -.2,-1.2 .8,.2 .6,2.3 -1,1.4 .6,2.6 .5,.4 .3,-1.6 .7,.6 -.3,2 1.2,.2 -.4,.9 1.7,-.1 0,-1 h -1 l .1,-1.7 -.8,-.6 1.7,-.3 .5,-.8 0,-1.6 .5,1.3 -.6,1.8 1.2,3.9 1.8,.1 2.2,-4.2 .1,-1.9 -1.3,-4 -.1,-1.2 .5,-1.2 -.7,-.7 -1.7,.1 -2.5,-2 -1.7,0 -2,-1.4 -1.5,0 -.5,-1.6 -1.4,-.3 -.2,-1.5 -1,-.5 .1,-1.7 -5.1,-7.4 -1.8,-1.5 v -1.2 l -4.3,-3.5 -.7,-1.1 -1.6,-2 -1.9,-.6 0,-2.2 -1.2,-1.3 -1.7,-.7 -2.1,1.3 -1.6,2.1 -.4,2.4 -1.5,.1 -2.5,2.7 -.8,-.3 v -2.5 l -2.4,-2.2 -2.3,-2 -.5,-2 -2.5,-1.3 .2,-2.2 -2.8,-.1 -.7,1.1 -1.2,0 -.7,-.7 -1.2,.8 -1.8,-1.2 0,-85.8 -6.9,-4.1 -1.8,-.5 -2.2,1.1 -2.2,.1 -2.3,-1.6 -4.3,-.6 -5.8,-3.6 -5.7,-.4 -2,.5 -.2,-1.8 -1.8,-.7 1.1,-1 -.2,-.9 -3.2,-1.1 h -2.4 l -.4,.4 -.9,-.6 .1,-2.6 -.8,-.9 -2.5,2.9 -.8,-.1 v -.8 l 1.7,-.8 v -.8 l -1.9,-2.4 -1.1,-.1 -4.5,3.1 h -3.9 l .4,-.9 -1.8,-.1 -5.2,3.4 -1.8,0 -.6,-.8 -2.7,1.5 -3.6,3.7 -2.8,2.7 -1.5,1.2  -2.6,.1 -2.2,-.4 -2.3,-1.3 v 0 l -2.8,3.9 -.1,2.4 2.6,2.4 2.1,4.5 .2,5.3 2.9,2 3.4,.4 .7,.8 -1.5,2.3 .7,2.7 -1.7,-2.6 v -2.4 l -1.5,-.3 .1,1.2 .7,2.1 2.9,3.7 h -1.4 l -2.2,1.1 -6.2,-2.5 -.1,-2 1.4,-1.3 0,-1.4 -2.1,-.5 -2.3,.2 -4.8,.2 1.5,2.3 -1.9,-1.8 -8.4,1.2 -.8,1.5 4.9,4.7 -.8,1.4 -.3,2 -.7,.8 -.1,1.9 4.4,3.6 4.1,.2 4.6,1.9 h 2 l .8,-.6 3.8,.1 .1,-.8 1.2,1.1 .1,2 -2.5,-.1 .1,3.3 .5,3.2 -2.9,2.7 -1.9,-.1 -2,-.8 -1,.1 -3.1,2.1 -1.7,.2 -1.4,-2.8 -3.1,0 -2.2,2 -.5,1.8 -3.3,1.8 -5.3,4.3 -.3,3.1 .7,2.2 1,1.2 1,-.4 .9,1 -.8,.6 -1.5,.9 1.1,1.5 -2.6,1.1 .8,2.2 1.7,2.3 .8,4.1 4,1.5 2.6,-.8 1.7,-1.1 .5,2.1 .3,4.4 -1.9,1.4 0,4.4 -.6,.9 h -1.7 l 1.7,1.2 2.1,-.1 .4,-1 4.6,-.6 2,2.6 1.3,-.7 1.3,5.1 1,.5 1,-.7 .1,-2.4 .9,-1 .7,1.1 .2,1.6 1.6,.4 4.7,-1.2 .2,1.2 -2,1.1 -1.6,1.7 -2.8,7 -4.3,2 -1.4,1.5 -.3,1.4 -1,-.6 -9.3,3.3 -1.8,4.1 -1.3,-.4 .5,-1.1 -1.5,-1.4 -3.5,-.2 -5.3,3.2 -2.2,1.3 -2.3,0 -.5,2.4 z">
+<title>Alaska</title></path>
+
+<path class="az" data-build="fade" d="m 139.6,387.6 3,-2.2 .8,-2.4 -1,-1.6 -1.8,-.2 -1.1,-1.6 1.1,-6.9 1.6,-.3 2.4,-3.2 1.6,-7 2.4,-3.6 4.8,-1.7 1.3,-1.3 -.4,-1.9 -2.3,-2.5 -1.2,-5.8 -1.4,-1.8 -1.3,-3.4 .9,-2.1 1.4,-3 .5,-2.9 -.5,-4.9 1,-13.6 3.5,-.6 3.7,1.4 1.2,2.7 h 2 l 2.4,-2.9 3.4,-17.5 46.2,8.2 40,6 -17.4,124.1 -37.3,-5.4 -64.2,-37.5 .5,-2.9 2,-1.8 z">
+<title>Arizona</title></path>
+
+<path class="ar" data-build="fade" d="m 584.2,367 .9,-2.2 1.2,.5 .7,-1 -.8,-.7 .3,-1.5 -1.1,-.9 .6,-1 -.1,-1.5 -1.1,-.1 .8,-.8 1.3,.8 .3,-1.4 -.4,-1.1 .1,-.7 2,.6 -.4,-1.5 1.6,-1.3 -.5,-.9 -1.1,.1 -.6,-.9 .9,-.9 1.6,-.2 .5,-.8 1.4,-.2 -.1,-.8 -.9,-.9 v -.5 h 1.5 l .4,-.7 -1.4,-1 -.1,-.6 -11.2,.8 2.8,-5.1 1.7,-1.5 v -2.2 l -1.6,-2.5 -39.8,2 -39.1,.7 4.1,24.4 -.7,39 2.6,2.3 2.8,-1.3 3.2,.8 .2,11.9 52.3,-1.3 1.2,-1.5 .5,-3 -1.5,-2.3 -.5,-2.2 .9,-.7 v -.8 l -1.7,-1.1 -.1,-.7 1.6,-.9 -1.2,-1.1 1.7,-7.1 3.4,-1.6 v -.8 l -1.1,-1.4 2.9,-5.4 h 1.9 l 1.5,-1.2 -.3,-5.2 3.1,-4.5 1.8,-.6 -.5,-3.1 z">
+<title>Arkansas</title></path>
+
+<path class="ca" data-build="fade" d="m 69.4,365.6 3.4,5.2 -1.4,.1 -1.8,-1.9 z m 1.9,-9.8 1.8,4.1 2.6,1 .7,-.6 -1.3,-2.5 -2.6,-2.4 z m -19.9,-19 v 2.4 l 2,1.2 4.4,-.2 1,-1 -3.1,-.2 z m -5.9,.1 3.3,.5 1.4,2.2 h -3.8 z m 47.9,45.5 -1,-3 .2,-3 -.4,-7.9 -1.8,-4.8 -1.2,-1.4 -.6,-1.5 -7,-8.6 -3.6,.1 -2,-1.9 1.1,-1.8 -.7,-3.7 -2.2,-1.2 -3.9,-.6 -2.8,-1.3 -1.5,-1.9 -4.5,-6.6 -2.7,-2.2 -3.7,-.5 -3.1,-2.3 -4.7,-1.5 -2.8,-.3 -2.5,-2.5 .2,-2.8 .8,-4.8 1.8,-5.1 -1.4,-1.6 -4,-9.4 -2.7,-3.7 -.4,-3 -1.6,-2.3 .2,-2.5 -2,-5 -2.9,-2.7 .6,-7.1 2.4,-.8 1.8,-3.1 -.4,-3.2 -1,-.9 h -2.5 l -2.5,-3.3 -1.5,-3.5 v -7.5 l 1.2,-4.2 .2,-2.1 2.5,.2 -.1,1.6 -.8,.7 v 2.5 l 3.7,3.2 v -4.7 l -1.4,-3.4 .5,-1.1 -1,-1.7 2.8,-1.5 -1.9,-3 -1.4,.5 -1.5,3.8 .5,1.3 -.8,1 -.9,-.1 -5.4,-6.1 .7,-5.6 -1.1,-3.9 -6.5,-12.8 .8,-10.7 2.3,-3.6 .2,-6.4 -5.5,-11.1 .3,-5.2 6.9,-7.5 1.7,-2.4 -.1,-1.4 4,-9.2 .1,-8.4 .9,-2.5 66.1,18.6 -16.4,63.1 1.1,3.5 70.4,105 -.9,2.1 1.3,3.4 1.4,1.8 1.2,5.8 2.3,2.5 .4,1.9 -1.3,1.3 -4.8,1.7 -2.4,3.6 -1.6,7 -2.4,3.2 -1.6,.3 -1.1,6.9 1.1,1.6 1.8,.2 1,1.6 -.8,2.4 -3,2.2 -2.2,-.1 z">
+<title>California</title></path>
+
+<path class="co" data-build="fade" d="m 374.6,323.3 -16.5,-1 -51.7,-4.8 -52.6,-6.5 11.5,-88.3 44.9,5.7 37.5,3.4 33.1,2.4 -1.4,22.1 z">
+<title>Colorado</title></path>
+
+<path class="ct" data-build="fade" d="m 873.5,178.9 .4,-1.1 -3.2,-12.3 -.1,-.3 -14.9,3.4 v .7 l -.9,.3 -.5,-.7 -10.5,2.4 2.8,16.3 1.8,1.5 -3.5,3.4 1.7,2.2 5.4,-4.5 1.7,-1.3 h .8 l 2.4,-3.1 1.4,.1 2.9,-1.1 h 2.1 l 5.3,-2.7 2.8,-.9 1,-1 1.5,.5 z">
+<title>Connecticut</title></path>
+
+<path class="de" data-build="fade" d="m 822.2,226.6 -1.6,.3 -1.5,1.1 -1.2,2.1 7.6,27.1 10.9,-2.3 -2.2,-7.6 -1.1,.5 -3.3,-2.6 -.5,-1.7 -1.8,-1 -.2,-3.7 -2.1,-2.2 -1.1,-.8 -1.2,-1.1 -.4,-3.2 .3,-2.1 1,-2.2 z">
+<title>Delaware</title></path>
+
+<path class="fl" data-build="fade" d="m 751.7,445.1 -4,-.7 -1.7,-.9 -2.2,1.4 v 2.5 l 1.4,2.1 -.5,4.3 -2.1,.6 -1,-1.1 -.6,-3.2 -50.1,3.3 -3.3,-6 -48.8,5.1 -.5,2.9 2.5,2.8 1.7,.7 .9,1.2 -.4,7.3 -1.1,.6 .5,.4 1,-.3 .7,-.8 10.5,-2.7 9.2,-.5 8.1,1.9 8.5,5 2.4,.8 2.2,2 -.1,2.7 h 2.4 l 1.9,-1 2.5,.1 2,-.8 2.9,-2 3.1,-2.9 1.1,-.4 .6,.5 h 1.4 l .5,-.8 -.5,-1.2 -.6,-.6 .2,-.8 2,-1.1 5,-.4 .8,1 1,.1 2.3,1 3,1.8 1.2,1.7 1.1,1.2 2.8,1.4 v 2.4 l 2.8,1.9 1,.1 1.6,1.4 .7,1.6 1,.2 .8,2.1 .7,.6 1,-1.1 2.9,.1 .5,1.4 1.1,.9 v 1.3 l 2.9,2.2 .2,9.6 -1.8,5.8 1,1.2 -.2,3.4 -.8,1.4 .7,1.2 2.3,2.3 .3,1.5 .8,1 -.4,-1.9 1.3,-.6 .8,-3.6 -3,-1.2 .1,-.6 2.6,-.4 .9,2.6 1.1,.6 .1,-2 1.1,.3 .6,.8 -.1,.7 -2.9,4.2 -.2,1.1 -1.7,1.9 v 1.1 l 3.7,3.8 5.3,7.9 1.8,2.1 v 1.8 l 2.8,4.6 2.3,.6 .7,-1.2 -2.1,.3 -3,-4.5 .2,-1.4 1.5,-.8 v -1.5 l -.6,-1.3 .9,-.9 .4,.9 .7,.5 v 4 l -1.2,-.6 -.8,.9 1.4,1.6 1,2.6 1.2,-.6 2.3,1.2 2.1,2.2 1.6,5.1 3.1,4.8 .8,-1.3 2.8,-.5 3.2,1.3 .3,1.7 3.3,3.8 .1,1.1 2.2,2.7 -.7,.5 v 2.7 l 2.7,1.4 h 1.5 l 2.7,-1.8 1.5,.3 1.1,.4 2.3,-1.7 .2,-.7 1.2,.3 2.4,-1.7 1.3,-2.3 -.7,-3.2 -.2,-1.3 1.1,-4 .6,-.2 .6,1.6 .8,-1.8 -.8,-7.2 -.4,-10.5 -1,-6.8 -.7,-1.7 -6.6,-11.1 -5.2,-9.1 -2.2,-3.3 -1.3,-3.6 -.2,-3.4 .9,-.3 v -.9 l -1.1,-2.2 -4,-4 -7.6,-9.7 -5.7,-10.4 -4.3,-10.7 -.6,-3.7 -1.2,-1 -.5,-3.8 z m 9.2,134.5 1.7,-.1 -.7,-1 z m 7.3,-1.1 v -.7 l 1.6,-.2 3.7,-3.3 1.5,-.6 2.4,-.9 .3,1.3 1.7,.8 -2.6,1.2 h -2.4 l -3.9,2.5 z m 17.2,-7.6 -3,1.4 -1,1.3 1.1,.1 z m 3.8,-2.9 -1.1,.3 -1.4,2 1.1,-.2 1.5,-1.6 z m 8.3,-15.7 -1.7,5.6 -.8,1 -1,2.6 -1.2,1.6 -.7,1.7 -1.9,2.2 v .9 l 2.7,-2.8 2.4,-3.5 .6,-2 2.1,-4.9 z">
+<title>Florida</title></path>
+
+<path class="ga" data-build="fade" d="m 761.8,414.1 v 1.4 l -4.2,6.2 -1.2,.2 1.5,.5 v 2 l -.9,1.1 -.6,6 -2.3,6.2 .5,2 .7,5.1 -3.6,.3 -4,-.7 -1.7,-.9 -2.2,1.4 v 2.5 l 1.4,2.1 -.5,4.3 -2.1,.6 -1,-1.1 -.6,-3.2 -50.1,3.3 -3.3,-6 -.7,-2.2 -1.5,-1.5 -.5,-1.4 .6,-6.3 -2.4,-5.7 .5,-2.6 .3,-3.7 2.2,-3.8 -.2,-1.1 -1.7,-1 v -3.2 l -1.8,-1.9 -2.9,-6.1 -12.9,-45.8 22.9,-2.9 21.4,-3 -.1,1.9 -1.9,1 -1.4,3.2 .2,1.3 6.1,3.8 2.6,-.3 3.1,4 .4,1.7 4.2,5.1 2.6,1.7 1.4,.2 2.2,1.6 1.1,2.2 2,1.6 1.8,.5 2.7,2.7 .1,1.4 2.6,2.8 5,2.3 3.6,6.7 .3,2.7 3.9,2.1 2.5,4.8 .8,3.1 4.2,.4 z">
+<title>Georgia</title></path>
+
+<!-- Hawaii is shown in the same scale as the contiguous United States. The Northwestern Hawaiian Islands are not shown. -->
+<path class="hi" data-build="fade" d="m 317,553.7 -.2,3.2 1.7,1.9 .1,1.2 -4.8,4.5 -.1,1.2 1.9,3.2 1.7,4.2 v 2.6 l -.5,1.2 .1,3.4 4.1,2.1 1.1,1.1 1.2,-1.1 2.1,-3.6 4.5,-2.9 3.3,-.5 2.5,-1 1.7,-1.2 3.2,-3.5 -2.8,-1.1 -1.4,-1.4 .1,-1.7 -.5,-.6 h -2 l .2,-2.5 -.7,-1.2 -2.6,-2.3 -4.5,-1.9 -2.8,-.2 -3.3,-2.7 -1.2,-.6 z m -15.3,-17 -1.1,1.5 -.1,1.7 2.7,2.4 1.9,.5 .6,1 .4,3 3.6,.2 5.3,-2.6 -.1,-2.5 -1.4,-.5 -3.5,-2.6 -1.8,-.3 -2.9,1.3 -1.5,-2.7 z m -1.5,11.5 .9,-1.4 2.5,-.3 .6,1.8 z m -7,-8.7 1.7,4 3.1,-.6 .3,-2 -1.4,-1.5 z m -4.1,-6.7 -1.1,2.4 h 5 l 4.8,1.6 2.5,-1.6 .2,-1.5 -4.8,.2 z m -16,-10.6 -1.9,2.1 -2.9,.6 .8,2.2 2.2,2.8 .1,1 2.1,-.3 2.3,.1 1.7,1.2 3.5,-.8 v -.7 l -1,-.8 -.5,-2.1 -.8,-.3 -.5,1 -1.2,-1.3 .2,-1.4 -1.8,-3.3 -1.1,-.7 z m -31.8,-12.4 -4.2,2.9 .2,2.3 2.4,1.2 1.9,1.3 2.7,.4 2.6,-2.2 -.2,-1.9 .8,-1.7 v -1.4 l -1,-.9 z m -10.8,4.8 -.3,1.2 -1.9,.9 -.6,1.8 1,.8 1.1,-1.5 1.9,-.6 .4,-2.6 z">
+<title>Hawaii</title></path>
+
+<path class="id" data-build="fade" d="m 165.3,183.1 -24.4,-5.4 8.5,-37.3 2.9,-5.8 .4,-2.1 .8,-.9 -.9,-2 -2.9,-1.2 .2,-4.2 4,-5.8 2.5,-.8 1.6,-2.3 -.1,-1.6 1.8,-1.6 3.2,-5.5 4.2,-4.8 -.5,-3.2 -3.5,-3.1 -1.6,-3.6 1.1,-4.3 -.7,-4 12.7,-56.1 14.2,3 -4.8,22 3.7,7.4 -1.6,4.8 3.6,4.8 1.9,.7 3.9,8.3 v 2.1 l 2.3,3 h .9 l 1.4,2.1 h 3.2 v 1.6 l -7.1,17 -.5,4.1 1.4,.5 1.6,2.6 2.8,-1.4 3.6,-2.4 1.9,1.9 .5,2.5 -.5,3.2 2.5,9.7 2.6,3.5 2.3,1.4 .4,3 v 4.1 l 2.3,2.3 1.6,-2.3 6.9,1.6 2.1,-1.2 9,1.7 2.8,-3.3 1.8,-.6 1.2,1.8 1.6,4.1 .9,.1 -8.5,54.8 -47.9,-8.2 z">
+<title>Idaho</title></path>
+
+<path class="il" data-build="fade" d="m 623.5,265.9 -1,5.2 v 2 l 2.4,3.5 v .7 l -.3,.9 .9,1.9 -.3,2.4 -1.6,1.8 -1.3,4.2 -3.8,5.3 -.1,7 h -1 l .9,1.9 v .9 l -2.2,2.7 .1,1.1 1.5,2.2 -.1,.9 -3.7,.6 -.6,1.2 -1.2,-.6 -1,.5 -.4,3.3 1.7,1.8 -.4,2.4 -1.5,.3 -6.9,-3 -4,3.7 .3,1.8 h -2.8 l -1.4,-1.5 -1.8,-3.8 v -1.9 l .8,-.6 .1,-1.3 -1.7,-1.9 -.9,-2.5 -2.7,-4.1 -4.8,-1.3 -7.4,-7.1 -.4,-2.4 2.8,-7.6 -.4,-1.9 1.2,-1.1 v -1.3 l -2.8,-1.5 -3,-.7 -3.4,1.2 -1.3,-2.3 .6,-1.9 -.7,-2.4 -8.6,-8.4 -2.2,-1.5 -2.5,-5.9 -1.2,-5.4 1.4,-3.7 .7,-.7 .1,-2.3 -.7,-.9 1,-1.5 1.8,-.6 .9,-.3 1,-1.2 v -2.4 l 1.7,-2.4 .5,-.5 .1,-3.5 -.9,-1.4 -1,-.3 -1.1,-1.6 1,-4 3,-.8 h 2.4 l 4.2,-1.8 1.7,-2.2 .1,-2.4 1.1,-1.3 1.3,-3.2 -.1,-2.6 -2.8,-3.5 h -1.2 l -.9,-1.1 .2,-1.6 -1.7,-1.7 -2.5,-1.3 .5,-.6 45.9,-2.8 .1,4.6 3.4,4.6 1.2,4.1 1.6,3.2 z">
+<title>Illinois</title></path>
+
+<path class="in" data-build="fade" d="m 629.2,214.8 -5.1,2.3 -4.7,-1.4 4.1,50.2 -1,5.2 v 2 l 2.4,3.5 v .7 l -.3,.9 .9,1.9 -.3,2.4 -1.6,1.8 -1.3,4.2 -3.8,5.3 -.1,7 h -1 l .9,1.9 1.1,.8 .6,-1 -.7,-1.7 4.6,-.5 .2,1.2 1.1,.2 .4,-.9 -.6,-1.3 .3,-.8 1.3,.8 1.7,-.4 1.7,.6 3.4,2.1 1.8,-2.8 3.5,-2.2 3,3.3 1.6,-2.1 .3,-2.7 3.8,-2.3 .2,1.3 1.9,1.2 3,-.2 1.2,-.7 .1,-3.4 2.5,-3.7 4.6,-4.4 -.1,-1.7 1.2,-3.8 2.2,1 6.7,-4.5 -.4,-1.7 -1.5,-2.1 1,-1.9 -6.6,-57.2 -.1,-1.4 -32.4,3.4 z">
+<title>Indiana</title></path>
+
+<path class="ia" data-build="fade" d="m 556.9,183 2.1,1.6 .6,1.1 -1.6,3.3 -.1,2.5 2,5.5 2.7,1.5 3.3,.7 1.3,2.8 -.5,.6 2.5,1.3 1.7,1.7 -.2,1.6 .9,1.1 h 1.2 l 2.8,3.5 .1,2.6 -1.3,3.2 -1.1,1.3 -.1,2.4 -1.7,2.2 -4.2,1.8 h -2.4 l -3,.8 -1,4 1.1,1.6 1,.3 .9,1.4 -.1,3.5 -.5,.5 -1.7,2.4 v 2.4 l -1,1.2 -.9,.3 -1.8,.6 -1,1.5 .7,.9 -.1,2.3 -.7,.7 -1.5,-.8 -1.1,-1.1 -.6,-1.6 -1.7,-1.3 -14.3,.8 -27.2,1.2 -25.9,-.1 -1.8,-4.4 .7,-2.2 -.8,-3.3 .2,-2.9 -1.3,-.7 -.4,-6.1 -2.8,-5 -.2,-3.7 -2.2,-4.3 -1.3,-3.7 v -1.4 l -.6,-1.7 v -2.3 l -.5,-.9 -.7,-1.7 -.3,-1.3 -1.3,-1.2 1,-4.3 1.7,-5.1 -.7,-2 -1.3,-.4 -.4,-1.6 1,-.5 .1,-1.1 -1.3,-1.5 .1,-1.6 2.2,.1 h 28.2 l 36.3,-.9 18.6,-.7 z">
+<title>Iowa</title></path>
+
+<path class="ks" data-build="fade" d="m 459.1,259.5 -43.7,-1.2 -36,-2 -4.8,67 67.7,2.9 62,.1 -.5,-48.1 -3.2,-.7 -2.6,-4.7 -2.5,-2.5 .5,-2.3 2.7,-2.6 .1,-1.2 -1.5,-2.1 -.9,1 -2,-.6 -2.9,-3 z">
+<title>Kansas</title></path>
+
+<path class="ky" data-build="fade" d="m 692.1,322.5 -20.5,1.4 -5.2,.8 -17.4,1 -2.6,.8 -22.6,2 -.7,-.6 h -3.7 l 1.2,3.2 -.6,.9 -23.3,1.5 1,-2.7 1.4,.9 .7,-.4 1.2,-4.1 -1,-1 1,-2 .2,-.9 -1.3,-.8 -.3,-1.8 4,-3.7 6.9,3 1.5,-.3 .4,-2.4 -1.7,-1.8 .4,-3.3 1,-.5 1.2,.6 .6,-1.2 3.7,-.6 .1,-.9 -1.5,-2.2 -.1,-1.1 2.2,-2.7 0,-.9 1.1,.8 .6,-1 -.7,-1.7 4.6,-.5 .2,1.2 1.1,.2 .4,-.9 -.6,-1.3 .3,-.8 1.3,.8 1.7,-.4 1.7,.6 3.4,2.1 1.8,-2.8 3.5,-2.2 3,3.3 1.6,-2.1 .3,-2.7 3.8,-2.3 .2,1.3 1.9,1.2 3,-.2 1.2,-.7 .1,-3.4 2.5,-3.7 4.6,-4.4 -.1,-1.7 1.2,-3.8 2.2,1 6.7,-4.5 -.4,-1.7 -1.5,-2.1 1,-1.9 1.3,.5 2.2,.1 1.9,-.8 2.9,1.2 2.2,3.4 v 1 l 4.1,.7 2.3,-.2 1.9,2.1 2.2,.2 v -1 l 1.9,-.8 3,.8 1.2,.8 1.3,-.7 h .9 l .6,-1.7 3.4,-1.8 .5,.8 .8,2.9 3.5,1.4 1.2,2.1 -.1,1.1 .6,1 -.6,3.6 1.9,1.6 .8,1.1 1,.6 -.1,.9 4.4,5.6 h 1.4 l 1.5,1.8 1.2,.3 1.4,-.1 -4.9,6.6 -2.9,1 -3,3 -.4,2.2 -2.1,1.3 -.1,1.7 -1.4,1.4 -1.8,.5 -.5,1.9 -1,.4 -6.9,4.2 z m -98,11.3 -.7,-.7 .2,-1 h 1.1 l .7,.7 -.3,1 z">
+<title>Kentucky</title></path>
+
+<path class="la" data-build="fade" d="m 602.5,472.8 -1.2,-1.8 .3,-1.3 -4.8,-6.8 .9,-4.6 1,-1.4 .1,-1.4 -36,2 1.7,-11.9 2.4,-4.8 6,-8.4 -1.8,-2.5 h 2 v -3.3 l -2.4,-2.5 .5,-1.7 -1.2,-1 -1.6,-7.1 .6,-1.4 -52.3,1.3 .5,19.9 .7,3.4 2.6,2.8 .7,5.4 3.8,4.6 .8,4.3 h 1 l -.1,7.3 -3.3,6.4 1.3,2.3 -1.3,1.5 .7,3 -.1,4.3 -2.2,3.5 -.1,.8 -1.7,1.2 1,1.8 1.2,1.1 1.6,-1.3 5.3,-.9 6.1,-.1 9.6,3.8 8,1 1.5,-1.4 1.8,-.2 4.8,2.2 1.6,-.4 1.1,-1.5 -4.2,-1.8 -2.2,1 -1.1,-.2 -1.4,-2 3.3,-2.2 1.6,-.1 v 1.7 l 1.5,-.1 3.4,-.3 .4,2.3 1.1,.4 .6,1.9 4.8,1 1.7,1.6 v .7 h -1.2 l -1.5,1.7 1.7,1.2 5.4,1 2.7,2.8 4.4,-1 -3.7,.2 -.1,-.6 2.8,-.7 .2,-1.8 1.2,-.3 v -1.4 l 1.1,.1 v 1.6 l 2.5,.1 .8,-1.9 .9,.3 .2,2.5 1.2,.2 -1.8,2 2.6,-.9 2,-1.1 2.9,-3.3 h -.7 l -1.3,1.2 -.4,-.1 -.5,-.8 .9,-1.2 v -2.3 l 1.1,-.8 .7,.7 1,-.8 1,-.1 .6,1.3 -.6,1.9 h 2.4 l 5.1,1.7 .5,1.3 1.6,1.4 2.8,.1 1.3,.7 1.8,-1 .9,-1.7 v -1.7 h -1.4 l -1.2,-1.4 -1.1,-1.1 -3.2,-.9 -2.6,.2 -4.2,-2.4 v -2.3 l 1.3,-1 2.4,.6 -3.1,-1.6 .2,-.8 h 3.6 l 2.6,-3.5 -2.6,-1.8 .8,-1.5 -1.2,-.8 h -.8 l -2,2.1 v 2.1 l -.6,.7 -1.1,-.1 -1.6,-1.4 h -1.3 v -1.5 l .6,-.7 .8,.7 1.7,-1.6 .7,-1.6 .8,-.3 z m -10.3,-2.7 1.9,1 .8,1.1 2.5,.1 1.5,.8 .2,1.4 -.4,.6 -.9,-1.5 -1.4,1.2 -.9,1.4 -2.8,.8 -1.6,.1 -3.7,-1 .1,-1.7 2,-2 1.1,-2.4 z m -4.7,1.2 v 1.1 l -1.8,2 h -1.2 v -2.2 l 1.6,-1.5 z">
+<title>Louisiana</title></path>
+
+<path class="me" data-build="fade" d="m 875,128.7 .6,4 3.2,2 .8,2.2 2.3,1.4 1.4,-.3 1,-3 -.8,-2.9 1.6,-.9 .5,-2.8 -.6,-1.3 3.3,-1.9 -2.2,-2.3 .9,-2.4 1.4,-2.2 .5,3.2 1.6,-2 1.3,.9 1.2,-.8 v -1.7 l 3.2,-1.3 .3,-2.9 2.5,-.2 2.7,-3.7 v -.7 l -.9,-.5 -.1,-3.3 .6,-1.1 .2,1.6 1,-.5 -.2,-3.2 -.9,.3 -.1,1.2 -1.2,-1.4 .9,-1.4 .6,.1 1.1,-.4 .5,2.8 2,-.3 2.9,.7 v -1 l -1.1,-1.2 1.3,.1 .1,-2.3 .6,.8 .3,1.9 2.1,1.5 .2,-1 .9,-.2 -.3,-.8 .8,-.6 -.1,-1.6 -1.6,-.2 -2,.7 1.4,-1.6 .7,-.8 1.3,-.2 .4,1.3 1.7,1.6 .4,-2.1 2.3,-1.2 -.9,-1.3 .1,-1.7 1.1,.5 h .7 l 1.7,-1.4 .4,-2.3 2.2,.3 .1,-.7 .2,-1.6 .5,1.4 1.5,-1 2.3,-4.1 -.1,-2.2 -1.4,-2 -3,-3.2 h -1.9 l -.8,2.2 -2.9,-3 .3,-.8 v -1.5 l -1.6,-4.5 -.8,-.2 -.7,.4 h -4.8 l -.3,-3.6 -8.1,-26 -7.3,-3.7 -2.9,-.1 -6.7,6.6 -2.7,-1 -1,-3.9 h -2.7 l -6.9,19.5 .7,6.2 -1.7,2.4 -.4,4.6 1.3,3.7 .8,.2 v 1.6 l -1.6,4.5 -1.5,1.4 -1.3,2.2 -.4,7.8 -2.4,-1 -1.5,.4 z m 34.6,-24.7 -1,.8 v 1.3 l .7,-.8 .9,.8 .4,-.5 1.1,.2 -1,-.8 .4,-.8 z m -1.7,2.6 -1,1.1 .5,.4 -.1,1 h 1.1 v -1.8 z m -3,-1.6 .9,1.3 1,.5 .3,-1 v -1.8 l -1.3,-.7 -.4,1.2 z m -1,5 -1.7,-1.7 1.6,-2.4 .8,.3 .2,1.1 1,.8 v 1.1 l -1,1 z">
+<title>Maine</title></path>
+
+<path class="md" data-build="fade" d="m 822.9,269.3 0,-1.7 h -.8 l 0,1.8 z m 11.8,-3.9 1.2,-2.2 .1,-2.5 -.6,-.6 -.7,.9 -.2,2.1 -.8,1.4 -.3,1.1 -4.6,1.6 -.7,.8 -1.3,.2 -.4,.9 -1.3,.6 -.3,-2.5 .4,-.7 -.8,-.5 .2,-1.5 -1.6,1 v -2 l 1.2,-.3 -1.9,-.4 -.7,-.8 .4,-1.3 -.8,-.6 -.7,1.6 .5,.8 -.7,.6 -1.1,.5 -2,-1 -.2,-1.2 -1,-1.1 -1.4,-1.7 1.5,-.8 -1,-.6 v -.9 l .6,-1 1.7,-.3 -1.4,-.6 -.1,-.7 -1.3,-.1 -.4,1.1 -.6,.3 .1,-3.4 1,-1 .8,.7 .1,-1.6 -1,-.9 -.9,1.1 -1,1.4 -.6,-1 .2,-2.4 .9,-1 .9,.9 1.2,-.7 -.4,-1.7 -1,1 -.9,-2.1 -.2,-1.7 1.1,-2.4 1.1,-1.4 1.4,-.2 -.5,-.8 .5,-.6 -.3,-.7 .2,-2.1 -1.5,.4 -.8,1.1 1,1.3 -2.6,3.6 -.9,-.4 -.7,.9 -.6,2.2 -1.8,.5 1.3,.6 1.3,1.3 -.2,.7 .9,1.2 -1.1,1 .5,.3 -.5,1.3 v 2.1 l -.5,1.3 .9,1.1 .7,3.4 1.3,1.4 1.6,1.4 .4,2.8 1.6,2 .4,1.4 v 1 h -.7 l -1.5,-1.2 -.4,.2 -1.2,-.2 -1.7,-1.4 -1.4,-.3 -1,.5 -1.2,-.3 -.4,.2 -1.7,-.8 -1,-1 -1,-1.3 -.6,-.2 -.8,.7 -1.6,1.3 -1.1,-.8 -.4,-2.3 .8,-2.1 -.3,-.5 .3,-.4 -.7,-1 1,-.1 1,-.9 .4,-1.8 1.7,-2.6 -2.6,-1.8 -1,1.7 -.6,-.6 h -1 l -.6,-.1 -.4,-.4 .1,-.5 -1.7,-.6 -.8,.3 -1.2,-.1 -.7,-.7 -.5,-.2 -.2,-.7 .6,-.8 v -.9 l -1.2,-.2 -1,-.9 -.9,.1 -1.6,-.3 -.9,-.4 .2,-1.6 -1,-.5 -.2,-.7 h -.7 l -.8,-1.2 .2,-1 -2.6,.4 -2.2,-1.6 -1.4,.3 -.9,1.4 h -1.3 l -1.7,2.9 -3.3,.4 -1.9,-1 -2.6,3.8 -2.2,-.3 -3.1,3.9 -.9,1.6 -1.8,1.6 -1.7,-11.4 60.5,-11.8 7.6,27.1 10.9,-2.3 0,5.3 -.1,3.1 -1,1.8 z m -13.4,-1.8 -1.3,.9 .8,1.8 1.7,.8 -.4,-1.6 z">
+<title>Maryland</title></path>
+
+<path class="ma" data-build="fade" d="m 899.9,174.2 h 3.4 l .9,-.6 .1,-1.3 -1.9,-1.8 .4,1 -1.5,1.5 h -2.3 l .1,.8 z m -9,1.8 -1.2,-.6 1,-.8 .6,-2.1 1.2,-1 .8,-.2 .6,.9 1.1,.2 .6,-.6 .5,1.9 -1.3,.3 -2.8,.7 z m -34.9,-23.4 18.4,-3.8 1,-1.5 .3,-1.7 1.9,-.6 .5,-1.1 1.7,-1.1 1.3,.3 1.7,3.3 1,.4 1.1,-1.3 .8,1.3 v 1.1 l -3,2.4 .2,.8 -.9,1 .4,.8 -1.3,.3 .9,1.2 -.8,.7 .6,1 .9,-.2 .3,-.8 1.1,.6 h 1.8 l 2.5,2.6 .2,2.6 1.8,.1 .8,1.1 .6,2 1,.7 h 1.9 l 1.9,-.1 .8,-.9 1.6,-1.2 1.1,-.3 -1.2,-2.1 -.3,.9 -1.5,-3.6 h -.8 l -.4,.9 -1.2,-1 1.3,-1.1 1.8,.4 2.3,2.1 1.3,2.7 1.2,3.3 -1,2.8 v -1.8 l -.7,-1 -3.5,2.3 -.9,-.3 -1.6,1 -.1,1.2 -2.2,1.2 -2,2.1 -2,1.9 h -1.2 l 3.3,-3.3 .5,-1.9 -.5,-.6 -.3,-1.3 -.9,-.1 -.1,1.3 -1,1.2 h -1.2 l -.3,1.1 .4,1.2 -1.2,1.1 -1.1,-.2 -.4,1 -1.4,-3 -1.3,-1.1 -2.6,-1.3 -.6,-2.2 h -.8 l -.7,-2.6 -6.5,2 -.1,-.3 -14.9,3.4 v .7 l -.9,.3 -.5,-.7 -10.5,2.4 -.7,-1 .5,-15 z">
+<title>Massachusetts</title></path>
+
+<path class="mi" data-build="fade" d="m 663.3,209.8 .1,1.4 21.4,-3.5 .5,-1.2 3.9,-5.9 v -4.3 l .8,-2.1 2.2,-.8 2,-7.8 1,-.5 1,.6 -.2,.6 -1.1,.8 .3,.9 .8,.4 1.9,-1.4 .4,-9.8 -1.6,-2.3 -1.2,-3.7 v -2.5 l -2.3,-4.4 v -1.8 l -1.2,-3.3 -2.3,-3 -2.9,-1 -4.8,3 -2.5,4.6 -.2,.9 -3,3.5 -1.5,-.2 -2.9,-2.8 -.1,-3.4 1.5,-1.9 2,-.2 1.2,-1.7 .2,-4 .8,-.8 1.1,-.1 .9,-1.7 -.2,-9.6 -.3,-1.3 -1.2,-1.2 -1.7,-1 -.1,-1.8 .7,-.6 1.8,.8 -.3,-1.7 -1.9,-2.7 -.7,-1.6 -1.1,-1.1 h -2.2 l -8.1,-2.9 -1.4,-1.7 -3.1,-.3 -1.2,.3 -4.4,-2.3 h -1.4 l .5,1 -2.7,-.1 .1,.6 .6,.6 -2.5,2.1 .1,1.8 1.5,2.3 1.5,.2 v .6 l -1.5,.5 -2.1,-.1 -2.8,2.5 .1,2.5 .4,5.8 -2.2,3.4 .8,-4.5 -.8,-.6 -.9,5.3 -1,-2.3 .5,-2.3 -.5,-1 .6,-1.3 -.6,-1.1 1,-1 v -1.2 l -1.3,.6 -1.3,3.1 -.7,.7 -1.3,2.4 -1.7,-.2 -.1,1.2 h -1.6 l .2,1.5 .2,2 -3,1.2 .1,1.3 1,1.7 -.1,5.2 -1.3,4.4 -1.7,2.5 1.2,1.4 .8,3.5 -1,2.5 -.2,2.1 1.7,3.4 2.5,4.9 1.2,1.9 1.6,6.9 -.1,8.8 -.9,3.9 -2,3.2 -.9,3.7 -2,3 -1.2,1 z m -95.8,-96.8 3,3.8 17,3.8 1.4,1 4,.8 .7,.5 2.8,-.2 4.9,.8 1.4,1.5 -1,1 .8,.8 3.8,.7 1.2,1.2 .1,4.4 -1.3,2.8 2,.1 1,-.8 .9,.8 -1.1,3.1 1,1.6 1.2,.3 .8,-1.8 2.9,-4.6 1.6,-6 2.3,-2 -.5,-1.6 .5,-.9 1,1.6 -.3,2.2 2.9,-2.2 .2,-2.3 2.1,.6 .8,-1.6 .7,.6 -.7,1.5 -1,.5 -1,2 1.4,1.8 1.1,-.5 -.5,-.7 1,-1.5 1.9,-1.7 h .8 l .2,-2.6 2,-1.8 7.9,-.5 1.9,-3.1 3.8,-.3 3.8,1.2 4.2,2.7 .7,-.2 -.2,-3.5 .7,-.2 4.5,1.1 1.5,-.2 2.9,-.7 1.7,.4 1.8,.1 v -1.1 l -.7,-.9 -1.5,-.2 -1.1,-.8 .5,-1.4 -.8,-.3 -2.6,.1 -.1,-1 1.1,-.8 .6,.8 .5,-1.8 -.7,-.7 .7,-.2 -1.4,-1.3 .3,-1.3 .1,-1.9 h -1.3 l -1.5,1 -1.9,.1 -.5,1.8 -1.9,.2 -.3,-1.2 -2.2,.1 -1,1.2 -.7,-.1 -.2,-.8 -2.6,.4 -.1,-4.8 1,-2 -.7,-.1 -1.8,1.1 h -2.2 l -3.8,2.7 -6.2,.3 -4.1,.8 -1.9,1.5 -1.4,1.3 -2.5,1.7 -.3,.8 -.6,-1.7 -1.3,-.6 v .6 l .7,.7 v 1.3 l -1.5,-.6 h -.6 l -.3,1.2 -2,-1.9 -1.3,-.2 -1.3,1.5 -3.2,-.1 -.5,-1.4 -2,-1.9 -1.3,-1.6 v -.7 l -1.1,-1.4 -2.6,-1.2 -3.3,-.1 -1.1,-.9 h -1.4 l -.7,.4 -2.2,2.2 -.7,1.1 -1,-.7 .2,-1 .8,-2.1 3.2,-5 .8,-.2 1.7,-1.9 .7,-1.6 3,-.6 .8,-.6 -.1,-1 -.5,-.5 -4.5,.2 -2,.5 -2.6,1.2 -1.2,1.2 -1.7,2.2 -1.8,1 -3.3,3.4 -.4,1.6 -7.4,4.6 -4,.5 -1.8,.4 -2.3,3 -1.8,.7 -4.4,2.3 z m 100.7,3.8 3.8,.1 .6,-.5 -.2,-2 -1.7,-1.8 -1.9,.1 -.1,.5 1.1,.4 -1.6,.8 -.3,1 -.6,-.6 -.4,.8 z m -75.1,-41.9 -2.3,.2 -2.7,1.9 -7.1,5.3 .8,1 1.8,.3 2.8,-2 -1.1,-.5 2.3,-1.6 h 1 l 3,-1.9 -.1,-.9 z m 41.1,62.8 v 1 l 2.1,1.6 -.2,-2.4 z m -.7,2.8 1.1,.1 v .9 h -1 z m 21.4,-21.3 v .9 l .8,-.2 v -.5 z m 4.7,3.1 -.1,-1.1 -1.6,-.2 -.6,-.4 h -.9 l -.4,.3 .9,.4 1.1,1.1 z m -18,1.2 -.1,1.1 -.3,.7 .2,2.2 .4,.3 .7,.1 .5,-.9 .1,-1.6 -.3,-.6 -.1,-1.1 z">
+<title>Michigan</title></path>
+
+<path class="mn" data-build="fade" d="m 464.7,68.6 -1.1,2.8 .8,1.4 -.3,5.1 -.5,1.1 2.7,9.1 1.3,2.5 .7,14 1,2.7 -.4,5.8 2.9,7.4 .3,5.8 -.1,2.1 -.1,2.2 -.9,2 -3.1,1.9 -.3,1.2 1.7,2.5 .4,1.8 2.6,.6 1.5,1.9 -.2,39.5 h 28.2 l 36.3,-.9 18.6,-.7 -1.1,-4.5 -.2,-3 -2.2,-3 -2.8,-.7 -5.2,-3.6 -.6,-3.3 -6.3,-3.1 -.2,-1.3 h -3.3 l -2.2,-2.6 -2,-1.3 .7,-5.1 -.9,-1.6 .5,-5.4 1,-1.8 -.3,-2.7 -1.2,-1.3 -1.8,-.3 v -1.7 l 2.8,-5.8 5.9,-3.9 -.4,-13 .9,.4 .6,-.5 .1,-1.1 .9,-.6 1.4,1.2 .7,-.1 v 0 l -1.2,-2.2 4.3,-3.1 3.1,-3.7 1.6,-.8 4.7,-5.9 6.3,-5.8 3.9,-2.1 6.3,-2.7 7.6,-4.5 -.6,-.4 -3.7,.7 -2.8,.1 -1,-1.6 -1.4,-.9 -9.8,1.2 -1,-2.8 -1.6,-.1 -1.7,.8 -3.7,3.1 h -4.1 l -2.1,-1 -.3,-1.7 -3.9,-.8 -.6,-1.6 -.7,-1.3 -1,.9 -2.6,.1 -9.9,-5.5 h -2.9 l -.8,-.7 -3.1,1.3 -.8,1.3 -3.3,.8 -1.3,-.2 v -1.7 l -.7,-.9 h -5.9 l -.4,-1.4 h -2.6 l -1.1,.4 -2.4,-1.7 .3,-1.4 -.6,-2.4 -.7,-1.1 -.2,-3 -1,-3.1 -2.1,-1.6 h -2.9 l .1,8 -30.9,-.4 z">
+<title>Minnesota</title></path>
+
+<path class="ms" data-build="fade" d="m 623.8,468.6 -5,.1 -2.4,-1.5 -7.9,2.5 -.9,-.7 -.5,.2 -.1,1.6 -.6,.1 -2.6,2.7 -.7,-.1 -.6,-.7 -1.2,-1.8 .3,-1.3 -4.8,-6.8 .9,-4.6 1,-1.4 .1,-1.4 -36,2 1.7,-11.9 2.4,-4.8 6,-8.4 -1.8,-2.5 h 2 v -3.3 l -2.4,-2.5 .5,-1.7 -1.2,-1 -1.6,-7.1 .6,-1.4 1.2,-1.5 .5,-3 -1.5,-2.3 -.5,-2.2 .9,-.7 v -.8 l -1.7,-1.1 -.1,-.7 1.6,-.9 -1.2,-1.1 1.7,-7.1 3.4,-1.6 v -.8 l -1.1,-1.4 2.9,-5.4 h 1.9 l 1.5,-1.2 -.3,-5.2 3.1,-4.5 1.8,-.6 -.5,-3.1 38.3,-2.6 1.3,2 -1.3,67 4.4,33.2 z">
+<title>Mississippi</title></path>
+
+<path class="mo" data-build="fade" d="m 555.3,248.9 -1.1,-1.1 -.6,-1.6 -1.7,-1.3 -14.3,.8 -27.2,1.2 -25.9,-.1 1.3,1.3 -.3,1.4 2.1,3.7 3.9,6.3 2.9,3 2,.6 .9,-1 1.5,2.1 -.1,1.2 -2.7,2.6 -.5,2.3 2.5,2.5 2.6,4.7 3.2,.7 .5,48.1 .2,10.8 39.1,-.7 39.8,-2 1.6,2.5 v 2.2 l -1.7,1.5 -2.8,5.1 11.2,-.8 1,-2 1.2,-.5 v -.7 l -1.2,-1.1 -.6,-1 1.7,.2 .8,-.7 -1.4,-1.5 1.4,-.5 .1,-1 -.6,-1 v -1.3 l -.7,-.7 .2,-1 h 1.1 l .7,.7 -.3,1 .8,.7 .8,-1 1,-2.7 1.4,.9 .7,-.4 1.2,-4.1 -1,-1 1,-2 .2,-.9 -1.3,-.8 h -2.8 l -1.4,-1.5 -1.8,-3.8 v -1.9 l .8,-.6 .1,-1.3 -1.7,-1.9 -.9,-2.5 -2.7,-4.1 -4.8,-1.3 -7.4,-7.1 -.4,-2.4 2.8,-7.6 -.4,-1.9 1.2,-1.1 v -1.3 l -2.8,-1.5 -3,-.7 -3.4,1.2 -1.3,-2.3 .6,-1.9 -.7,-2.4 -8.6,-8.4 -2.2,-1.5 -2.5,-5.9 -1.2,-5.4 1.4,-3.7 z">
+<title>Missouri</title></path>
+
+<path class="mt" data-build="fade" d="m 247,130.5 57.3,7.9 51,5.3 2,-20.7 5.2,-66.7 -53.5,-5.6 -54.3,-7.7 -65.9,-12.5 -4.8,22 3.7,7.4 -1.6,4.8 3.6,4.8 1.9,.7 3.9,8.3 v 2.1 l 2.3,3 h .9 l 1.4,2.1 h 3.2 v 1.6 l -7.1,17 -.5,4.1 1.4,.5 1.6,2.6 2.8,-1.4 3.6,-2.4 1.9,1.9 .5,2.5 -.5,3.2 2.5,9.7 2.6,3.5 2.3,1.4 .4,3 v 4.1 l 2.3,2.3 1.6,-2.3 6.9,1.6 2.1,-1.2 9,1.7 2.8,-3.3 1.8,-.6 1.2,1.8 1.6,4.1 .9,.1 z">
+<title>Montana</title></path>
+
+<path class="ne" data-build="fade" d="m 402.5,191.1 38,1.6 3.4,3.2 1.7,.2 2.1,2 1.8,-.1 1.8,-2 1.5,.6 1,-.7 .7,.5 .9,-.4 .7,.4 .9,-.4 1,.5 1.4,-.6 2,.6 .6,1.1 6.1,2.2 1.2,1.3 .9,2.6 1.8,.7 1.5,-.2 .5,.9 v 2.3 l .6,1.7 v 1.4 l 1.3,3.7 2.2,4.3 .2,3.7 2.8,5 .4,6.1 1.3,.7 -.2,2.9 .8,3.3 -.7,2.2 1.8,4.4 1.3,1.3 -.3,1.4 2.1,3.7 3.9,6.3 h -32.4 l -43.7,-1.2 -36,-2 1.4,-22.1 -33.1,-2.4 3.7,-44.2 z">
+<title>Nebraska</title></path>
+
+<path class="nv" data-build="fade" d="m 167.6,296.8 -3.4,17.5 -2.4,2.9 h -2 l -1.2,-2.7 -3.7,-1.4 -3.5,.6 -1,13.6 .5,4.9 -.5,2.9 -1.4,3 -70.4,-105 -1.1,-3.5 16.4,-63.1 47,11.2 24.4,5.4 23.3,4.7 z">
+<title>Nevada</title></path>
+
+<path class="nh" data-build="fade" d="m 862.6,93.6 -1.3,.1 -1,-1.1 -1.9,1.4 -.5,6.1 1.2,2.3 -1.1,3.5 2.1,2.8 -.4,1.7 .1,1.3 -1.1,2.1 -1.4,.4 -.6,1.3 -2.1,1 -.7,1.5 1.4,3.4 -.5,2.5 .5,1.5 -1,1.9 .4,1.9 -1.3,1.9 .2,2.2 -.7,1.1 .7,4.5 .7,1.5 -.5,2.6 .9,1.8 -.2,2.5 -.5,1.3 -.1,1.4 2.1,2.6 18.4,-3.8 1,-1.5 .3,-1.7 1.9,-.6 .5,-1.1 1.7,-1.1 1.3,.3 .8,-4.8 -2.3,-1.4 -.8,-2.2 -3.2,-2 -.6,-4 -11.9,-36.8 z">
+<title>New Hampshire</title></path>
+
+<path class="nj" data-build="fade" d="m 842.5,195.4 -14.6,-4.9 -1.8,2.5 .1,2.2 -3,5.4 1.5,1.8 -.7,2 -1,1 .5,3.6 2.7,.9 1,2.8 2.1,1.1 4.2,3.2 -3.3,2.6 -1.6,2.3 -1.8,3 -1.6,.6 -1.4,1.7 -1,2.2 -.3,2.1 .8,.9 .4,2.3 1.2,.6 2.4,1.5 1.8,.8 1.6,.8 .1,1.1 .8,.1 1.1,-1.2 .8,.4 2.1,.2 -.2,2.9 .2,2.5 1.8,-.7 1.5,-3.9 1.6,-4.8 2.9,-2.8 .6,-3.5 -.6,-1.2 1.7,-2.9 v -1.2 l -.7,-1.1 1.2,-2.7 -.3,-3.6 -.6,-8.2 -1.2,-1.4 v 1.4 l .5,.6 h -1.1 l -.6,-.4 -1.3,-.2 -.9,.6 -1.2,-1.6 .7,-1.7 v -1 l 1.7,-.7 .8,-2.1 z">
+<title>New Jersey</title></path>
+
+<path class="nm" data-build="fade" d="m 357.5,332.9 h -.8 l -7.9,99.3 -31.8,-2.6 -34.4,-3.6 -.3,3 2,2.2 -30.8,-4.1 -1.4,10.2 -15.7,-2.2 17.4,-124.1 52.6,6.5 51.7,4.8 z">
+<title>New Mexico</title></path>
+
+<path class="ny" data-build="fade" d="m 872.9,181.6 -1.3,.1 -.5,1 z m -30.6,22.7 .7,.6 1.3,-.3 1.1,.3 .9,-1.3 h 1.9 l 2.4,-.9 5.1,-2.1 -.5,-.5 -1.9,.8 -2,.9 .2,-.8 2.6,-1.1 .8,-1 1.2,.1 4.1,-2.3 v .7 l -4.2,3 4.5,-2.8 1.7,-2.2 1.5,-.1 4.5,-3.1 3.2,-3.1 3,-2.3 1,-1.2 -1.7,-.1 -1,1.2 -.2,.7 -.9,.7 -.8,-1.1 -1.7,1 -.1,.9 -.9,-.2 .5,-.9 -1.2,-.7 -.6,.9 .9,.3 .2,.5 -.3,.5 -1.4,2.6 h -1.9 l .9,-1.8 .9,-.6 .3,-1.7 1.4,-1.6 .9,-.8 1.5,-.7 -1.2,-.2 -.7,.9 h -.7 l -1.1,.8 -.2,1 -2.2,2.1 -.4,.9 -1.4,.9 -7.7,1.9 .2,.9 -.9,.7 -2,.3 -1,-.6 -.2,1.1 -1.1,-.4 .1,1 -1.2,-.1 -1.2,.5 -.2,1.1 h -1 l .2,1 h -.7 l .2,1 -1.8,.4 -1.5,2.3 z m -.8,-.4 -1.6,.4 v 1 l -.7,1.6 .6,.7 2.4,-2.3 -.1,-.9 z m -10.1,-95.2 -.6,1.9 1.4,.9 -.4,1.5 .5,3.2 2.2,2.3 -.4,2.2 .6,2 -.4,1 -.3,3.8 3.1,6.7 -.8,1.8 .9,2.2 .9,-1.6 1.9,1.5 3,14.2 -.5,2 1.1,1 -.5,15 .7,1 2.8,16.3 1.8,1.5 -3.5,3.4 1.7,2.2 -1.3,3.3 -1.5,1.7 -1.5,2.3 -.2,-.7 .4,-5.9 -14.6,-4.9 -1.6,-1.1 -1.9,.3 -3,-2.2 -3,-5.8 h -2 l -.4,-1.5 -1.7,-1.1 -70.5,13.9 -.8,-6 4.3,-3.9 .6,-1.7 3.9,-2.5 .6,-2.4 2.3,-2 .8,-1.1 -1.7,-3.3 -1.7,-.5 -1.8,-3 -.2,-3.2 7.6,-3.9 8.2,-1.6 h 4.4 l 3.2,1.6 .9,-.1 1.8,-1.6 3.4,-.7 h 3 l 2.6,-1.3 2.5,-2.6 2.4,-3.1 1.9,-.4 1.1,-.5 .4,-3.2 -1.4,-2.7 -1.2,-.7 2,-1.3 -.1,-1.8 h -1.5 l -2.3,-1.4 -.1,-3.1 6.2,-6.1 .7,-2.4 3.7,-6.3 5.9,-6.4 2.1,-1.7 2.5,.1 20.6,-5.2 z">
+<title>New York</title></path>
+
+<path class="nc" data-build="fade" d="m 829,300.1 -29.1,6.1 -39.4,7.3 -29.4,3.5 v 5.2 l -1.5,-.1 -1.4,1.2 -2.4,5.2 -2.6,-1.1 -3.5,2.5 -.7,2.1 -1.5,1.2 -.8,-.8 -.1,-1.5 -.8,-.2 -4,3.3 -.6,3.4 -4.7,2.4 -.5,1.2 -3.2,2.6 -3.6,.5 -4.6,3 -.8,4.1 -1.3,.9 -1.5,-.1 -1.4,1.3 -.1,4.9 21.4,-3 4.4,-1.9 1.3,-.1 7.3,-4.3 23.2,-2.2 .4,.5 -.2,1.4 .7,.3 1.2,-1.5 3.3,3 .1,2.6 19.7,-2.8 24.5,17.1 4,-2.2 3,-.7 h 1.7 l 1.1,1.1 .8,-2 .6,-5 1.7,-3.9 5.4,-6.1 4.1,-3.5 5.4,-2.3 2.5,-.4 1.3,.4 .7,1.1 3.3,-6.6 3.3,-5.3 -.7,-.3 -4.4,6.8 -.5,-.8 2,-2.2 -.4,-1.5 -2,-.5 1,1.3 -1.2,.1 -1.2,-1.8 -1.2,2 -1.6,.2 1,-2.7 .7,-1.7 -.2,-2.9 -2.2,-.1 .9,-.9 1.1,.3 2.7,.1 .8,-.5 h 2.3 l 2,-1.9 .2,-3.2 1.3,-1.4 1.2,-.2 1.3,-1 -.5,-3.7 -2.2,-3.8 -2.7,-.2 -.9,1.6 -.5,-1 -2.7,.2 -1.2,.4 -1.9,1.2 -.3,-.4 h -.9 l -1.8,1.2 -2.6,.5 v -1.3 l .8,-1 1,.7 h 1 l 1.7,-2.1 3.7,-1.7 2,-2.2 h 2.4 l .8,1.3 1.7,.8 -.5,-1.5 -.3,-1.6 -2.8,-3.1 -.3,-1.4 -.4,1 -.9,-1.3 z m 7,31 2.7,-2.5 4.6,-3.3 v -3.7 l -.4,-3.1 -1.7,-4.2 1.5,1.4 1,3.2 .4,7.6 -1.7,.4 -3.1,2.4 -3.2,3.2 z m 1.9,-19.3 -.9,-.2 v 1 l 2.5,2.2 -.2,-1.4 z m 2.9,2.1 -1.4,-2.8 -2.2,-3.4 -2.4,-3 -2.2,-4.3 -.8,-.7 2.2,4.3 .3,1.3 3.4,5.5 1.8,2.1 z">
+<title>North Carolina</title></path>
+
+<path class="nd" data-build="fade" d="m 464.7,68.6 -1.1,2.8 .8,1.4 -.3,5.1 -.5,1.1 2.7,9.1 1.3,2.5 .7,14 1,2.7 -.4,5.8 2.9,7.4 .3,5.8 -.1,2.1 -29.5,-.4 -46,-2.1 -39.2,-2.9 5.2,-66.7 44.5,3.4 55.3,1.6 z">
+<title>North Dakota</title></path>
+
+<path class="oh" data-build="fade" d="m 685.7,208.8 1.9,-.4 3,1.3 2.1,.6 .7,.9 h 1 l 1,-1.5 1.3,.8 h 1.5 l -.1,1 -3.1,.5 -2,1.1 1.9,.8 1.6,-1.5 2.4,-.4 2.2,1.5 1.5,-.1 2.5,-1.7 3.6,-2.1 5.2,-.3 4.9,-5.9 3.8,-3.1 9.3,-5.1 4.9,29.9 -2.2,1.2 1.4,2.1 -.1,2.2 .6,2 -1.1,3.4 -.1,5.4 -1,3.6 .5,1.1 -.4,2.2 -1.1,.5 -2,3.3 -1.8,2 h -.6 l -1.8,1.7 -1.3,-1.2 -1.5,1.8 -.3,1.2 h -1.3 l -1.3,2.2 .1,2.1 -1,.5 1.4,1.1 v 1.9 l -1,.2 -.7,.8 -1,.5 -.6,-2.1 -1.6,-.5 -1,2.3 -.3,2.2 -1.1,1.3 1.3,3.6 -1.5,.8 -.4,3.5 h -1.5 l -3.2,1.4 -1.2,-2.1 -3.5,-1.4 -.8,-2.9 -.5,-.8 -3.4,1.8 -.6,1.7 h -.9 l -1.3,.7 -1.2,-.8 -3,-.8 -1.9,.8 v 1 l -2.2,-.2 -1.9,-2.1 -2.3,.2 -4.1,-.7 v -1 l -2.2,-3.4 -2.9,-1.2 -1.9,.8 -2.2,-.1 -1.3,-.5 -6.6,-57.2 21.4,-3.5 z">
+<title>Ohio</title></path>
+
+<path class="ok" data-build="fade" d="m 501.5,398.6 -4.6,-3.8 -2.2,-.9 -.5,1.6 -5.1,.3 -.6,-1.5 -5,2.5 -1.6,-.7 -3.7,.3 -.6,1.7 -3.6,.9 -1.3,-1.2 -1.2,.1 -2,-1.8 -2.1,.7 -2,-.5 -1.8,-2 -2.5,4.2 -1.2,.8 -1,-1.8 .3,-2 -1.2,-.7 -2.3,2.5 -1.7,-1.2 -.1,-1.5 -1.3,.5 -2.6,-1.7 -3,2.6 -2.3,-1.1 .7,-2.1 -2.3,.1 -1.9,-3 -3.5,-1.1 -2,2.3 -2.3,-2.2 -1.4,.4 -2,.1 -3.5,-1.9 -2.3,.1 -1.2,-.7 -.5,-2.9 -2.3,-1.7 -1.1,1.5 -1.4,-1 -1.2,-.4 -1.1,1 -1.5,-.3 -2.5,-3 -2.7,-1.3 1.4,-42.7 -52.6,-3.2 .6,-10.6 16.5,1 67.7,2.9 62,.1 .2,10.8 4.1,24.4 -.7,39 z">
+<title>Oklahoma</title></path>
+
+<path class="or" data-build="fade" d="m 93.9,166.5 47,11.2 8.5,-37.3 2.9,-5.8 .4,-2.1 .8,-.9 -.9,-2 -2.9,-1.2 .2,-4.2 4,-5.8 2.5,-.8 1.6,-2.3 -.1,-1.6 1.8,-1.6 3.2,-5.5 4.2,-4.8 -.5,-3.2 -3.5,-3.1 -1.6,-3.6 -30.3,-7.3 -2.8,1 -5.4,-.9 -1.8,-.9 -1.5,1.2 -3.3,-.4 -4.5,.5 -.9,.7 -4.2,-.4 -.8,-1.6 -1.2,-.2 -4.4,1.3 -1.6,-1.1 -2.2,.8 -.2,-1.8 -2.3,-1.2 -1.5,-.2 -1,-1.1 -3,.3 -1.2,-.8 h -1.2 l -1.2,.9 -5.5,.7 -6.6,-4.2 1.1,-5.6 -.4,-4.1 -3.2,-3.7 -3.7,.1 -.4,-1.1 .4,-1.2 -.7,-.8 -1,.1 -1.1,1.3 -1.5,-.2 -.5,-1.1 -1,-.1 -.7,.6 -2,-1.9 v 4.3 l -1.3,1.3 -1.1,3.5 -.1,2.3 -4.5,12.3 -13.2,31.3 -3.2,4.6 -1.6,-.1 .1,2.1 -5.2,7.1 -.3,3.3 1,1.3 .1,2.4 -1.2,1.1 -1.2,3 .1,5.7 1.2,2.9 z">
+<title>Oregon</title></path>
+
+<path class="pa" data-build="fade" d="m 826.3,189.4 -1.9,.3 -3,-2.2 -3,-5.8 h -2 l -.4,-1.5 -1.7,-1.1 -70.5,13.9 -.8,-6 -4.2,3.4 -.9,.1 -2.7,3 -3.3,1.7 4.9,29.9 3.2,19.7 17.4,-2.9 60.5,-11.8 1.2,-2.1 1.5,-1.1 1.6,-.3 1.6,.6 1.4,-1.7 1.6,-.6 1.8,-3 1.6,-2.3 3.3,-2.6 -4.2,-3.2 -2.1,-1.1 -1,-2.8 -2.7,-.9 -.5,-3.6 1,-1 .7,-2 -1.5,-1.8 3,-5.4 -.1,-2.2 1.8,-2.5 z">
+<title>Pennsylvania</title></path>
+
+<path class="ri" data-build="fade" d="m 883.2,170.7 -1.3,-1.1 -2.6,-1.3 -.6,-2.2 h -.8 l -.7,-2.6 -6.5,2 3.2,12.3 -.4,1.1 .4,1.8 5.6,-3.6 .1,-3 -.8,-.8 .4,-.6 -.1,-1.3 -.9,-.7 1.2,-.4 -.9,-1.6 1.8,.7 .3,1.4 .7,1.2 -1.4,-.8 1.1,1.7 -.3,1.2 -.6,-1.1 v 2.5 l .6,-.9 .4,.9 1.3,-1.5 -.2,-2.5 1.4,3.1 1,-.9 z m -4.7,12.2 h .9 l .5,-.6 -.8,-1.3 -.7,.7 z">
+<title>Rhode Island</title></path>
+
+<path class="sc" data-build="fade" d="m 772.3,350.2 -19.7,2.8 -.1,-2.6 -3.3,-3 -1.2,1.5 -.7,-.3 .2,-1.4 -.4,-.5 -23.2,2.2 -7.3,4.3 -1.3,.1 -4.4,1.9 -.1,1.9 -1.9,1 -1.4,3.2 .2,1.3 6.1,3.8 2.6,-.3 3.1,4 .4,1.7 4.2,5.1 2.6,1.7 1.4,.2 2.2,1.6 1.1,2.2 2,1.6 1.8,.5 2.7,2.7 .1,1.4 2.6,2.8 5,2.3 3.6,6.7 .3,2.7 3.9,2.1 2.5,4.8 .8,3.1 4.2,.4 .8,-1.5 h .6 l 1.8,-1.5 .5,-2 3.2,-2.1 .3,-2.4 -1.2,-.9 .8,-.7 .8,.4 1.3,-.4 1.8,-2.1 3.8,-1.8 1.6,-2.4 .1,-.7 4.8,-4.4 -.1,-.5 -.9,-.8 1.1,-1.5 h .8 l .4,.5 .7,-.8 h 1.3 l .6,-1.5 2.3,-2.1 -.3,-5.4 .8,-2.3 3.6,-6.2 2.4,-2.2 2.2,-1.1 z">
+<title>South Carolina</title></path>
+
+<path class="sd" data-build="fade" d="m 396.5,125.9 46,2.1 29.5,.4 -.1,2.2 -.9,2 -3.1,1.9 -.3,1.2 1.7,2.5 .4,1.8 2.6,.6 1.5,1.9 -.2,39.5 -2.2,-.1 -.1,1.6 1.3,1.5 -.1,1.1 -1,.5 .4,1.6 1.3,.4 .7,2 -1.7,5.1 -1,4.3 1.3,1.2 .3,1.3 .7,1.7 -1.5,.2 -1.8,-.7 -.9,-2.6 -1.2,-1.3 -6.1,-2.2 -.6,-1.1 -2,-.6 -1.4,.6 -1,-.5 -.9,.4 -.7,-.4 -.9,.4 -.7,-.5 -1,.7 -1.5,-.6 -1.8,2 -1.8,.1 -2.1,-2 -1.7,-.2 -3.4,-3.2 -38,-1.6 -51.1,-3.5 3.9,-43.9 2,-20.7 z">
+<title>South Dakota</title></path>
+
+<path class="tn" data-build="fade" d="m 620.9,365.1 45.7,-4 22.9,-2.9 .1,-4.9 1.4,-1.3 1.5,.1 1.3,-.9 .8,-4.1 4.6,-3 3.6,-.5 3.2,-2.6 .5,-1.2 4.7,-2.4 .6,-3.4 4,-3.3 .8,.2 .1,1.5 .8,.8 1.5,-1.2 .7,-2.1 3.5,-2.5 2.6,1.1 2.4,-5.2 1.4,-1.2 1.5,.1 0,-5.2 .3,-.7 -4.6,.5 -.2,1 -28.9,3.3 -5.6,1.4 -20.5,1.4 -5.2,.8 -17.4,1 -2.6,.8 -22.6,2 -.7,-.6 h -3.7 l 1.2,3.2 -.6,.9 -23.3,1.5 -.8,1 -.8,-.7 h -1 v 1.3 l .6,1 -.1,1 -1.4,.5 1.4,1.5 -.8,.7 -1.7,-.2 .6,1 1.2,1.1 v .7 l -1.2,.5 -1,2 .1,.6 1.4,1 -.4,.7 h -1.5 v .5 l .9,.9 .1,.8 -1.4,.2 -.5,.8 -1.6,.2 -.9,.9 .6,.9 1.1,-.1 .5,.9 -1.6,1.3 .4,1.5 -2,-.6 -.1,.7 .4,1.1 -.3,1.4 -1.3,-.8 -.8,.8 1.1,.1 .1,1.5 -.6,1 1.1,.9 -.3,1.5 .8,.7 -.7,1 -1.2,-.5 -.9,2.2 -1.6,.7 z">
+<title>Tennessee</title></path>
+
+<path class="tx" data-build="fade" d="m 282.3,429 .3,-3 34.4,3.6 31.8,2.6 7.9,-99.3 .8,0 52.6,3.2 -1.4,42.7 2.7,1.3 2.5,3 1.5,.3 1.1,-1 1.2,.4 1.4,1 1.1,-1.5 2.3,1.7 .5,2.9 1.2,.7 2.3,-.1 3.5,1.9 2,-.1 1.4,-.4 2.3,2.2 2,-2.3 3.5,1.1 1.9,3 2.3,-.1 -.7,2.1 2.3,1.1 3,-2.6 2.6,1.7 1.3,-.5 .1,1.5 1.7,1.2 2.3,-2.5 1.2,.7 -.3,2 1,1.8 1.2,-.8 2.5,-4.2 1.8,2 2,.5 2.1,-.7 2,1.8 1.2,-.1 1.3,1.2 3.6,-.9 .6,-1.7 3.7,-.3 1.6,.7 5,-2.5 .6,1.5 5.1,-.3 .5,-1.6 2.2,.9 4.6,3.8 6.4,1.9 2.6,2.3 2.8,-1.3 3.2,.8 .2,11.9 .5,19.9 .7,3.4 2.6,2.8 .7,5.4 3.8,4.6 .8,4.3 h 1 l -.1,7.3 -3.3,6.4 1.3,2.3 -1.3,1.5 .7,3 -.1,4.3 -2.2,3.5 -.1,.8 -1.7,1.2 1,1.8 1.2,1.1 -3.5,.3 -8.4,3.9 -3.5,1.4 -1.8,1.8 -.7,-.5 2.1,-2.3 1.8,-.7 .5,-.9 -2.9,-.1 -.7,-.8 .8,-2 -.9,-1.8 h -.6 l -2.4,1.3 -1.9,2.6 .3,1.7 3.3,3.4 1.3,.3 v .8 l -2.3,1.6 -4.9,4 -4,3.9 -3.2,1.4 -5,3 -3.7,2 -4.5,1.9 -4.1,2.5 3.2,-3 v -1.1 l .6,-.8 -.2,-1.8 -1.5,-.1 -1.1,1.5 -2.6,1.3 -1.8,-1.2 -.3,-1.7 h -1.5 l .8,2.2 1.4,.7 1.2,.9 1.8,1.6 -.7,.8 -3.9,1.7 -1.7,.1 -1.2,-1.2 -.5,2.1 .5,1.1 -2.7,2 -1.5,.2 -.8,.7 -.4,1.7 -1.8,3.3 -1.6,.7 -1.6,-.6 -1.8,1.1 .3,1.4 1.3,.8 1,.8 -1.8,3.5 -.3,2.8 -1,1.7 -1.4,1 -2.9,.4 1.8,.6 1.9,-.6 -.4,3.2 -1.1,-.1 .2,1.2 .3,1.4 -1.3,.9 v 3.1 l 1.6,1.4 .6,3.1 -.4,2.2 -1,.4 .4,1.5 1.1,.4 .8,1.7 v 2.6 l 1.1,2.1 2.2,2.6 -.1,.7 -2.2,-.2 -1.6,1.4 .2,1.4 -.9,-.3 -1.4,-.2 -3.4,-3.7 -2.3,-.6 h -7.1 l -2.8,-.8 -3.6,-3 -1.7,-1 -2.1,.1 -3.2,-2.6 -5.4,-1.6 v -1.3 l -1.4,-1.8 -.9,-4.7 -1.1,-1.7 -1.7,-1.4 v -1.6 l -1.4,-.6 .6,-2.6 -.3,-2.2 -1.3,-1.4 .7,-3 -.8,-3.2 -1.7,-1.4 h -1.1 l -4,-3.5 .1,-1.9 -.8,-1.7 -.8,-.2 -.9,-2.4 -2,-1.6 -2.9,-2.5 -.2,-2.1 -1,-.7 .2,-1.6 .5,-.7 -1.4,-1.5 .1,-.7 -2,-2.2 .1,-2.1 -2.7,-4.9 -.1,-1.7 -1.8,-3.1 -5.1,-4.8 v -1.1 l -3.3,-1.7 -.1,-1.8 -1.2,-.4 v -.7 l -.8,-.2 -2.1,-2.8 h -.8 l -.7,-.6 -1.3,1.1 h -2.2 l -2.6,-1.1 h -4.6 l -4.2,-2.1 -1.3,1.9 -2.2,-.6 -3.3,1.2 -1.7,2.8 -2,3.2 -1.1,4.4 -1.4,1.2 -1.1,.1 -.9,1.6 -1.3,.6 -.1,1.8 -2.9,.1 -1.8,-1.5 h -1 l -2,-2.9 -3.6,-.5 -1.7,-2.3 -1.3,-.2 -2.1,-.8 -3.4,-3.4 .2,-.8 -1.6,-1.2 -1,-.1 -3.4,-3.1 -.1,-2 -2.3,-4 .2,-1.6 -.7,-1.3 .8,-1.5 -.1,-2.4 -2.6,-4.1 -.6,-4.2 -1.6,-1.6 v -1 l -1.2,-.2 -.7,-1.1 -2.4,-1.7 -.9,-.1 -1.9,-1.6 v -1.1 l -2.9,-1.8 -.6,-2.1 -2.6,-2.3 -3.2,-4.4 -3,-1.3 -2.1,-1.8 .2,-1.2 -1.3,-1.4 -1.7,-3.7 -2.4,-1 z m 174.9,138.3 .8,.1 -.6,-4.8 -3.5,-12.3 -.2,-8.1 4.9,-10.5 6.1,-8.2 7.2,-5.1 v -.7 h -.8 l -2.6,1 -3.6,2.3 -.7,1.5 -8.2,11.6 -2.8,7.9 v 8.8 l 3.6,12 z">
+<title>Texas</title></path>
+
+<path class="ut" data-build="fade" d="m 233.2,217.9 3.3,-21.9 -47.9,-8.2 -21,109 46.2,8.2 40,6 11.5,-88.3 z">
+<title>Utah</title></path>
+
+<path class="vt" data-build="fade" d="m 859.1,102.4 -1.1,3.5 2.1,2.8 -.4,1.7 .1,1.3 -1.1,2.1 -1.4,.4 -.6,1.3 -2.1,1 -.7,1.5 1.4,3.4 -.5,2.5 .5,1.5 -1,1.9 .4,1.9 -1.3,1.9 .2,2.2 -.7,1.1 .7,4.5 .7,1.5 -.5,2.6 .9,1.8 -.2,2.5 -.5,1.3 -.1,1.4 2.1,2.6 -12.4,2.7 -1.1,-1 .5,-2 -3,-14.2 -1.9,-1.5 -.9,1.6 -.9,-2.2 .8,-1.8 -3.1,-6.7 .3,-3.8 .4,-1 -.6,-2 .4,-2.2 -2.2,-2.3 -.5,-3.2 .4,-1.5 -1.4,-.9 .6,-1.9 -.8,-1.7 27.3,-6.9 z">
+<title>Vermont</title></path>
+
+<path class="va" data-build="fade" d="m 834.7,265.4 -1.1,2.8 .5,1.1 .4,-1.1 .8,-3.1 z m -34.6,-7 -.7,-1 1,-.1 1,-.9 .4,-1.8 -.2,-.5 .1,-.5 -.3,-.7 -.6,-.5 -.4,-.1 -.5,-.4 -.6,-.6 h -1 l -.6,-.1 -.4,-.4 .1,-.5 -1.7,-.6 -.8,.3 -1.2,-.1 -.7,-.7 -.5,-.2 -.2,-.7 .6,-.8 v -.9 l -1.2,-.2 -1,-.9 -.9,.1 -1.6,-.3 -.4,.7 -.4,1.6 -.5,2.3 -10,-5.2 -.2,.9 .9,1.6 -.8,2.3 .1,2.9 -1.2,.8 -.5,2.1 -.9,.8 -1.4,1.8 -.9,.8 -1,2.5 -2.4,-1.1 -2.3,8.5 -1.3,1.6 -2.8,-.5 -1.3,-1.9 -2.3,-.7 -.1,4.7 -1.4,1.7 .4,1.5 -2.1,2.2 .4,1.9 -3.7,6.3 -1,3.3 1.5,1.2 -1.5,1.9 .1,1.4 -2.3,2 -.7,-1.1 -4.3,3.1 -1.5,-1 -.6,1.4 .8,.5 -.5,.9 -5.5,2.4 -3,-1.8 -.8,1.7 -1.9,1.8 -2.3,.1 -4.4,-2.3 -.1,-1.5 -1.5,-.7 .8,-1.2 -.7,-.6 -4.9,6.6 -2.9,1 -3,3 -.4,2.2 -2.1,1.3 -.1,1.7 -1.4,1.4 -1.8,.5 -.5,1.9 -1,.4 -6.9,4.2 28.9,-3.3 .2,-1 4.6,-.5 -.3,.7 29.4,-3.5 39.4,-7.3 29.1,-6.1 -.6,-1.2 .4,-.1 .9,.9 -.1,-1.4 -.3,-1.9 1.6,1.2 .9,2.1 v -1.3 l -3.4,-5.5 v -1.2 l -.7,-.8 -1.3,.7 .5,1.4 h -.8 l -.4,-1 -.6,.9 -.9,-1.1 -2.1,-.1 -.2,.7 1.5,2.1 -1.4,-.7 -.5,-1 -.4,.8 -.8,.1 -1.5,1.7 .3,-1.6 v -1.4 l -1.5,-.7 -1.8,-.5 -.2,-1.7 -.6,-1.3 -.6,1.1 -1.7,-1 -2,.3 .2,-.9 1.5,-.2 .9,.5 1.7,-.8 .9,.4 .5,1 v .7 l 1.9,.4 .3,.9 .9,.4 .9,1.2 1.4,-1.6 h .6 l -.1,-2.1 -1.3,1 -.6,-.9 1.5,-.2 -1.2,-.9 -1.2,.6 -.1,-1.7 -1.7,.2 -2.2,-1.1 -1.8,-2.2 3.6,2.2 .9,.3 1.7,-.8 -1.7,-.9 .6,-.6 -1,-.5 .8,-.2 -.3,-.9 1.1,.9 .4,-.8 .4,1.3 1.2,.8 .6,-.5 -.5,-.6 -.1,-2.5 -1.1,-.1 -1.6,-.8 .9,-1.1 -2,-.1 -.4,-.5 -1.4,.6 -1.4,-.8 -.5,-1.2 -2.1,-1.2 -2.1,-1.8 -2.2,-1.9 3,1.3 .9,1.2 2.1,.7 2.3,2.5 .2,-1.7 .6,1.3 2.3,.5 v -4 l -.8,-1.1 1.1,.4 .1,-1.6 -3.1,-1.4 -1.6,-.2 -1.3,-.2 .3,-1.2 -1.5,-.3 -.1,-.6 h -1.8 l -.2,.8 -.7,-1 h -2.7 l -1,-.4 -.2,-1 -1.2,-.6 -.4,-1.5 -.6,-.4 -.7,1.1 -.9,.2 -.9,.7 h -1.5 l -.9,-1.3 .4,-3.1 .5,-2.4 .6,.5 z m 21.9,11.6 .9,-.1 0,-.6 -.8,.1 z m 7.5,14.2 -1,2.7 1.2,-1.3 z m -1.8,-15.3 .7,.3 -.2,1.9 -.5,-.5 -1.3,1 1,.4 -1.8,4.4 .1,8.1 1.9,3.1 .5,-1.5 .4,-2.7 -.3,-2.3 .7,-.9 -.2,-1.4 1.2,-.6 -.6,-.5 .5,-.7 .8,1.1 -.2,1.1 -.4,3.9 1.1,-2.2 .4,-3.1 .1,-3 -.3,-2 .6,-2.3 1.1,-1.8 .1,-2.2 .3,-.9 -4.6,1.6 -.7,.8 z">
+<title>Virginia</title></path>
+
+<path class="wa" data-build="fade" d="m 161.9,83.6 .7,4 -1.1,4.3 -30.3,-7.3 -2.8,1 -5.4,-.9 -1.8,-.9 -1.5,1.2 -3.3,-.4 -4.5,.5 -.9,.7 -4.2,-.4 -.8,-1.6 -1.2,-.2 -4.4,1.3 -1.6,-1.1 -2.2,.8 -.2,-1.8 -2.3,-1.2 -1.5,-.2 -1,-1.1 -3,.3 -1.2,-.8 h -1.2 l -1.2,.9 -5.5,.7 -6.6,-4.2 1.1,-5.6 -.4,-4.1 -3.2,-3.7 -3.7,.1 -.4,-1.1 .4,-1.2 -.7,-.8 -1,.1 -2.1,-1.5 -1.2,.4 -2,-.1 -.7,-1.5 -1.6,-.3 2.5,-7.5 -.7,6 .5,.5 v -2 l .8,-.2 1.1,2.3 -.5,-2.2 1.2,-4.2 1.8,.4 -1.1,-2 -1,.3 -1.5,-.4 .2,-4.2 .2,1.5 .9,.5 .6,-1.6 h 3.2 l -2.2,-1.2 -1.7,-1.9 -1.4,1.6 1.2,-3.1 -.3,-4.6 -.2,-3.6 .9,-6.1 -.5,-2 -1.4,-2.1 .1,-4 .4,-2.7 2,-2.3 -.7,-1.4 .2,-.6 .9,.1 7.8,7.6 4.7,1.9 5.1,2.5 3.2,-.1 .2,3 1,-1.6 h .7 l .6,2.7 .5,-2.6 1.4,-.2 .5,.7 -1.1,.6 .1,1.6 .7,-1.5 h 1.1 l -.4,2.6 -1.1,-.8 .4,1.4 -.1,1.5 -.8,.7 -2.5,2.9 1.2,-3.4 -1.6,.4 -.4,2.1 -3.8,2.8 -.4,1 -2.1,2.2 -.1,1 h 2.2 l 2.4,-.2 .5,-.9 -3.9,.5 v -.6 l 2.6,-2.8 1.8,-.8 1.9,-.2 1,-1.6 3,-2.3 v -1.4 h 1.1 l .1,4 h -1.5 l -.6,.8 -1.1,-.9 .3,1.1 v 1.7 l -.7,.7 -.3,-1.6 -.8,.8 .7,.6 -.9,1.1 h 1.3 l .7,-.5 .1,2 -1,1.9 -.9,1 -.1,1.8 -1,-.2 -.2,-1.4 .9,-1.1 -.8,-.5 -.8,.7 -.7,2.2 -.8,.9 -.1,-2 .8,-1.1 -.2,-1.1 -1.2,1.2 .1,2.2 -.6,.4 -2.1,-.4 -1.3,1.2 2.2,-.6 -.2,2.2 1,-1.8 .4,1.4 .5,-1 .7,1.8 h .7 l .7,-.8 .6,-.1 2,-1.9 .2,-1.2 .8,.6 .3,.9 .7,-.3 .1,-1.2 h 1.3 l .2,-2.9 -.1,-2.7 .9,.3 -.7,-2.1 1.4,-.8 .2,-2.4 2.3,-2.2 1,.1 .3,-1.4 -1.2,-1.4 -.1,-3.5 -.8,.9 .7,2.9 -.6,.1 -.6,-1.9 -.6,-.5 .3,-2.3 1.8,-.1 .3,.7 .3,-1.6 -1.6,-1.7 -.6,-1.6 -.2,2 .9,1.1 -.7,.4 -1,-.8 -1.8,1.3 1.5,.5 .2,2.4 -.3,1.8 .9,-1.3 1.4,2.3 -.4,1.9 h -1.5 v -1.2 l -1.5,-1.2 .5,-3 -1.9,-2.6 2.7,-3 .6,-4.1 h .9 l 1.4,3.2 v -2.6 l 1.2,.3 v -3.3 l -.9,-.8 -1.2,2.5 -1,-3 1.3,-.1 -1.5,-4.9 1.9,-.6 25.4,7.5 31.7,8 23.6,5.5 z m -78.7,-39.4 h .5 l .1,.8 -.5,.3 .1,.6 -.7,.4 -.2,-.9 .5,-.4 z m 5,-4.3 -1.2,1.9 -.1,.8 .4,.2 .5,-.6 1.1,.1 z m -.4,-21.6 .5,.6 1.3,-.3 .2,-1 1.2,-1.8 -1,-.4 -.7,1.6 -.1,-1.6 -1.1,.2 -.7,1.4 z m 3.2,-5.5 .7,1.5 -.9,.2 -.8,.4 -.2,-2.4 z m -2.7,-1.6 -1.1,-.2 .5,1.4 z m -1,2.5 .8,.4 -.4,1.1 1.7,-.5 -.2,-2.2 -.9,-.2 z m -2.7,-.4 .3,2.7 1.6,1.3 .6,-1.9 -1.1,-2.2 z m 1.9,-1.1 -1.1,-1 -.9,.1 1.8,1.5 z m 3.2,-7 h -1.2 v .8 l 1.2,.6 z m -.9,32.5 .4,-2.7 h -1.1 l -.2,1.9 z">
+<title>Washington</title></path>
+
+<path class="wv" data-build="fade" d="m 723.4,297.5 -.8,1.2 1.5,.7 .1,1.5 4.4,2.3 2.3,-.1 1.9,-1.8 .8,-1.7 3,1.8 5.5,-2.4 .5,-.9 -.8,-.5 .6,-1.4 1.5,1 4.3,-3.1 .7,1.1 2.3,-2 -.1,-1.4 1.5,-1.9 -1.5,-1.2 1,-3.3 3.7,-6.3 -.4,-1.9 2.1,-2.2 -.4,-1.5 1.4,-1.7 .1,-4.7 2.3,.7 1.3,1.9 2.8,.5 1.3,-1.6 2.3,-8.5 2.4,1.1 1,-2.5 .9,-.8 1.4,-1.8 .9,-.8 .5,-2.1 1.2,-.8 -.1,-2.9 .8,-2.3 -.9,-1.6 .2,-.9 10,5.2 .5,-2.3 .4,-1.6 .4,-.7 -.9,-.4 .2,-1.6 -1,-.5 -.2,-.7 h -.7 l -.8,-1.2 .2,-1 -2.6,.4 -2.2,-1.6 -1.4,.3 -.9,1.4 h -1.3 l -1.7,2.9 -3.3,.4 -1.9,-1 -2.6,3.8 -2.2,-.3 -3.1,3.9 -.9,1.6 -1.8,1.6 -1.7,-11.4 -17.4,2.9 -3.2,-19.7 -2.2,1.2 1.4,2.1 -.1,2.2 .6,2 -1.1,3.4 -.1,5.4 -1,3.6 .5,1.1 -.4,2.2 -1.1,.5 -2,3.3 -1.8,2 h -.6 l -1.8,1.7 -1.3,-1.2 -1.5,1.8 -.3,1.2 h -1.3 l -1.3,2.2 .1,2.1 -1,.5 1.4,1.1 v 1.9 l -1,.2 -.7,.8 -1,.5 -.6,-2.1 -1.6,-.5 -1,2.3 -.3,2.2 -1.1,1.3 1.3,3.6 -1.5,.8 -.4,3.5 h -1.5 l -3.2,1.4 -.1,1.1 .6,1 -.6,3.6 1.9,1.6 .8,1.1 1,.6 -.1,.9 4.4,5.6 h 1.4 l 1.5,1.8 1.2,.3 1.4,-.1 z">
+<title>West Virginia</title></path>
+
+<path class="wi" data-build="fade" d="m 611,144 -2.9,.8 .2,2.3 -2.4,3.4 -.2,3.1 .6,.7 .8,-.7 .5,-1.6 2,-1.1 1.6,-4.2 3.5,-1.1 .8,-3.3 .7,-.9 .4,-2.1 1.8,-1.1 v -1.5 l 1,-.9 1.4,.1 v 2 l -1,.1 .5,1.2 -.7,2.2 -.6,.1 -1.2,4.5 -.7,.5 -2.8,7.2 -.3,4.2 .6,2 .1,1.3 -2.4,1.9 .3,1.9 -.9,3.1 .3,1.6 .4,3.7 -1.1,4.1 -1.5,5 1,1.5 -.3,.3 .8,1.7 -.5,1.1 1.1,.9 v 2.7 l 1.3,1.5 -.4,3 .3,4 -45.9,2.8 -1.3,-2.8 -3.3,-.7 -2.7,-1.5 -2,-5.5 .1,-2.5 1.6,-3.3 -.6,-1.1 -2.1,-1.6 -.2,-2.6 -1.1,-4.5 -.2,-3 -2.2,-3 -2.8,-.7 -5.2,-3.6 -.6,-3.3 -6.3,-3.1 -.2,-1.3 h -3.3 l -2.2,-2.6 -2,-1.3 .7,-5.1 -.9,-1.6 .5,-5.4 1,-1.8 -.3,-2.7 -1.2,-1.3 -1.8,-.3 v -1.7 l 2.8,-5.8 5.9,-3.9 -.4,-13 .9,.4 .6,-.5 .1,-1.1 .9,-.6 1.4,1.2 .7,-.1 h 2.6 l 6.8,-2.6 .3,-1 h 1.2 l .7,-1.2 .4,.8 1.8,-.9 1.8,-1.7 .3,.5 1,-1 2.2,1.6 -.8,1.6 -1.2,1.4 .5,1.5 -1.4,1.6 .4,.9 2.3,-1.1 v -1.4 l 3.3,1.9 1.9,.7 1.9,.7 3,3.8 17,3.8 1.4,1 4,.8 .7,.5 2.8,-.2 4.9,.8 1.4,1.5 -1,1 .8,.8 3.8,.7 1.2,1.2 .1,4.4 -1.3,2.8 2,.1 1,-.8 .9,.8 -1.1,3.1 1,1.6 1.2,.3 z m -49.5,-37.3 -.5,.1 -1.5,1.6 .2,.5 1.5,-.6 v -.6 l .9,-.3 z m 1.6,-1.1 -1,.3 -.2,.7 .9,-.1 z m -1.3,-1.6 -.2,.9 h 1.7 l .6,-.4 .1,-1 z m 2.8,-3 -.3,1.9 1.2,-.5 .1,-1.4 z m 58.3,31.9 -2,.3 -.4,1.3 1.3,1.7 z">
+<title>Wisconsin</title></path>
+
+<path class="wy" data-build="fade" d="m 355.3,143.7 -51,-5.3 -57.3,-7.9 -2,10.7 -8.5,54.8 -3.3,21.9 32.1,4.8 44.9,5.7 37.5,3.4 3.7,-44.2 z">
+<title>Wyoming</title></path>
+
+<path class="dc" data-build="fade" d="m 803.5,252 -2.6,-1.8 -1,1.7 .5,.4 .4,.1 .6,.5 .3,.7 -.1,.5 .2,.5 z">
+<title>District of Columbia</title></path>
+
+</g>
+
+<g class="borders" fill="none">
+<path class="al-fl" d="m 687.6,447.4 -48.8,5.1 -.5,2.9 2.5,2.8 1.7,.7 .9,1.2 -.4,7.3 -1.1,.6"/>
+<path class="al-ga" d="m 666.6,361.1 12.9,45.8 2.9,6.1 1.8,1.9 v 3.2 l 1.7,1 .2,1.1 -2.2,3.8 -.3,3.7 -.5,2.6 2.4,5.7 -.6,6.3 .5,1.4 1.5,1.5 .7,2.2"/>
+<path class="al-ms" d="m 620.9,365.1 1.3,2 -1.3,67 4.4,33.2"/>
+<path class="al-tn" d="m 620.9,365.1 45.7,-4"/>
+<path class="ar-la" d="m 516.7,414.2 52.3,-1.3"/>
+<path class="ar-mo" d="m 591.7,344.9 -11.2,.8 2.8,-5.1 1.7,-1.5 v -2.2 l -1.6,-2.5 -39.8,2 -39.1,.7"/>
+<path class="ar-ms" d="m 569,412.9 1.2,-1.5 .5,-3 -1.5,-2.3 -.5,-2.2 .9,-.7 v -.8 l -1.7,-1.1 -.1,-.7 1.6,-.9 -1.2,-1.1 1.7,-7.1 3.4,-1.6 0,-.8 -1.1,-1.4 2.9,-5.4 h 1.9 l 1.5,-1.2 -.3,-5.2 3.1,-4.5 1.8,-.6 -.5,-3.1"/>
+<path class="ar-ok" d="m 507.9,400.5 .7,-39 -4.1,-24.4"/>
+<path class="ar-tn" d="m 582.6,367.7 1.6,-.7 .9,-2.2 1.2,.5 .7,-1 -.8,-.7 .3,-1.5 -1.1,-.9 .6,-1 -.1,-1.5 -1.1,-.1 .8,-.8 1.3,.8 .3,-1.4 -.4,-1.1 .1,-.7 2,.6 -.4,-1.5 1.6,-1.3 -.5,-.9 -1.1,.1 -.6,-.9 .9,-.9 1.6,-.2 .5,-.8 1.4,-.2 -.1,-.8 -.9,-.9 0,-.5 h 1.5 l .4,-.7 -1.4,-1 -.1,-.6"/>
+<path class="ar-tx" d="m 507.9,400.5 2.6,2.3 2.8,-1.3 3.2,.8 .2,11.9"/>
+<path class="az-ca" d="m 149,338.1 -.9,2.1 1.3,3.4 1.4,1.8 1.2,5.8 2.3,2.5 .4,1.9 -1.3,1.3 -4.8,1.7 -2.4,3.6 -1.6,7 -2.4,3.2 -1.6,.3 -1.1,6.9 1.1,1.6 1.8,.2 1,1.6 -.8,2.4 -3,2.2 -2.2,-.1"/>
+<path class="az-nm" d="m 253.8,311 -17.4,124.1"/>
+<path class="az-nv" d="m 167.6,296.8 -3.4,17.5 -2.4,2.9 h -2 l -1.2,-2.7 -3.7,-1.4 -3.5,.6 -1,13.6 .5,4.9 -.5,2.9 -1.4,3"/>
+<path class="az-ut" d="m 167.6,296.8 46.2,8.2 40,6"/>
+<path class="ca-nv" d="m 93.9,166.5 -16.4,63.1 1.1,3.5 70.4,105"/>
+<path class="ca-or" d="m 27.8,147.9 66.1,18.6"/>
+<path class="co-ks" d="m 379.4,256.3 -4.8,67"/>
+<path class="co-ne" d="m 347.7,231.8 33.1,2.4 -1.4,22.1"/>
+<path class="co-nm" d="m 253.8,311 52.6,6.5 51.7,4.8"/>
+<path class="co-ok" d="m 358.1,322.3 16.5,1"/>
+<path class="co-ut" d="m 265.3,222.7 -11.5,88.3"/>
+<path class="co-wy" d="m 265.3,222.7 44.9,5.7 37.5,3.4"/>
+<path class="ct-ma" d="m 843.8,171.3 10.5,-2.4 .5,.7 .9,-.3 0,-.7 14.9,-3.4 .1,.3"/>
+<path class="ct-ny" d="m 846.6,194.7 -1.7,-2.2 3.5,-3.4 -1.8,-1.5 -2.8,-16.3"/>
+<path class="ct-ri" d="m 870.7,165.5 3.2,12.3 -.4,1.1 .4,1.8"/>
+<path class="dc-md" d="m 801.8,254.6 1.7,-2.6 -2.6,-1.8 -1,1.7"/>
+<path class="dc-va" d="m 799.9,251.9 .5,.4 .4,.1 .6,.5 .3,.7 -.1,.5 .2,.5"/>
+<path class="de-md" d="m 817.9,230.1 7.6,27.1 10.9,-2.3"/>
+<path class="de-nj" d="m 823.8,227.2 -1,2.2 -.3,2.1"/>
+<path class="de-pa" d="m 817.9,230.1 1.2,-2.1 1.5,-1.1 1.6,-.3 1.6,.6"/>
+<path class="fl-ga" d="m 687.6,447.4 3.3,6 50.1,-3.3 .6,3.2 1,1.1 2.1,-.6 .5,-4.3 -1.4,-2.1 v -2.5 l 2.2,-1.4 1.7,.9 4,.7 3.6,-.3"/>
+<path class="ga-nc" d="m 689.5,358.2 21.4,-3"/>
+<path class="ga-sc" d="m 710.9,355.2 -.1,1.9 -1.9,1 -1.4,3.2 .2,1.3 6.1,3.8 2.6,-.3 3.1,4 .4,1.7 4.2,5.1 2.6,1.7 1.4,.2 2.2,1.6 1.1,2.2 2,1.6 1.8,.5 2.7,2.7 .1,1.4 2.6,2.8 5,2.3 3.6,6.7 .3,2.7 3.9,2.1 2.5,4.8 .8,3.1 4.2,.4"/>
+<path class="ga-tn" d="m 666.6,361.1 22.9,-2.9"/>
+<path class="ia-il" d="m 556.8,249.7 .7,-.7 .1,-2.3 -.7,-.9 1,-1.5 1.8,-.6 .9,-.3 1,-1.2 0,-2.4 1.7,-2.4 .5,-.5 .1,-3.5 -.9,-1.4 -1,-.3 -1.1,-1.6 1,-4 3,-.8 h 2.4 l 4.2,-1.8 1.7,-2.2 .1,-2.4 1.1,-1.3 1.3,-3.2 -.1,-2.6 -2.8,-3.5 -1.2,0 -.9,-1.1 .2,-1.6 -1.7,-1.7 -2.5,-1.3 .5,-.6"/>
+<path class="ia-mn" d="m 473.6,182 28.2,0 36.3,-.9 18.6,-.7"/>
+<path class="ia-mo" d="m 484.5,246.8 25.9,.1 27.2,-1.2 14.3,-.8 1.7,1.3 .6,1.6 1.1,1.1 1.5,.8"/>
+<path class="ia-ne" d="m 484.5,246.8 -1.8,-4.4 .7,-2.2 -.8,-3.3 .2,-2.9 -1.3,-.7 -.4,-6.1 -2.8,-5 -.2,-3.7 -2.2,-4.3 -1.3,-3.7 v -1.4 l -.6,-1.7 v -2.3 l -.5,-.9"/>
+<path class="ia-sd" d="m 473.5,204.2 -.7,-1.7 -.3,-1.3 -1.3,-1.2 1,-4.3 1.7,-5.1 -.7,-2 -1.3,-.4 -.4,-1.6 1,-.5 .1,-1.1 -1.3,-1.5 .1,-1.6 2.2,.1"/>
+<path class="ia-wi" d="m 567.2,202 -1.3,-2.8 -3.3,-.7 -2.7,-1.5 -2,-5.5 .1,-2.5 1.6,-3.3 -.6,-1.1 -2.1,-1.6 -.2,-2.6"/>
+<path class="id-mt" d="m 188.8,30.5 -4.8,22 3.7,7.4 -1.6,4.8 3.6,4.8 1.9,.7 3.9,8.3 v 2.1 l 2.3,3 h .9 l 1.4,2.1 h 3.2 v 1.6 l -7.1,17 -.5,4.1 1.4,.5 1.6,2.6 2.8,-1.4 3.6,-2.4 1.9,1.9 .5,2.5 -.5,3.2 2.5,9.7 2.6,3.5 2.3,1.4 .4,3 v 4.1 l 2.3,2.3 1.6,-2.3 6.9,1.6 2.1,-1.2 9,1.7 2.8,-3.3 1.8,-.6 1.2,1.8 1.6,4.1 .9,.1"/>
+<path class="id-nv" d="m 140.9,177.7 24.4,5.4 23.3,4.7"/>
+<path class="id-or" d="m 140.9,177.7 8.5,-37.3 2.9,-5.8 .4,-2.1 .8,-.9 -.9,-2 -2.9,-1.2 .2,-4.2 4,-5.8 2.5,-.8 1.6,-2.3 -.1,-1.6 1.8,-1.6 3.2,-5.5 4.2,-4.8 -.5,-3.2 -3.5,-3.1 -1.6,-3.6"/>
+<path class="id-ut" d="m 236.5,196 -47.9,-8.2"/>
+<path class="id-wa" d="m 174.6,27.5 -12.7,56.1 .7,4 -1.1,4.3"/>
+<path class="id-wy" d="m 245,141.2 -8.5,54.8"/>
+<path class="il-in" d="m 619.4,215.7 4.1,50.2 -1,5.2 v 2 l 2.4,3.5 v .7 l -.3,.9 .9,1.9 -.3,2.4 -1.6,1.8 -1.3,4.2 -3.8,5.3 -.1,7 h -1 l .9,1.9"/>
+<path class="il-ky" d="m 599.9,322.5 -.3,-1.8 4,-3.7 6.9,3 1.5,-.3 .4,-2.4 -1.7,-1.8 .4,-3.3 1,-.5 1.2,.6 .6,-1.2 3.7,-.6 .1,-.9 -1.5,-2.2 -.1,-1.1 2.2,-2.7 v -.9"/>
+<path class="il-mo" d="m 599.9,322.5 -2.8,0 -1.4,-1.5 -1.8,-3.8 v -1.9 l .8,-.6 .1,-1.3 -1.7,-1.9 -.9,-2.5 -2.7,-4.1 -4.8,-1.3 -7.4,-7.1 -.4,-2.4 2.8,-7.6 -.4,-1.9 1.2,-1.1 v -1.3 l -2.8,-1.5 -3,-.7 -3.4,1.2 -1.3,-2.3 .6,-1.9 -.7,-2.4 -8.6,-8.4 -2.2,-1.5 -2.5,-5.9 -1.2,-5.4 1.4,-3.7"/>
+<path class="il-wi" d="m 567.2,202 45.9,-2.8"/>
+<path class="in-ky" d="m 618.3,302.7 1.1,.8 .6,-1 -.7,-1.7 4.6,-.5 .2,1.2 1.1,.2 .4,-.9 -.6,-1.3 .3,-.8 1.3,.8 1.7,-.4 1.7,.6 3.4,2.1 1.8,-2.8 3.5,-2.2 3,3.3 1.6,-2.1 .3,-2.7 3.8,-2.3 .2,1.3 1.9,1.2 3,-.2 1.2,-.7 .1,-3.4 2.5,-3.7 4.6,-4.4 -.1,-1.7 1.2,-3.8 2.2,1 6.7,-4.5 -.4,-1.7 -1.5,-2.1 1,-1.9"/>
+<path class="in-mi" d="m 630.9,213.2 32.4,-3.4 .1,1.4"/>
+<path class="in-oh" d="m 670,268.4 -6.6,-57.2"/>
+<path class="ks-mo" d="m 504.3,326.3 -.5,-48.1 -3.2,-.7 -2.6,-4.7 -2.5,-2.5 .5,-2.3 2.7,-2.6 .1,-1.2 -1.5,-2.1 -.9,1 -2,-.6 -2.9,-3"/>
+<path class="ks-ne" d="m 379.4,256.3 36,2 43.7,1.2 h 32.4"/>
+<path class="ks-ok" d="m 374.6,323.3 67.7,2.9 62,.1"/>
+<path class="ky-mo" d="m 596.7,333.5 1,-2.7 1.4,.9 .7,-.4 1.2,-4.1 -1,-1 1,-2 .2,-.9 -1.3,-.8 m -5.8,11.3 -.7,-.7 .2,-1 h 1.1 l .7,.7 -.3,1"/>
+<path class="ky-oh" d="m 670,268.4 1.3,.5 2.2,.1 1.9,-.8 2.9,1.2 2.2,3.4 v 1 l 4.1,.7 2.3,-.2 1.9,2.1 2.2,.2 v -1 l 1.9,-.8 3,.8 1.2,.8 1.3,-.7 h .9 l .6,-1.7 3.4,-1.8 .5,.8 .8,2.9 3.5,1.4 1.2,2.1"/>
+<path class="ky-tn" d="m 596.7,333.5 23.3,-1.5 .6,-.9 -1.2,-3.2 h 3.7 l .7,.6 22.6,-2 2.6,-.8 17.4,-1 5.2,-.8 20.5,-1.4 5.6,-1.4 m -103.6,12.7 h 1"/>
+<path class="ky-va" d="m 697.7,321.1 6.9,-4.2 1,-.4 .5,-1.9 1.8,-.5 1.4,-1.4 .1,-1.7 2.1,-1.3 .4,-2.2 3,-3 2.9,-1 4.9,-6.6"/>
+<path class="ky-wv" d="m 709.3,279.4 -.1,1.1 .6,1 -.6,3.6 1.9,1.6 .8,1.1 1,.6 -.1,.9 4.4,5.6 h 1.4 l 1.5,1.8 1.2,.3 1.4,-.1"/>
+<path class="la-ms" d="m 569,412.9 -.6,1.4 1.6,7.1 1.2,1 -.5,1.7 2.4,2.5 v 3.3 l -2,0 1.8,2.5 -6,8.4 -2.4,4.8 -1.7,11.9 36,-2 -.1,1.4 -1,1.4 -.9,4.6 4.8,6.8 -.3,1.3 1.2,1.8 .6,.7"/>
+<path class="la-tx" d="m 516.7,414.2 .5,19.9 .7,3.4 2.6,2.8 .7,5.4 3.8,4.6 .8,4.3 h 1 l -.1,7.3 -3.3,6.4 1.3,2.3 -1.3,1.5 .7,3 -.1,4.3 -2.2,3.5 -.1,.8 -1.7,1.2 1,1.8 1.2,1.1"/>
+<path class="ma-nh" d="m 856,152.6 18.4,-3.8 1,-1.5 .3,-1.7 1.9,-.6 .5,-1.1 1.7,-1.1 1.3,.3"/>
+<path class="ma-ny" d="m 843.8,171.3 -.7,-1 .5,-15"/>
+<path class="ma-ri" d="m 870.7,165.5 6.5,-2 .7,2.6 h .8 l .6,2.2 2.6,1.3 1.3,1.1 1.4,3"/>
+<path class="ma-vt" d="m 843.6,155.3 12.4,-2.7"/>
+<path class="md-pa" d="m 757.4,241.9 60.5,-11.8"/>
+<path class="md-va" d="m 822.9,269.3 -.8,.1 m 13.2,-4.3 -.6,.3 m -1.3,.2 -4.6,1.6 -.7,.8 m -28.2,-16.1 -.6,-.6 h -1 l -.6,-.1 -.4,-.4 .1,-.5 -1.7,-.6 -.8,.3 -1.2,-.1 -.7,-.7 -.5,-.2 -.2,-.7 .6,-.8 v -.9 l -1.2,-.2 -1,-.9 -.9,.1 -1.6,-.3 m 11.6,13.5 .3,-.4 -.7,-1 1,-.1 1,-.9 .4,-1.8"/>
+<path class="md-wv" d="m 757.4,241.9 1.7,11.4 1.8,-1.6 .9,-1.6 3.1,-3.9 2.2,.3 2.6,-3.8 1.9,1 3.3,-.4 1.7,-2.9 h 1.3 l .9,-1.4 1.4,-.3 2.2,1.6 2.6,-.4 -.2,1 .8,1.2 h .7 l .2,.7 1,.5 -.2,1.6 .9,.4"/>
+<path class="me-nh" d="m 881.9,138.3 -2.3,-1.4 -.8,-2.2 -3.2,-2 -.6,-4 -11.9,-36.8"/>
+<path class="mi-oh" d="m 663.4,211.2 21.4,-3.5"/>
+<path class="mi-wi" d="m 565.6,112.3 1.9,.7 3,3.8 17,3.8 1.4,1 4,.8 .7,.5 2.8,-.2 4.9,.8 1.4,1.5 -1,1 .8,.8 3.8,.7 1.2,1.2 .1,4.4 -1.3,2.8 2,.1 1,-.8 .9,.8 -1.1,3.1 1,1.6 1.2,.3"/>
+<path class="mn-nd" d="m 462.3,61.3 2.4,7.3 -1.1,2.8 .8,1.4 -.3,5.1 -.5,1.1 2.7,9.1 1.3,2.5 .7,14 1,2.7 -.4,5.8 2.9,7.4 .3,5.8 -.1,2.1"/>
+<path class="mn-sd" d="m 473.6,182 .2,-39.5 -1.5,-1.9 -2.6,-.6 -.4,-1.8 -1.7,-2.5 .3,-1.2 3.1,-1.9 .9,-2 .1,-2.2"/>
+<path class="mn-wi" d="m 556.7,180.4 -1.1,-4.5 -.2,-3 -2.2,-3 -2.8,-.7 -5.2,-3.6 -.6,-3.3 -6.3,-3.1 -.2,-1.3 -3.3,0 -2.2,-2.6 -2,-1.3 .7,-5.1 -.9,-1.6 .5,-5.4 1,-1.8 -.3,-2.7 -1.2,-1.3 -1.8,-.3 v -1.7 l 2.8,-5.8 5.9,-3.9 -.4,-13 .9,.4 .6,-.5 .1,-1.1 .9,-.6 1.4,1.2 .7,-.1"/>
+<path class="mo-ne" d="m 491.5,259.5 -3.9,-6.3 -2.1,-3.7 .3,-1.4 -1.3,-1.3"/>
+<path class="mo-ok" d="m 504.3,326.3 .2,10.8"/>
+<path class="mo-tn" d="m 591.7,344.9 1,-2 1.2,-.5 v -.7 l -1.2,-1.1 -.6,-1 1.7,.2 .8,-.7 -1.4,-1.5 1.4,-.5 .1,-1 -.6,-1 0,-1.3 m 1,0 .8,.7 .8,-1"/>
+<path class="ms-tn" d="m 582.6,367.7 38.3,-2.6"/>
+<path class="mt-nd" d="m 362.5,56.3 -5.2,66.7"/>
+<path class="mt-sd" d="m 357.3,123 -2,20.7"/>
+<path class="mt-wy" d="m 355.3,143.7 -51,-5.3 -57.3,-7.9 -2,10.7"/>
+<path class="nc-sc" d="m 710.9,355.2 4.4,-1.9 1.3,-.1 7.3,-4.3 23.2,-2.2 .4,.5 -.2,1.4 .7,.3 1.2,-1.5 3.3,3 .1,2.6 19.7,-2.8 24.5,17.1"/>
+<path class="nc-tn" d="m 731.1,317 0,5.2 -1.5,-.1 -1.4,1.2 -2.4,5.2 -2.6,-1.1 -3.5,2.5 -.7,2.1 -1.5,1.2 -.8,-.8 -.1,-1.5 -.8,-.2 -4,3.3 -.6,3.4 -4.7,2.4 -.5,1.2 -3.2,2.6 -3.6,.5 -4.6,3 -.8,4.1 -1.3,.9 -1.5,-.1 -1.4,1.3 -.1,4.9"/>
+<path class="nc-va" d="m 731.1,317 29.4,-3.5 39.4,-7.3 29.1,-6.1"/>
+<path class="nd-sd" d="m 357.3,123 39.2,2.9 46,2.1 29.5,.4"/>
+<path class="ne-sd" d="m 351.4,187.6 51.1,3.5 38,1.6 3.4,3.2 1.7,.2 2.1,2 1.8,-.1 1.8,-2 1.5,.6 1,-.7 .7,.5 .9,-.4 .7,.4 .9,-.4 1,.5 1.4,-.6 2,.6 .6,1.1 6.1,2.2 1.2,1.3 .9,2.6 1.8,.7 1.5,-.2"/>
+<path class="ne-wy" d="m 347.7,231.8 3.7,-44.2"/>
+<path class="nh-vt" d="m 857.9,100.1 1.2,2.3 -1.1,3.5 2.1,2.8 -.4,1.7 .1,1.3 -1.1,2.1 -1.4,.4 -.6,1.3 -2.1,1 -.7,1.5 1.4,3.4 -.5,2.5 .5,1.5 -1,1.9 .4,1.9 -1.3,1.9 .2,2.2 -.7,1.1 .7,4.5 .7,1.5 -.5,2.6 .9,1.8 -.2,2.5 -.5,1.3 -.1,1.4 2.1,2.6"/>
+<path class="nj-ny" d="m 827.9,190.5 14.6,4.9 -.4,5.9"/>
+<path class="nj-pa" d="m 823.8,227.2 1.4,-1.7 1.6,-.6 1.8,-3 1.6,-2.3 3.3,-2.6 -4.2,-3.2 -2.1,-1.1 -1,-2.8 -2.7,-.9 -.5,-3.6 1,-1 .7,-2 -1.5,-1.8 3,-5.4 -.1,-2.2 1.8,-2.5"/>
+<path class="nm-ok" d="m 358.1,322.3 -.6,10.6"/>
+<path class="nm-tx" d="m 284.3,431.2 -2,-2.2 .3,-3 34.4,3.6 31.8,2.6 7.9,-99.3 .8,0"/>
+<path class="nv-or" d="m 93.9,166.5 47,11.2"/>
+<path class="nv-ut" d="m 188.6,187.8 -21,109"/>
+<path class="ny-pa" d="m 827.9,190.5 -1.6,-1.1 -1.9,.3 -3,-2.2 -3,-5.8 h -2 l -.4,-1.5 -1.7,-1.1 -70.5,13.9 -.8,-6"/>
+<path class="ny-vt" d="m 843.6,155.3 -1.1,-1 .5,-2 -3,-14.2 -1.9,-1.5 -.9,1.6 -.9,-2.2 .8,-1.8 -3.1,-6.7 .3,-3.8 .4,-1 -.6,-2 .4,-2.2 -2.2,-2.3 -.5,-3.2 .4,-1.5 -1.4,-.9 .6,-1.9 -.8,-1.7"/>
+<path class="oh-pa" d="m 736.8,225.1 -4.9,-29.9"/>
+<path class="oh-wv" d="m 709.3,279.4 3.2,-1.4 h 1.5 l .4,-3.5 1.5,-.8 -1.3,-3.6 1.1,-1.3 .3,-2.2 1,-2.3 1.6,.5 .6,2.1 1,-.5 .7,-.8 1,-.2 v -1.9 l -1.4,-1.1 1,-.5 -.1,-2.1 1.3,-2.2 h 1.3 l .3,-1.2 1.5,-1.8 1.3,1.2 1.8,-1.7 h .6 l 1.8,-2 2,-3.3 1.1,-.5 .4,-2.2 -.5,-1.1 1,-3.6 .1,-5.4 1.1,-3.4 -.6,-2 .1,-2.2 -1.4,-2.1 2.2,-1.2"/>
+<path class="ok-tx" d="m 357.5,332.9 52.6,3.2 -1.4,42.7 2.7,1.3 2.5,3 1.5,.3 1.1,-1 1.2,.4 1.4,1 1.1,-1.5 2.3,1.7 .5,2.9 1.2,.7 2.3,-.1 3.5,1.9 2,-.1 1.4,-.4 2.3,2.2 2,-2.3 3.5,1.1 1.9,3 2.3,-.1 -.7,2.1 2.3,1.1 3,-2.6 2.6,1.7 1.3,-.5 .1,1.5 1.7,1.2 2.3,-2.5 1.2,.7 -.3,2 1,1.8 1.2,-.8 2.5,-4.2 1.8,2 2,.5 2.1,-.7 2,1.8 1.2,-.1 1.3,1.2 3.6,-.9 .6,-1.7 3.7,-.3 1.6,.7 5,-2.5 .6,1.5 5.1,-.3 .5,-1.6 2.2,.9 4.6,3.8 6.4,1.9"/>
+<path class="or-wa" d="m 161.5,91.9 -30.3,-7.3 -2.8,1 -5.4,-.9 -1.8,-.9 -1.5,1.2 -3.3,-.4 -4.5,.5 -.9,.7 -4.2,-.4 -.8,-1.6 -1.2,-.2 -4.4,1.3 -1.6,-1.1 -2.2,.8 -.2,-1.8 -2.3,-1.2 -1.5,-.2 -1,-1.1 -3,.3 -1.2,-.8 h -1.2 l -1.2,.9 -5.5,.7 -6.6,-4.2 1.1,-5.6 -.4,-4.1 -3.2,-3.7 -3.7,.1 -.4,-1.1 .4,-1.2 -.7,-.8 -1,.1"/>
+<path class="pa-wv" d="m 736.8,225.1 3.2,19.7 17.4,-2.9"/>
+<path class="sd-wy" d="m 351.4,187.6 3.9,-43.9"/>
+<path class="tn-va" d="m 697.7,321.1 28.9,-3.3 .2,-1 4.6,-.5 -.3,.7"/>
+<path class="ut-wy" d="m 236.5,196 -3.3,21.9 32.1,4.8"/>
+<path class="va-wv" d="m 722.7,296.9 .7,.6 -.8,1.2 1.5,.7 .1,1.5 4.4,2.3 2.3,-.1 1.9,-1.8 .8,-1.7 3,1.8 5.5,-2.4 .5,-.9 -.8,-.5 .6,-1.4 1.5,1 4.3,-3.1 .7,1.1 2.3,-2 -.1,-1.4 1.5,-1.9 -1.5,-1.2 1,-3.3 3.7,-6.3 -.4,-1.9 2.1,-2.2 -.4,-1.5 1.4,-1.7 .1,-4.7 2.3,.7 1.3,1.9 2.8,.5 1.3,-1.6 2.3,-8.5 2.4,1.1 1,-2.5 .9,-.8 1.4,-1.8 .9,-.8 .5,-2.1 1.2,-.8 -.1,-2.9 .8,-2.3 -.9,-1.6 .2,-.9 10,5.2 .5,-2.3 .4,-1.6 .4,-.7"/>
+</g>
+
+<circle class="state borders dccircle dc" data-build="fade" cx="801.6" cy="252.1" r="5">
+<title>District of Columbia</title></circle>
+
+<path class="separator1" fill="none" d="m 215,493 v 55 l 36,45 m -251,-168 h 147 l 68,68 h 85 l 54,54 v 46"/>
+      </svg>
+      <svg class="audob-geo-svg audob-geo-svg-ca" data-geo-ca viewBox="0 0 146.71400999999997 250.26799999999992" role="img" aria-label="California choropleth, index by county">
+<g class="cty-group" transform="translate(-36.02790000000001,-148.95)">
+<path id="c06015" class="cty-t1" data-build="fade" d="m 50.323,148.95 6.3328,1.993 4.9742,1.375 -0.54734,0.914 -0.75415,0.983 -1.166,0.112 -1.6313,1.453 -1.3015,6.019 0.15333,0.531 0.15333,1.478 -0.09806,0.282 -0.80229,0.931 -0.44393,0.306 -0.93957,-0.274 -0.66679,-0.892 0.35479,-1.189 -1.8809,-0.611 -2.956,-0.867 0.28704,-1.92 0.06418,-1.31 0.02496,-2.571 -0.0071,-0.218 -0.04101,-0.273 -0.08914,-0.297 0.39402,-3.785 0.58656,-2.17"><title>Del Norte, CA</title></path>
+<path id="c06093" class="cty-t1" data-build="fade" d="m 61.63,152.32 4.7086,1.317 0.04101,0 1.2284,0.255 1.7526,0.637 0.72206,0.215 0.42611,0.122 5.5697,1.574 2.209,0.547 2.0164,0.546 0.52238,0.169 0.9164,0.282 13.733,4.09 -0.44394,1.012 -0.15868,0.555 -0.87717,3.231 0.02496,0.07 0.08023,0.05 -2.0895,7.763 -1.503,5.489 -9.1996,-2.557 -4.7656,-1.381 -3.4712,-0.933 0.41719,-2.337 -2.0325,-1.254 -3.6085,1.421 -2.5156,2.605 0.15333,1.068 -0.2086,0.371 -0.3851,0.305 -0.32983,-0.05 -1.3496,-0.685 -2.3142,-2.442 -1.2694,-1.905 -0.78803,-0.763 -0.82012,-0.659 0.12837,-4.491 -0.32092,-0.459 -2.6369,-0.779 0.44393,-0.306 0.80229,-0.931 0.09806,-0.282 -0.15333,-1.478 -0.15333,-0.531 1.3015,-6.019 1.6313,-1.453 1.166,-0.112 0.75415,-0.983 0.54734,-0.914"><title>Siskiyou, CA</title></path>
+<path id="c06025" class="cty-t2" data-build="fade" d="m 142.45,377.78 11.557,2.418 9.4813,1.858 2.4586,0.424 3.8154,0.763 -1.9273,0.476 -1.1321,6.975 0.0143,0.04 0.40115,1.068 0.88609,0.62 0.312,0.138 1.6723,0.28 0.0571,0.06 0.0553,0.06 0.57052,1.332 -0.18542,1.512 -0.16937,0.586 -0.83438,1.173 -2.6672,1.655 -2.0182,-0.152 -0.11232,0 -14.206,-1.686 -0.28169,-0.03 -1.6153,-0.193 -6.0029,-0.715 -2.5548,-0.298 -1.8809,-0.217 0.86826,-3.799 1.815,-6.395 0.56338,-2.63 1.0608,-5.319"><title>Imperial, CA</title></path>
+<path id="c06065" class="cty-t4" data-build="fade" d="m 176.23,369.3 -1.7276,2.442 -0.53843,0.933 -0.49029,1.76 -0.10519,0.747 -0.54555,2.724 -0.74881,2.603 -2.3142,2.731 -3.8154,-0.763 -2.4586,-0.424 -9.4813,-1.858 -11.557,-2.418 -4.0097,-0.909 -5.9227,-1.285 -4.081,-0.892 -7.5219,-1.806 0.0891,-0.387 -2.0022,-1.784 -2.6993,-0.619 0.13728,-0.66 2.4586,-2.401 -0.9164,-1.271 -1.0679,-0.401 -0.55626,-1.495 -1.1963,-2.718 0.62757,-1.138 2.3534,-2.034 2.66,0.603 0.72385,0.169 0.16046,0.385 2.4586,0.916 5.4805,1.22 2.4015,0.09 4.6693,0.82 13.532,2.86 9.4332,2 0.20239,-1.0122 3.5434,0.69815 12.824,2.573"><title>Riverside, CA</title></path>
+<path id="c06073" class="cty-t5" data-build="fade" d="m 116.3,370.1 2.6993,0.619 2.0022,1.784 -0.0891,0.387 7.5219,1.806 4.081,0.892 5.9227,1.285 4.0097,0.909 -1.0608,5.319 -0.56338,2.629 -1.815,6.396 -0.86826,3.799 -1.7989,-0.218 -3.6638,-0.44 -3.7298,-0.433 -5.263,-0.621 -5.0544,-0.617 -0.11232,0 -0.87539,-3.833 0.35301,-5.68 0,-0.192 0.009,0 0.0143,-1.24 0.009,-0.481 -0.22464,-1.968 -0.0963,-0.697 -0.36906,-1.097 -0.0339,-0.09 -1.0358,-2.612 -0.30487,-0.731 -0.0571,-0.114 -0.41719,-0.883 -0.61866,-0.891 -0.37797,-0.408 -0.41006,-0.277 2.2179,-2.289"><title>San Diego, CA</title></path>
+<path id="c06059" class="cty-t5" data-build="fade" d="m 113.53,358.99 1.6313,2.167 1.1963,2.718 0.55626,1.495 1.0679,0.401 0.9164,1.271 -2.4586,2.401 -0.13728,0.66 -2.2179,2.289 -0.12123,-0.488 -0.32092,-0.651 -0.19968,-0.291 -3.5283,-4.426 -2.8366,-3.472 -0.69175,-0.854 0.49029,-0.866 1.0287,-1.295 2.0253,-1.741 0.85935,0.06 0.21751,0.05 2.5228,0.579"><title>Orange, CA</title></path>
+<path id="c06037" class="cty-t5" data-build="fade" d="m 96.897,381.81 -1.4299,-0.06 -0.90748,-1.118 -0.12124,-0.192 -0.44215,-1.407 -0.40115,-2.514 0.50634,0.17 2.6351,4.594 0.21751,0.467 -0.05705,0.06 m -0.97166,-15.651 -0.08023,-0.06 -0.01605,-0.166 0.01605,-0.03 0.08736,0.02 0.98236,0.33 1.1,0.884 0.89144,0.715 0.67571,0.571 0.86826,1.799 0.0713,0.185 0.0481,0.385 -0.0874,0.209 -0.26564,0.155 -0.16943,0 -2.3142,-1.093 -0.15333,-0.137 -1.6545,-3.776 m 24.333,-26.405 -1.223,5.302 -0.56874,3.063 -0.42789,2.603 -0.16937,1.125 -1.2355,2.675 -1.0679,1.784 -0.4261,0.708 -1.3354,0.649 -0.48138,0.589 -0.0321,0.16 0.0874,0.362 0.15333,0.217 -2.5228,-0.579 -0.21751,-0.05 -0.85935,-0.06 -2.0253,1.741 -1.0287,1.295 -0.49029,0.866 -1.4299,0.195 -1.503,-0.03 -0.69176,-0.273 -0.34409,-0.195 -1.3425,-0.866 -0.24069,-0.2 -0.14441,-0.811 0.1355,-0.144 0.43502,-0.323 0.22464,-0.05 0.11232,-0.232 0.11945,-0.579 -0.14263,-1.061 -0.0891,-0.515 -0.0481,-0.289 -0.1034,-0.596 -0.18542,-0.724 -0.25852,-0.697 -0.0232,-0.05 -0.0321,-0.07 -0.009,-0.01 -0.19968,-0.394 -0.041,-0.05 -0.15154,-0.218 -0.0499,-0.07 -0.0553,-0.05 -0.3227,-0.305 -0.46533,-0.184 -1.8399,-0.386 -1.4459,-0.193 -0.76307,0.06 -2.8455,-1.262 0.24069,-0.644 1.8328,-0.795 1.478,-0.619 2.2179,0.548 1.125,-1.794 0.12124,-0.841 -1.7436,-12.304 -0.08023,-0.667 22.42,5.24"><title>Los Angeles, CA</title></path>
+<path id="c06111" class="cty-t4" data-build="fade" d="m 88.332,330.16 1.0608,0.385 1.8239,0.85 0.2496,0.596 0.08736,0.625 4.6372,2.138 1.7276,0.426 1.7436,12.304 -0.12124,0.841 -1.125,1.794 -2.2179,-0.547 -1.478,0.618 -1.8328,0.795 -0.24069,0.644 -2.5228,-1.904 -2.7724,-4.823 -1.897,-2.442 -0.44215,-0.562 -0.23356,-0.105 0.5313,-0.369 0.15333,-0.136 0.35301,-1.126 2.5156,-10.002"><title>Ventura, CA</title></path>
+<path id="c06083" class="cty-t4" data-build="fade" d="m 68.428,346.59 3.3589,0.271 1.503,1.375 -0.04992,0.763 -0.01426,0.144 -0.08023,0.02 -2.7421,0.321 -0.24782,0.01 -0.73098,-0.746 -0.13728,-0.24 -0.85934,-1.928 m 9.385,1.05 0.7078,0.5 1.8649,0.618 0.06418,-0.04 0.03031,-0.02 0.04814,-0.02 0.0731,-0.04 0.09628,-0.06 0.05705,-0.02 0.50634,0.03 0.60974,0.451 0.12837,0.191 -0.0071,0 -0.0071,0.02 -0.01783,0.01 -0.61866,0.483 -0.1765,0.144 -0.12837,0.02 -3.1575,0.06 -0.68462,-0.162 -0.66679,-0.264 -0.0071,0 -0.2496,-0.123 -0.56339,-0.262 -0.50455,-0.371 -0.04101,-0.135 -0.36905,-2.09 0.12837,-0.162 0.11232,0.03 0.98949,0.392 1.7829,0.811 m -10.936,-24.78 2.8686,0.312 1.0216,0.396 0.9467,0.972 1.2462,-0.209 1.2052,-0.676 3.7119,-1.069 0.34588,0.41 1.0537,0.988 3.2537,2.611 4.081,3.213 0.82012,0.211 0.34588,0 0.55447,0.139 -2.5156,10.002 -0.35301,1.126 -0.15333,0.136 -0.5313,0.369 -1.3407,-1.229 -1.0127,-0.44 -1.0287,-0.146 -0.32092,0 -1.1,-0.05 -2.3159,-0.731 -0.79516,-0.804 -1.3585,-0.981 -0.54556,-0.216 -1.4138,-0.524 -1.182,-0.314 -1.3746,-0.288 -1.5743,-0.2 -1.872,-0.323 -2.4104,-3.148 0.15154,-1.826 1.182,-6.065 0.41006,-1.648"><title>Santa Barbara, CA</title></path>
+<path id="c06079" class="cty-t3" data-build="fade" d="m 59.268,301.14 20.234,5.539 0.35301,0.1 -1.0127,3.92 2.332,0.81867 -0.35478,2.1213 1.1131,1.8808 1.6557,0.57404 -0.62399,1.9581 1.4073,0.53837 -0.62815,1.7596 2.0004,0.531 0.53664,0.63075 -0.1554,1.7299 0.90302,-0.14271 0.86231,0.30508 -0.37202,2.1974 1.2563,0.48762 -0.99662,3.935 -0.34588,0 -0.82012,-0.211 -4.081,-3.213 -3.2537,-2.611 -1.0537,-0.988 -0.34588,-0.41 -3.7119,1.07 -1.2052,0.675 -1.2462,0.209 -0.9467,-0.972 -1.0216,-0.396 -2.8686,-0.312 0.30487,-0.556 0.02496,-0.04 0.28882,-0.642 0.23356,-0.619 0.11054,-0.379 0.08201,-0.384 0.02318,-0.105 0.0089,-0.04 0.03922,-0.511 0,-0.03 -0.05527,-0.369 -0.08023,-0.22 -0.16759,-0.174 -0.55626,-0.571 -0.08023,-0.07 -0.16046,-0.111 -1.6634,-4.532 -3.0772,-5.674 -2.0253,-3.135 -0.31378,-0.328 -0.18364,-0.224 -0.29061,-1.02 -0.07131,-1.988"><title>San Luis Obispo, CA</title></path>
+<path id="c06029" class="cty-t3" data-build="fade" d="m 91.634,309.79 8.7182,2.16 9.8753,2.427 7.8749,1.84 1.0626,0.305 6.8052,1.399 -0.74702,1.904 -0.1765,0.658 -0.24069,2.708 -3.9063,16.722 -0.64183,-0.159 -22.42,-5.24 0.08023,0.667 -1.7276,-0.426 -4.6372,-2.138 -0.08736,-0.625 -0.2496,-0.596 -1.8239,-0.85 -1.0608,-0.385 -0.55447,-0.139 0.99662,-3.935 -1.2563,-0.48762 0.37202,-2.1974 -0.86231,-0.30508 -0.90302,0.14271 0.1554,-1.7299 -0.53664,-0.63075 -2.0004,-0.531 0.62815,-1.7596 -1.4073,-0.53837 0.62399,-1.9581 -1.6557,-0.57404 -1.1131,-1.8808 0.35478,-2.1213 -2.332,-0.81867 1.0127,-3.92 11.779,3.013"><title>Kern, CA</title></path>
+<path id="c06071" class="cty-t4" data-build="fade" d="m 125.97,317.92 4.6372,1.116 29.658,6.556 1.6884,0 3.687,5.537 1.2712,1.896 0.47246,0.7 6.8159,10.198 2.5138,3.743 -0.57765,2.556 -0.0321,0.321 0.0161,0.121 1.0127,2.635 1.2783,2.008 0.0642,0.925 1.1874,4.999 1.1731,1.407 1.0216,1.138 0.8843,1.545 -0.0642,0.997 -0.041,0.03 -2.4104,1.391 -1.6242,0.666 -2.3694,0.908 -12.824,-2.573 -3.5434,-0.69815 -0.20239,1.0122 -9.4332,-2 -13.532,-2.86 -4.6693,-0.82 -2.4015,-0.09 -5.4805,-1.22 -2.4586,-0.916 -0.16046,-0.385 -0.72385,-0.169 -2.66,-0.603 -2.3534,2.034 -0.62757,1.138 -1.6313,-2.167 -0.15333,-0.217 -0.0874,-0.362 0.0321,-0.16 0.48138,-0.589 1.3354,-0.649 0.4261,-0.708 1.0679,-1.784 1.2355,-2.675 0.16937,-1.124 0.42789,-2.603 0.56874,-3.063 1.223,-5.303 0.64183,0.159 3.9063,-16.722 0.24069,-2.708 0.1765,-0.658 0.74702,-1.904"><title>San Bernardino, CA</title></path>
+<path id="c06027" class="cty-t1" data-build="fade" d="m 114.55,275.54 16.618,3.931 9.2424,13.876 0.34409,0.513 1.9683,2.926 1.15,1.744 6.0671,9.08 4.9172,7.385 0.6347,0.948 2.6369,3.953 0.2086,0.306 3.6157,5.383 -1.6884,0 -29.658,-6.556 -4.6372,-1.116 -6.8052,-1.399 0.87539,-1.912 0.30487,-1.076 -0.0802,-1.519 -0.51347,-7.481 -1.3425,-7.611 -0.43324,-3.431 0.52238,-2.264 0.15155,-1.237 -0.0481,-0.87 -0.29774,-2.819 -0.23355,-0.476 -1.3568,-1.469 -0.35479,-0.03 -1.3889,-0.981 -0.0571,-0.05 -0.15154,-0.339 -0.90035,-4.525 0.0481,-1.396 0.64183,-1.488"><title>Inyo, CA</title></path>
+<path id="c06107" class="cty-t2" data-build="fade" d="m 117.98,293.49 0.43324,3.431 1.3425,7.611 0.51347,7.481 0.0802,1.519 -0.30487,1.076 -0.87539,1.912 -1.0626,-0.305 -7.8749,-1.84 -9.8753,-2.427 -8.7182,-2.16 1.9059,-7.433 0.89144,-2.999 0.58656,-0.159 0.46533,0.111 0.74702,-2.963 -0.8048,-0.30301 0.3466,-1.915 -0.79516,-0.202 2.3944,-1.454 2.7122,0.49434 0.63963,-1.6933 2.2981,0.612 3.3661,0.875 0.51525,-1.888 7.8981,1.858 3.1753,0.761"><title>Tulare, CA</title></path>
+<path id="c06031" class="cty-t2" data-build="fade" d="m 94.977,293.92 0.79516,0.202 -0.3466,1.915 0.8048,0.30301 -0.74702,2.963 -0.46533,-0.111 -0.58656,0.159 -0.89144,2.999 -1.9059,7.433 -11.779,-3.013 -0.35301,-0.1 -1.1179,-3.109 7.9552,-4.502 1.2462,-4.924 2.7403,0.674 2.5869,0.265 2.0646,-1.157"><title>Kings, CA</title></path>
+<path id="c06039" class="cty-t2" data-build="fade" d="m 107.42,267.18 1.3336,0.362 1.1268,0.362 0.24781,0.298 0.55448,1.109 0.21038,2.394 -5.6107,3.454 -0.79516,0.522 -0.33696,0.332 -0.21751,0.426 -0.15333,1.027 -0.016,0.396 -0.0392,0.151 -0.36906,0.859 -0.26565,0.289 -0.50633,0.451 -0.54734,0.303 -2.6119,-0.167 -0.76129,0.121 -2.9257,1.824 -0.78803,0.522 -0.18364,0.152 -1.2623,1.406 -0.30487,0.507 -0.4582,0.449 -0.06418,0.02 -7.7235,-0.25 -1.1,-0.208 -1.2694,-1.031 -0.69175,-1.123 -0.18542,-0.435 -0.08736,-0.289 -0.06418,-0.431 -0.50634,-3.948 1.462,-0.868 3.4873,-0.355 2.7242,0.364 1.7775,0 6.4504,-3.938 1.9451,0.474 1.5992,-1.432 0.40115,-1.46 6.0439,-3.681 0.48137,1.044"><title>Madera, CA</title></path>
+<path id="c06019" class="cty-t3" data-build="fade" d="m 114.55,275.54 -0.64183,1.488 -0.0481,1.396 0.90035,4.525 0.15154,0.339 0.0571,0.05 1.3889,0.981 0.35479,0.03 1.3568,1.469 0.23355,0.476 0.29774,2.819 0.0481,0.87 -0.15155,1.237 -0.52238,2.264 -3.1753,-0.761 -7.8981,-1.858 -0.51525,1.888 -3.3661,-0.875 -2.2981,-0.612 -0.63963,1.6933 -2.7122,-0.49434 -2.3944,1.454 -2.0646,1.157 -2.5869,-0.265 -2.7403,-0.674 -1.2462,4.924 -7.9552,4.502 -3.6406,-4.452 -1.1321,-1.631 -0.08023,-1.298 0.49029,-2.4 0.91461,-0.988 0.97983,0.27203 0.74955,-3.873 -4.0739,-7.133 8.4526,-5.032 0.50634,3.948 0.06418,0.431 0.08736,0.289 0.18542,0.435 0.69175,1.123 1.2694,1.031 1.1,0.208 7.7234,0.25 0.06418,-0.02 0.4582,-0.449 0.30487,-0.507 1.2623,-1.406 0.18364,-0.152 0.78803,-0.522 2.9257,-1.824 0.76129,-0.121 2.6119,0.167 0.54734,-0.303 0.50633,-0.451 0.26565,-0.289 0.36906,-0.859 0.0392,-0.151 0.016,-0.396 0.15333,-1.027 0.21751,-0.426 0.33696,-0.332 0.79516,-0.522 5.6107,-3.454 3.662,3.832"><title>Fresno, CA</title></path>
+<path id="c06053" class="cty-t2" data-build="fade" d="m 60.739,275.14 -0.09806,0.467 0.18542,0.708 1.4798,2.456 1.6777,3.022 1.0706,1.3184 -0.42623,2.8152 0.87464,-0.0115 2.4194,4.88 -0.08326,1.1321 1.1833,0.21094 3.3839,2.85 0.48851,0.193 0.09806,0 0.1355,-0.08 0.89322,-1.311 -0.49029,2.4 0.08023,1.298 1.1321,1.631 3.6406,4.452 1.1179,3.109 -20.234,-5.539 -0.57052,-0.833 -0.94849,-1.752 0.03209,-0.852 0.02318,-0.411 0.04101,-0.747 -0.10519,-0.659 -0.01605,-0.1 -2.1287,-4.563 -0.47424,-0.836 -0.91461,-1.031 -0.25852,-0.231 -0.0071,0 -0.17829,-0.02 -0.11232,-0.06 -0.1765,-0.223 -0.11232,-0.25 -0.45107,-1.045 -0.16046,-0.378 -0.01605,-0.362 0.58835,-5.849 1.2854,-0.457 0.03922,0.01 0.29061,0 0.22286,-0.1 0.44394,-0.328 0.27278,-0.282 0.19968,-0.241 0.34588,-0.524 0.32983,-0.656 0.8843,-1.913 0.01605,-0.266 -0.10341,-0.836 -0.0089,-0.06 3.1985,-0.153"><title>Monterey, CA</title></path>
+<path id="c06069" class="cty-t3" data-build="fade" d="m 60.739,275.14 1.1393,0.162 1.601,-0.9 1.6385,0.347 3.5747,0.961 -0.36905,0.385 -0.12837,0.179 -0.04814,0.128 0.12124,0.33 0.97166,2.112 3.1575,2.887 0.19433,0.33 4.0739,7.133 -0.74955,3.873 -0.97983,-0.27203 -0.91461,0.988 -0.89322,1.311 -0.1355,0.08 -0.09806,0 -0.48851,-0.193 -3.3839,-2.85 -1.1833,-0.21094 0.08326,-1.1321 -2.4194,-4.88 -0.87464,0.0115 0.42623,-2.8152 -1.0706,-1.3184 -1.6777,-3.022 -1.4798,-2.456 -0.18542,-0.708 0.09806,-0.467"><title>San Benito, CA</title></path>
+<path id="c06047" class="cty-t3" data-build="fade" d="m 87.23,264.54 0.86826,4.427 -0.0071,0.339 -0.01604,0.06 -0.08023,0.08 0.73098,4.363 0.47246,0.672 1.2961,1.683 -1.7775,0 -2.7243,-0.364 -3.4873,0.355 -1.462,0.868 -8.4526,5.032 -0.19433,-0.33 -3.1575,-2.887 -0.97166,-2.112 -0.12124,-0.33 0.04814,-0.128 0.12837,-0.179 0.36905,-0.385 -0.24782,-0.257 -0.13728,-0.303 -0.01605,-0.13 0.25673,-0.9 0.4582,-0.209 0.37797,-0.593 0.25673,-1.24 -0.09628,-0.303 5.8817,-3.473 0.03209,-0.754 -0.10341,-0.226 -0.1355,-0.08 2.6119,-0.772 9.3993,-1.928"><title>Merced, CA</title></path>
+<path id="c06087" class="cty-t3" data-build="fade" d="m 54.269,263.9 -0.0071,0.255 0.03922,0.129 0.48316,1.014 0.93957,1.904 0.4582,0.656 1.2302,1.081 0.7702,0.552 1.5511,1.641 2.1448,3.549 0.12124,0.202 -0.12124,0.419 -1.1393,-0.162 -3.1985,0.153 -0.12837,-0.724 -0.28169,-1.332 -0.20146,-0.497 -0.1765,-0.339 -0.16046,-0.217 -0.36192,-0.323 -0.16937,-0.04 -0.90035,0.209 -0.80407,-0.04 -0.41541,-0.06 -0.29061,-0.07 -0.14441,-0.08 -0.05705,-0.03 -0.25495,-0.145 -0.19433,-0.114 -0.69888,-0.793 -0.69175,-0.995 -0.5206,-1.241 -0.43502,-1.307 -0.04814,-0.955 0.1462,-0.91 1.4923,-0.249 1.5671,0.433 0.12124,-0.312 0.33696,-1.261"><title>Santa Cruz, CA</title></path>
+<path id="c06081" class="cty-t5" data-build="fade" d="m 52.766,253.31 -0.03209,0 -0.39223,2.347 0.2389,0.376 2.7813,2.918 0.20146,0.127 0.48137,0.169 0.32983,-0.09 0.0089,-0.02 0.32983,0.827 -2.4443,3.929 -0.33696,1.261 -0.12124,0.312 -1.5671,-0.433 -1.4923,0.249 -0.1462,0.91 0.04814,0.955 -0.14441,-0.233 -0.49029,-0.804 -0.65966,-1.231 -0.08023,-0.226 0.04101,-1.091 0.29774,-5.962 0.55269,-2.427 0.67571,-2.417 1.9202,0.545"><title>San Mateo, CA</title></path>
+<path id="c06001" class="cty-t5" data-build="fade" d="m 55.33,249.52 0.79516,0.02 0.09627,0.06 0.54021,0.755 0.34409,1.077 0.0731,0.537 3.1414,3.231 6.3559,-0.17 1.3015,-0.144 -0.72206,2.605 -0.98949,3.599 0.12837,0.275 0.98058,1.494 -0.01605,-0.02 -6.6679,-1.902 -0.21751,-0.02 -0.18542,0.137 -0.13728,0.06 -0.62579,0.08 -0.32092,-0.04 -2.2036,-0.754 -0.28704,-0.417 -0.32983,-0.827 0.01605,-4.035 -1.3906,-4.035 0.32092,-1.558"><title>Alameda, CA</title></path>
+<path id="c06085" class="cty-t5" data-build="fade" d="m 56.713,259.97 0.28704,0.417 2.2036,0.754 0.32092,0.04 0.62579,-0.08 0.13728,-0.06 0.18542,-0.137 0.21751,0.02 6.6679,1.902 -0.28169,0.114 -0.07131,1.205 0.51525,5.882 2.0236,1.745 0.09628,0.303 -0.25673,1.24 -0.37797,0.593 -0.4582,0.209 -0.25673,0.9 0.01605,0.13 0.13728,0.303 0.24782,0.257 -3.5747,-0.961 -1.6385,-0.347 -1.601,0.9 0.12124,-0.419 -0.12124,-0.202 -2.1448,-3.549 -1.5511,-1.64 -0.7702,-0.553 -1.2302,-1.081 -0.4582,-0.656 -0.93957,-1.904 -0.48316,-1.014 -0.03922,-0.129 0.0071,-0.255 2.4443,-3.929"><title>Santa Clara, CA</title></path>
+<path id="c06099" class="cty-t3" data-build="fade" d="m 80.489,252.1 3.2716,6.752 3.4784,5.68 -0.0089,0 -9.3993,1.928 -2.6119,0.771 0.1355,0.08 0.10341,0.226 -0.03209,0.754 -5.8817,3.473 -2.0236,-1.745 -0.51525,-5.882 0.07131,-1.205 0.28169,-0.114 0.01605,0.02 4.7335,-2.798 0.83617,-0.536 0.36014,-0.162 2.0343,-0.539 0.44928,0.162 0.89144,0.177 1.0305,0.119 0.98771,-0.258 0.64362,-2.642 1.1482,-4.269"><title>Stanislaus, CA</title></path>
+<path id="c06043" class="cty-t2" data-build="fade" d="m 87.239,264.54 0.08736,-0.9 0.15333,-0.225 1.0519,-0.756 5.2238,-1.092 0.34588,0.178 1.5119,1.631 0.12658,0.234 0.10519,0.07 0.51525,0.248 1.6634,0.451 0.57052,0 2.209,-0.339 0.27991,-0.152 1.5511,-1.237 1.0465,-0.241 1.6937,1.22 1.0768,1.239 0.48316,1.277 -6.0439,3.681 -0.40115,1.46 -1.5992,1.432 -1.9451,-0.474 -6.4504,3.938 -1.2961,-1.683 -0.47246,-0.672 -0.73098,-4.363 0.08023,-0.08 0.01604,-0.06 0.0071,-0.339 -0.86826,-4.427 0.0089,0"><title>Mariposa, CA</title></path>
+<path id="c06109" class="cty-t2" data-build="fade" d="m 104.29,252.35 -0.13549,0.112 -0.19434,0.678 -0.28882,2.111 0.73811,1.173 0.53129,0.451 0.41719,0.273 0.75594,0.41 0.6347,0.465 0.44215,0.346 0.7078,0.674 0.49742,1.086 -0.5553,2.1516 1.1676,0.86166 0.31118,1.0758 -0.62579,2.024 -0.9574,0.733 -0.32092,0.208 -0.48137,-1.044 -0.48316,-1.277 -1.0768,-1.239 -1.6937,-1.22 -1.0465,0.241 -1.5511,1.237 -0.27991,0.152 -2.209,0.339 -0.57052,0 -1.6634,-0.451 -0.51525,-0.248 -0.10519,-0.07 -0.12658,-0.234 -1.5119,-1.631 -0.34588,-0.179 -5.2238,1.093 -1.0519,0.756 -0.15333,0.225 -0.08736,0.9 -3.4784,-5.68 3.1396,-2.073 1.3265,-1.304 2.2108,-2.28 2.1127,-1.961 2.6921,-2.336 0.43502,-0.203 0.41719,-0.13 2.209,-0.303 1.9522,2.275 0.26565,-0.13 1.3746,-0.459 0.98771,-0.121 0.69888,0.162 0.0802,0.08 0.0642,0.16 0.56338,2.113"><title>Tuolumne, CA</title></path>
+<path id="c06051" class="cty-t1" data-build="fade" d="m 107.43,243.9 3.4302,5.135 2.307,3.435 9.8183,14.772 8.1887,12.223 -16.618,-3.931 -3.662,-3.832 -0.21038,-2.394 -0.55448,-1.109 -0.24781,-0.298 -1.1268,-0.362 -1.3336,-0.362 0.32092,-0.208 0.9574,-0.733 0.62579,-2.024 -0.31118,-1.0758 -1.1676,-0.86166 0.5553,-2.1516 -0.49742,-1.086 -0.7078,-0.674 -0.44215,-0.346 -0.6347,-0.465 -0.75594,-0.41 -0.41719,-0.273 -0.53129,-0.451 -0.73811,-1.173 0.28882,-2.111 0.19434,-0.678 0.13549,-0.112 1.815,-1.544 0.83616,-1.918 -0.72384,-2.669 0.025,-0.234 0.41897,-1.077 0.76307,-1.002"><title>Mono, CA</title></path>
+<path id="c06003" class="cty-t1" data-build="fade" d="m 103.19,237.55 4.2343,6.35 -0.76307,1.002 -0.41897,1.077 -0.025,0.234 0.72384,2.669 -0.83616,1.918 -1.815,1.544 -0.56338,-2.113 -0.0642,-0.16 -0.0802,-0.08 -0.69888,-0.162 -0.98771,0.121 -1.3746,0.459 -0.26565,0.13 -1.9522,-2.275 -0.46533,-1.954 1.1161,-4.331 2.3712,-1.18 0.44037,-0.321 1.4388,-1.28 0.0891,-0.137 0.12123,-0.64 -0.025,-0.443 -0.19968,-0.427"><title>Alpine, CA</title></path>
+<path id="c06009" class="cty-t2" data-build="fade" d="m 98.304,248.27 -2.209,0.303 -0.41719,0.13 -0.43502,0.203 -2.6921,2.336 -2.1127,1.961 -2.2108,2.28 -1.3265,1.304 -3.1396,2.073 -3.2716,-6.752 -0.30487,-3.638 0.11945,0.137 0.22464,0.137 1.3996,0.298 4.2504,-1.343 3.2145,-1.415 0.83617,-0.433 0.77912,0.05 6.8302,0.419 0.46533,1.954"><title>Calaveras, CA</title></path>
+<path id="c06005" class="cty-t2" data-build="fade" d="m 98.955,241.98 -1.1161,4.331 -6.8302,-0.419 -0.77912,-0.05 -0.83617,0.433 -3.2145,1.415 -4.2504,1.343 -1.3996,-0.298 -0.22464,-0.137 -0.11945,-0.137 -0.09628,-1.76 1.2444,-4.709 1.6634,0.193 2.0575,-0.63326 3.1485,2.3933 0.79694,0.201 1.2765,0.146 3.5212,0.159 0.99662,-0.159 4.1612,-2.316"><title>Amador, CA</title></path>
+<path id="c06077" class="cty-t3" data-build="fade" d="m 80.185,248.47 0.30487,3.638 -1.1482,4.269 -0.64362,2.642 -0.98771,0.258 -1.0305,-0.119 -0.89144,-0.177 -0.44928,-0.162 -2.0343,0.539 -0.36014,0.162 -0.83617,0.536 -4.7335,2.798 -0.98058,-1.494 -0.12837,-0.275 0.98949,-3.599 0.72206,-2.605 1.2623,-6.235 0.77911,-1.011 1.938,-2.052 0.40828,0 0.31378,0.132 0.21573,0.497 0.33161,0.314 0.86648,0.216 3.1824,0.371 0.12124,-0.02 1.2373,-0.426 1.4548,0.04 0.09628,1.76"><title>San Joaquin, CA</title></path>
+<path id="c06013" class="cty-t4" data-build="fade" d="m 57.162,246.07 1.5511,0.94 0.89144,0.258 3.7922,0.922 0.25673,0.03 0.23356,-0.02 0.16224,-0.106 0.14441,-0.176 0.36905,1.013 0.16046,0.215 0.45107,0.186 0.19968,0.05 0.69888,0.02 0.78803,-0.223 0.42611,-0.267 0.08736,-0.159 0.04992,-0.322 0.08736,-0.143 0.12837,-0.06 0.19968,0 1.0216,0.183 0.32092,0.168 0.05705,0.07 -1.2623,6.235 -1.3015,0.144 -6.3559,0.17 -3.1414,-3.231 -0.0731,-0.537 -0.34409,-1.077 -0.54021,-0.755 -0.09627,-0.06 -0.79516,-0.02 -0.68997,-0.506 -0.65966,-1.503 2.2821,-0.499 0.37797,-0.179 0.49029,-0.383 0.04814,-0.153 -0.01605,-0.225"><title>Contra Costa, CA</title></path>
+<path id="c06017" class="cty-t3" data-build="fade" d="m 102.28,234.11 0.90926,3.447 0.19968,0.427 0.025,0.443 -0.12123,0.64 -0.0891,0.137 -1.4388,1.28 -0.44037,0.321 -2.3712,1.18 -4.1612,2.316 -0.99662,0.159 -3.5212,-0.159 -1.2765,-0.146 -0.79694,-0.201 -3.1485,-2.3933 -2.0575,0.63326 -1.6634,-0.193 -0.72206,-5.095 2.1929,-2.619 0.49029,-1.068 0.37797,-0.314 1.8952,-0.538 2.4194,-0.394 0.77198,0.04 0.12124,0.05 0.41719,0.246 0.55447,0.572 0.19968,0.449 0.1462,0.245 0.24782,0.287 1.0608,1.052 0.21751,0.13 0.14441,0 0.85934,-0.162 0.42611,-0.191 0.94849,-0.795 3.8332,0.144 1.0127,0.09 0.36905,-0.09 0.2496,-0.107 0.07131,-0.271 0.21751,-0.169 2.4265,0.618"><title>El Dorado, CA</title></path>
+<path id="c06067" class="cty-t4" data-build="fade" d="m 74.848,234.79 5.7622,2.111 0.72206,5.095 -1.2444,4.709 -1.4548,-0.04 -1.2373,0.426 -0.12124,0.02 -3.1824,-0.371 -0.86648,-0.216 -0.33161,-0.314 -0.21573,-0.497 -0.31378,-0.132 -0.40828,0 -1.938,2.052 -0.77911,1.011 -0.05705,-0.07 -0.32092,-0.168 -1.0216,-0.183 -0.19968,0 -0.12837,0.06 -0.08736,0.143 -0.04992,0.322 -0.08736,0.159 -0.42611,0.267 -0.78803,0.223 -0.69888,-0.02 -0.19968,-0.05 -0.45107,-0.186 -0.16046,-0.215 -0.36905,-1.013 1.0448,0.44 1.7098,-0.169 1.9683,-2.027 1.4709,-2.469 1.1731,-0.509 0.34766,-0.208 0.87539,-1.808 0.77911,-3.175 0.02496,-0.239 -0.02496,-0.105 -0.66858,-1.182 -0.07131,-2.266 2.0253,0.588"><title>Sacramento, CA</title></path>
+<path id="c06095" class="cty-t3" data-build="fade" d="m 55.346,243.26 3.6495,1.051 0.07845,-0.208 -0.03922,-0.104 -0.06418,0 -0.09628,-0.136 -0.06418,-0.187 0.04814,-0.2 0.97166,-2.788 2.4354,0.681 0.08023,-0.191 0.02496,-0.201 0.02318,-0.41 -0.01605,-0.193 -0.08023,-0.522 -0.39401,-1.19 0.0071,-0.112 0.03209,-0.151 0.81121,-1.527 0.08914,-0.1 0.8112,0.136 6.0832,1.214 0.18542,0.307 0,0.07 -0.19255,0.82 -1.0929,3.88 1.7508,0.501 -1.4709,2.469 -1.9683,2.027 -1.7098,0.169 -1.0448,-0.44 -0.14441,0.176 -0.16224,0.106 -0.23356,0.02 -0.25673,-0.03 -3.7922,-0.922 -0.89144,-0.258 -1.5511,-0.94 -1.7847,-2.676 -0.03209,-0.135"><title>Solano, CA</title></path>
+<path id="c06075" class="cty-t5" data-build="fade" d="m 52.766,253.31 -1.9202,-0.545 0,-0.02 0.02318,-0.355 0.22642,-1.31 0.2086,-0.12 0.82725,-0.162 0.69175,0.05 0.32983,0.08 0.12124,0.178 0.12658,0.393 -0.10341,1.372 -0.10341,0.332 -0.42789,0.103"><title>San Francisco, CA</title></path>
+<path id="c06041" class="cty-t4" data-build="fade" d="m 45.968,237.15 0.21751,-0.114 1.4548,0.03 0.14441,0.04 3.8011,4.525 1.2747,0.68721 0.74173,1.5628 -0.64183,1.673 -0.66679,2.112 -0.04992,0.179 0.12124,0.19 0.29774,0.369 0.29774,0.494 0.10341,0.255 -0.0071,0.07 -1.0608,1.035 -0.47424,-0.06 -0.29774,-0.153 -0.20146,-0.193 -5.6642,-6.5 0.93957,-5.006 -0.05527,-0.426 -0.20146,-0.587 -0.0731,-0.191"><title>Marin, CA</title></path>
+<path id="c06055" class="cty-t3" data-build="fade" d="m 60.056,227.52 1.6795,1.063 0.88252,4.699 0.2086,1.327 0.02496,0.474 -0.0089,1.679 -0.08914,0.1 -0.81121,1.527 -0.03209,0.151 -0.0071,0.112 0.39401,1.19 0.08023,0.522 0.01605,0.193 -0.02318,0.41 -0.02496,0.201 -0.08023,0.191 -2.4354,-0.681 -0.97166,2.788 -0.04814,0.2 0.06418,0.187 0.09628,0.136 0.06418,0 0.03922,0.104 -0.07845,0.208 -3.6495,-1.051 0.69888,0.128 0.55447,-0.9 0.04101,-0.53 -0.01605,-0.538 -0.21751,-1.858 -1.2302,-4.354 -0.70602,-1.938 0.05705,-1.51 0.29596,-0.989 3.0451,-0.04 2.0592,-1.743 0.19968,-0.305 -0.07132,-1.159"><title>Napa, CA</title></path>
+<path id="c06097" class="cty-t3" data-build="fade" d="m 39.99,223.99 2.5154,0.74632 0.35398,-0.76632 4.0418,1.2257 0.39459,-1.0496 5.383,1.591 2.1448,5.032 -0.29596,0.989 -0.05705,1.51 0.70602,1.938 1.2302,4.354 0.21751,1.858 0.01605,0.538 -0.04101,0.53 -0.55447,0.9 -0.69888,-0.128 0.03209,0.135 -1.7757,0.49 -0.74173,-1.5628 -1.2747,-0.68721 -3.8011,-4.525 -0.14441,-0.04 -1.4548,-0.03 -0.21751,0.114 -1.1393,-4.052 -3.7208,-7.119 -1.1179,-1.992"><title>Sonoma, CA</title></path>
+<path id="c06113" class="cty-t3" data-build="fade" d="m 61.373,226.46 8.6291,2.418 2.8205,5.329 0.07131,2.266 0.66858,1.182 0.02496,0.105 -0.02496,0.239 -0.77911,3.175 -0.87539,1.808 -0.34766,0.208 -1.1731,0.509 -1.7508,-0.501 1.0929,-3.88 0.19255,-0.82 0,-0.07 -0.18542,-0.307 -6.0832,-1.214 -0.8112,-0.136 0.0089,-1.679 -0.02496,-0.474 -0.2086,-1.327 -0.88252,-4.699 -1.6795,-1.063 1.3175,-1.068"><title>Yolo, CA</title></path>
+<path id="c06061" class="cty-t3" data-build="fade" d="m 77.646,229.25 2.5459,-0.208 0.85221,0.729 0.18542,0.09 2.4104,0.811 0.57765,-0.1 1.1089,-1.1 0.15333,-0.225 0.1355,-0.353 0.15333,-0.162 0.83617,-0.627 0.83617,-0.434 1.2694,-0.633 2.4336,-1.134 0.90926,-0.208 0.66679,-0.03 10.952,2.84 -0.85935,3.383 -0.28882,1.198 -0.24247,1.012 -2.4265,-0.618 -0.21751,0.169 -0.07131,0.271 -0.2496,0.107 -0.36905,0.09 -1.0127,-0.09 -3.8332,-0.144 -0.94849,0.795 -0.42611,0.19 -0.85934,0.163 -0.14441,0 -0.21751,-0.13 -1.0608,-1.052 -0.24782,-0.287 -0.1462,-0.245 -0.19968,-0.449 -0.55447,-0.572 -0.41719,-0.246 -0.12124,-0.05 -0.77198,-0.04 -2.4194,0.394 -1.8952,0.538 -0.37797,0.314 -0.49029,1.068 -2.1929,2.619 -5.7622,-2.111 1.4299,-4.213 0.94849,0.25 0.41898,-1.575"><title>Placer, CA</title></path>
+<path id="c06057" class="cty-t2" data-build="fade" d="m 104.45,225.63 -0.77911,2.884 -10.952,-2.84 -0.66679,0.03 -0.90926,0.208 -2.4336,1.134 -1.2694,0.633 -0.83617,0.434 -0.83617,0.627 -0.15333,0.162 -0.1355,0.353 -0.15333,0.225 -1.1089,1.1 -0.57765,0.1 -2.4104,-0.811 -0.18542,-0.09 -0.85221,-0.729 1.1981,-4.388 0.46533,-0.74 1.5671,-1.086 1.4691,-0.772 0.9574,-0.103 0.41897,0.06 0.48138,0.232 0.24069,-0.28 0.40115,-0.103 2.8936,0.231 2.266,-0.563 0.05705,-0.07 0.25673,-0.22 0.60974,-0.296 0.27456,-0.04 1.2694,0.408 0.36192,0.451 0.12837,1.084 0.37619,0.443 0.22642,0.128 8.3403,2.202"><title>Nevada, CA</title></path>
+<path id="c06091" class="cty-t2" data-build="fade" d="m 88.468,216.76 1.6474,-1.048 0.22642,-0.833 0.45642,-0.323 0.83617,-0.24 3.2627,2.556 3.5443,0.883 5.0865,1.351 2.5638,0.312 -1.6402,6.212 -8.3403,-2.202 -0.22642,-0.128 -0.37619,-0.443 -0.12837,-1.084 -0.36192,-0.451 -1.2694,-0.408 -0.27456,0.04 -0.60974,0.296 -0.25673,0.22 -0.05705,0.07 -2.266,0.563 -2.8936,-0.231 -0.40115,0.103 -0.24069,0.28 1.7187,-5.493"><title>Sierra, CA</title></path>
+<path id="c06115" class="cty-t2" data-build="fade" d="m 87.072,217.39 1.396,-0.635 -1.7187,5.493 -0.48138,-0.232 -0.41897,-0.06 -0.9574,0.103 -1.4691,0.772 -1.5671,1.086 -0.46533,0.74 -1.1981,4.388 -2.5459,0.208 -0.75594,-0.235 -0.38688,0.01 -1.2034,0.167 -0.42789,0.337 -0.24782,0.266 -0.02496,-2.393 0.79694,-4.767 0.10341,-0.344 0.30487,-0.646 0.11232,-0.06 2.2339,0.123 1.7757,-0.128 0.69888,-0.355 2.0618,-2.7976 2.9619,-0.0974 1.4232,-0.93598"><title>Yuba, CA</title></path>
+<path id="c06101" class="cty-t2" data-build="fade" d="m 75.916,221.58 -0.11232,0.06 -0.30487,0.646 -0.10341,0.344 -0.79694,4.767 0.02496,2.393 0.24782,-0.266 0.42789,-0.337 1.2034,-0.167 0.38688,-0.01 0.75594,0.235 -0.41898,1.575 -0.94849,-0.25 -1.4299,4.213 -2.0253,-0.588 -2.8205,-5.329 0.67571,-1.341 -0.60974,-2.733 -0.51703,-1.059 0.16937,-1.109 1.4067,-2.571 4.7888,1.524"><title>Sutter, CA</title></path>
+<path id="c06011" class="cty-t1" data-build="fade" d="m 71.941,218.37 -0.81299,1.694 -1.4067,2.571 -0.16937,1.109 0.51703,1.059 0.60974,2.733 -0.67571,1.341 -8.6291,-2.418 -0.85221,-1.013 -0.08023,-0.183 -0.61152,-2.332 0.06418,-1.614 0.65312,-1.9112 -2.3558,-0.99779 -0.61866,-0.619 -0.97345,-1.446 -0.14441,-0.692 0.35301,-0.595 0.7078,-0.769 10.178,2.8622 0.32064,-0.75373 2.2267,0.67583 -0.26177,0.64936 1.962,0.64936"><title>Colusa, CA</title></path>
+<path id="c06033" class="cty-t1" data-build="fade" d="m 57.515,214.28 -0.7078,0.769 -0.35301,0.595 0.14441,0.692 0.97345,1.446 0.61866,0.619 2.3558,0.99779 -0.65312,1.9112 -0.06418,1.614 0.61152,2.332 0.08023,0.183 0.85221,1.013 -1.3175,1.068 0.07132,1.159 -0.19968,0.305 -2.0592,1.743 -3.0451,0.04 -2.1448,-5.032 -1.462,-1.66 -0.44215,-0.709 -0.98771,-2.594 -0.29774,-1.318 0.03922,-0.194 0.09627,-0.328 0.39401,-0.925 0.39401,-0.74 0.76307,-0.234 0.74702,-0.834 0.15333,-0.963 -0.09627,-3.161 0.19255,-0.64 0.13728,-0.348 0.49742,-1.086 0.73811,-0.151 1.4887,0.492 0.86648,-0.05 0.30665,-0.786 0.10341,-0.332 2.5388,0.726 -0.58656,2.273 -0.19968,0.633 -0.54734,1.474"><title>Lake, CA</title></path>
+<path id="c06007" class="cty-t2" data-build="fade" d="m 71.876,208.38 -0.22642,-0.394 0.10519,-0.669 0.71493,-0.818 4.0418,1.091 0.4992,0.03 0.53664,-0.282 0.13728,-0.415 0.13728,-0.277 0.26386,-0.279 0.73989,-0.541 3.1093,-1.927 0.86113,0.234 1.1,-0.209 0.21573,-0.128 0.24247,-0.466 0.53664,0.152 0.21038,1.091 0.02318,0.549 -0.08736,0.314 -0.37618,0.376 -1.4316,4.147 2.5299,4.605 1.3122,2.821 -1.4232,0.93598 -2.9619,0.0974 -2.0618,2.7976 -0.69888,0.355 -1.7757,0.128 -2.2339,-0.123 -4.7888,-1.524 0.81299,-1.694 1.494,-3.168 -2.0555,-0.53571 1.3726,-4.1483 -0.87539,-2.129"><title>Butte, CA</title></path>
+<path id="c06021" class="cty-t1" data-build="fade" d="m 56.841,204.07 15.035,4.315 0.87539,2.129 -1.3726,4.1483 2.0555,0.53571 -1.494,3.168 -1.962,-0.64936 0.26177,-0.64936 -2.2267,-0.67583 -0.32064,0.75373 -10.178,-2.8622 0.54734,-1.474 0.19968,-0.633 0.58656,-2.273 -2.5388,-0.726 0.5313,-5.108"><title>Glenn, CA</title></path>
+<path id="c06063" class="cty-t1" data-build="fade" d="m 85.134,196.49 2.8455,0.788 4.475,1.188 -1.1482,4.252 0.2086,0.572 1.6474,1.469 0.6347,0.17 0.36014,-0.08 0.1462,-0.537 1.7436,-1.398 0.61687,-0.185 0.64362,0.169 2.9578,2.216 3.9045,4.58 0.4992,0.653 0.85935,3.726 -0.0161,0.701 -0.16937,0.649 -0.85935,2.542 -0.95561,1.141 -5.0865,-1.351 -3.5443,-0.883 -3.2627,-2.556 -0.83617,0.24 -0.45642,0.323 -0.22642,0.833 -1.6474,1.048 -1.396,0.635 -1.3122,-2.821 -2.5299,-4.605 1.4316,-4.147 0.37618,-0.376 0.08736,-0.314 -0.02318,-0.549 -0.21038,-1.091 -0.53664,-0.152 1.519,-1.037 0.06418,-0.06 0.12837,-0.202 0.52951,-1.583 -0.2086,-1.079 -0.15154,-0.03 -1.1981,-0.582 -0.05705,-0.06 -0.06418,-0.224 0.0071,-0.154 0.12124,-1.535 0.08914,-0.305"><title>Plumas, CA</title></path>
+<path id="c06103" class="cty-t1" data-build="fade" d="m 85.134,196.49 -0.08914,0.305 -0.12124,1.535 -0.0071,0.154 0.06418,0.224 0.05705,0.06 1.1981,0.582 0.15154,0.03 0.2086,1.079 -0.52951,1.583 -0.12837,0.202 -0.06418,0.06 -1.519,1.037 -0.24247,0.466 -0.21573,0.128 -1.1,0.209 -0.86113,-0.234 -3.1093,1.927 -0.73989,0.541 -0.26386,0.279 -0.13728,0.277 -0.13728,0.415 -0.53664,0.282 -0.4992,-0.03 -4.0418,-1.091 -0.71493,0.818 -0.10519,0.669 0.22642,0.394 -15.035,-4.315 -0.0731,-0.114 0,-1.034 0.52238,-1.062 0.61866,-0.362 0.18542,-0.419 0.05527,-0.746 -0.08023,-0.246 -0.05527,-0.429 0.37797,-3.142 0.32805,-1.159 0.08914,-0.08 0.21751,-1.027 0.01426,-0.237 -0.08736,-0.198 -1.0858,-1.235 1.4798,-0.171 2.4104,-0.06 1.9273,0.02 4.0435,0.548 1.0911,0.74 1.6634,0.531 0.58835,0.157 2.2179,0.148 1.6545,-0.06 1.4869,0.08 2.7563,0.392 2.4425,0.485 3.5033,1.091"><title>Tehama, CA</title></path>
+<path id="c06045" class="cty-t1" data-build="fade" d="m 39.934,194.14 8.0425,2.401 -0.16759,0.548 10.26,3 0.08023,0.246 -0.05527,0.746 -0.18542,0.419 -0.61866,0.362 -0.52238,1.062 0,1.034 0.0731,0.114 -0.5313,5.108 -0.10341,0.332 -0.30665,0.786 -0.86648,0.05 -1.4887,-0.492 -0.73811,0.151 -0.49742,1.086 -0.13728,0.348 -0.19255,0.64 0.09627,3.161 -0.15333,0.963 -0.74702,0.834 -0.76307,0.234 -0.39401,0.74 -0.39401,0.925 -0.09627,0.328 -0.03922,0.194 0.29774,1.318 0.98771,2.594 0.44215,0.709 1.462,1.66 -5.383,-1.591 -0.39459,1.0496 -4.0418,-1.2257 -0.35398,0.76632 -2.5154,-0.74632 -0.82012,-1.469 -1.2284,-2.656 0.98058,-10.122 0.05527,-0.394 0.03922,-0.178 0.33161,-0.825 0.3851,-0.845 0.40114,-0.585 0.22464,-0.332 0.30665,-0.319 0.11232,-0.153 0.06418,-0.09 0.01604,-0.02 0.40115,-0.619 0.03209,-0.16 0.34588,-2.313 0.05527,-0.572 -0.0071,-3.582 -0.01605,-0.06 -0.77198,-2.055 -0.42432,-1.109 -0.53843,-1.398"><title>Mendocino, CA</title></path>
+<path id="c06023" class="cty-t2" data-build="fade" d="m 55.192,165.33 2.6369,0.779 0.32092,0.459 -0.12837,4.491 -0.28169,0.274 -0.29596,0.401 -0.5313,1.052 -0.03209,0.749 0.08736,0.152 -0.08736,1.117 -1.2605,1.286 -0.55626,0.49 -1.856,1.494 -0.52238,2.66 -4.7086,15.805 -8.0425,-2.401 -0.38688,-0.681 -3.4142,-6.518 -0.10519,-0.289 0.43324,-4.163 0.05705,-0.105 1.462,-2.106 1.0287,-1.326 0.39402,-0.442 0.7078,-0.755 1.0519,-1.021 1.2373,-1.318 0.68462,-0.722 0.5206,-0.627 0.68462,-0.988 0.74524,-1.311 0.3637,-0.836 -0.08914,-0.513 2.1608,-5.135 1.6331,-3.785 2.956,0.867 1.8809,0.611 -0.35479,1.189 0.66679,0.892 0.93957,0.274"><title>Humboldt, CA</title></path>
+<path id="c06105" class="cty-t1" data-build="fade" d="m 58.022,171.06 0.82012,0.659 0.78803,0.763 1.2694,1.905 2.3142,2.442 1.3496,0.685 0.32983,0.05 0.3851,-0.305 0.2086,-0.371 -0.15333,-1.068 2.5156,-2.605 3.6085,-1.421 2.0325,1.254 -0.41719,2.337 0.33874,0.241 0.27991,0.305 0.04814,0.217 -0.2496,0.909 -0.11945,0.202 -0.16046,0.232 -1.938,1.72 -0.6347,0.232 -0.11232,0.02 -4.6123,5.609 -2.9578,3.73 -2.7474,1.269 -2.0895,1.696 -0.2496,0.82 1.0858,1.235 0.08736,0.198 -0.01426,0.237 -0.21751,1.027 -0.08914,0.08 -0.32805,1.159 -0.37797,3.142 0.05527,0.429 -10.26,-3 0.16759,-0.548 4.7086,-15.805 0.52238,-2.66 1.856,-1.494 0.55626,-0.49 1.2605,-1.286 0.08736,-1.117 -0.08736,-0.152 0.03209,-0.749 0.5313,-1.052 0.29596,-0.401 0.28169,-0.274"><title>Trinity, CA</title></path>
+<path id="c06089" class="cty-t1" data-build="fade" d="m 90.509,180.25 1.9041,0.504 -1.5903,5.875 -0.03209,0.772 -2.1448,7.763 -0.66679,2.112 -2.8455,-0.788 -3.5033,-1.091 -2.4425,-0.485 -2.7563,-0.392 -1.4869,-0.08 -1.6545,0.06 -2.2179,-0.148 -0.58835,-0.157 -1.6634,-0.531 -1.0911,-0.74 -4.0435,-0.548 -1.9273,-0.02 -2.4104,0.06 -1.4798,0.171 0.2496,-0.82 2.0895,-1.696 2.7474,-1.269 2.9578,-3.73 4.6123,-5.609 0.11232,-0.02 0.6347,-0.232 1.938,-1.72 0.16046,-0.232 0.11945,-0.202 0.2496,-0.909 -0.04814,-0.217 -0.27991,-0.305 -0.33874,-0.241 3.4712,0.933 4.7656,1.381 9.1996,2.557"><title>Shasta, CA</title></path>
+<path id="c06035" class="cty-t1" data-build="fade" d="m 114.58,186.64 -1.8328,7.135 -2.0646,8.221 -1.0358,4.008 -0.32983,1.294 -0.009,0.02 -1.125,4.277 -1.7347,6.508 -0.35301,1.31 -2.5638,-0.312 0.95561,-1.141 0.85935,-2.542 0.16937,-0.649 0.0161,-0.701 -0.85935,-3.726 -0.4992,-0.653 -3.9045,-4.58 -2.9578,-2.216 -0.64362,-0.169 -0.61687,0.185 -1.7436,1.398 -0.1462,0.537 -0.36014,0.08 -0.6347,-0.17 -1.6474,-1.469 -0.2086,-0.572 1.1482,-4.252 -4.475,-1.188 0.66679,-2.112 2.1448,-7.763 0.03209,-0.772 1.5903,-5.875 22.163,5.884"><title>Lassen, CA</title></path>
+<path id="c06049" class="cty-t1" data-build="fade" d="m 95.476,162.08 9.3048,2.603 3.0541,0.82 0.0232,0 6.0261,1.599 0.65074,0.168 4.7424,1.198 -4.7014,18.16 -22.163,-5.883 -1.9041,-0.505 1.503,-5.489 2.0895,-7.763 -0.08023,-0.05 -0.02496,-0.07 0.87717,-3.231 0.15868,-0.554 0.44394,-1.013"><title>Modoc, CA</title></path>
+</g>
+      </svg>
+      </div>
+    </div>
+    <span class="ms-source">Source: Google</span>
+  </div>
+</section>
+
+</section>
+
+<script>
+(function () {
+  var root = document.currentScript.closest('.ms-frag');
+  if (!root) return;
+  var panel = root.querySelector('[data-sk-panel]');
+  var tabsWrap = root.querySelector('.audob-sk-tabs');
+  if (!panel || !tabsWrap) return;
+  var svg = panel.querySelector('svg.audob-sk-svg');
+  var tabs = Array.prototype.slice.call(tabsWrap.querySelectorAll('[data-sk-tab]'));
+  var TAB_KEYS = ['audio', 'video', 'social', 'news'];
+
+  /* ============================================================
+     Layout constants — shared column geometry (identical for all
+     four states so the panel never reflows on swap).
+     ============================================================ */
+  var NODE_W = 18;
+  var TH = 1104;
+  var COL_X = { channel: 0, interest: 145, index: 285, property: 445, program: 605, nugget: 780 };
+  var GAP1 = 28, GAP2 = 32, GAP3 = 20, GAP4 = 10;
+  var STAGGER_MS = 45, COL_DUR_MS = 340, OUT_MS = 180;
+  var COLOR = { pos: 'var(--ms-pos)', neg: 'var(--ms-neg)', chart8: 'var(--ms-chart-8)' };
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* Proportional Sankey split: source side (left edge, feeding this
+     level) is a CONTIGUOUS partition of the parent's full height;
+     dest side (right edge — the node itself, and the next level's
+     source range) reserves `gap` between siblings. Mirrors the
+     board-exact Audio ribbon math 1:1. */
+  function split(items, y0, h, gap, weightFn) {
+    weightFn = weightFn || function (d) { return d.weight != null ? d.weight : 1; };
+    var n = items.length, W = 0;
+    items.forEach(function (d) { W += weightFn(d); });
+    if (!W) W = 1;
+    var destH = Math.max(0, h - gap * (n - 1));
+    var srcCum = y0, destCum = y0;
+    return items.map(function (d) {
+      var frac = weightFn(d) / W;
+      var srcY0 = srcCum, srcY1 = srcCum + h * frac;
+      var destY0 = destCum, destY1 = destCum + destH * frac;
+      srcCum = srcY1; destCum = destY1 + gap;
+      var out = {};
+      for (var k in d) out[k] = d[k];
+      out.srcY0 = srcY0; out.srcY1 = srcY1; out.destY0 = destY0; out.destY1 = destY1;
+      return out;
+    });
+  }
+
+  function ribbon(xA, xB, seg, color) {
+    var m = ((xA + xB) / 2).toFixed(1);
+    return '<path class="audob-sk-ribbon" d="M' + xA + ',' + seg.srcY0.toFixed(1) +
+      ' C' + m + ',' + seg.srcY0.toFixed(1) + ' ' + m + ',' + seg.destY0.toFixed(1) + ' ' + xB + ',' + seg.destY0.toFixed(1) +
+      ' L' + xB + ',' + seg.destY1.toFixed(1) +
+      ' C' + m + ',' + seg.destY1.toFixed(1) + ' ' + m + ',' + seg.srcY1.toFixed(1) + ' ' + xA + ',' + seg.srcY1.toFixed(1) +
+      ' Z" fill="' + color + '" fill-opacity="0.16"/>';
+  }
+  function nodeRect(x, seg, color) {
+    return '<rect class="audob-sk-node" x="' + x + '" y="' + seg.destY0.toFixed(1) + '" width="' + NODE_W + '" height="' + (seg.destY1 - seg.destY0).toFixed(1) + '" rx="2" fill="' + color + '"/>';
+  }
+  function labelBlock(x, seg, label, sub) {
+    var c = (seg.destY0 + seg.destY1) / 2;
+    if (sub) {
+      return '<text class="audob-sk-label" x="' + x + '" y="' + (c - 3).toFixed(1) + '">' + esc(label) + '</text>' +
+        '<text class="audob-sk-sub" x="' + x + '" y="' + (c + 13).toFixed(1) + '">' + esc(sub) + '</text>';
+    }
+    return '<text class="audob-sk-label" x="' + x + '" y="' + (c + 5).toFixed(1) + '">' + esc(label) + '</text>';
+  }
+  function chip(x, seg, color, text) {
+    var w = Math.max(90, Math.round(text.length * 5.6 + 26));
+    var cy = (seg.destY0 + seg.destY1) / 2 - 11;
+    return nodeRect(x, seg, color) +
+      '<g class="audob-sk-chip" transform="translate(' + (x + 28) + ',' + cy.toFixed(1) + ')"><rect width="' + w + '" height="22" rx="4" fill="' + color + '" fill-opacity="0.16"/><text x="' + (w / 2) + '" y="15" text-anchor="middle" fill="' + color + '">' + esc(text) + '</text></g>';
+  }
+  function colGroup(idx, innerHTML) {
+    return '<g class="audob-sk-colgrp" style="--sk-col-delay:' + (idx * STAGGER_MS) + 'ms">' + innerHTML + '</g>';
+  }
+
+  /* ============================================================
+     Derived states (Video / Social / News) — built from the page's
+     own board-exact platform lists in the "Media channel & platform
+     interests" module above, with plausible programs/nuggets in the
+     same grammar as the Audio Streaming state (approved derivation —
+     functionality illustration only).
+     ============================================================ */
+  var SK_DATA = {
+    video: {
+      label: 'Video Streaming', interestPct: 54,
+      interested: {
+        over: { sub: 'high affinity', color: 'pos', platforms: [
+          { name: 'YouTube', lx: '512lx', programs: [{ name: 'Live sports', nugget: 'Live Sports 2.6x Avg Time' }, { name: 'Prestige drama' }] },
+          { name: 'Netflix', lx: '287lx', programs: [{ name: 'True crime docs', nugget: 'Weekend Binge Peak' }, { name: 'Awards season' }] }
+        ] },
+        under: { sub: 'weak signal', color: 'chart8', platforms: [
+          { name: 'Hulu', lx: '176lx', programs: [{ name: 'Sitcom reruns', nugget: 'Skip Rate 58%' }] }
+        ] }
+      },
+      notInterested: {
+        over: { sub: 'resistant', color: 'neg', platforms: [
+          { name: 'HBO Max', lx: '143lx', programs: [{ name: 'Limited series' }, { name: 'Late-night talk', nugget: 'Ad-Skip Heavy' }] }
+        ] },
+        under: { sub: 'low signal', color: 'chart8', platforms: [
+          { name: 'Apple TV+', lx: '68lx', programs: [{ name: 'Kids & family', nugget: 'Skews Too Young' }] }
+        ] }
+      }
+    },
+    social: {
+      label: 'Social', interestPct: 38,
+      interested: {
+        over: { sub: 'high affinity', color: 'pos', platforms: [
+          { name: 'Instagram', lx: '398lx', programs: [{ name: 'Reels & influencers', nugget: 'Story Taps 2.9x Avg' }, { name: 'Travel inspo' }] },
+          { name: 'Pinterest', lx: '241lx', programs: [{ name: 'Mood boards & DIY', nugget: 'Save Rate High' }] }
+        ] },
+        under: { sub: 'weak signal', color: 'chart8', platforms: [
+          { name: 'Facebook', lx: '129lx', programs: [{ name: 'Community groups', nugget: 'Skip Rate 44%' }] }
+        ] }
+      },
+      notInterested: {
+        over: { sub: 'resistant', color: 'neg', platforms: [
+          { name: 'LinkedIn', lx: '97lx', programs: [{ name: 'Industry news' }, { name: 'Career updates', nugget: 'Low Dwell Time' }] }
+        ] },
+        under: { sub: 'low signal', color: 'chart8', platforms: [
+          { name: 'Reddit', lx: '41lx', programs: [{ name: 'Niche forums', nugget: 'Wrong Age Demo' }] }
+        ] }
+      }
+    },
+    news: {
+      label: 'News & Business', interestPct: 29,
+      interested: {
+        over: { sub: 'high affinity', color: 'pos', platforms: [
+          { name: 'NY Times', lx: '365lx', programs: [{ name: 'Travel & lifestyle', nugget: 'Morning Read Peak' }, { name: 'Opinion & analysis' }] },
+          { name: 'CNN', lx: '228lx', programs: [{ name: 'Breaking news', nugget: 'Push Alert Opens High' }] }
+        ] },
+        under: { sub: 'weak signal', color: 'chart8', platforms: [
+          { name: 'Bloomberg', lx: '134lx', programs: [{ name: 'Markets briefing', nugget: 'Skip Rate 51%' }] }
+        ] }
+      },
+      notInterested: {
+        over: { sub: 'resistant', color: 'neg', platforms: [
+          { name: 'WSJ', lx: '88lx', programs: [{ name: 'Business desk' }, { name: 'Opinion', nugget: 'Paywall Drop-off' }] }
+        ] },
+        under: { sub: 'low signal', color: 'chart8', platforms: [
+          { name: 'Forbes', lx: '37lx', programs: [{ name: 'Contributor columns', nugget: 'Wrong Income Bracket' }] }
+        ] }
+      }
+    }
+  };
+
+  function buildDerived(key) {
+    var d = SK_DATA[key];
+    var groups = [[], [], [], [], [], []];
+
+    groups[0].push(nodeRect(COL_X.channel, { destY0: 0, destY1: TH }, 'var(--ms-chart-2)'));
+    groups[0].push(labelBlock(COL_X.channel + 32, { destY0: 0, destY1: TH }, d.label, null));
+
+    var lvl1 = split([
+      { kind: 'interested', pct: d.interestPct },
+      { kind: 'not', pct: 100 - d.interestPct }
+    ], 0, TH, GAP1, function (x) { return x.pct; });
+
+    lvl1.forEach(function (top) {
+      var isInt = top.kind === 'interested';
+      var topColor = isInt ? COLOR.pos : COLOR.neg;
+      groups[1].push(ribbon(COL_X.channel + NODE_W, COL_X.interest, top, topColor));
+      groups[1].push(nodeRect(COL_X.interest, top, topColor));
+      groups[1].push(labelBlock(COL_X.interest + 32, top, isInt ? 'Interested' : 'Not Interested', top.pct + '%'));
+
+      var bucket = isInt ? d.interested : d.notInterested;
+      var branches = [
+        { kind: 'over', sub: bucket.over.sub, color: bucket.over.color, platforms: bucket.over.platforms, weight: bucket.over.platforms.length },
+        { kind: 'under', sub: bucket.under.sub, color: bucket.under.color, platforms: bucket.under.platforms, weight: bucket.under.platforms.length }
+      ];
+      var lvl2 = split(branches, top.destY0, top.destY1 - top.destY0, GAP2, function (x) { return x.weight; });
+
+      lvl2.forEach(function (idxBr) {
+        var c2 = COLOR[idxBr.color];
+        groups[2].push(ribbon(COL_X.interest + NODE_W, COL_X.index, idxBr, c2));
+        groups[2].push(nodeRect(COL_X.index, idxBr, c2));
+        groups[2].push(labelBlock(COL_X.index + 32, idxBr, idxBr.kind === 'over' ? 'Over-indexed' : 'Under-indexed', idxBr.sub));
+
+        var plats = idxBr.platforms.map(function (p) { var o = {}; for (var k in p) o[k] = p[k]; o.weight = 1; return o; });
+        var lvl3 = split(plats, idxBr.destY0, idxBr.destY1 - idxBr.destY0, GAP3);
+
+        lvl3.forEach(function (plat) {
+          groups[3].push(ribbon(COL_X.index + NODE_W, COL_X.property, plat, c2));
+          groups[3].push(nodeRect(COL_X.property, plat, c2));
+          groups[3].push(labelBlock(COL_X.property + 32, plat, plat.name, plat.lx));
+
+          var progs = plat.programs.map(function (pr) { var o = {}; for (var k in pr) o[k] = pr[k]; o.weight = 1; return o; });
+          var lvl4 = split(progs, plat.destY0, plat.destY1 - plat.destY0, GAP4);
+
+          lvl4.forEach(function (prog) {
+            groups[4].push(ribbon(COL_X.property + NODE_W, COL_X.program, prog, c2));
+            groups[4].push(nodeRect(COL_X.program, prog, c2));
+            groups[4].push(labelBlock(COL_X.program + 32, prog, prog.name, null));
+
+            if (prog.nugget) {
+              groups[5].push(ribbon(COL_X.program + NODE_W, COL_X.nugget, prog, c2));
+              groups[5].push(chip(COL_X.nugget, prog, c2, prog.nugget));
+            }
+          });
+        });
+      });
+    });
+
+    return groups.map(function (arr, i) { return colGroup(i, arr.join('')); }).join('');
+  }
+
+  /* ============================================================
+     Audio Streaming — the board-exact resting state. Its markup is
+     left completely untouched above (same paths/rects/text, same
+     data-build page-load reveal); we only read it once at init to
+     build a column-grouped copy for re-entry after the user has
+     navigated away, so the swap choreography works uniformly across
+     all four pills without ever regenerating (and risking drift
+     from) the original numbers.
+     ============================================================ */
+  var AUDIO_GROUPS_HTML = (function () {
+    var initialG = svg.querySelector('.audob-sk-state[data-sk-state="audio"]');
+    if (!initialG) return ['', '', '', '', '', ''];
+    var kids = Array.prototype.slice.call(initialG.children);
+    var ribbonBuckets = [2, 4, 9, 11, 8];   /* ch→int, int→idx, idx→prop, prop→prog, prog→nug */
+    var nodeBuckets = [2, 6, 12, 27, 22, 16]; /* channel, interest, index, property, program, nugget */
+    var totalRibbons = ribbonBuckets.reduce(function (a, b) { return a + b; }, 0);
+    var ribbons = kids.slice(0, totalRibbons);
+    var nodes = kids.slice(totalRibbons);
+    var ri = 0, ni = 0;
+    var out = [nodes.slice(ni, ni + nodeBuckets[0]).map(function (e) { return e.outerHTML; }).join('')];
+    ni += nodeBuckets[0];
+    for (var g = 1; g <= 5; g++) {
+      var rb = ribbons.slice(ri, ri + ribbonBuckets[g - 1]); ri += ribbonBuckets[g - 1];
+      var nb = nodes.slice(ni, ni + nodeBuckets[g]); ni += nodeBuckets[g];
+      out.push(rb.map(function (e) { return e.outerHTML; }).join('') + nb.map(function (e) { return e.outerHTML; }).join(''));
+      ni = ni; /* no-op, keeps loop var scoping obvious */
+    }
+    return out.map(function (html, i) { return colGroup(i, html); });
+  })();
+
+  function renderStateInner(key) {
+    if (key === 'audio') return AUDIO_GROUPS_HTML.join('');
+    return buildDerived(key);
+  }
+
+  /* ============================================================
+     Tab wiring + transition choreography
+     ============================================================ */
+  var current = 'audio', busy = false;
+
+  function reducedMotion() {
+    return document.body.classList.contains('ms-motion-off') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function setActiveTab(key) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute('data-sk-tab') === key;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      if (on) panel.setAttribute('aria-labelledby', t.id);
+    });
+  }
+
+  function swapTo(key) {
+    if (busy || key === current || TAB_KEYS.indexOf(key) === -1) return;
+    var stateG = svg.querySelector('.audob-sk-state');
+    if (!stateG) return;
+
+    if (reducedMotion()) {
+      stateG.outerHTML = '<g class="audob-sk-state" data-sk-state="' + key + '">' + renderStateInner(key) + '</g>';
+      current = key;
+      setActiveTab(key);
+      return;
+    }
+
+    busy = true;
+    tabsWrap.classList.add('is-busy');
+    setActiveTab(key);
+    stateG.classList.add('is-out');
+
+    setTimeout(function () {
+      stateG.outerHTML = '<g class="audob-sk-state is-in-pre" data-sk-state="' + key + '">' + renderStateInner(key) + '</g>';
+      var newG = svg.querySelector('.audob-sk-state');
+      current = key;
+      void newG.getBoundingClientRect(); /* force reflow before flipping to .is-in */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          newG.classList.remove('is-in-pre');
+          newG.classList.add('is-in');
+        });
+      });
+      setTimeout(function () {
+        busy = false;
+        tabsWrap.classList.remove('is-busy');
+      }, STAGGER_MS * 5 + COL_DUR_MS + 40);
+    }, OUT_MS);
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { swapTo(t.getAttribute('data-sk-tab')); });
+  });
+  tabsWrap.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    var idx = TAB_KEYS.indexOf(current);
+    var dir = e.key === 'ArrowRight' ? 1 : -1;
+    var nextKey = TAB_KEYS[(idx + dir + TAB_KEYS.length) % TAB_KEYS.length];
+    swapTo(nextKey);
+    var nextTab = tabsWrap.querySelector('[data-sk-tab="' + nextKey + '"]');
+    if (nextTab) nextTab.focus();
+  });
+
+  /* ============================================================
+     Geo drill-down (round 8): California-only state -> county.
+     National + county maps are both always in the DOM, stacked in
+     the same box; CSS crossfades/scales between them off the
+     [data-geo-level] attribute, so the transition and reduced-
+     motion/motion-off handling live entirely in CSS.
+     ============================================================ */
+  var geoWrap = root.querySelector('[data-geo-level]');
+  var geoTitle = root.querySelector('[data-geo-title]');
+  var geoBack = root.querySelector('[data-geo-back]');
+  var geoUsSvg = root.querySelector('[data-geo-us]');
+  var geoCaPath = geoUsSvg && geoUsSvg.querySelector('.ca');
+  var GEO_US_TITLE = 'United States — Index by State';
+  var GEO_CA_TITLE = 'California — Index by County';
+
+  function geoGoCounty() {
+    if (!geoWrap || geoWrap.getAttribute('data-geo-level') === 'county') return;
+    geoWrap.setAttribute('data-geo-level', 'county');
+    if (geoTitle) geoTitle.textContent = GEO_CA_TITLE;
+  }
+  function geoGoUS() {
+    if (!geoWrap || geoWrap.getAttribute('data-geo-level') === 'us') return;
+    geoWrap.setAttribute('data-geo-level', 'us');
+    if (geoTitle) geoTitle.textContent = GEO_US_TITLE;
+  }
+  if (geoCaPath) {
+    geoCaPath.setAttribute('tabindex', '0');
+    geoCaPath.setAttribute('role', 'button');
+    geoCaPath.setAttribute('aria-label', 'View California county detail');
+    geoCaPath.addEventListener('click', geoGoCounty);
+    geoCaPath.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); geoGoCounty(); }
+    });
+  }
+  if (geoBack) geoBack.addEventListener('click', geoGoUS);
+})();
+</script>

@@ -1,0 +1,570 @@
+/* ==========================================================================
+   BATCH MATRIX (PLAN.md "## BATCH MATRIX — 25 at a time, results grow up,
+   shelf dies"), width rule updated by RESULTS SHEET (PLAN.md "## RESULTS
+   SHEET — the frame springs from the output node") — every new class this
+   phase's UI seam needs lives HERE only, imported LAST in main.jsx (after
+   nodes.css, per that file's own import-order comment), which is what lets
+   the one deliberate override below win its cascade tie.
+
+   Two kinds of rule:
+     1. Genuinely NEW, uniquely-named classes (the matrix section/head/grid/
+        tile family, the run-group/divider pair PLAN.md "## BATCHES STAY,
+        NEWEST FIRST" adds, the stage batch badge) — nothing here collides
+        with an existing selector in any other file.
+     2. ONE deliberate out-specification: `.cw-results-sheet--matrix` widens
+        the satellite sheet past nodes.css's own `.cw-results-sheet { width:
+        460px }` (RESULTS SHEET's fixed list-only width — the free-standing
+        `results` frame node this rule used to target, `.cw-node--results-
+        matrix` / `.cw-node--results`, retired that same phase). Same
+        specificity (one class selector each) — cascade ORDER alone decides
+        the tie, and this file loading after nodes.css is what makes the
+        wider width win without editing that file's own bytes.
+
+   Token discipline unchanged from every other file in this app — DESIGN BAR
+   item 1: --cw-* (or the --accent alias nodes.css already sets per card
+   type) only, zero raw hex, with ONE documented, already-established
+   exception this file also leans on: the literal rgba(16, 24, 40, N)
+   "shadow-ink" family and white ink that darkroom.css's own .cw-dl-chip
+   comment names outright ("sits ON TOP OF arbitrary SVG artifact content,
+   so it uses a theme-invariant dark scrim + white ink — contrast against
+   unpredictable underlying art, not the app's own light/dark chrome") —
+   the exact same situation a tile's hover-download chip and the stage's
+   batch badge are both in here, so this reuses that SAME literal rather
+   than inventing a second scrim color. Motion vocabulary reused verbatim
+   too: cw-materialize/cw-stamp-in-reduced (nodes.css keyframes, referenced
+   by name — @keyframes are global, no redefinition needed) and the
+   duration/easing custom properties (motion.css, --cw-d-N / --cw-e-name)
+   every other surface in this app already keys its own transitions to.
+   ========================================================================== */
+
+/* ---- sheet width — matrix content needs real room -----------------------
+   RESULTS BEAUTIFICATION amendment (PLAN.md, Bryan run-2 screenshot): "the
+   matrix grid goes 10 ACROSS from the start (not 5) — widen the matrix
+   sheet frame so ten ~200px tiles + gaps fit (~2260px)" — supersedes the
+   original BATCH MATRIX/RESULTS SHEET ~1140px figure (5 across); list-only
+   frames are untouched, still nodes.css's own ~460px. 2260 − the sheet's
+   own 32px horizontal padding (nodes.css `.cw-results-sheet`, 16px each
+   side, also untouched) = 2228px content box; at the grid's own 200px tile
+   floor + 12px gaps (CRAFT PASS) that lands on exactly 10 columns for a
+   25-tile batch — see `.cw-results-matrix-grid` below for the shared math,
+   width and grid math chosen together, not independently guessed. */
+.cw-results-sheet--matrix {
+  width: 2260px;
+}
+
+/* ---- one matrix section = one batch output/remix node --------------------
+   Rendered ABOVE the plain row list (ResultsNode.jsx's own render order —
+   "matrix sections first, then the list rows"). The section head mirrors
+   nodes.css's own `.cw-results-head` language, restated here rather than
+   reused across this dispatch's file-grant boundary — the SAME
+   "duplicate small pieces locally, don't reach into another seam's file"
+   precedent this app's own file-header comments document repeatedly
+   (DeliverablesShelf.jsx's CrossIcon/DownloadChip, ResultsNode.jsx's own
+   FORMAT_ICONS/ResultsClearButton, RunPreview.jsx's own FORMAT_ICONS —
+   all the same call). */
+.cw-results-matrix-section {
+  margin-bottom: 24px;
+}
+.cw-results-matrix-section:last-of-type {
+  margin-bottom: 12px;
+}
+/* `headerMode="solo"` (RESULTS BEAUTIFICATION) — this IS the sheet's only
+   header when it renders, so it earns a touch more room than the demoted
+   divider below (gap/margin/padding all nudged up from their pre-
+   beautification values for a more generous, "one considered header" feel,
+   matched by `.cw-results-head`'s own identical nudge in nodes.css so the
+   two header shapes read as the same family). */
+.cw-results-matrix-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 13px;
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+.cw-results-matrix-head-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ---- `headerMode="divider"` (RESULTS BEAUTIFICATION, default) — a section
+   head demoted to a quiet inline divider once the sheet-level
+   `.cw-results-head` above already carries RESULTS + total + the actions:
+   SAME mono-label-plus-trailing-hairline language as `.cw-results-run-
+   divider`/`-label` below (deliberately reusing that family's exact type
+   scale/color rather than inventing a second one — DESIGN BAR "reuse, don't
+   invent"), plus one small icon-only download button standing in for what
+   used to be a text "Download all" twin. Never bordered/boxed — "visibly
+   subordinate, never a second full header" (PLAN.md). */
+.cw-results-matrix-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.cw-results-matrix-divider-label {
+  flex-shrink: 0;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cw-text-3);
+  white-space: nowrap;
+}
+.cw-results-matrix-divider-line {
+  flex: 1;
+  height: var(--cw-hairline-w, 0.5px);
+  background: var(--cw-border-soft);
+}
+.cw-results-matrix-divider-dl {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--cw-radius-pill, 999px);
+  background: var(--cw-field);
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    color var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+.cw-results-matrix-divider-dl:hover {
+  color: var(--cw-accent);
+  background: color-mix(in srgb, var(--cw-accent) 14%, var(--cw-field));
+}
+.cw-results-matrix-divider-dl:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+
+/* ---- run groups — "newest run's group FIRST... a quiet group divider
+   line labels each run" (PLAN.md "## BATCHES STAY, NEWEST FIRST"). One
+   `.cw-results-run-group` per run inside a matrix section, newest painted
+   first (ResultsNode.jsx reverses the chronological array for display,
+   never for the tile numbers themselves). Spacing lives on the group
+   wrapper rather than the divider, so a single-run section (no divider
+   rendered at all) still reads with zero extra gap above its own grid —
+   exactly "a single run reads exactly as it always has" (ResultsNode.jsx's
+   own batchVolumeStat comment, same standard applied here to layout). */
+.cw-results-run-group {
+  margin-top: 18px;
+}
+.cw-results-run-group:first-child {
+  margin-top: 0;
+}
+/* Quiet, mono, instrument-voice label (DESIGN BAR item 2: "Fira Code for
+   meta/numbers") with a hairline rule trailing off to the right — same
+   language as nodes.css's own section dividers, restated here per this
+   file's own "duplicate small pieces locally" precedent (see this file's
+   header comment). Never a loud rule/box — a run boundary is a quiet fact,
+   not a call to attention. */
+.cw-results-run-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 10px;
+}
+.cw-results-run-label {
+  flex-shrink: 0;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cw-text-3);
+  white-space: nowrap;
+}
+/* (The divider's trailing hairline is gone — Bryan: "you dont need the
+   hairline to the right of RUN 1 or RUN 2 or any other runs for that
+   matter." The bare mono label alone marks the run boundary now.) */
+
+/* ---- the grid — RULED SHEET (Bryan: "make the images different sizes
+   like they were before, sepeare everything with a hairline or vertically
+   and horizontally so they all sit in equal sized spaces on the output
+   panel"). The grid is now a hairline LATTICE of equal cells, contact-
+   sheet style: gap collapses to 0 and the lines come from each cell's own
+   border-right/border-bottom (`.cw-results-tile` below) plus this
+   container's border-top/border-left closing the first row/column — every
+   interior line lands exactly once, no doubling, and a partial last row
+   still closes cleanly at its final tile's own right border. Columns are
+   an EXPLICIT 10 (the sheet's fixed 2260px width was chosen for exactly
+   this count — the width rule's own comment above; the sheet never
+   reflows, so auto-fill was solving a problem this surface doesn't have);
+   equal rows fall out of every cell being the same fixed anatomy (art
+   zone + caption reservoir, below) stretched to the row. The artwork
+   INSIDE each equal cell is what varies — its own native ratio, contained
+   (see `.cw-results-tile-art`). */
+.cw-results-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-left: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+/* ---- one tile = one asset -------------------------------------------------
+   Staggered draw-in, capped at ~16 tiles then the rest land together
+   (ResultsNode.jsx's tileDelay() sets the inline animation-delay; this rule
+   only owns the keyframe/duration/easing) — cw-materialize is the SAME
+   entrance every card/thumb/row in this app already mounts with
+   (nodes.css), reused by name rather than redefined (DESIGN BAR "reuse,
+   don't invent"). */
+/* RULED SHEET — one tile IS one ruled cell now: its own border-right/
+   border-bottom draw the lattice (the grid's border-top/left close the
+   outer edges, see the grid comment above), padding insets the content
+   from the rules, and the old floating-card hover lift (scale/translateY)
+   retires — a cell in a ruled sheet doesn't levitate; hover reads as a
+   faint wash instead, and the download/select chips still reveal. */
+.cw-results-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 12px 14px;
+  border: none;
+  border-right: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  background: transparent;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+  animation: cw-materialize var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
+}
+.cw-results-tile:hover,
+.cw-results-tile:focus-visible {
+  background: color-mix(in srgb, var(--cw-accent) 4%, transparent);
+}
+/* SELECTED DOWNLOADS — a ticked cell wears a 1px inset accent ring (inset
+   so it never collides with the shared lattice lines) plus a slightly
+   deeper wash than hover. */
+.cw-results-tile.is-selected {
+  background: color-mix(in srgb, var(--cw-accent) 6%, transparent);
+  box-shadow: inset 0 0 0 1px var(--cw-accent);
+}
+/* RULED SHEET — the art ZONE: an invisible, fixed-height centering stage
+   (no border/background/radius of its own any more — the drawn frame moved
+   onto the media element itself, so it hugs the artwork's true edges).
+   Height math: the sheet's 2228px grid / 10 columns = ~223px per cell,
+   minus the tile's own 24px horizontal padding ≈ 198px of content width —
+   190px of zone height is chosen UNDER that so the widest ratio in the
+   engine's bank (1:1) still fits height-driven without ever clamping, i.e.
+   every ratio renders true: 1:1 → 190×190, 4:5 → 152×190, 9:16 → 107×190.
+   `flex-shrink: 0` keeps the caption reservoir below from ever eating it. */
+.cw-results-tile-art {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cw-results-tile:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: -2px;
+}
+/* Per-tile index badge (ResultsNode.jsx's own comment) — quiet mono corner
+   chip, dark-scrim family so it reads on any artwork. */
+/* (The old .cw-results-tile-num overlay badge retired — Bryan: "make the
+   asset number and text not appear on the asset"; the index now rides the
+   caption line as .cw-results-tile-capnum above.) */
+/* Reduced motion — "reduced-motion opacity-only" (PLAN.md, verbatim). Same
+   swap-the-keyframe technique nodes.css's own `.cw-results-row` reduced-
+   motion rule already establishes: the per-tile stagger DELAY survives (set
+   inline, untouched), only the motion itself flattens to a plain fade; the
+   hover lift/scale is dropped too, since scale/transform are motion, not a
+   state change worth keeping under this preference. */
+@media (prefers-reduced-motion: reduce) {
+  .cw-results-tile {
+    animation: cw-stamp-in-reduced var(--cw-d-1, 140ms) linear backwards;
+  }
+}
+/* RULED SHEET — the media itself, at its own NATIVE ratio inside the equal
+   zone ("make the images different sizes like they were before"): a photo
+   contains within the zone off its natural pixels; a drawn Artifact sizes
+   height-driven off its viewBox's true proportions (an <svg> with a
+   viewBox has an intrinsic ratio, so `width: auto` resolves from the
+   definite height — no inline style needed). The hairline frame lives HERE
+   now, hugging the artwork's actual edges — square-cornered, which is what
+   a ruled contact sheet wants (a radius would fight the lattice). */
+.cw-results-tile-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  /* ARRIVAL ANIMATION — "the IMAGES themselves fade in on their own load
+     event... no pop-in of half-loaded photos" (PLAN.md "## BATCHES STAY,
+     NEWEST FIRST", item 3). Independent of the TILE's own cw-materialize
+     entrance above (position/scale) — this is purely "has this exact
+     photo's bytes actually arrived," toggled by ResultsNode.jsx's own
+     `is-loaded` class on the element's load event (or immediately, via
+     `img.complete`, when the browser already had it cached). */
+  opacity: 0;
+  transition: opacity var(--cw-d-2, 240ms) var(--cw-e-out, ease);
+}
+.cw-results-tile-img.is-loaded {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-results-tile-img {
+    transition: opacity var(--cw-d-1, 140ms) linear;
+  }
+}
+/* ORDERED BUILD-IN (Bryan: "make it look like the images build in in
+   order") — drawn tiles fade on the same schedule as photos: hidden until
+   ResultsNode.jsx flips `is-revealed` at this tile's own turn in the
+   sweep (photos reuse their existing `is-loaded` fade, now also gated on
+   the turn), so the whole sheet blooms strictly 01 → 02 → 03… */
+.cw-results-tile-svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  opacity: 0;
+  transition: opacity var(--cw-d-2, 240ms) var(--cw-e-out, ease);
+}
+.cw-results-tile-svg.is-revealed {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-results-tile-svg {
+    transition: opacity var(--cw-d-1, 140ms) linear;
+  }
+}
+/* PAIRED DELIVERABLES (PLAN.md "## PAIRED DELIVERABLES") — "below each
+   numbered image, its copy as a 2-line clamped caption (quiet, 11px
+   family)." A FIXED 2-line reservoir (`height`, not `max-height`) so every
+   tile in a batch grows by the exact same strip regardless of its own
+   particular caption's length (contract item 3: "tile boxes grow by the
+   caption strip uniformly") — a one-line caption still reserves the full
+   two lines' worth of box, rather than the grid reading uneven. Inter
+   (words), not Fira Code (DESIGN BAR item 2: mono is for meta/numbers —
+   `.cw-results-tile-num`/`.cw-results-meta` neighbors, not prose like
+   this). `line-clamp` is the modern spec property; the `-webkit-*` trio
+   alongside it is still required for Safari/older Chromium clamp support. */
+/* Outside the art card now (Bryan) — open space under the frame, no box.
+   The old `height: 2 lines` PLUS interior padding under a border-box reset
+   left less than two lines of actual text room, which is exactly the
+   mid-glyph clipping Bryan's screenshot caught ("shown without exc…") —
+   padding moved out to the tile's own gap; the reservoir is now purely
+   the two text lines, so the clamp ellipsizes instead of guillotining. */
+/* FULL copy, never truncated (Bryan: "show all of the copy, do not
+   truncate — in the graphic output panel") — this supersedes both the
+   2-line-clamp era and the brief one-line era.
+   RULED SHEET — equal cells need an equal caption zone too, so this is a
+   RESERVOIR again, but a min-height one, never a clamp: 4 lines covers the
+   longest entry in engine.js's own BATCH_CAPTION_BANK (131 chars ≈ 3.5
+   lines at this cell's ~198px content width), so every normal cell is
+   pixel-identical; a hypothetically longer caption would GROW its row
+   (grid rows stretch, the row's cells stay equal to each other) rather
+   than ever clipping a word. */
+.cw-results-tile-caption {
+  min-height: calc(1.4em * 4);
+  margin: 0;
+  padding: 0 2px;
+  font-family: var(--cw-font);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--cw-text-3);
+  overflow-wrap: anywhere;
+}
+/* The index, riding the caption line instead of the artwork — mono, quiet,
+   the contact-sheet number spoken in the app's own label voice. */
+.cw-results-tile-capnum {
+  font-family: var(--cw-font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cw-label);
+  margin-right: 6px;
+}
+/* Hover download chip — same family DELIVERABLE DOWNLOADS already
+   established app-wide (darkroom.css's `.cw-dl-chip`/`.cw-dl-host`, out of
+   this seam's file grant per this dispatch's own file grant), restated
+   locally as its own class (this file's own header comment) rather than
+   reusing that selector across the boundary — same literal dark-scrim +
+   white-ink treatment that file's own comment documents for exactly this
+   "sits on top of arbitrary art" situation. */
+.cw-results-tile-dl {
+  position: absolute;
+  z-index: 1;
+  right: 6px;
+  bottom: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--cw-radius-pill, 999px);
+  background: rgba(16, 24, 40, 0.62);
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0;
+  /* CRAFT PASS — "the download chip's reveal": a small settle-in (scale +
+     rise) rather than a flat opacity swap, so it arrives instead of just
+     appearing. */
+  transform: translateY(4px) scale(0.85);
+  transition:
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    transform var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+.cw-results-tile:hover .cw-results-tile-dl,
+.cw-results-tile:focus-within .cw-results-tile-dl {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.cw-results-tile-dl:hover {
+  background: var(--cw-accent);
+}
+.cw-results-tile-dl:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-results-tile-dl {
+    transition: opacity var(--cw-d-1, 140ms) linear, background var(--cw-d-1, 140ms) linear;
+    transform: none;
+  }
+}
+
+/* ---- SELECTED DOWNLOADS (Bryan: "make it so i can select multiple images
+   and batch download those that are selected in addition to individual
+   downloads and download all") ----------------------------------------------
+   The tick control — top-left counterpart to the download chip's bottom-
+   right corner, same reveal choreography and the same dark-scrim/white-ink
+   treatment (this file's header comment: "sits on top of arbitrary art").
+   Hidden until the tile is hovered, ONCE ANY selection exists sheet-wide
+   the grid's `is-selecting` class keeps every tick faintly visible so
+   continuing a selection never means hunting; a selected tick is always
+   fully shown, filled accent. */
+.cw-results-tile-select {
+  position: absolute;
+  z-index: 1;
+  left: 6px;
+  top: 6px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--cw-radius-pill, 999px);
+  background: rgba(16, 24, 40, 0.45);
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+.cw-results-tile:hover .cw-results-tile-select,
+.cw-results-tile:focus-within .cw-results-tile-select {
+  opacity: 1;
+}
+.cw-results-matrix-grid.is-selecting .cw-results-tile-select {
+  opacity: 0.55;
+}
+/* Both selectors carry ≥3 classes and sit AFTER the 0.55 rule above, so a
+   hovered or actually-selected tick always reads at full strength even in
+   selecting mode (a 2-class .is-selected alone would lose that tie). */
+.cw-results-matrix-grid.is-selecting .cw-results-tile:hover .cw-results-tile-select,
+.cw-results-matrix-grid .cw-results-tile-select.is-selected {
+  opacity: 1;
+}
+.cw-results-tile-select.is-selected {
+  background: var(--cw-accent);
+  border-color: var(--cw-accent);
+}
+.cw-results-tile-select:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-results-tile-select {
+    transition: opacity var(--cw-d-1, 140ms) linear, background var(--cw-d-1, 140ms) linear;
+  }
+}
+
+/* The header-side selection bar (ResultsNode.jsx's SelectionActions) —
+   lives inside `.cw-results-head-right`/`.cw-results-matrix-head-right`
+   next to "Download all"/"Clear". "Download N selected" borrows the
+   `.cw-results-dlall` text-button voice verbatim (same class, this
+   modifier only tints it accent so an armed selection reads as the primary
+   act); the × is a small ghost circle that just empties the selection. */
+.cw-results-selbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cw-results-seldl {
+  color: var(--cw-accent);
+}
+.cw-results-selclear {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--cw-radius-pill, 999px);
+  background: var(--cw-field);
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    color var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+.cw-results-selclear:hover {
+  color: var(--cw-text-1);
+  background: color-mix(in srgb, var(--cw-text-3) 14%, var(--cw-field));
+}
+.cw-results-selclear:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+
+/* ---- OutputNode.jsx's own card-stage badge — "a quiet ×N chip-family
+   badge in the card stage" (PLAN.md). Same mono-pill FAMILY as nodes.css's
+   own `.cw-stage-version-chip` (mono, pill, small), but painted with the
+   same dark-scrim/white-ink pairing as the download chips above rather than
+   that chip's own --cw-field/--cw-border tokens — it sits INSIDE
+   `.cw-stage-frame` (position:relative, overflow:hidden — nodes.css, "THE
+   REVEAL" section) directly on top of the batch's own first-asset art, the
+   identical "arbitrary art underneath" situation the download chips are in,
+   so it needs the same theme-invariant contrast rather than chrome tokens
+   that could vanish against a dark photo. */
+.cw-stage-batch-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  padding: 3px 7px;
+  border-radius: var(--cw-radius-pill, 999px);
+  background: rgba(16, 24, 40, 0.62);
+  color: #ffffff;
+  font-family: var(--cw-font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}

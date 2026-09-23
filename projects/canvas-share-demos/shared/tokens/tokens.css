@@ -1,0 +1,142 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Read-Only Canvas Share — design tokens
+   Mirrors the primitive + semantic scale from /omni-system (Style Dictionary
+   output, see /Users/bryancocco/TINKER/omni-system/dist/tokens.css) so these
+   demos stay on-brand. Do not fork values here — if the source system changes,
+   re-sync this file rather than drifting.
+
+   A second layer below (--doc-*) adapts those primitives for a chrome-free
+   reading layout (no nav/tabs, generous rhythm, wider gutters) — but the
+   palette, type, and card treatment stay the real OMNI system. This should
+   still read as an OMNI+ Canvas surface, just with the app frame removed,
+   not as a separate document brand.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* — mirrored OMNI primitives — */
+  --omni-primitive-neutral-black: #131517;
+  --omni-primitive-neutral-white: #f7f7f7;
+  --omni-primitive-neutral-light00: #f6f7fa;
+  --omni-primitive-neutral-light01: #e8e9ed;
+  --omni-primitive-neutral-light02: #c7c9d2;
+  --omni-primitive-neutral-light03: #9b9dac;
+  --omni-primitive-neutral-light04: #757886;
+  --omni-primitive-neutral-dark00: #2f3038;
+  --omni-primitive-neutral-dark01: #545662;
+  --omni-primitive-neutral-dark04: #23242a;
+  --omni-primitive-neutral-dark05: #1b1d21;
+  --omni-primitive-neutral-dark06: #131517;
+  --omni-primitive-brand-cyan01: #0de0e1;
+  --omni-primitive-brand-green01: #2de8af;
+  --omni-primitive-brand-blue01: #27baf9;
+
+  --omni-accent-primary: #1858ee;
+  --omni-accent-branded: #0b3392;
+  --omni-text-body: #394457;
+  --omni-text-subtle-01: #818ea6;
+  --omni-rule-line: #e8e9ed;
+  --omni-rule-line-hairline: rgba(15, 23, 42, 0.1);
+
+  --omni-font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --omni-font-family-mono: 'Fira Code', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --omni-font-family-display: 'Instrument Serif', 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  --omni-space-2: 4px;
+  --omni-space-4: 8px;
+  --omni-space-6: 12px;
+  --omni-space-8: 16px;
+  --omni-space-12: 24px;
+  --omni-space-16: 32px;
+  --omni-space-20: 40px;
+  --omni-space-24: 48px;
+  --omni-space-32: 64px;
+  --omni-space-40: 80px;
+
+  --omni-radius-small: 6px;
+  --omni-radius-medium: 8px;
+  --omni-radius-large: 12px;
+  --omni-radius-xlarge: 16px;
+  --omni-radius-pill: 999px;
+
+  --omni-shadow-elevation-1: 0 1px 1px rgba(15, 18, 24, 0.04), 0 3px 6px rgba(15, 18, 24, 0.06), 0 8px 20px rgba(15, 18, 24, 0.06);
+  --omni-shadow-elevation-2: 0 1px 1px rgba(15, 18, 24, 0.05), 0 4px 8px rgba(15, 18, 24, 0.08), 0 12px 28px rgba(15, 18, 24, 0.10);
+  --omni-shadow-elevation-3: 0 4px 14px rgba(24, 88, 238, 0.22), 0 12px 32px rgba(24, 88, 238, 0.14);
+
+  --omni-transition-duration-fast: 200ms;
+  --omni-transition-duration-base: 240ms;
+  --omni-transition-duration-slow: 380ms;
+  --omni-transition-easing-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  --omni-transition-easing-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* — document-layer semantics — matches the OMNI+ Canvas board stack exactly:
+     white boards (--card-bg) on the #F5F7FA canvas scroll bg, separated by
+     24px gaps, 48px board padding. Values mirror publish-to-workspace's
+     .brief-stack / .brief-board / .qa-* system. Type is ALL Inter (sans) —
+     bold near-black headlines, muted mono eyebrows. No serif anywhere. */
+  --doc-page-bg: #f5f7fa;
+  --doc-paper-bg: #ffffff;
+  --doc-ink: var(--omni-text-body);
+  --doc-ink-strong: #0a0a0a;
+  --doc-ink-subtle: var(--omni-text-subtle-01);
+  --doc-ink-body: var(--doc-ink);
+  --doc-rule: var(--omni-rule-line);
+  /* Accent derivatives resolve from --doc-accent (NOT the primitive) so the
+     theme layer can override one variable and have soft/line follow. */
+  --doc-accent: var(--omni-accent-primary);
+  --doc-accent-soft: color-mix(in srgb, var(--doc-accent) 12%, transparent);
+  --doc-accent-line: color-mix(in srgb, var(--doc-accent) 32%, transparent);
+  --doc-nested-bg: var(--omni-neutral-semantic-surface, #f6f7fa);
+
+  --doc-font-body: var(--omni-font-family-sans);
+  --doc-font-mono: var(--omni-font-family-mono);
+  /* Display/heading face. Defaults to the body face (Inter) so the OMNI themes
+     are unchanged; workspace themes override it inline on <body> to bring their
+     own licensed-safe display type. Body copy deliberately stays Inter — a
+     brand face on long-form body text is a legibility regression, and the doc's
+     body typography is settled. */
+  --doc-font-display: var(--doc-font-body);
+
+  --doc-content-width: 940px;
+  --doc-gutter: clamp(16px, 4vw, 32px);
+  /* Edge gutter for full-bleed chrome (header/footer) — content hugs the
+     browser's left/right edges, traditional site-chrome spacing. */
+  --doc-edge-gutter: clamp(20px, 3vw, 44px);
+  --doc-section-gap: var(--omni-space-12);
+  --doc-card-radius: 0px;
+  --doc-card-padding: clamp(28px, 5vw, 48px);
+
+  --doc-reveal-duration: 640ms;
+  --doc-reveal-distance: 22px;
+  --doc-reveal-easing: var(--omni-transition-easing-smooth);
+}
+
+/* ── Derived tokens MUST be re-declared on <body> ─────────────────────────────
+   The theme layer (themes.js) writes --doc-accent / --doc-ink as inline vars on
+   <body>. A derived alias declared on :root substitutes against the ROOT's value
+   and freezes there — so it would never see the theme's override. Re-declaring
+   here resolves each one against body's own (themed) value. [data-theme='dark']
+   below is also a body-level selector and outranks this, keeping its own mix. */
+body {
+  --doc-ink-body: var(--doc-ink);
+  --doc-accent-soft: color-mix(in srgb, var(--doc-accent) 12%, transparent);
+  --doc-accent-line: color-mix(in srgb, var(--doc-accent) 32%, transparent);
+}
+
+[data-theme='dark'] {
+  --omni-accent-primary: #0de0e1;
+  --omni-text-body: #e8e9ed;
+  --omni-text-subtle-01: #9b9dac;
+  --omni-rule-line: #33353e;
+  --omni-rule-line-hairline: rgba(255, 255, 255, 0.1);
+
+  --doc-page-bg: #131517;
+  --doc-paper-bg: #23242a;
+  --doc-ink: var(--omni-text-body);
+  --doc-ink-strong: #ececef;
+  --doc-ink-subtle: var(--omni-text-subtle-01);
+  --doc-rule: var(--omni-rule-line);
+  --doc-accent: var(--omni-accent-primary);
+  --doc-accent-soft: color-mix(in srgb, var(--doc-accent) 14%, transparent);
+  --doc-accent-line: color-mix(in srgb, var(--doc-accent) 34%, transparent);
+  --doc-nested-bg: var(--omni-primitive-neutral-dark04);
+}

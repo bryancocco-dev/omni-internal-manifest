@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"><title>theme seed</title>
+<style>html,body{margin:0;height:100%;overflow:hidden}iframe{display:block;border:0;width:100vw;height:100vh}</style>
+<script>
+// Verification-only helper: prime the theme localStorage keys the profile
+// module restores on load, then embed the app same-origin in a full-viewport
+// iframe (headless virtual time won't follow a cross-document redirect, but
+// it fully loads an iframe). Not part of the product.
+const t = new URLSearchParams(location.search).get('t') || 'light';
+localStorage.clear();
+const WS = {
+  'ws:nike':       { base: 'dark',  accent: '#FA5400' },
+  'ws:hermes':     { base: 'light', accent: '#FF6900' },
+  'ws:rollsroyce': { base: 'dark',  accent: '#B08B4C' },
+  'ws:spotify':    { base: 'dark',  accent: '#1DB954' },
+  'ws:bmw':        { base: 'light', accent: '#1C69D4' },
+};
+if (WS[t]) {
+  localStorage.setItem('chatHatTheme', WS[t].base);
+  localStorage.setItem('chatHatActiveTheme', t);
+  localStorage.setItem('chatHatAccent', WS[t].accent);
+} else {
+  localStorage.setItem('chatHatTheme', t);
+}
+addEventListener('load', () => {
+  const f = document.createElement('iframe');
+  f.src = '/?flow=default';
+  document.body.appendChild(f);
+});
+</script>

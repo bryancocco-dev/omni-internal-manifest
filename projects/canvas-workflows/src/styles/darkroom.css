@@ -1,0 +1,680 @@
+/* ==========================================================================
+   ANDREW ROUND — C: THE DARKROOM
+   PLAN.md "### C — THE DARKROOM". The OutputNode-scoped develop tray itself
+   (the frame that blurs into focus on the card, C3, plus CANVAS-NATIVE
+   DELIVERABLES' own version rail) lives in nodes.css — node-card chrome
+   stays that file's job. This file is everything ELSE new: RunPreview's big
+   artifact hero (C3's "RunPreview renders the same SVG big") and the shared
+   download-chip affordances (DELIVERABLE DOWNLOADS, below). Imported once,
+   globally, from main.jsx — see that file's own import-block comment for
+   load order. Every selector stays under #workflow-root, same discipline
+   every other stylesheet here keeps, so nothing can leak into the OMNI+
+   Canvas shell.
+
+   CANVAS-NATIVE DELIVERABLES (PLAN.md "## CANVAS-NATIVE DELIVERABLES — kill
+   the dock, version the outputs") — Bryan, on the filmstrip dock this file
+   used to also host (C4, plus its own two-step Clear): "it's weird that
+   this panel just shows up rather than something being the natural
+   completion state on the node canvas itself." Both are DELETED here along
+   with components/Filmstrip.jsx itself — the canvas IS the record now:
+   deliverables live where they were produced (the Output node's own version
+   rail, nodes.css) and the run's own download-all moved into the header's
+   existing Run cluster (App.jsx's own local styles). What's left in this
+   file from that era is only what OTHER surfaces still genuinely share:
+   RunPreview's hero + the download-chip affordances below.
+
+   DELIVERABLE DOWNLOADS (PLAN.md "## DELIVERABLE DOWNLOADS") added the
+   download-chip affordance shared by OutputNode's own hover chip and
+   RunPreview's header pill — new, uniquely-named classes only (.cw-dl-chip,
+   .cw-dl-host, .cw-rp-download), so nothing here can collide with or
+   reorder those other files' own rules. File generation itself is
+   src/run/download.js (pure functions, Blob + anchor, no backend).
+
+   DELIVERABLES A+C (PLAN.md "## DELIVERABLES A+C — the record and its
+   gallery") — the filmstrip dock's replacement, the .cw-shelf-* docked-
+   drawer rules at the end of this file. Originally shipped as view C beside
+   the panel's own DELIVERABLES section (view A, CompiledPanel.jsx); SHELF
+   DOCKING FIX's same-day amendment (2026-08-20) removed view A + its
+   .cw-deliverables-gallery toggle entirely (CompiledPanel.jsx, that file's
+   own dated comment) — this shelf is now the ONE view of the record, so the
+   .cw-deliverables-gallery rules that used to live just above this section
+   are gone too (grep confirmed nothing else referenced that class). Every
+   rule below still targets brand-new selectors only, WITHOUT editing
+   app.css/flow.css's own bytes for the parts still owned by other files
+   (see the "chrome physics" block's own comment). .cw-dl-chip/.cw-dl-host
+   above are reused verbatim by the shelf's own thumbs — no new
+   download-chip styling needed.
+
+   VERSION HISTORY IN THE OVERLAY (PLAN.md "## VERSION HISTORY IN THE
+   OVERLAY") — RunPreview's own version control row (components/
+   RunPreview.jsx's new VersionControlRow) + the crossfade that plays when
+   switching between versions inside it. This phase's own file grant is
+   darkroom.css/app.css — runpreview.css stays untouched, same precedent
+   this file's own .cw-rp-download/.cw-rp-artifact-* rules above already
+   set. New, uniquely-named .cw-rp-version(s)-prefixed classes only.
+   ========================================================================== */
+
+/* ---- RunPreview artifact hero (components/RunPreview.jsx, ArtifactHero) --
+   Deliberately its own file, not an addition to styles/runpreview.css (out
+   of this seam's file grant) — new, uniquely-named classes only, so nothing
+   here can collide with or reorder that file's own rules regardless of
+   which stylesheet Vite happens to concatenate first. */
+#workflow-root .cw-rp-artifact-frame {
+  position: relative;
+  width: 100%;
+  /* Raised with the card's own cap — the frame was held to 460px to fit a
+     560px card, which is why a poster read as a cropped strip in a window
+     with room to spare. */
+  max-height: min(58vh, 560px);
+  overflow: hidden;
+  border-radius: 12px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  background: var(--cw-field);
+}
+#workflow-root .cw-rp-artifact-frame svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* FINAL QUEUE — FQ-A "REAL ADAPTERS". Same frame, a real <img> instead of
+   the SVG rule just above — object-fit:cover rather than an SVG's own
+   preserveAspectRatio contain-by-default, since the requested photo
+   dimensions (run/pollinations.js) already match this frame's own aspect
+   ratio, so cover vs. contain is only ever a rounding-edge safety net here,
+   never a visible crop. */
+#workflow-root .cw-rp-artifact-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* "i want some space" — the caption was sitting flat on the frame's edge.
+   The old `margin-top` here never actually applied: this element carries
+   BOTH .cw-rp-para and .cw-rp-artifact-caption, and .cw-rp-para's `margin: 0
+   0 10px` SHORTHAND (runpreview.css) re-zeroed the top at equal specificity.
+   A `p.` type selector outranks it outright, and padding can be neither
+   collapsed nor reset by that shorthand — so the gap is real either way. */
+#workflow-root p.cw-rp-artifact-caption {
+  margin-top: 0;
+  padding-top: 22px;
+}
+/* Hairline + caps label opening a section — the SAME "framed section"
+   language nodes.css uses throughout (INSTRUMENT PASS item 4's "share one
+   rule" principle for stacked framed sections), reused here so the
+   Presentation/Spreadsheet "Contents" body reads as part of the same
+   system, not a bolted-on afterthought. */
+#workflow-root .cw-rp-artifact-divider {
+  margin: 20px 0 12px;
+  padding-top: 14px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cw-label);
+}
+
+/* ==========================================================================
+   VERSION HISTORY IN THE OVERLAY (PLAN.md "## VERSION HISTORY IN THE
+   OVERLAY") — see this file's own header comment above.
+   ========================================================================== */
+
+/* ---- the crossfade — NEVER the darkroom develop (nodes.css's own
+   cw-artifact-develop). That animation means "this was just produced";
+   browsing history is a different act, PLAN.md says so explicitly. Chrome
+   (the control row below) updates the instant a click/key lands; only this
+   wrapper — the actual rendered artifact/prose RunPreviewBody returned —
+   lags behind it: fades out 120ms LINEAR, then the caller (RunPreview.jsx's
+   own goToVersion) swaps its content underneath while still invisible, then
+   this fades back up 200ms --cw-e-out. Inert (no classes ever applied, zero
+   cost) for every single-version deliverable — there's no control row to
+   ever trigger a swap. --------------------------------------------------- */
+#workflow-root .cw-rp-version-body--out {
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+#workflow-root .cw-rp-version-body--in {
+  animation: cw-rp-version-in 200ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+@keyframes cw-rp-version-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- the control row — FIT + VERSION STEPPER, part B (PLAN.md "## FIT +
+   VERSION STEPPER" -> "### B — retire the version dots") retired this row's
+   own three-zone chevron/dots/readout trio in favor of ONE shared
+   VersionStepper (this file, exported below — that component's own header
+   comment carries the full design/diagnosis). This wrapper is now just the
+   plain hairline-topped strip the shared component sits inside, centered —
+   nodes.css's `.cw-vstep*` rules (unprefixed, reach this portaled modal for
+   free) own everything the control itself looks like. */
+/* Now a CARD-level footer rather than the last thing inside the scrolling
+   body (RunPreview.jsx's own comment on the move). `flex-shrink:0` keeps it
+   at full height when the body is squeezed; the hairline reads as the card's
+   own footer rule, which is what it now is. */
+#workflow-root .cw-rp-versions {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 12px 22px 14px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  background: var(--cw-surface);
+}
+
+/* Non-negotiable — reduced-motion drops the crossfade, keeps the layout:
+   the plain (un-animated) resting state already IS the settled state, so
+   zeroing the animation/transition is the whole fix. (The stepper's own
+   hover/press/menu transitions are nodes.css's own reduced-motion rule,
+   next to .cw-combobox-popover's.) */
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-rp-version-body--out,
+  #workflow-root .cw-rp-version-body--in {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   DELIVERABLE DOWNLOADS (PLAN.md "## DELIVERABLE DOWNLOADS") — see this
+   file's own header comment for why every shared download affordance lands
+   here. File generation is src/run/download.js.
+   ========================================================================== */
+
+/* .cw-dl-chip — the small hover download icon OutputNode's own artifact
+   frame uses ("the SAME hover download chip" every artifact-bearing surface
+   in this app shares, PLAN.md). Sits ON TOP OF arbitrary SVG artifact
+   content, so it uses a theme-invariant dark scrim + white ink — contrast
+   against unpredictable underlying art, not the app's own light/dark
+   chrome (this is why it reads correctly in both themes with zero
+   theme-specific rule of its own). */
+#workflow-root .cw-dl-chip {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: rgba(16, 24, 40, 0.62);
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0;
+  scale: 0.85;
+  pointer-events: none;
+  transition:
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    scale var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-dl-chip svg {
+  display: block;
+}
+#workflow-root .cw-dl-chip:hover {
+  background: rgba(16, 24, 40, 0.82);
+}
+#workflow-root .cw-dl-chip:active {
+  scale: 0.92;
+}
+/* Reveal — hovering (or keyboard-focusing) the HOST reveals its chip.
+   .cw-dl-host is a marker class OutputNode.jsx adds to whichever of its
+   "Generated" wrappers is live (.cw-artifact-sheet / .cw-artifact-frame);
+   position:relative here rather than touching nodes.css's own rule for
+   those classes (out of this dispatch's file grant — .cw-artifact-frame
+   already has it there, .cw-dl-host picks it up fresh for
+   .cw-artifact-sheet, harmless no-op on the other one). */
+#workflow-root .cw-dl-host {
+  position: relative;
+}
+#workflow-root .cw-dl-host:hover .cw-dl-chip,
+#workflow-root .cw-dl-chip:focus-visible {
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
+}
+
+/* .cw-rp-download — RunPreview's header Download button (PLAN.md: "quiet
+   pill, DownloadSimple 13, 'Download' label"). This one does NOT sit on top
+   of artifact art (it's in the modal's plain header chrome), so it uses
+   normal --cw-* theme tokens instead of the fixed dark scrim above — the
+   SAME white-pill/accent-hairline family as the header's own Run button
+   (App.jsx's own local styles), not a new one. */
+#workflow-root .cw-rp-download {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 12px;
+  border: var(--cw-hairline-w, 0.5px) solid color-mix(in srgb, var(--cw-accent) 28%, transparent);
+  border-radius: var(--cw-radius-pill, 999px);
+  background: var(--cw-surface);
+  color: var(--cw-accent);
+  font-family: var(--cw-font);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-rp-download svg {
+  color: var(--cw-accent);
+  flex-shrink: 0;
+}
+#workflow-root .cw-rp-download:hover {
+  background: color-mix(in srgb, var(--cw-accent) 6%, var(--cw-surface));
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-dl-chip {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   SHELF DOCKING FIX (Bryan, from live review, 2026-08-20) — the shelf is
+   now a TRUE third panel, sibling to the palette and compiled panel:
+   "docked drawer at the canvas bottom, spanning palette-edge -> panel-edge
+   (panel-aware via --cw-palette-w/--cw-panel-w)" still holds, but three
+   things changed from the original DELIVERABLES A+C build:
+   1. NO OVERLAP — `bottom` now reads --cw-footer-h instead of a bare 0.
+      This drawer is `position: fixed` (the SAME "portaled straight to
+      #workflow-root" reason subgraph.css's own theater and flow.css's
+      picker popover already use, sidestepping the ancestor-positioning
+      question entirely), which resolves against the true viewport, NOT the
+      shell's own #main box that visually stops above the footer — a bare
+      `bottom: 0` sat exactly where the footer sits. DeliverablesShelf.jsx
+      measures the real .footer node and publishes the var (that file's own
+      header comment); the fallback below is only a pre-measurement guess.
+   2. OWN HANDLE — .cw-panel-handle--bottom (app.css) is a permanent child,
+      visible/clickable at every collapse state; DeliverablesShelf.jsx is
+      the only place that toggles `shelfOpen` now.
+   3. SOLID WHITE — the old rgba(255,255,255,.72) + blur+saturate glass
+      recipe (matched to .cw-panel's own) is gone; `.cw-shelf-drawer` below
+      is a flat var(--cw-surface) fill, no translucency.
+   `--cw-palette-w`/`--cw-panel-w` stay read-only here exactly as before
+   (published by Palette.jsx/CompiledPanel.jsx respectively), both still
+   live-updating on collapse — nothing needed to change for that part.
+   ========================================================================== */
+#workflow-root .cw-shelf {
+  position: fixed;
+  /* The pane's real viewport-relative left edge (published by
+     DeliverablesShelf.jsx) — NOT --cw-palette-w, which is only the
+     palette's own width and ignores the nav + CANVAS rail sitting left of
+     it; using the width alone overlapped the palette by exactly that gap. */
+  left: var(--cw-pane-left, 328px);
+  right: var(--cw-panel-w, 288px);
+  bottom: var(--cw-footer-h, 52px);
+  z-index: 6;
+  transition:
+    left 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    right 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-3, 420ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* The drawer: height is JS-driven (DeliverablesShelf.jsx measures its own
+   natural content height, then animates between 0 and that number) rather
+   than the old translateY slide — a real height collapse is what lets the
+   ALWAYS-MOUNTED handle above sit flush at the footer line with zero
+   drawer footprint behind it when closed, instead of a full-height box
+   parked just off-screen (which would have re-created the exact overlap
+   item 1 above fixes, just relocated behind the footer instead of over it). */
+#workflow-root .cw-shelf-drawer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  background: var(--cw-surface);
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  box-shadow: 0 -8px 20px -16px rgba(16, 24, 40, 0.22);
+  transition: height var(--cw-d-3, 420ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+/* The closed peek band carries no content — the inner fades out entirely
+   (rule below), so the sliver reads as clean paper under the pill rather
+   than a squashed sliced-off row. */
+
+/* Content fades independently of the height clip so it's fully gone well
+   before the collapse finishes (never looks sliced at the clip line) and
+   fully back before the reveal settles. */
+#workflow-root .cw-shelf-inner {
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity var(--cw-d-2, 240ms) var(--cw-e-out, ease);
+}
+#workflow-root .cw-shelf-drawer.is-open .cw-shelf-inner {
+  opacity: 1;
+}
+
+/* ---- head row: "IDENTICAL language to the panel's ('DELIVERABLES · N ·
+   Download all') + a x that closes it" (PLAN.md) — same label/count/quiet-
+   button VALUES as CompiledPanel's own head row (app.css's .cw-section-
+   label/.cw-count-num/.cw-deliverables-dlall), restated as fresh classes
+   here rather than cross-referencing those app.css selectors directly —
+   this dispatch's own file grant keeps ALL new styles in this file, and
+   app.css is the concurrent LIBRARY PASS executor's to edit right now. --- */
+#workflow-root .cw-shelf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+#workflow-root .cw-shelf-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--cw-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+#workflow-root .cw-shelf-count {
+  font-family: var(--cw-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 600;
+  color: var(--cw-text-3);
+}
+#workflow-root .cw-shelf-head-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+#workflow-root .cw-shelf-dlall {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+#workflow-root .cw-shelf-dlall:hover {
+  color: var(--cw-accent);
+}
+#workflow-root .cw-shelf-dlall:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+
+/* Armed two-step Clear (DeliverablesShelf.jsx's own ShelfClearButton) — "the
+   armed two-step Clear from the filmstrip lesson" (PLAN.md). Unarmed reads
+   as quiet chrome (same family as Download all); armed swaps its own label
+   to "Clear all?" and takes the danger tint, matching the vocabulary
+   app.css's own .cw-btn-quiet--danger already uses for the toolbar's Clear
+   (a DIFFERENT, heavier modal-confirm control — this one stays inline). */
+#workflow-root .cw-shelf-clear {
+  padding: 3px 9px;
+  border: var(--cw-hairline-w, 0.5px) solid transparent;
+  border-radius: var(--cw-radius-pill, 999px);
+  background: none;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    color var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+#workflow-root .cw-shelf-clear:hover {
+  color: var(--cw-danger);
+}
+#workflow-root .cw-shelf-clear.is-armed {
+  color: var(--cw-danger);
+  background: color-mix(in srgb, var(--cw-danger) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cw-danger) 32%, transparent);
+}
+#workflow-root .cw-shelf-clear:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+
+/* Close (x) — drawn CrossIcon (DESIGN BAR's own "x lesson"), quiet field-
+   colored circular hit target (this surface is light glass, not a solid
+   danger-red pill like the issues dismiss button, so it borrows THAT
+   button's shape/sizing, not its color). */
+#workflow-root .cw-shelf-close {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--cw-radius-pill, 999px);
+  background: var(--cw-field);
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    color var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+#workflow-root .cw-shelf-close:hover {
+  color: var(--cw-text);
+  background: color-mix(in srgb, var(--cw-text-3) 16%, var(--cw-field));
+}
+#workflow-root .cw-shelf-close:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 2px;
+}
+
+/* ---- body: "56px thumbs, mono 'NN · Format' beneath, hover download chip"
+   (PLAN.md) — single horizontally-scrolling row (this app's own filmstrip
+   naming precedent), thin scrollbar matching .cw-palette/.cw-panel's own
+   recipe (app.css), restated here rather than reused across files. ------- */
+#workflow-root .cw-shelf-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 0 16px 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--cw-text-3) 28%, transparent) transparent;
+}
+#workflow-root .cw-shelf-body::-webkit-scrollbar {
+  height: 8px;
+}
+#workflow-root .cw-shelf-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+#workflow-root .cw-shelf-body::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--cw-text-3) 28%, transparent);
+  border-radius: var(--cw-radius-pill, 999px);
+}
+
+/* One tile (DeliverablesShelf.jsx's own ShelfThumb) — div role=button, same
+   "buttons can't nest" shape CompiledPanel.jsx's own DeliverableRow already
+   uses (it wraps a real nested download <button>, .cw-dl-chip below).
+   `cw-materialize` (nodes.css, global keyframe) is the SAME "materialize
+   language" entrance the graph's own cards use — reused by name, not
+   reinvented, per the DESIGN BAR's motion-vocabulary rule; the per-tile
+   stagger is a plain inline `animationDelay` the component computes. */
+#workflow-root .cw-shelf-thumb {
+  flex-shrink: 0;
+  width: 78px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--cw-text);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  animation: cw-materialize var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
+}
+#workflow-root .cw-shelf-thumb:focus-visible {
+  outline: 2px solid var(--cw-accent);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+#workflow-root .cw-shelf-thumb-art {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--cw-field);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  transition: border-color var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+#workflow-root .cw-shelf-thumb:hover .cw-shelf-thumb-art,
+#workflow-root .cw-shelf-thumb:focus-visible .cw-shelf-thumb-art {
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+}
+#workflow-root .cw-shelf-thumb-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* FINAL QUEUE — FQ-A "REAL ADAPTERS" — the real-photo sibling of
+   .cw-shelf-thumb-svg just above: this 56x56 slot is a fixed square
+   regardless of the artifact's own native aspect (the SVG letterboxes
+   inside it via preserveAspectRatio="xMidYMid meet"), and object-fit:cover
+   is the right call for a raster photo in that same square — crop to fill,
+   never letterbox. */
+#workflow-root .cw-shelf-thumb-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Version badge — same theme-invariant dark-scrim + white-ink recipe as
+   .cw-dl-chip above (contrast against unpredictable underlying art, not
+   app chrome), opposite corner so the two never collide. */
+#workflow-root .cw-shelf-thumb-v {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(16, 24, 40, 0.62);
+  color: #ffffff;
+  font-family: var(--cw-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+}
+#workflow-root .cw-shelf-thumb-cap {
+  width: 100%;
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cw-text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ALWAYS AVAILABLE (SHELF DOCKING FIX item 3) — "empty record shows one
+   quiet line... no card chrome" (PLAN.md, verbatim). Fills the row (the
+   flex-start body's only/first child, explicit width) rather than sitting
+   thumb-sized and left-aligned like a real tile would. */
+#workflow-root .cw-shelf-empty {
+  width: 100%;
+  padding: 18px 0 20px;
+  text-align: center;
+  color: var(--cw-text-3);
+  font-size: 12.5px;
+}
+
+/* ==========================================================================
+   DELIVERABLES A+C — chrome physics: the issues pill + minimap lift clear
+   of the gallery shelf, keyed off --cw-shelf-h (DeliverablesShelf.jsx
+   publishes it while mounted — see that file's own header comment; this is
+   the "F10 pattern" app.css's own --cw-filmstrip-h comment already
+   documents as the precedent, now re-lit for the shelf instead of the dead
+   filmstrip dock — "republish a --cw-shelf-h var", PLAN.md verbatim).
+   Neither app.css (.cw-issues-wrap) nor flow.css (the minimap panel) is
+   this seam's file to edit this round — both rules below simply layer a
+   later, equal-or-higher-specificity override in THIS file instead
+   (main.jsx loads darkroom.css after both), enough to win the cascade
+   without touching either file's own bytes.
+   ========================================================================== */
+
+/* .cw-issues-wrap (app.css) ships a plain `bottom: 16px`, z-index: 6, and no
+   transition of its own — this adds the shelf's live height on top, newly
+   animated, and bumps z-index one tier above the shelf's own (also 6) so
+   the pill always reads on top of the drawer during any transient overlap
+   mid-animation, never the reverse. */
+#workflow-root .cw-issues-wrap {
+  bottom: calc(16px + var(--cw-shelf-h, 0px));
+  z-index: 7;
+  transition: bottom var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* The minimap panel (flow.css) already owns a `right`/`opacity` transition
+   list on this exact selector — CSS `transition` doesn't merge across
+   cascading rules (only the winning declaration applies), so this restates
+   that same list verbatim alongside the new `translate` lift rather than
+   silently dropping flow.css's own panel-collapse slide / yield-dim fade.
+   Values copied from that file's own rule as of this dispatch. */
+#workflow-root .react-flow__panel.react-flow__minimap {
+  translate: 0 calc(-1 * var(--cw-shelf-h, 0px));
+  transition:
+    right 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity 140ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    translate var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-issues-wrap {
+    transition: none;
+  }
+  /* Restates flow.css's OWN reduced-motion rule for the identical reason as
+     the base override above: this file loads after it, so without this,
+     darkroom.css's unconditional `transition: right…, opacity…, translate…`
+     would silently outrun flow.css's own `transition: none` under reduced
+     motion instead of yielding to it. */
+  #workflow-root .react-flow__panel.react-flow__minimap {
+    transition: none;
+  }
+  /* SHELF DOCKING FIX — the shelf's own open/close is a height + opacity
+     state change now (no more mount-triggered animation to swap for a
+     fade), so reduced-motion just zeroes the transitions outright: the
+     var(--cw-shelf-h)-driven bottom overrides just above already carry the
+     opacity-fade-not-slide reduced-motion story for THOSE consumers. */
+  #workflow-root .cw-shelf,
+  #workflow-root .cw-shelf-drawer,
+  #workflow-root .cw-shelf-inner {
+    transition: none;
+  }
+  #workflow-root .cw-shelf-thumb {
+    animation: none;
+  }
+}

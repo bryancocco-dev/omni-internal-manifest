@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+  OMNI component: siderail_workflowicons
+  Project: Workflows
+  Note: .rail-tools — 4 new rail-tool buttons this project adds to the base siderail (Skills, Light Canvas, Canvas view, Workflow builder — the 5th/newest icon, shown active/open)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workflows — siderail_workflowicons · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-workflows.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div style="position:relative;width:80px;height:240px;background:var(--nav-bg,#fff)">
+      <div class="rail-tools" role="group" aria-label="Workspace tools">
+        <button class="rail-tool rail-tool-skills" type="button" aria-label="Skills" data-tip="rich">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path class="rail-tool-skill-star" d="M12 3.2 L13.7 8.3 L18.8 10 L13.7 11.7 L12 16.8 L10.3 11.7 L5.2 10 L10.3 8.3 Z"/>
+            <path class="rail-tool-skill-spark rail-tool-skill-spark-a" d="M18 15.2 L18.7 17.1 L20.6 17.8 L18.7 18.5 L18 20.4 L17.3 18.5 L15.4 17.8 L17.3 17.1 Z"/>
+            <path class="rail-tool-skill-spark rail-tool-skill-spark-b" d="M6.4 14.6 L6.9 16 L8.3 16.5 L6.9 17 L6.4 18.4 L5.9 17 L4.5 16.5 L5.9 16 Z"/>
+          </svg>
+          <span class="rail-tool-tip" id="skillsRailTip" aria-hidden="true">
+            <span class="rail-tool-tip-title">Skills</span>
+            <span class="rail-tool-tip-body"><strong data-tip-x>0</strong> of <strong data-tip-y>0</strong> skills are available in this Canvas</span>
+          </span>
+        </button>
+        <button class="rail-tool rail-tool-light" type="button" aria-label="Light Canvas" data-tooltip="Light Canvas">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path class="rail-tool-bolt-path" d="M13.6 2.5 6.4 13.2h4.3l-1.3 8.3 7.2-10.7h-4.3z"/>
+          </svg>
+        </button>
+        <button class="rail-tool rail-tool-canvasview" type="button" aria-label="Canvas view" data-tooltip="Canvas view">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="4.5" width="17" height="15" rx="2"/>
+            <path d="M3.5 10h17"/>
+            <path d="M12 10v9.5"/>
+          </svg>
+        </button>
+        <button class="rail-tool rail-tool-workflow active" type="button" aria-label="Workflow builder" data-tooltip="Workflow builder">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="4.5" width="7.5" height="6" rx="1.5"/>
+            <rect class="rail-tool-wf-node-b" x="14" y="13.5" width="7.5" height="6" rx="1.5"/>
+            <path class="rail-tool-wf-wire" d="M10 7.5h3.5a2.5 2.5 0 0 1 2.5 2.5v3.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+</body>
+</html>

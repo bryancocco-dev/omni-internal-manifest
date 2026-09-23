@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+  OMNI component: button
+  Project: Agent Builder
+  Note: .canvas-actions — Cancel (ghost) + Save (.launch-btn, disabled) sticky bar
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — button · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="canvas-actions" id="canvasActions">
+        <span class="canvas-actions-spacer" aria-hidden="true"></span>
+        <button class="cancel-btn" id="cancelBtn" type="button">Cancel</button>
+        <button class="launch-btn" id="launchBtn" type="button" disabled title="Add a name (3+ chars) and description (20+ chars) to save">Save</button>
+      </div>
+</body>
+</html>

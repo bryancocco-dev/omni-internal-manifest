@@ -1,0 +1,902 @@
+/* ==========================================================================
+   Seam D — Edges / layout / flow-theme
+   Restyles React Flow's OWN chrome only: canvas background, the OmniEdge
+   path + its hover controls, connection line, handles, the Controls
+   (zoom/fit/lock) rail, the MiniMap, and the drag-selection marquee.
+   App shell layout (header bar / 3-col grid / palette / compiled panel)
+   lives in B's styles/app.css — nothing below should reach outside
+   `.react-flow` and the `.omni-edge-*` bits OmniEdge.jsx renders.
+   Import order (set by B in main.jsx): xyflow base -> this file -> app.css,
+   so these overrides win over the library defaults and app.css can still
+   layer on top for anything shell-level.
+
+   UI ELEVATION PHASE (E3 — "Canvas layer", see PLAN.md "## UI ELEVATION
+   PHASE" -> "### E3"). Added here: a second, coarser dot-grid layer (item 1
+   — scoped to its own <Background> className so the fine grid's
+   --xy-background-pattern-color is untouched), a bumped minimap node fill
+   (item 2 — the node-rect radius is a React prop, set in FlowCanvas.jsx),
+   and larger handles (item 3). Item 4's empty-state ghost card is rendered
+   by FlowCanvas.jsx (a <ViewportPortal> child, styled at the bottom of this
+   file) since it isn't React Flow chrome. Frozen per Bryan: defaultViewport
+   zoom-1 boot, no fit-on-mount, the heal pass, and the zoom readout — none
+   of that changed here.
+
+   COMFY ROUND (CP1 — "TYPED COLOR PORTS", see PLAN.md "## COMFY ROUND" ->
+   "### CP1"). Comfy's lesson: ports that SHOW their type and refuse wrong
+   wires. Three additions, all scoped to the existing handle rules below:
+     1. every handle now carries its OWNING NODE's kind color as a ring —
+        --cw-port is set per `react-flow__node-<type>` (RF's own automatic
+        wrapper class, same trick the __node-output override above already
+        leans on — zero cooperation needed from nodes.css/nodes/*, which own
+        per-kind CARD styling this round, not ports) and read by the base
+        handle rule for a muted 55%-mix ring at rest, full color on genuine
+        :hover/.connectingfrom. Values mirror edges/OmniEdge.jsx's
+        EDGE_KIND_COLORS roster (that file now exports it too) — CSS can't
+        import JS, so this is a literal duplicate; keep both lists in sync
+        by hand if a kind is ever added.
+     2. while a connection drag is in flight, RF's own `.connectionindicator`
+        class is ambient (true on every idle handle — verified via CDP
+        against this exact build before touching it, not assumed) but
+        NARROWS to true type-compatible candidates only once a drag starts
+        (its own isPossibleEndHandle check) — gating on the SAME
+        `:has(.connectingfrom)` detector motion.css's ambient breathe rule
+        already validated against this build turns that ambient class into
+        a genuine per-drag signal: compatible handles brighten to full kind
+        color + thicken their ring (border-width, not `scale`/box-shadow —
+        motion.css's own breathe/aperture keyframes already animate those
+        two for EVERY connectable handle during a drag, so a static value
+        here would just lose the cascade to a running animation on the same
+        property; border-width and `filter` are both properties that file
+        never touches, so this layers on top cleanly instead of fighting
+        it), incompatible ones desaturate via `filter` instead — a post-
+        paint compositing step that mutes whatever's rendered underneath
+        (including motion.css's own animated halo), reading as "inert" even
+        though that ambient breathe rule still technically runs on them.
+     3. an invalid DROP (released on a handle whose real isValidConnection
+        said no) gets one-shot punished: FlowCanvas.jsx's onConnectEnd adds
+        `.cw-handle-refused` straight to that DOM node (mirrors this file's
+        existing onNodeDragStop landing-bounce trick) for a combined
+        shake+ring-flash keyframe below, self-clearing on animationend.
+   ========================================================================== */
+
+/* Our node type named "output" collides with React Flow's BUILT-IN 'output'
+   node type: the library's base stylesheet styles .react-flow__node-output
+   (width:150px, dark 1px border, white bg, centered text) purely by that
+   class name, which draws a ghost 150px card behind C's 270px OutputNode and
+   caps the node's measured width. Neutralize the stock look; the custom
+   component's own .cw-node card is the only visible chrome. */
+#workflow-root .react-flow__node-output {
+  width: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+  font-size: inherit;
+  color: inherit;
+}
+
+#workflow-root .react-flow {
+  /* ---- canvas -------------------------------------------------------- */
+  --xy-background-color: var(--cw-canvas-bg);
+  --xy-background-pattern-color: var(--cw-canvas-dot);
+
+  /* ---- edges (baseline; OmniEdge also sets its own per-instance color
+     so it can react to hover/selected — these vars are the fallback for
+     anything that isn't routed through OmniEdge, e.g. the in-progress
+     connection line uses the connectionline-* pair below) -------------- */
+  --xy-edge-stroke: var(--cw-edge);
+  --xy-edge-stroke-width: 1.5;
+  --xy-edge-stroke-selected: var(--cw-accent);
+  --xy-connectionline-stroke: var(--cw-accent);
+  --xy-connectionline-stroke-width: 1.5;
+
+  /* ---- handles --------------------------------------------------------- */
+  --xy-handle-background-color: var(--cw-handle-bg);
+  --xy-handle-border-color: var(--cw-handle-border);
+
+  /* ---- drag-selection marquee ------------------------------------------ */
+  --xy-selection-background-color: color-mix(in srgb, var(--cw-accent) 8%, transparent);
+  --xy-selection-border: 1px dotted color-mix(in srgb, var(--cw-accent) 60%, transparent);
+
+  /* ---- Controls (bottom-left zoom rail) --------------------------------- */
+  --xy-controls-button-background-color: var(--cw-surface);
+  --xy-controls-button-background-color-hover: var(--cw-surface-3);
+  --xy-controls-button-color: var(--cw-text-3);
+  --xy-controls-button-color-hover: var(--cw-text);
+  --xy-controls-button-border-color: var(--cw-border);
+  --xy-controls-box-shadow: var(--cw-shadow), 0 4px 10px rgba(16, 24, 40, .06);
+
+  /* ---- MiniMap (bottom-right) -------------------------------------------- */
+  /* Chromeless minimap (Bryan): no card, no mask wash — just the node
+     ghosts and the viewport rect, outlined at the shared hairline weight
+     (non-scaling-stroke below keeps the 0.5 literal at any flow scale). */
+  --xy-minimap-background-color: transparent;
+  --xy-minimap-mask-background-color: transparent;
+  --xy-minimap-mask-stroke-color: var(--cw-label);
+  --xy-minimap-mask-stroke-width: 0.5;
+  /* UI ELEVATION E3 item 2 — was --cw-surface-3 (an opaque tinted-gray
+     rect); a translucent ink tint reads as a lighter, more editorial
+     "ghost" rect instead of a solid block. Corner radius is the
+     `nodeBorderRadius` prop on <MiniMap> (FlowCanvas.jsx) — no CSS var for
+     it. Mask stroke above is untouched per spec. */
+  --xy-minimap-node-background-color: color-mix(in srgb, var(--cw-text-3) 22%, transparent);
+  --xy-minimap-node-stroke-color: transparent;
+  --xy-minimap-node-stroke-width: 0;
+}
+
+/* ---- Two-scale dot grid (UI ELEVATION E3 item 1) ------------------------
+   A second, coarser <Background> (gap 110/size 2, FlowCanvas.jsx) layered
+   on top of the fine grid (gap 22/size 1.5, untouched above) reads as
+   landmark dots — like graph paper's heavier major lines. Scoped to its own
+   className (RF's multi-Background convention: give each instance a unique
+   `id` so their internal <pattern> ids don't collide — see FlowCanvas.jsx)
+   so only THIS layer's --xy-background-pattern-color is overridden; the
+   fine grid keeps inheriting the plain value set above.
+   Percentages over 100% in color-mix() are invalid — verified against the
+   installed Chromium: the browser drops the whole declaration, it does not
+   clamp to 100 — so "higher alpha" than the base token can't come from
+   inflating a transparent-mix percentage past 100. Mixing toward
+   --cw-text-3 instead (always more opaque/inked than the hairline dot
+   color, in every theme, light or dark) genuinely raises the rendered
+   alpha while staying anchored on --cw-canvas-dot. ------------------------ */
+/* Fine matrix: fainter in LIGHT themes only (Bryan) — the tight 14px grid
+   carries less visual weight; the cross landmarks below keep full strength
+   and carry the pan-motion cue. Dark keeps its already-tuned dot value. */
+body:not([data-theme="dark"]) #workflow-root .react-flow__background {
+  --xy-background-pattern-color: color-mix(in srgb, var(--cw-canvas-dot) 55%, transparent);
+}
+
+
+/* ---- Connection line while dragging a new edge: dashed accent ----------
+   WIRE GEOMETRY (PLAN.md "## WIRE GEOMETRY"): "the drag-preview connection
+   line uses the same builder... or the drag feels alien to the drop." The
+   line's actual GEOMETRY comes from FlowCanvas.jsx's `connectionLineType=
+   "smoothstep"` prop on <ReactFlow> — outside this seam (FlowCanvas.jsx is
+   SUBGRAPHS' file this phase) — so OmniEdge.jsx's new distance-adaptive
+   bezier / rounded-detour skeleton can't reach the in-flight drag preview
+   directly. What CAN move from here: matching the drag preview's WEIGHT to
+   an edge's own active/hover ink (coreWidth steps to 2 in OmniEdge.jsx) so
+   a drag doesn't read as a thinner, different material than the wire it's
+   about to become. */
+#workflow-root .react-flow__connection-path {
+  stroke-dasharray: 5 5;
+  stroke-width: 2;
+}
+
+/* ---- Handles: 10px circles, white fill, kind color on rest/hover/connecting
+   UI ELEVATION E3 item 3 — was 9px/1.5px; nodes.css's per-kind handle
+   CHARACTER (the idle-breathe/swell/flicker animations, M2) is untouched —
+   this file only ever owns color/size/the drag-state rules below. */
+#workflow-root .react-flow__handle {
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  min-height: 10px;
+  border-width: 2px;
+  /* DESIGN BAR item 3 ("motion vocabulary — reuse, don't invent") — every
+     state below (rest/hover/connectingfrom/drag-compatible/drag-inert)
+     changes one of these five properties, never a sixth, so ONE shared list
+     here covers every entrance/exit with no per-rule transition needed —
+     the "grow" (border-width) and the incompatible dim (opacity) eases
+     exactly like the color/ring/glow do, so nothing below ever pops. */
+  transition:
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-width var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    filter var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* CP1 item 1 — per-kind port roster. React Flow stamps `react-flow__node-
+   <type>` on every node's own wrapper div automatically (verified against
+   the installed package — the SAME mechanism the __node-output override at
+   the top of this file already relies on), so --cw-port resolves for every
+   handle inside that subtree with zero cooperation from nodes.css/nodes/*.
+   Values duplicated from edges/OmniEdge.jsx's EDGE_KIND_COLORS (now
+   exported there) — CSS has no import, so keep the two lists in sync by
+   hand if a kind is ever added/renamed. task/output share --cw-accent, same
+   as the edges. */
+#workflow-root .react-flow__node-trigger { --cw-port: var(--cw-kind-trigger, #10B981); }
+#workflow-root .react-flow__node-task    { --cw-port: var(--cw-accent, #1858EE); }
+#workflow-root .react-flow__node-human   { --cw-port: var(--cw-kind-human, #F59E0B); }
+#workflow-root .react-flow__node-output  { --cw-port: var(--cw-accent, #1858EE); }
+#workflow-root .react-flow__node-logic   { --cw-port: var(--cw-kind-logic, #8B5CF6); }
+#workflow-root .react-flow__node-wait    { --cw-port: var(--cw-kind-wait, #64748B); }
+#workflow-root .react-flow__node-stop    { --cw-port: var(--cw-kind-stop, #DC2626); }
+#workflow-root .react-flow__node-generate { --cw-port: var(--cw-accent, #1858EE); }
+#workflow-root .react-flow__node-params  { --cw-port: var(--cw-kind-wait, #64748B); }
+/* WAVE 1 — THE VERB EXPANSION. Gather and A/B Split (LogicNode.jsx's new
+   'gather'/'split' kinds) need NO new line here — both are node TYPE
+   `logic` (same component, same --cw-node--logic card), and this roster
+   keys off React Flow's own `react-flow__node-<TYPE>` wrapper class, not
+   `data.kind` — so the .react-flow__node-logic rule two lines up already
+   covers them, "logic purple," for free. */
+/* WAVE 2 — THE VERB EXPANSION. Source/Audience/Measure (SignalNode.jsx's
+   'signal' type, master contract "### Shared infrastructure" -> "Color
+   discipline") land the SAME way: one shared node TYPE, so one line here
+   covers all three kinds — no data.kind branching needed, this roster
+   keys off type alone. Style Reference (Wave 3) will join the identical
+   'signal' type per that same contract bullet, so this line already
+   covers it too, "for free," the same way logic's own row does for
+   Gather/Split above. */
+#workflow-root .react-flow__node-signal  { --cw-port: var(--cw-kind-signal, #0EA5E9); }
+/* WAVE 3 — THE VERB EXPANSION. Remix is a NEW node type (not a kind on an
+   existing one) — needs its own line, unlike Compare (joins 'logic') and
+   Style Reference (joins 'signal', both covered "for free" by the WAVE 2
+   comment above). --cw-accent, matching EDGE_KIND_COLORS.remix
+   (edges/OmniEdge.jsx). */
+#workflow-root .react-flow__node-remix   { --cw-port: var(--cw-accent, #1858EE); }
+/* WAVE 4 — THE VERB EXPANSION. Handoff/Localize/Optimize/Run Workflow are
+   each their own new node type — need their own line apiece, same reasoning
+   as Remix just above. Guardrail joins 'logic' (a new `kind`, same as
+   Gather/Split/Compare) and is already covered "for free" by the
+   .react-flow__node-logic rule up top. Values duplicated from
+   edges/OmniEdge.jsx's EDGE_KIND_COLORS (same hand-sync convention this
+   whole roster already documents). */
+#workflow-root .react-flow__node-handoff { --cw-port: var(--cw-kind-human, #F59E0B); }
+#workflow-root .react-flow__node-localize { --cw-port: var(--cw-accent, #1858EE); }
+#workflow-root .react-flow__node-optimize { --cw-port: var(--cw-accent, #1858EE); }
+#workflow-root .react-flow__node-runworkflow { --cw-port: var(--cw-accent, #1858EE); }
+
+/* Rest — 55% of the owning node's kind color mixed toward the existing
+   neutral edge token, the exact same "mix the kind color INTO --cw-edge"
+   idiom OmniEdge.jsx's own idle wire gradient already uses (its
+   GRADIENT_MIX_IDLE, just at a stronger percentage since a 10px dot needs
+   to read at a glance where a hairline wire can lean on its full length
+   instead). Falls back to the flat neutral for any handle outside the 7
+   node-type wrappers above. */
+#workflow-root .react-flow__handle {
+  border-color: color-mix(in srgb, var(--cw-port, var(--cw-handle-border)) 55%, var(--cw-handle-border));
+}
+
+/* Invisible hit pad. The dot stays 10px — a bigger one would read as heavy
+   furniture on every edge of every card — but 10px is a mean target to grab
+   with a mouse, so the grabbable area is ~24px while the drawn circle isn't
+   touched. */
+#workflow-root .react-flow__handle::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+}
+
+/* Hover / the exact handle a drag started from — full kind color. Bare
+   `.connectionindicator` deliberately dropped from this trio (it used to
+   sit here alongside :hover/.connectingfrom): verified via CDP against
+   this build that RF's own class is ambiently TRUE on every idle,
+   unhovered, unconnected handle (its isPossibleEndHandle default), so
+   keying the "full color" state off it here would have painted every port
+   permanently bright instead of the "at rest ~55%, full on hover/
+   connecting" split CP1 asks for. It's put back to work below, gated by an
+   actual drag in flight, where RF narrows it to real candidates. */
+#workflow-root .react-flow__handle:hover,
+#workflow-root .react-flow__handle.connectingfrom {
+  border-color: var(--cw-port, var(--cw-accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cw-port, var(--cw-accent)) 15%, transparent);
+}
+
+/* CP1 item 2 — while a connection is being dragged (":has(.connectingfrom)"
+   is motion.css's own "a drag is in progress" detector, already verified
+   against this build by that file — reused here rather than re-inventing
+   a second one), `.connectionindicator` narrows from its idle "ambient,
+   always on" meaning to "RF thinks this handle's TYPE is a legal end for
+   THIS drag" (source vs target, same-node included — it doesn't know this
+   app's own already-used-handle/self-loop/trigger-as-target rules, which
+   only get enforced for real at drop time; see the refusal rule further
+   down for that half). Compatible candidates brighten to full kind color
+   and thicken their ring; border-width (not `scale`) is what visibly
+   "grows" it because motion.css's cw-handle-breathe keyframes already own
+   `scale` + box-shadow for every connectable handle during a drag —
+   layering a static value onto either here would just lose the cascade to
+   that running animation every frame, where border-width and the
+   drop-shadow below are both properties that rule never touches. */
+#workflow-root .react-flow:has(.react-flow__handle.connectingfrom)
+  .react-flow__handle.connectionindicator:not(.connectingfrom) {
+  border-color: var(--cw-port, var(--cw-accent));
+  border-width: 3px;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cw-port, var(--cw-accent)) 70%, transparent));
+}
+
+/* Incompatible candidates (source-to-source, a node's own other-type
+   handles under Strict mode, ...) go visibly inert instead: `filter` is a
+   post-paint compositing step, so it mutes whatever's rendered underneath
+   — including motion.css's own animated breathe halo on these same
+   elements — without this rule having to fight that animation's `scale`/
+   box-shadow property values directly. No indicator falls out for free:
+   this branch just never applies the brighten/grow rule above. */
+#workflow-root .react-flow:has(.react-flow__handle.connectingfrom)
+  .react-flow__handle:not(.connectionindicator):not(.connectingfrom) {
+  filter: saturate(30%);
+  opacity: 0.6;
+}
+
+/* Reduced motion: the transition list above is a short, non-looping,
+   non-positional property fade (color/ring/glow/opacity — never translate
+   or scale), so it's left running rather than stripped — matching this
+   codebase's own established line (nodes.css/motion.css only ever remove
+   LOOPING or POSITIONAL motion under this query, keeping plain fades as
+   the "still communicate state" fallback; see motion.css's own connecting-
+   drag reduced-motion block for the identical call). Nothing to override
+   here as a result — noted so the next reader doesn't go looking for it. */
+
+/* CP1 item 3 — invalid drop attempt. Handled in FlowCanvas.jsx via the Web
+   Animations API (`handleEl.animate(...)`) rather than a CSS class +
+   @keyframes here, which is what this rule tried FIRST — reverted after
+   CDP verification caught a real race: the same connection-drag-ending
+   store update that makes onConnectEnd fire ALSO re-renders every handle
+   (their connectingfrom/connectionindicator classes are computed from that
+   same store), and React's reconciliation overwrites the WHOLE className
+   attribute on that pass — including a class this file's CSS added a
+   moment earlier from outside React, same as onNodeDragStop's existing
+   cw-landed trick two components up. That trick survives because nothing
+   else re-renders that exact node right after a drag-stop; this one
+   couldn't, because a re-render of that exact handle is the guaranteed
+   NEXT thing to happen. A WAAPI animation lives outside class/style
+   entirely, so React's re-render can't touch it. See FlowCanvas.jsx's
+   onConnectEnd for the keyframes (same --cw-danger ring + shake this
+   comment used to describe) and PORT_REFUSE_MS/PORT_REFUSE_EASE for the
+   --cw-d-1/--cw-e-spring values it borrows (a WAAPI `easing` string
+   doesn't reliably resolve var(), unlike a plain CSS property value, so
+   those two live as literal-with-pointer-comment constants instead). */
+
+/* ---- Controls rail (Bryan: "feels sloppy") -----------------------------
+   Cleaned up: a divider between every single button read as a stack of
+   unrelated cells, so the rail is now GROUPED — readout · zoom pair · view
+   tools — with a hairline only between groups (the per-button borders RF
+   ships are stripped, then re-added on the two group boundaries via
+   :nth-child). Buttons are square and uniform, icons all render at one size,
+   and no button gets a heavy filled background. */
+#workflow-root .react-flow__controls {
+  border-radius: 14px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  /* NOT overflow:hidden — the hover tooltips below have to escape the pill.
+     The corners are kept clean by rounding the two end buttons instead
+     (which end is which is fixed by the explicit flex order below). */
+  overflow: visible;
+  padding: 2px 0;
+  background: var(--cw-surface);
+}
+
+#workflow-root .react-flow__controls-button.cw-zoom-readout {
+  border-radius: 12px 12px 0 0;
+}
+
+/* The bottom rounding has to live on whichever button sits LAST in the flex
+   order below — currently cw-wires-toggle (+ RAIL VIEW TOGGLES, PLAN.md;
+   moved off cw-comment-toggle when that group landed after it). If a new
+   tool is ever appended to the rail, this rule moves with it, or the new
+   last button paints square corners past the pill's radius while the old
+   one rounds mid-stack (which is exactly what Bryan caught when the
+   comment tool was added under the select toggle, and exactly what this
+   move is following the same warning to avoid repeating). CSS can't select
+   "highest order", so it's stated by hand. */
+#workflow-root .react-flow__controls-button.cw-focus-btn {
+  border-radius: 0 0 12px 12px;
+}
+
+/* History group separator — hairline above undo, same recipe as the other
+   group boundaries in this rail. */
+#workflow-root .react-flow__controls-button.cw-wires-toggle {
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+#workflow-root .react-flow__controls-button {
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+#workflow-root .react-flow__controls-button:hover {
+  background: var(--cw-field);
+}
+
+#workflow-root .react-flow__controls-button svg {
+  width: 13px;
+  height: 13px;
+  max-width: 13px;
+  max-height: 13px;
+  fill: currentColor;
+}
+
+/* Explicit rail order — RF renders its own built-ins before {children}, so
+   without this the custom zoom pair lands beneath fit/lock. Groups top to
+   bottom: readout · zoom pair · view tools · + RAIL VIEW TOGGLES. */
+#workflow-root .react-flow__controls-button.cw-zoom-readout { order: -4; }
+#workflow-root .react-flow__controls-button.react-flow__controls-zoomin { order: -3; }
+#workflow-root .react-flow__controls-button.react-flow__controls-zoomout { order: -2; }
+#workflow-root .react-flow__controls-button.react-flow__controls-fitview { order: -1; }
+#workflow-root .react-flow__controls-button.cw-tidy-btn { order: 0; }
+#workflow-root .react-flow__controls-button.cw-select-toggle { order: 0; }
+#workflow-root .react-flow__controls-button.cw-snap-toggle { order: 1; }
+#workflow-root .react-flow__controls-button.cw-comment-toggle { order: 2; }
+#workflow-root .react-flow__controls-button.react-flow__controls-interactive { order: 2; }
+/* + RAIL VIEW TOGGLES (PLAN.md, same dispatch as NODE TOOLBAR V2) — a new
+   bottom group, after everything above. */
+#workflow-root .react-flow__controls-button.cw-minimap-toggle { order: 3; }
+#workflow-root .react-flow__controls-button.cw-wires-toggle { order: 4; }
+#workflow-root .react-flow__controls-button.cw-undo-btn { order: 5; }
+#workflow-root .react-flow__controls-button.cw-redo-btn { order: 6; }
+#workflow-root .react-flow__controls-button.cw-focus-btn { order: 7; }
+
+/* Group separators only. Flex order puts the readout first (order:-1), so in
+   DOM order the children are: zoomIn, zoomOut, fitView, lock, [readout],
+   [snap]. The rule below draws a rule UNDER the readout (top group), under
+   the zoom pair, and (+ RAIL VIEW TOGGLES) under the comment toggle — closing
+   off the "view tools" group now that a fourth group follows it. */
+#workflow-root .react-flow__controls-button.cw-zoom-readout,
+#workflow-root .react-flow__controls-button.react-flow__controls-zoomout,
+#workflow-root .react-flow__controls-button.cw-comment-toggle {
+  border-bottom: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+/* ---- MiniMap: chromeless (Bryan) — container stripped entirely; the
+   viewport rect's own hairline is the only stroke. non-scaling-stroke keeps
+   it constant regardless of the flow's bounding box. ------------------- */
+#workflow-root .react-flow__minimap {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+#workflow-root .react-flow__minimap-mask {
+  vector-effect: non-scaling-stroke;
+}
+
+/* Dragging the minimap pans the canvas (RF `pannable`) — but nothing SAID so
+   (Bryan tried the crop rect and felt nothing). Grab cursors + the rect
+   firming up on hover make the affordance legible; the drag itself already
+   worked, verified via CDP. */
+#workflow-root .react-flow__minimap {
+  cursor: grab;
+}
+
+#workflow-root .react-flow__minimap:active {
+  cursor: grabbing;
+}
+
+#workflow-root .react-flow__minimap:hover {
+  --xy-minimap-mask-stroke-color: var(--cw-accent);
+  --xy-minimap-mask-stroke-width: 1;
+  --xy-minimap-mask-background-color: color-mix(in srgb, var(--cw-accent) 5%, transparent);
+}
+
+/* Yield-to-content (class set by FlowCanvas.jsx's minimap-yield effect).
+   Chromeless above means the panel paints nothing outside its node rects —
+   yet it still hit-tests as a full rectangle, an unseeable click shield.
+   While the cursor sits where real graph content lies beneath the panel (a
+   run's live human-response options, a card field), the effect flips this
+   class on: events fall through to that content, and the map dims so the
+   hand-off is visible. It comes straight off over beneath-empty spots, so
+   the minimap's own drag-pan and wheel-zoom keep working everywhere they
+   don't fight actual content. */
+#workflow-root .react-flow__minimap.cw-minimap-yield {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* + RAIL VIEW TOGGLES — minimap show/hide (Comfy's bottom-right pair,
+   PLAN.md). The panel STAYS mounted either way (FlowCanvas.jsx just toggles
+   this class) — a CSS-only opacity+scale transition covers "fade+scale-out
+   ... in with spring" without a mount/unmount presence machine, and it
+   means the existing minimap-yield effect above never has to special-case
+   "the panel doesn't exist right now": pointer-events:none already removes
+   a hidden panel from hit-testing for any real pointer event, so it can
+   never become that effect's event.target/closest() match in the first
+   place. Dismiss uses --cw-e-out (leaving), arrival --cw-e-spring — the
+   same directional split every other rail toggle enter/exit in this file
+   already uses. */
+#workflow-root .react-flow__minimap.cw-minimap-hidden {
+  opacity: 0;
+  scale: 0.85;
+  pointer-events: none;
+  transition:
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    scale var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .react-flow__minimap:not(.cw-minimap-hidden) {
+  transition:
+    opacity var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    scale var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .react-flow__minimap.cw-minimap-hidden,
+  #workflow-root .react-flow__minimap:not(.cw-minimap-hidden) {
+    transition: none;
+  }
+}
+
+/* + RAIL VIEW TOGGLES — Hide wires (Comfy's declutter move, PLAN.md).
+   Targets React Flow's own two edge-content layers directly (verified
+   against the installed @xyflow/react source: `.react-flow__edges` is the
+   SVG holding every OmniEdge path — comets/pulses/surges live inside THAT
+   same SVG, so they fade with it for free — and `.react-flow__edgelabel-
+   renderer` is the SEPARATE html-content layer EdgeLabelRenderer portals
+   the +/x controls into, which the SVG opacity alone would never reach).
+   Ports/handles are in neither layer, so they're untouched — "the graph
+   reads as cards+ports" (PLAN.md). Scoped off `.cw-flow-stage.cw-wires-
+   hidden` (FlowCanvas.jsx sets the class; this file owns the rule) rather
+   than a bare id selector, matching this file's own scoping convention
+   elsewhere (`#workflow-root .react-flow ...`). */
+#workflow-root .cw-flow-stage.cw-wires-hidden .react-flow__edges,
+#workflow-root .cw-flow-stage.cw-wires-hidden .react-flow__edgelabel-renderer {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-flow-stage.cw-wires-hidden .react-flow__edges,
+  #workflow-root .cw-flow-stage.cw-wires-hidden .react-flow__edgelabel-renderer {
+    transition: none;
+  }
+}
+
+/* ---- OmniEdge hover controls (+ insert / x cut) ------------------------
+   Rendered via EdgeLabelRenderer inside OmniEdge.jsx; toggled visible by
+   the `is-visible` class OmniEdge adds while hovered or selected. ------- */
+#workflow-root .omni-edge-controls {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease;
+}
+
+#workflow-root .omni-edge-controls.is-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#workflow-root .omni-edge-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 999px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  background: var(--cw-surface);
+  color: var(--cw-text-3);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--cw-shadow);
+  transition: border-color .12s ease, color .12s ease, transform .12s ease;
+}
+
+#workflow-root .omni-edge-btn:hover {
+  border-color: var(--cw-accent);
+  color: var(--cw-accent);
+  transform: scale(1.08);
+}
+
+/* ---- Zoom readout (Bryan) — extra ControlButton rendered by FlowCanvas's
+   ZoomReadout; `order:-1` floats it to the top of the controls pill (the
+   container is a flex column). Text cell, tabular digits, click = 100%. --- */
+#workflow-root .react-flow__controls {
+  display: flex;
+  flex-direction: column;
+}
+
+#workflow-root .react-flow__controls-button.cw-zoom-readout {
+  height: 26px;
+  font-family: var(--cw-font-mono);
+  font-size: 9.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  color: var(--cw-text-3);
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .react-flow__controls-button.cw-zoom-readout:hover {
+  color: var(--cw-text);
+}
+
+
+
+
+/* The compiled panel now floats over the canvas as frosted glass (app.css),
+   so the pane extends underneath it — pull the minimap and the attribution-
+   free bottom-right furniture clear of that 288px band so they never sit
+   behind the glass. */
+#workflow-root .react-flow__minimap {
+  right: calc(var(--cw-panel-w, 288px) + 16px);
+  transition: right 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+
+/* Snap-to-grid toggle: an accent TINT when on (was a filled dark cell, which
+   read as a mystery button rather than a state). */
+/* One active look for every rail toggle. The comment tool used to tint only
+   its icon while the select tool got the full band, so the two "on" states
+   read as different mechanisms sitting one on top of the other.
+   + RAIL VIEW TOGGLES adds the minimap/wires pair to the same language —
+   "aria-pressed + active tint like select/comment toggles" (PLAN.md). */
+#workflow-root .react-flow__controls-button.cw-snap-toggle[aria-pressed='true'],
+#workflow-root .react-flow__controls-button.cw-comment-toggle[aria-pressed='true'],
+#workflow-root .react-flow__controls-button.cw-minimap-toggle[aria-pressed='true'],
+#workflow-root .react-flow__controls-button.cw-wires-toggle[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--cw-accent) 12%, transparent);
+  color: var(--cw-accent);
+}
+
+
+/* Entrance (with app.css's choreography): canvas furniture rises in last. */
+#workflow-root .react-flow__controls,
+#workflow-root .react-flow__minimap {
+  animation: cw-furniture-in 340ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) 240ms backwards;
+}
+
+@keyframes cw-furniture-in {
+  from { opacity: 0; translate: 0 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .react-flow__controls,
+  #workflow-root .react-flow__minimap {
+    animation: none;
+  }
+}
+
+
+/* Minimap rides the compiled panel's published width (Bryan: it must never
+   sit behind the panel). !important because React Flow's own
+   .react-flow__panel.right positions it at the frame edge with equal-or-
+   later specificity. */
+#workflow-root .react-flow__panel.react-flow__minimap {
+  right: calc(var(--cw-panel-w, 288px) + 16px) !important;
+  /* opacity rides along for the minimap-yield dim (rule above) — this block
+     is the one that wins the transition cascade for the panel. */
+  transition:
+    right 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity 140ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .react-flow__panel.react-flow__minimap {
+    transition: none;
+  }
+}
+
+
+/* Zoom rail rides the top-left now (Bryan) — clear of the 64px frosted
+   header floating above the canvas. */
+#workflow-root .react-flow__controls.top {
+  top: 80px;
+}
+
+
+/* ---- Rail tooltips (Bryan: "give each item in that panel a tool tip for
+   what it does") — the shell's own .rail-tool::after treatment, re-cut in
+   --cw-* tokens so it themes with the builder. Native `title` attributes
+   were removed from these buttons at the same time; leaving both would
+   stack the OS tooltip on top of this one a second later. --------------- */
+#workflow-root .react-flow__controls-button.cw-rail-tip {
+  position: relative;
+}
+
+#workflow-root .cw-rail-tip-pop {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transform: translateY(-50%) translateX(-4px);
+  padding: 5px 6px 5px 10px;
+  background: var(--cw-surface);
+  color: var(--cw-text);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 6px;
+  /* Family stated explicitly, not inherited: the zoom readout's own button is
+     set in --cw-font-mono, so its tooltip came out in a different typeface
+     from every other one (Bryan). */
+  font-family: var(--cw-font);
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: normal;
+  letter-spacing: -0.05px;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.06),
+    0 10px 24px -12px rgba(16, 24, 40, 0.28);
+  transition:
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, ease),
+    transform var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+/* The keycap. Mono + a hairline well, so the key reads as a THING you press
+   rather than more sentence — the same logic the zoom readout uses to read as
+   a numeral chip. */
+#workflow-root .cw-rail-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 19px;
+  padding: 0 6px;
+  background: var(--cw-field);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 4px;
+  font-family: var(--cw-font-mono);
+  /* Legibility pass (Bryan: "hard to read in the 3 dot menu") — up a step,
+     full text ink, and tracking so ⌘C reads as two glyphs, not a ligature
+     smudge. */
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  color: var(--cw-text);
+}
+
+#workflow-root .cw-rail-tip:hover .cw-rail-tip-pop,
+#workflow-root .cw-rail-tip:focus-visible .cw-rail-tip-pop {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-rail-tip-pop {
+    transition: opacity var(--cw-d-1, 140ms) linear;
+    transform: translateY(-50%);
+  }
+  #workflow-root .cw-rail-tip:hover .cw-rail-tip-pop,
+  #workflow-root .cw-rail-tip:focus-visible .cw-rail-tip-pop {
+    transform: translateY(-50%);
+  }
+}
+
+/* ==========================================================================
+   WIRE FEEL — item 5, "the wire that waits" (see PLAN.md "## WIRE FEEL").
+   Styles for the vanilla-DOM overlay edges/ConnectionLine.jsx appends to
+   document.body while a wire-drop picker is open (`.cw-held-wire`, module-
+   scope, driven by `cw:wire-hold`/`cw:wire-release`) — NOT React Flow
+   chrome, but scoped here per this spec's own seam line ("flow.css
+   connection-line + edge rules only") since it's the screen-space sibling
+   of the in-flight connection line this same file already styles above.
+   position:fixed + a fixed z-index (over the picker's own popover z-index,
+   which lives in app.css — verified by eye, not by reading that file, per
+   the seam boundary) so the frozen wire stays visible behind/around the
+   picker rather than under it.
+   ========================================================================== */
+.cw-held-wire {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.cw-held-wire-path {
+  stroke: var(--cw-edge-active);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+/* "frozen at release shape, dimmed 50%" while the picker has focus. */
+.cw-held-wire.is-held .cw-held-wire-path {
+  opacity: 0.5;
+}
+
+/* "completes with the settle morph on pick" — the morph itself is the
+   freshly-minted OmniEdge's own job (cw:wire-connected); this overlay just
+   needs to clear out without a competing flourish. */
+.cw-held-wire.is-completing .cw-held-wire-path {
+  opacity: 0;
+  transition: opacity 160ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* "retracts INTO the source port (140ms ease-in...)" — stroke-dashoffset
+   travels 0->100 on a pathLength=100 path (same trick edges-motion.css's
+   own draw-on uses), read backward: the dash shrinks toward its `M` start
+   (the source handle), not toward the drop point, so it visibly withdraws
+   into the port rather than just fading in place. The "port absorb pulse"
+   half of this beat is a WAAPI call on the actual handle element
+   (ConnectionLine.jsx's document.__cwPulsePort), not CSS. */
+.cw-held-wire.is-releasing .cw-held-wire-path {
+  opacity: 0;
+  transition:
+    opacity 140ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    stroke-dashoffset 140ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-held-wire.is-completing .cw-held-wire-path,
+  .cw-held-wire.is-releasing .cw-held-wire-path {
+    transition: opacity 90ms linear;
+  }
+}
+
+
+
+
+/* ---- FOCUS MODE (Bryan: "hide the ui... except the nodes themselves...
+   just the thing in the screenshot and the share/run module") -------------
+   Everything that isn't canvas, this rail, or the Share/Run cluster leaves
+   with a real exit (fade + a short slide in the direction it lives), never
+   a display:none pop — DESIGN BAR's "exits for every unmount". The surfaces
+   are siblings of the stage and of #workflow-root, so the class rides both
+   the root AND body (FlowCanvas.jsx sets both) to reach the shell's own
+   header/footer. pointer-events:none while hidden keeps a faded panel from
+   eating clicks meant for the canvas beneath it. */
+/* Each surface's OWN base rule carries the opacity/transform easing (see
+   app.css/darkroom.css) — declaring it here instead replaced their base
+   `transition` shorthands at toggle-on, killing the width/slide easing on
+   the way IN while leaving it intact on the way out. This rule now only
+   states the destination. */
+#workflow-root.cw-focus-mode .cw-palette,
+#workflow-root.cw-focus-mode .cw-panel,
+#workflow-root.cw-focus-mode .cw-shelf,
+#workflow-root.cw-focus-mode .cw-panel-handle,
+#workflow-root.cw-focus-mode .react-flow__minimap {
+  opacity: 0;
+  pointer-events: none;
+}
+/* The two surfaces with no opacity easing of their own. */
+#workflow-root .cw-panel-handle {
+  transition:
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-3, 420ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .react-flow__minimap {
+  transition:
+    right 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    bottom 420ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--cw-d-3, 420ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root.cw-focus-mode .cw-palette {
+  transform: translateX(-16px);
+}
+#workflow-root.cw-focus-mode .cw-panel,
+#workflow-root.cw-focus-mode .react-flow__minimap {
+  transform: translateX(16px);
+}
+#workflow-root.cw-focus-mode .cw-shelf {
+  transform: translateY(16px);
+}
+/* The canvas takes the freed room — the pane is a grid/flex child of the
+   builder body, so zeroing the side columns' claim is what actually widens
+   it; the vars every anchored surface reads go to 0 in the same beat, so
+   the rail's own clamps and the completion glide stay honest. */
+#workflow-root.cw-focus-mode {
+  --cw-palette-w: 0px;
+  --cw-panel-w: 0px;
+  --cw-shelf-h: 0px;
+}
+/* The builder HEADER STAYS WHOLE (Bryan: "keep the top nav and the whole
+   sharing panel including the workflow building and untitled workflow with
+   dropdown") — the eyebrow, the title dropdown, and the Share/Run cluster
+   are the workflow's own identity bar, not panel chrome; focus mode hides
+   the PANELS around the canvas, not the thing telling you which workflow
+   you're looking at. Only the shell's footer leaves. */
+body.cw-focus-mode .footer {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root.cw-focus-mode .cw-palette,
+  #workflow-root.cw-focus-mode .cw-panel,
+  #workflow-root.cw-focus-mode .cw-shelf,
+  #workflow-root.cw-focus-mode .cw-panel-handle,
+  #workflow-root.cw-focus-mode .react-flow__minimap,
+  body.cw-focus-mode .footer {
+    transition: none;
+  }
+}

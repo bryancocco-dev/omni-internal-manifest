@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+  OMNI component: sharemodal
+  Project: Share Demos
+  Note: .share-modal — "Share this file" flyout for a published canvas: invite by name/email + role, collaborator avatar summary
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share Demos — sharemodal · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-share-demos.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="share-overlay is-open" style="position:relative;min-height:540px">
+    <div class="share-modal" role="dialog" aria-modal="true" aria-label="Share this file">
+    <section class="share-view share-view--invite is-active">
+      <header class="share-head">
+        <h2 class="share-title">Share this file</h2>
+        <button class="share-icon-btn share-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg></button>
+      </header>
+      <div class="share-body">
+        <div class="share-invite">
+          <div class="share-invite__main">
+            <div class="share-field">
+              <input class="share-field__input" type="text" autocomplete="off" placeholder="Name, email or username" aria-label="Invite by name, email or username">
+              <button class="share-role" type="button" aria-label="Choose permission" data-menu-id="invite-role"><span class="share-role__label">Can edit</span><span class="share-role__caret"><svg viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button>
+            </div>
+            <div class="share-results" role="listbox" hidden=""></div>
+          </div>
+          <button class="share-btn-invite" type="button">Invite <span class="share-btn-invite__ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.3" stroke="currentColor" stroke-width="1.6"></circle><path d="M3.6 19a5.4 5.4 0 0 1 10.8 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M19 8v5M21.5 10.5h-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></span></button>
+        </div>
+        <div class="share-toast" hidden=""></div>
+        <button class="share-summary" type="button" aria-label="View collaborators">
+          <span class="share-summary__lead"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12" cy="10" r="2.8" stroke="currentColor" stroke-width="1.5"></circle><path d="M6.8 18.2a5.5 5.5 0 0 1 10.4 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></span>
+          <span class="share-summary__avatars"><span class="share-avatar share-avatar--sm share-avatar--ring" style="--av:#6069f5">BC</span><span class="share-avatar share-avatar--sm share-avatar--ring" style="--av:#c2506e">ML</span><span class="share-avatar share-avatar--sm share-avatar--ring" style="--av:#8b5cf6">DR</span><span class="share-avatar share-avatar--sm share-avatar--ring" style="--av:#0e8f9a">PA</span></span>
+          <span class="share-summary__count">7 people with access</span>
+          <span class="share-summary__chev"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </button>
+      </div>
+    </section>
+    <section class="share-view share-view--collab">
+      <header class="share-head">
+        <button class="share-icon-btn share-back" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <h2 class="share-title share-title--collab"></h2>
+        <button class="share-icon-btn share-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg></button>
+      </header>
+      <div class="share-body">
+        <p class="share-collab__label">Current collaborators</p>
+        <ul class="share-collab__list"></ul>
+      </div>
+    </section></div></div>
+</body>
+</html>

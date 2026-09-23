@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+  OMNI component: slider
+  Project: Agent Builder
+  Note: .slider-row — range slider with axis labels + bound value (Expert Settings)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — slider · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="setting-card">
+            <h3>Output Creativity</h3>
+            <p>Temperature controls randomness; top-k controls the pool of candidate tokens. For creative ideation (brainstorming, varied phrasing) set Temperature higher. For agents working with structured data (classification, RAG with clear schemas) keep Temperature lower so answers stay consistent.</p>
+            <div class="slider-row">
+              <span class="slider-label">Temperature <span class="info" data-tip="Controls randomness. Higher = more creative, varied phrasing (good for ideation). Lower = more deterministic, repeatable answers (good for structured data and classification)."><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M7 6v4M7 4v.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span></span>
+              <span class="slider-track-wrap">
+                <span class="slider-axis-labels"><span>More Deterministic</span><span>More Creative and Random</span></span>
+                <input class="slider" type="range" min="0" max="100" value="0" data-setting="temperature" />
+                <span class="slider-hint" data-hint-for="temperature"></span>
+              </span>
+              <span class="slider-value" data-bind="temperature">0</span>
+            </div>
+          </div>
+</body>
+</html>

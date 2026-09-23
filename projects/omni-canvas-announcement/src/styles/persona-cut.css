@@ -1,0 +1,297 @@
+/* ------------------------------------------------------------------
+   PERSONA CUT (?cut=persona) — "Personas in Canvas".
+   Two pieces of new UI, both prefixed `xps-`:
+     1. Chat messages (user bubble / assistant row) mounted between the
+        greeting and the chat-hat spacer, plus the composer's
+        Mei-agent swap bar (persona-chat.js).
+     2. The persona-document pane content mounted in the canvas side
+        (persona-build.js): a PERSONAS tab row + Chat pill (this cut's
+        own chrome), then the cover + Demographics — REUSED verbatim
+        from the V1 persona spread (.ps-hero/.ph-*/.ps-demos/.pd-* in
+        canvas-ui.css), not forked. `.xps-cover-wrap` only supplies the
+        sizing that block's normal flex parent would otherwise give it.
+   Strict OMNI light tokens; hairlines 0.5px; mono eyebrows.
+------------------------------------------------------------------ */
+
+/* ==================================================================
+   1. CHAT MESSAGES (left column) — ported VERBATIM from the house
+   chat anatomy (lease-campaign's .chat-stream / .msg / .msg-head /
+   .msg-avatar / .msg-meta / .body / .bubble), tokens swapped to
+   var(--omni-*) where the source used its own --text-subtle etc.
+   Scoped under .xps-chat-stream so these generic class names never
+   leak beyond this mounted block. Airy rhythm kept as-is (28px
+   between messages, 8px name-row-to-body) — that generosity IS the
+   point Bryan wants, not a bespoke tightened version. -------------- */
+/* NOTE: the bare `.xps-chat-stream { }` rule is ALSO applied inline
+   (style="") on the mounted element in persona-build.js — this
+   project's dev CSS pipeline was observed silently dropping this
+   exact rule from the parsed stylesheet across several edits (verified
+   via document.styleSheets: every OTHER rule in this file parses, this
+   one specific selector does not, regardless of position in the file
+   or renaming). The inline style is the reliable source of truth for
+   the container box model; this rule stays for documentation/in case
+   a clean (non-HMR-churned) build parses it fine. */
+.xps-chat-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 36px 0; /* left/right matches .cs-greeting's own 36px inset */
+}
+/* CSS default hidden state — GSAP's own tl.set(...,{opacity:0},0) is
+   only a defensive reset between loops; the codebase's proven idiom
+   (ppt-board's .xpb2-copy-line, ppt-export's .xpe-title-menu) is that
+   the STYLESHEET carries the true pre-reveal state so nothing flashes
+   visible before its cue's own timeline has actually played forward
+   through it. */
+.xps-chat-stream .msg { position: relative; display: flex; flex-direction: column; gap: 11px; opacity: 0; }
+.xps-chat-stream .msg-head { display: flex; align-items: center; gap: 12px; }
+.xps-chat-stream .msg-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 12px;
+}
+/* Bryan: brand blue, not the source's own orange/tan gradient. */
+.xps-chat-stream .av-nick { background: var(--omni-brand-500); color: #ffffff; overflow: hidden; }
+.xps-chat-stream .av-nick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.xps-chat-stream .msg-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.xps-chat-stream .msg-name { font-weight: 700; color: var(--omni-text-strong); }
+.xps-chat-stream .msg-dot  { width: 2px; height: 2px; border-radius: 50%; background: var(--omni-text-subtle); }
+.xps-chat-stream .msg-time { color: var(--omni-text-subtle); }
+
+.xps-chat-stream .msg.user .bubble {
+  background: var(--omni-panel-bg-chat);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  border: 1px solid transparent;
+  color: var(--omni-text-strong);
+}
+.xps-chat-stream .msg.user .msg-head { padding: 0; }
+.xps-chat-stream .msg.user > .bubble { display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 23px; }
+
+.xps-chat-stream .msg.bot .body {
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--omni-text-body);
+}
+
+/* Mei's avatar — her actual portrait (circle-cropped, face-biased),
+   never the person-glyph tile or a filled initial circle. One class,
+   used identically in her message rows (with .msg-avatar above) AND
+   in the composer's agent bar below, so both read as the same
+   component. */
+.xps-av-mei {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.xps-av-mei img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 24%;
+  display: block;
+}
+
+/* ---- composer swap — the persona-agent bar overlay (persona-chat).
+   Rounds to match the composer's own geometry when it's the ONLY
+   thing visible above the input (the aux header hides during a
+   persona chat — see persona-chat.js): the composer's own
+   border-radius is tweened to a full 24px round at the same beat, and
+   this bar's top corners match it so the whole assembly reads as one
+   rounded container, never a square corner poking past the round. -- */
+.xps-agent-bar {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 62px;
+  /* left/right = composer's own 26px content inset, so the avatar's
+     left edge lines up with the input text's left edge below it. */
+  padding: 0 26px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--omni-canvas-bg);
+  border-bottom: 0.5px solid var(--omni-line);
+  border-radius: 24px 24px 0 0;
+  z-index: 3;
+  opacity: 0;
+}
+.xps-agent-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.xps-agent-name {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--omni-text-strong);
+}
+.xps-agent-sub {
+  font-family: var(--omni-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.xps-agent-spacer { flex: 1; }
+/* 46px — matches .round-btn's diameter convention (the composer's own
+   send/plus buttons), not an arbitrary smaller circle. */
+.xps-agent-end {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 0;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: #ef4444;
+  color: #ffffff;
+  transform: rotate(135deg);
+}
+.xps-agent-end svg { width: 20px; height: 20px; }
+
+/* ==================================================================
+   2. PANE — persona document (mounted into cs-canvas-side)
+   ================================================================== */
+.xps-scroller {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  will-change: transform;
+  opacity: 0;
+  filter: blur(22px);
+}
+.xps-doc {
+  width: 1000px;
+  margin: 0 auto;
+  padding: 84px 0 60px;
+  /* The V1 persona-spread's .ph-tags/.pd-head/.pd-grid all read their
+     side gutter off this token (normally supplied by .persona-spread,
+     which we don't mount here — only its .ps-hero/.ps-demos content).
+     Reusing the SAME 56px value verbatim, not forking a pane-specific
+     number. */
+  --p-pad-x: 56px;
+}
+
+/* ---- PERSONAS tab row (this cut's own chrome — matches the product
+   as-is; no banner above it anymore, so it takes that top slot). ---- */
+.xps-tabs {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 22px;
+  padding-bottom: 14px;
+  border-bottom: 0.5px solid var(--omni-line);
+  opacity: 0;
+  transform: translateY(14px);
+}
+.xps-tabs-label {
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  flex-shrink: 0;
+}
+.xps-tab {
+  background: transparent;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 2px 0 12px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -14.5px;
+  cursor: default;
+}
+.xps-tab-name {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--omni-text-subtle);
+}
+.xps-tab-sub {
+  font-family: var(--omni-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  opacity: 0.7;
+}
+.xps-tab.is-active { border-bottom-color: var(--omni-brand-500); }
+.xps-tab.is-active .xps-tab-name { color: var(--omni-brand-500); }
+.xps-tabs-spacer { flex: 1; }
+
+.xps-chat-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 15px;
+  border-radius: 9px;
+  border: 0;
+  background: #22c55e;
+  color: #ffffff;
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.xps-chat-pill-icon { width: 13px; height: 13px; display: grid; place-items: center; }
+.xps-chat-pill-icon svg { width: 100%; height: 100%; }
+.xps-chat-pill.is-active { background: #ef4444; }
+
+/* ---- cover: wraps the V1 persona-spread's .ps-hero VERBATIM (markup
+   + styles both live untouched in canvas-ui.css: .ps-hero/.ph-*).
+   The ONLY thing this cut adds is sizing — .ps-hero is normally sized
+   by its flex parent (.persona-spread, `flex:1 1 auto`), which we
+   don't mount here (we mount just the hero + demos, not the whole
+   spread, since the tab row + Chat pill are this cut's own chrome).
+   An aspect-ratio stands in for that flex sizing; nothing about the
+   hero's own internals is touched. */
+.xps-cover-wrap {
+  position: relative;
+  margin: 22px 0 0;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -14px rgba(24, 31, 64, 0.2);
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
+}
+.xps-cover-wrap .ps-hero { position: absolute; inset: 0; }
+/* persona-mei.webp is landscape (1200×896) — narrower than this 16:10
+   frame, so object-fit:cover crops top/bottom only, never the sides.
+   Her face sits ~58% across / ~31% down the source; this keeps it
+   clear of the bottom title block both at rest and through the Ken
+   Burns drift. Overrides only the object-position — every other
+   .ph-portrait img rule (filter, duotone overlay, sizing) is verbatim. */
+.xps-cover-wrap .ph-portrait img { object-position: 58% 32%; }
+
+/* Invisible camera-framing anchor(s) - vertical center computed at
+   build time (persona-build.js / persona-chat.js) from real measured
+   layout, so the chat-panel and tab-row cameras frame their content
+   regardless of length. */
+.xps-cam-anchor {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Persona cut only: the composer's typed line + placeholder step down a
+   notch (18px shared default reads oversized against the 15px thread
+   right above it at this cut's chat framing). Scoped statically via a
+   class the cut adds to the composer at build time. */
+.composer.xps-persona [data-typed-prompt],
+.composer.xps-persona [data-composer-rest] {
+  font-size: 16px;
+  line-height: 24px;
+}

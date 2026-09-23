@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+  OMNI component: button_magicprompt
+  Project: Graphics
+  Note: #magicPromptBtn — sparkle "Enhance Prompt" composer button that rewrites the prompt in place (word-by-word reveal + a temporary Revert)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphics — button_magicprompt · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-graphics.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="magic-prompt-wrap">
+      <button type="button" id="magicPromptBtn" aria-label="Enhance Prompt" disabled>
+        <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+          <path d="M48,64a8,8,0,0,1,8-8H72V40a8,8,0,0,1,16,0V56h16a8,8,0,0,1,0,16H88V88a8,8,0,0,1-16,0V72H56A8,8,0,0,1,48,64ZM184,192h-8v-8a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16Zm56-48H224V128a8,8,0,0,0-16,0v16H192a8,8,0,0,0,0,16h16v16a8,8,0,0,0,16,0V160h16a8,8,0,0,0,0-16ZM219.31,80,80,219.31a16,16,0,0,1-22.62,0L36.68,198.63a16,16,0,0,1,0-22.63L176,36.69a16,16,0,0,1,22.63,0l20.68,20.68A16,16,0,0,1,219.31,80Zm-54.63,32L144,91.31l-96,96L68.68,208ZM208,68.69,187.31,48l-32,32L176,100.69Z"/>
+          <circle class="wand-spark wand-spark-1" cx="232" cy="36" r="8"/>
+          <circle class="wand-spark wand-spark-2" cx="118" cy="16" r="6"/>
+        </svg>
+      </button>
+      <button type="button" class="magic-prompt-revert" id="magicPromptRevertBtn">Revert</button>
+      <span class="magic-tip" aria-hidden="true">Enhance Prompt</span>
+    </div>
+</body>
+</html>

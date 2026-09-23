@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+  OMNI component: receipt
+  Project: Copy Agent
+  Note: .cw-success / .cw-done-list — post-copy receipt (stamped avatar + badge, one row per destination with its real mark); the .cw-panel.done success state
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy Agent — receipt · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/copy-agent.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="cw-panel open done" id="cwPanel" role="dialog" aria-modal="true" aria-label="Copy agent to workspace" style="position:static;opacity:1;visibility:visible;transform:none;margin:0 auto;width:420px;max-height:none;">
+    <div class="cw-head">
+      <div class="cw-titles">
+        <div class="cw-title">Copy Agent to Workspace</div>
+      </div>
+      <button class="cw-close" id="cwClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="cw-success" id="cwSuccess">
+      <div class="cw-avatar aic" style="background:rgba(255,44,30,0.12);color:#c11f14"><span id="cwInitials"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></span><span class="cw-badge" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.2L4.8 9L10 3.4"/></svg></span></div>
+      <div class="cw-done-head" id="cwDoneHead">Copied Creative QA Sweep to 3 workspaces</div>
+      <div class="cw-done-list" id="cwDoneList">
+        <div class="cw-done-ws"><span class="cw-ws-logo" aria-hidden="true"><img src="/_assets/copy-agent/ws-bbdo.png" alt=""></span><span class="name">BBDO Worldwide</span></div>
+        <div class="cw-done-ws"><span class="cw-ws-logo mono" aria-hidden="true">DDB</span><span class="name">DDB North America</span></div>
+        <div class="cw-done-ws"><span class="cw-ws-logo" aria-hidden="true"><img src="/_assets/copy-agent/ws-criticalmass.png" alt=""></span><span class="name">Critical Mass</span></div>
+      </div>
+    </div>
+    <div class="cw-foot">
+      <button class="cw-btn-primary" id="cwPrimary" type="button">Done</button>
+    </div>
+  </div>
+</body>
+</html>

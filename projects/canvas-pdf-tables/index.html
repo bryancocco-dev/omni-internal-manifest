@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wide tables on paper — PDF export spec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --ink:#0a0a0a;
+  --ink-2:#3d3d3d;
+  --ink-3:#6f6f6f;
+  --ink-4:#9d9d9d;
+  --line:#e4e4e4;
+  --line-2:#c7c7c7;
+  --line-3:#111;
+  --bg:#fff;
+  --bg-2:#fafafa;
+  --bg-3:#f4f4f5;
+  --brand:#1858ee;
+  --bad:#c62828;
+  --bad-bg:#fdf0ef;
+  --good:#1a7f4b;
+  --sans:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'Fira Code','SF Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--sans);
+  background:var(--bg-3);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LAB CHROME — Swiss spec sheet
+   ═══════════════════════════════════════════════════════════════════════ */
+.lab{background:var(--bg);max-width:none;}
+.masthead{
+  border-bottom:1px solid var(--line-3);
+  padding:56px 48px 28px;
+}
+.masthead-kicker{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--brand);
+  margin:0 0 18px;
+}
+.masthead h1{
+  font-size:46px;
+  line-height:1.04;
+  letter-spacing:-.028em;
+  font-weight:700;
+  margin:0 0 14px;
+  max-width:20ch;
+}
+.masthead-dek{
+  font-size:18px;
+  line-height:1.5;
+  color:var(--ink-2);
+  max-width:78ch;
+  margin:0 0 26px;
+}
+.masthead-meta{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  border-top:1px solid var(--line);
+  padding-top:14px;
+}
+.meta-cell{
+  padding-right:34px;
+  border-right:1px solid var(--line);
+}
+.meta-cell:last-child{border-right:0;}
+.meta-k{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-4);
+  display:block;
+  margin-bottom:3px;
+}
+.meta-v{font-size:13px;color:var(--ink-2);font-weight:500;}
+
+section.sec{
+  border-bottom:1px solid var(--line);
+  padding:52px 48px 60px;
+}
+.sec-head{
+  display:grid;
+  grid-template-columns:88px minmax(0,1fr);
+  gap:0 24px;
+  margin-bottom:34px;
+}
+.sec-num{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.1em;
+  color:var(--brand);
+  padding-top:9px;
+}
+.sec-title{
+  font-size:29px;
+  letter-spacing:-.02em;
+  font-weight:700;
+  margin:0 0 10px;
+  line-height:1.15;
+}
+.sec-lede{
+  font-size:16.5px;
+  color:var(--ink-2);
+  max-width:82ch;
+  margin:0;
+  line-height:1.55;
+}
+.sec-body{
+  display:grid;
+  grid-template-columns:88px minmax(0,1fr);
+  gap:0 24px;
+}
+.sec-body > .gutter{}
+.prose p{max-width:82ch;margin:0 0 15px;color:var(--ink-2);}
+.prose p strong{color:var(--ink);font-weight:600;}
+.prose p:last-child{margin-bottom:0;}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FAILURE LEGEND
+   ═══════════════════════════════════════════════════════════════════════ */
+.flags{
+  list-style:none;
+  margin:0 0 30px;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:0;
+  border-top:1px solid var(--line);
+}
+.flags li{
+  padding:16px 26px 18px 0;
+  border-bottom:1px solid var(--line);
+  display:grid;
+  grid-template-columns:26px minmax(0,1fr);
+  gap:0 12px;
+  align-items:start;
+}
+.flag-n{
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:500;
+  width:20px;height:20px;
+  border-radius:50%;
+  background:var(--bad);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+.flag-t{font-weight:600;font-size:14.5px;display:block;margin-bottom:3px;}
+.flag-d{font-size:13.5px;color:var(--ink-3);line-height:1.5;}
+.flag-d code{
+  font-family:var(--mono);
+  font-size:12px;
+  background:var(--bad-bg);
+  color:var(--bad);
+  padding:1px 4px;
+  border-radius:2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SHEETS — paper simulation
+   ═══════════════════════════════════════════════════════════════════════ */
+.sheet-rail{
+  display:flex;
+  flex-wrap:wrap;
+  gap:26px;
+  align-items:flex-start;
+  padding:30px 28px;
+  background:var(--bg-3);
+  border:1px solid var(--line);
+  overflow-x:auto;
+}
+.sheet-stack{display:flex;flex-direction:column;gap:22px;}
+.sheet-cap{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--ink-4);
+  margin-bottom:9px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.sheet-cap .dot{width:6px;height:6px;border-radius:50%;background:var(--ink-4);}
+.sheet-cap.is-bad{color:var(--bad);}
+.sheet-cap.is-bad .dot{background:var(--bad);}
+.sheet-cap.is-good{color:var(--good);}
+.sheet-cap.is-good .dot{background:var(--good);}
+
+.sheet{
+  width:8.5in;
+  min-height:11in;
+  background:#fff;
+  padding:.62in .68in;
+  box-shadow:0 1px 2px rgba(0,0,0,.09), 0 10px 34px rgba(0,0,0,.08);
+  position:relative;
+  font-size:9.5pt;
+  line-height:1.42;
+  color:#111;
+  flex:0 0 auto;
+}
+.sheet--ls{width:11in;min-height:8.5in;}
+.zoomed{zoom:.58;}
+.zoomed-lg{zoom:.72;}
+
+.pg-mark{
+  position:absolute;
+  bottom:.3in;
+  right:.68in;
+  font-family:var(--mono);
+  font-size:7pt;
+  color:#b0b0b0;
+  letter-spacing:.06em;
+}
+
+/* export sheet typography — matches the OMNI+ Canvas strategy export */
+.xp-kicker{
+  font-family:var(--sans);
+  font-size:7.6pt;
+  font-weight:700;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--brand);
+  margin:0 0 7px;
+}
+.xp-title{
+  font-size:20pt;
+  font-weight:700;
+  letter-spacing:-.02em;
+  margin:0 0 5px;
+  line-height:1.1;
+}
+.xp-sub{font-size:9.5pt;color:#5c5c5c;margin:0 0 12px;}
+.xp-rule{border:0;border-top:1.4px solid #111;margin:0 0 18px;}
+.xp-sec{
+  font-family:var(--sans);
+  font-size:7.2pt;
+  font-weight:700;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--brand);
+  margin:0 0 9px;
+}
+.xp-foot{
+  margin-top:22px;
+  padding-top:8px;
+  border-top:1px solid #e0e0e0;
+  font-size:7.4pt;
+  color:#9a9a9a;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BROKEN TABLE — faithful recreation of today's export
+   ═══════════════════════════════════════════════════════════════════════ */
+.bk{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size:8.4pt;
+}
+.bk th{
+  font-family:var(--mono);
+  font-size:6.8pt;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#6f6f6f;
+  font-weight:400;
+  text-align:left;
+  vertical-align:top;
+  padding:0 0 8px;
+  border-bottom:1px solid #e0e0e0;
+  white-space:nowrap;
+  overflow:visible;
+}
+.bk td{
+  vertical-align:middle;
+  padding:10px 3px;
+  border-bottom:1px solid #eee;
+  word-break:break-all;
+  hyphens:auto;
+  -webkit-hyphens:auto;
+}
+.bk td.ovf{
+  white-space:nowrap;
+  overflow:visible;
+  word-break:normal;
+  hyphens:none;
+}
+.bk td.notes{
+  vertical-align:top;
+  word-break:normal;
+  hyphens:auto;
+}
+.bk tr.torn td{border-bottom:0;}
+.bk .num{color:#9a9a9a;font-size:7.6pt;}
+
+.flagdot{
+  display:inline-flex;
+  align-items:center;justify-content:center;
+  width:13px;height:13px;
+  border-radius:50%;
+  background:var(--bad);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:7.5px;
+  font-weight:500;
+  vertical-align:middle;
+  margin-left:4px;
+  position:relative;
+  top:-1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FIXED TABLE — the four-rung renderer output
+   ═══════════════════════════════════════════════════════════════════════ */
+.fx{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:auto;
+  font-size:8.4pt;
+}
+.fx th{
+  font-family:var(--mono);
+  font-size:6.6pt;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:#6f6f6f;
+  font-weight:400;
+  text-align:left;
+  vertical-align:bottom;
+  padding:0 11px 7px 0;
+  border-bottom:1px solid #111;
+  hyphens:none;
+  overflow:hidden;
+}
+.fx th:last-child,.fx td:last-child{padding-right:0;}
+.fx td{
+  vertical-align:top;
+  padding:8px 11px 8px 0;
+  border-bottom:1px solid #ededed;
+  word-break:normal;
+  overflow-wrap:break-word;
+  hyphens:none;
+}
+.fx .nb{white-space:nowrap;}
+.fx .ta-r{text-align:right;padding-right:11px;}
+.fx th.ta-r{text-align:right;}
+.fx .num{color:#9a9a9a;font-size:7.6pt;white-space:nowrap;}
+.fx tbody.rec{border:0;}
+.fx td.note{
+  padding:0 0 10px 0;
+  border-bottom:1px solid #ededed;
+  color:#4a4a4a;
+  font-size:8pt;
+  line-height:1.45;
+}
+.fx tbody.rec > tr.data > td{border-bottom:0;}
+.fx tbody.rec:last-child td{border-bottom:0;}
+.note-label{
+  font-family:var(--mono);
+  font-size:6.4pt;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:#a8a8a8;
+  margin-right:7px;
+}
+/* rung 3 — column-group continuation */
+.fx-cont{margin-top:3px;}
+.cont-tag{
+  font-family:var(--mono);
+  font-size:6.4pt;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:#a8a8a8;
+  padding:9px 0 5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LADDER
+   ═══════════════════════════════════════════════════════════════════════ */
+.ladder{border-top:1px solid var(--line-3);margin:0 0 6px;}
+.rung{
+  display:grid;
+  grid-template-columns:118px minmax(0,1fr) 210px;
+  gap:0 26px;
+  padding:22px 0 24px;
+  border-bottom:1px solid var(--line);
+  align-items:start;
+}
+.rung-id{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--brand);
+  padding-top:4px;
+}
+.rung-t{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 7px;}
+.rung-d{font-size:14.5px;color:var(--ink-2);margin:0 0 12px;max-width:74ch;line-height:1.55;}
+.rung-rules{list-style:none;margin:0;padding:0;}
+.rung-rules li{
+  font-size:13px;
+  color:var(--ink-3);
+  padding-left:16px;
+  position:relative;
+  margin-bottom:5px;
+  line-height:1.5;
+}
+.rung-rules li::before{
+  content:'';
+  position:absolute;left:0;top:8px;
+  width:6px;height:1px;background:var(--line-2);
+}
+.rung-when{
+  font-family:var(--mono);
+  font-size:11px;
+  line-height:1.6;
+  color:var(--ink-3);
+  background:var(--bg-2);
+  border:1px solid var(--line);
+  padding:12px 13px;
+}
+.rung-when b{
+  display:block;
+  color:var(--ink);
+  font-weight:500;
+  font-size:10px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CONTROLS + MEASUREMENT READOUT
+   ═══════════════════════════════════════════════════════════════════════ */
+.ctrls{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+  padding:16px 0 20px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:0;
+}
+.seg{display:inline-flex;border:1px solid var(--line-2);}
+.seg button{
+  font-family:var(--sans);
+  font-size:12.5px;
+  font-weight:500;
+  padding:8px 15px;
+  background:#fff;
+  border:0;
+  border-right:1px solid var(--line);
+  color:var(--ink-2);
+  cursor:pointer;
+  transition:background .12s,color .12s;
+}
+.seg button:last-child{border-right:0;}
+.seg button:hover{background:var(--bg-2);}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;}
+.ctrl-lab{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-4);
+  margin-right:4px;
+}
+.btn{
+  font-family:var(--sans);
+  font-size:12.5px;
+  font-weight:500;
+  padding:8px 16px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+  cursor:pointer;
+}
+.btn:hover{background:#000;}
+.btn--ghost{background:#fff;color:var(--ink);}
+.btn--ghost:hover{background:var(--bg-2);}
+
+.readout{
+  font-family:var(--mono);
+  font-size:11.5px;
+  line-height:1.7;
+  color:var(--ink-2);
+  background:var(--bg-2);
+  border:1px solid var(--line);
+  padding:15px 17px;
+  margin:22px 0 0;
+}
+.readout .r-row{display:flex;gap:10px;flex-wrap:wrap;}
+.readout .r-k{color:var(--ink-4);min-width:210px;}
+.readout .r-v{color:var(--ink);}
+.readout .r-v.ok{color:var(--good);}
+.readout .r-v.no{color:var(--bad);}
+.readout hr{border:0;border-top:1px solid var(--line);margin:9px 0;}
+.readout .r-verdict{color:var(--brand);font-weight:500;}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GENERALIZATION GRID
+   ═══════════════════════════════════════════════════════════════════════ */
+.gen{
+  border-top:1px solid var(--line-3);
+}
+.gen-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  border-bottom:1px solid var(--line);
+  padding:24px 0 28px;
+}
+.gen-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;margin-bottom:6px;}
+.gen-t{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0;}
+.gen-badge{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  padding:3px 9px;
+  border:1px solid var(--line-2);
+  color:var(--ink-3);
+}
+.gen-badge.b-0{border-color:#bfe0c9;color:var(--good);background:#f2faf5;}
+.gen-badge.b-1{border-color:#c9d9f7;color:var(--brand);background:#f3f6fe;}
+.gen-badge.b-2{border-color:#e5cfa8;color:#96660a;background:#fdf8ee;}
+.gen-badge.b-3{border-color:#cdc9d8;color:#4a4458;background:#f7f6fa;}
+.gen-d{font-size:14.5px;color:var(--ink-2);margin:0 0 16px;max-width:82ch;}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REPLY BLOCK
+   ═══════════════════════════════════════════════════════════════════════ */
+.reply{
+  border:1px solid var(--line-2);
+  background:var(--bg-2);
+  padding:0;
+  max-width:88ch;
+}
+.reply-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:11px 18px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+.reply-to{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--ink-4);
+}
+.reply-body{padding:20px 22px 24px;}
+.reply-body p{margin:0 0 13px;font-size:14.5px;color:var(--ink-2);line-height:1.6;}
+.reply-body p:last-child{margin-bottom:0;}
+.reply-body strong{color:var(--ink);font-weight:600;}
+.reply-body ol{margin:0 0 13px;padding-left:20px;}
+.reply-body li{font-size:14.5px;color:var(--ink-2);margin-bottom:7px;line-height:1.55;}
+
+.hint{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--ink-4);
+  margin-top:14px;
+  line-height:1.6;
+}
+
+/* measuring rig — never seen */
+#measure{
+  position:absolute;
+  visibility:hidden;
+  pointer-events:none;
+  left:-99999px;
+  top:0;
+  width:max-content;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PRINT — the actual proof
+   ═══════════════════════════════════════════════════════════════════════ */
+@page{size:letter portrait;margin:.62in .68in;}
+@page ls{size:letter landscape;margin:.62in .68in;}
+
+.print-root{display:none;}
+
+@media print{
+  html,body{background:#fff !important;}
+  body.exporting .lab{display:none !important;}
+  body.exporting .print-root{display:block !important;}
+
+  .print-root .sheet{
+    width:auto !important;
+    min-height:0 !important;
+    padding:0 !important;
+    box-shadow:none !important;
+    zoom:1 !important;
+    break-after:page;
+  }
+  .print-root .sheet:last-child{break-after:auto;}
+  .print-root .sheet--ls{page:ls;}
+  .print-root .pg-mark{display:none;}
+
+  /* the four print guarantees */
+  .fx thead{display:table-header-group;}
+  .fx tbody.rec{break-inside:avoid;}
+  .fx tr{break-inside:avoid;}
+  .xp-title,.xp-sec{break-after:avoid;}
+}
+</style>
+</head>
+<body>
+
+<div class="lab">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <p class="masthead-kicker">OMNI+ Canvas · Export spec · For Priya Natarajan</p>
+    <h1>Wide data tables, on paper</h1>
+    <p class="masthead-dek">
+      The canvas gives a wide table an escape valve that paper does not have: horizontal scroll.
+      Today's PDF export keeps the screen's column grid and squeezes it onto a fixed page, so the
+      columns collide. The fix is not a smaller font — it is a <strong>fit ladder</strong> that changes
+      the table's shape until it fits, in a fixed order, with four things it is never allowed to do.
+    </p>
+    <div class="masthead-meta">
+      <div class="meta-cell"><span class="meta-k">Raised by</span><span class="meta-v">Priya Natarajan — Thu 1:02 PM</span></div>
+      <div class="meta-cell"><span class="meta-k">Source</span><span class="meta-v">Create 8 Exportable Canvas Data Tables</span></div>
+      <div class="meta-cell"><span class="meta-k">Sample table</span><span class="meta-v">Research Source Inventory — 11 cols</span></div>
+      <div class="meta-cell"><span class="meta-k">Status</span><span class="meta-v">Recommendation + working proof</span></div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <div>
+        <h2 class="sec-title">What the export is doing today</h2>
+        <p class="sec-lede">
+          Below is Priya's exported PDF rebuilt from her file — same data, same failures, in the same
+          places. This is not a redraw of the idea; it is the actual output, reproduced so the five
+          distinct failure modes can be pointed at individually.
+        </p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div>
+        <ul class="flags">
+          <li><span class="flag-n">1</span><span><span class="flag-t">Headers overprint each other</span><span class="flag-d">Two column titles are drawn at fixed x-positions with no width check, so they render on top of one another: <code>GEOGRAPHY</code> + <code>SAMPLE</code> come out as <code>GEOGRAPHYSAMPLE</code>.</span></span></li>
+          <li><span class="flag-n">2</span><span><span class="flag-t">Cell values collide across columns</span><span class="flag-d">Same cause, one row down: <code>Secondary research</code> and <code>Nielsen / GWI</code> overlap into <code>SecondaryNielsen</code>. Two real values become one unreadable string.</span></span></li>
+          <li><span class="flag-n">3</span><span><span class="flag-t">Values break mid-token</span><span class="flag-d">Currency is hyphenated across lines — <code>$18K</code> prints as <code>$18-</code> then <code>K</code>. A number that breaks in half is worse than a number that is cut off, because it still looks like a number.</span></span></li>
+          <li><span class="flag-n">4</span><span><span class="flag-t">The prose column drives every row's height</span><span class="flag-d">NOTES gets whatever width is left over — about 14 characters — so one ordinary sentence becomes a 14-line column and stretches its whole row to match.</span></span></li>
+          <li><span class="flag-n">5</span><span><span class="flag-t">Rows tear across the page break</span><span class="flag-d">Row 4's NOTES text starts at the bottom of page 1 while the rest of row 4 renders on page 2 — and page 2 then holds a single row on otherwise blank paper.</span></span></li>
+        </ul>
+
+        <div class="sheet-rail">
+          <div>
+            <div class="sheet-cap is-bad"><span class="dot"></span>Today's export — page 1</div>
+            <div class="sheet zoomed">
+              <h3 class="xp-title" style="font-size:17pt;margin-bottom:14px;">Research Source Inventory</h3>
+              <table class="bk">
+                <colgroup>
+                  <col style="width:3.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:8%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:9%"><col style="width:5.5%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:31%">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>#</th><th>METHOD</th><th>VENDOR / SOURCE</th><th>AUDIENCE</th>
+                    <th>GEOGRAPHY<span class="flagdot">1</span></th><th>SAMPLE</th><th>WINDOW</th><th>SPEND</th>
+                    <th>OUTPUT</th><th>OWNER</th><th>NOTES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="num">1</td><td>Survey</td><td>Kantar</td><td>Adults 18-34</td>
+                    <td>US</td><td>1,200</td><td>Apr-May 2026</td><td>$18-K<span class="flagdot">3</span></td>
+                    <td>Deck + data</td><td>J. Reyes</td>
+                    <td class="notes">Quant survey covering fandom depth and viewing intent for the World Cup. Weighted to census benchmarks and fielded in two waves to track shift ahead of kickoff.<span class="flagdot">4</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num">2</td><td>Social listening</td><td class="ovf">Brandwatch</td><td class="ovf">Sports fans</td>
+                    <td>Global</td><td>n/a</td><td>Jan-Jun 2026</td><td>$9K</td>
+                    <td>Sentiment report</td><td class="ovf">T. Nguyen</td>
+                    <td class="notes">Ongoing listening stream tracking brand mentions and competitor share of voice. Sentiment scoring flagged rising negativity around ticketing that the team should monitor closely.</td>
+                  </tr>
+                  <tr>
+                    <td class="num">3</td><td>Expert interviews</td><td class="ovf">Independent consultants</td><td class="ovf">Category experts</td>
+                    <td>US/UK</td><td>8</td><td>Mar 2026</td><td>$12-K</td>
+                    <td class="ovf">Synthesis memo</td><td>M. Ortiz</td>
+                    <td class="notes">One-on-one interviews with sponsorship and media strategists to stress-test the activation concept. Findings informed the revised channel mix and pacing plan for Q3.</td>
+                  </tr>
+                  <tr class="torn">
+                    <td class="num">4</td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td>
+                    <td></td><td></td>
+                    <td class="notes">Desk research synthesizing existing syndicated data on streaming habits and<span class="flagdot">5</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="pg-mark">PAGE 1 OF 2</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sheet-cap is-bad"><span class="dot"></span>Today's export — page 2</div>
+            <div class="sheet zoomed">
+              <table class="bk">
+                <colgroup>
+                  <col style="width:3.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:8%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:9%"><col style="width:5.5%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:31%">
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td class="num"></td><td class="ovf">Secondary research</td><td class="ovf">Nielsen / GWI<span class="flagdot">2</span></td><td class="ovf">General population</td>
+                    <td>Global</td><td>n/a</td><td>Ongoing</td><td>$6K</td>
+                    <td class="ovf">Slide summary</td><td>K. Park</td>
+                    <td class="notes">major event viewership trends. Used to validate assumptions before commissioning primary research.</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="pg-mark">PAGE 2 OF 2</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">
+          Note what page 2 costs: one row of content, ~90% blank paper, and no header row to read it against.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <div>
+        <h2 class="sec-title">Why the canvas is fine and the page is not</h2>
+        <p class="sec-lede">
+          One difference explains every failure above.
+        </p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div class="prose">
+        <p>
+          In the canvas, a table that needs 940px inside an 700px panel simply overflows and hands the
+          reader a horizontal scrollbar. The column grid never has to change shape, because the viewport
+          is negotiable. <strong>Paper is not negotiable.</strong> A US Letter page with normal margins gives
+          you 7.3 inches across in portrait, 9.8 inches in landscape, and that is the entire budget.
+        </p>
+        <p>
+          So the export is solving an impossible problem the only way it knows how — keep all eleven
+          columns, keep the grid, divide the available width between them — and the arithmetic runs out.
+          Columns get narrower than their own headers, which is where the overprinting comes from. The
+          prose column gets the remainder, which is where the skyscraper rows come from.
+        </p>
+        <p>
+          The fix is to stop treating the screen layout as the thing being exported. <strong>A table's
+          meaning is its rows and its column labels — not its column geometry.</strong> Once the export is
+          allowed to change that geometry, everything fits, and nothing is lost.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <div>
+        <h2 class="sec-title">The fit ladder</h2>
+        <p class="sec-lede">
+          Four rules the export may never break, then four steps applied in order until the table fits.
+          Every table stops at the first rung that works — most stop early.
+        </p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div>
+        <ul class="flags" style="margin-bottom:34px;">
+          <li><span class="flag-n" style="background:var(--ink)">A</span><span><span class="flag-t">Never overlap</span><span class="flag-d">Every column is at least as wide as its own widest unbreakable content. If that cannot be met, climb the ladder — do not draw.</span></span></li>
+          <li><span class="flag-n" style="background:var(--ink)">B</span><span><span class="flag-t">Never break a token</span><span class="flag-d">Currency, dates, percentages, IDs and <code>n/a</code> wrap as whole units or not at all. No hyphenation inside a value.</span></span></li>
+          <li><span class="flag-n" style="background:var(--ink)">C</span><span><span class="flag-t">Never shrink below 8pt</span><span class="flag-d">Type may scale down to 8pt to buy fit and no further. Below that it stops being an export and starts being a picture of one.</span></span></li>
+          <li><span class="flag-n" style="background:var(--ink)">D</span><span><span class="flag-t">Never silently drop a column</span><span class="flag-d">Nothing disappears to make the fit work. Columns may move, stack, or repeat — they may not vanish.</span></span></li>
+        </ul>
+
+        <div class="ladder">
+          <div class="rung">
+            <div class="rung-id">Step 0<br>Always on</div>
+            <div>
+              <h3 class="rung-t">Measure first, then draw</h3>
+              <p class="rung-d">
+                Everything here applies to every table regardless of width, and on its own repairs three of
+                the five failures. Most narrow tables need nothing else.
+              </p>
+              <ul class="rung-rules">
+                <li>Column widths come from measured content, not from an even split</li>
+                <li>Header labels wrap to two lines rather than running into their neighbour</li>
+                <li>Currency, dates and short codes are marked unbreakable</li>
+                <li>The header row repeats at the top of every page</li>
+                <li>A row is atomic — it never splits across a page break</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits when</b>measured width ≤ 7.3in and no prose column is squeezed under ~2in</div>
+          </div>
+
+          <div class="rung">
+            <div class="rung-id">Step 1<br>Demote prose</div>
+            <div>
+              <h3 class="rung-t">Long text leaves the grid</h3>
+              <p class="rung-d">
+                Any column whose typical cell runs past roughly 48 characters is not really a column — it is
+                an annotation. It drops out of the grid and prints full-width beneath its own row, where it
+                has the whole page to be readable in. This single move is what kills the skyscraper rows.
+              </p>
+              <ul class="rung-rules">
+                <li>Prose is detected by measured median cell length, not by column name</li>
+                <li>The note keeps its label so nothing is ambiguous</li>
+                <li>Row and note are one unit — they never separate across pages</li>
+                <li>The canvas already hints at this with clamped cells and "Expand all" — print just resolves it permanently</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits when</b>remaining short columns measure ≤ 7.3in</div>
+          </div>
+
+          <div class="rung">
+            <div class="rung-id">Step 2<br>Rotate</div>
+            <div>
+              <h3 class="rung-t">That table's pages turn landscape</h3>
+              <p class="rung-d">
+                Worth 2.5 more inches — about a third more width. A PDF can mix orientations page by page,
+                so only the wide table rotates; the surrounding document stays portrait. The reader gets one
+                sideways page in an otherwise normal file, which is a long-established convention for wide data.
+              </p>
+              <ul class="rung-rules">
+                <li>Applied per table, not per document</li>
+                <li>Prose stays demoted from Step 1 — the two compound</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits when</b>remaining short columns measure ≤ 9.8in</div>
+          </div>
+
+          <div class="rung">
+            <div class="rung-id">Step 3<br>Continue</div>
+            <div>
+              <h3 class="rung-t">Split the columns, repeat the identity</h3>
+              <p class="rung-d">
+                For genuinely enormous tables, the columns break into groups. The identity columns — the
+                ones that tell you which row you are looking at — repeat at the head of each group, and the
+                remaining columns continue underneath marked "continued". This is how wide financial tables
+                have always been printed, and it guarantees any width fits.
+              </p>
+              <ul class="rung-rules">
+                <li>Identity columns repeat so a row is always identifiable</li>
+                <li>Groups stay adjacent — a row's continuation is never on another page</li>
+                <li>No column is dropped, so the export stays complete</li>
+              </ul>
+            </div>
+            <div class="rung-when"><b>Fits</b>always — this is the floor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <div>
+        <h2 class="sec-title">Priya's table, climbing the ladder</h2>
+        <p class="sec-lede">
+          The same eleven columns and four records from her export, re-rendered live at each rung. Column
+          widths below are really measured in the browser — the readout is the actual arithmetic, not an
+          illustration.
+        </p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div>
+        <div class="ctrls">
+          <span class="ctrl-lab">Rung</span>
+          <div class="seg" id="rungSeg">
+            <button type="button" data-rung="0" aria-pressed="true">0 · Measured</button>
+            <button type="button" data-rung="1" aria-pressed="false">1 · Prose demoted</button>
+            <button type="button" data-rung="2" aria-pressed="false">2 · Landscape</button>
+            <button type="button" data-rung="3" aria-pressed="false">3 · Continuation</button>
+          </div>
+          <span style="flex:1"></span>
+          <button class="btn btn--ghost" type="button" id="autoBtn">Use the ladder's own choice</button>
+        </div>
+
+        <div class="readout" id="readout"></div>
+
+        <div class="sheet-rail" id="demoRail" style="margin-top:22px;"></div>
+
+        <p class="hint">
+          Screen sheets above are illustrative of page shape. The real pagination guarantee is in
+          §06 — that button prints through the browser's own layout engine.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <div>
+        <h2 class="sec-title">The same rules against all eight tables</h2>
+        <p class="sec-lede">
+          A rule that only fixes one table is not a rule. These three span the range in the deck — a narrow
+          tracker, Priya's eleven-column inventory, and a fifteen-column media plan — and each is measured
+          and placed by the same ladder, with no per-table tuning.
+        </p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div class="gen" id="genGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <div>
+        <h2 class="sec-title">Working proof</h2>
+        <p class="sec-lede">
+          Not a mockup. This builds the export and hands it to the browser's print engine with the page
+          rules attached, so pagination, the repeating header row, the unbreakable rows and the landscape
+          page are enforced by the renderer rather than promised by me.
+        </p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div>
+        <div class="ctrls" style="border-bottom:0;">
+          <button class="btn" type="button" id="printBtn">Export the fixed PDF</button>
+          <button class="btn btn--ghost" type="button" id="printBrokenBtn">Export today's version, for comparison</button>
+        </div>
+        <p class="hint" style="margin-top:4px;">
+          In the print dialog choose <strong>Save as PDF</strong>, and leave "Headers and footers" off.
+          Background graphics can stay off — the design does not depend on them.<br><br>
+          <strong>Verified in the generated PDF:</strong> no collided text · <code>$18K</code>, <code>n/a</code>
+          and <code>1,200</code> intact · Deliverables portrait while Research and Media Plan are landscape,
+          in one file · the column header row reprinted at the top of every continuation page · no row ever
+          separated from its own notes across a page break.<br><br>
+          Direct export URLs, no dialog — <code>?export=fixed</code> · <code>?export=broken</code> ·
+          <code>?export=fixed&amp;stress=6</code> forces the Research table to 24 rows so the multi-page
+          behaviour can be checked on real paper.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="sec" style="border-bottom:0;">
+    <div class="sec-head">
+      <div class="sec-num">07</div>
+      <div>
+        <h2 class="sec-title">Reply to Priya</h2>
+        <p class="sec-lede">Drafted to send as-is.</p>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="gutter"></div>
+      <div>
+        <div class="reply">
+          <div class="reply-bar">
+            <span class="reply-to">To — Priya Natarajan</span>
+            <button class="btn btn--ghost" type="button" id="copyBtn">Copy</button>
+          </div>
+          <div class="reply-body" id="replyBody">
+            <p>Hi Priya — good catch, and it's a real gap rather than a settings problem.</p>
+            <p>
+              The short version: the canvas can let a wide table overflow because it has horizontal scroll,
+              and the PDF has no such escape. Right now the export keeps the screen's column grid and divides
+              a fixed page width between eleven columns, so columns end up narrower than their own headers.
+              That's what's producing the overlaps (<strong>GEOGRAPHYSAMPLE</strong>, <strong>SecondaryNielsen</strong>),
+              the broken values (<strong>$18K</strong> printing as <strong>$18-</strong> / <strong>K</strong>), and the
+              very tall rows — NOTES gets the leftover width, so one sentence becomes fourteen lines.
+            </p>
+            <p>What I'd recommend instead of shrinking type: let the export change the table's shape, in this order, stopping as soon as it fits.</p>
+            <ol>
+              <li><strong>Measure before drawing.</strong> Real column widths from content, header labels wrapping to two lines, currency and dates marked unbreakable, the header row repeating on every page, and rows never split across a page break.</li>
+              <li><strong>Demote long text.</strong> Any column averaging more than ~48 characters isn't really a column, it's an annotation — it prints full-width under its own row, keeping its label. This alone fixes the tall rows.</li>
+              <li><strong>Rotate that table's pages to landscape</strong> if the remaining columns still don't fit. A PDF can mix orientations, so only the wide table turns.</li>
+              <li><strong>Continue the columns in groups</strong> for the truly huge ones, repeating the identity columns so every row stays identifiable — the standard wide-financial-table treatment.</li>
+            </ol>
+            <p>
+              Four things it should never do, no matter what: overlap text, break a value mid-token, go below
+              8pt, or silently drop a column.
+            </p>
+            <p>
+              I've built a page that shows your Research Source Inventory at each step, with the widths
+              genuinely measured, plus a working Export button so you can pull a real fixed PDF and compare
+              it against the current one. Happy to walk through it live if that's easier.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- print target -->
+<div class="print-root" id="printRoot"></div>
+<div id="measure"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   PAGE GEOMETRY — US Letter, .68in side margins
+   ═══════════════════════════════════════════════════════════════════════ */
+const DPI = 96;
+const PORTRAIT_IN  = 8.5 - 0.68 * 2;   // 7.14in
+const LANDSCAPE_IN = 11  - 0.68 * 2;   // 9.64in
+const PORTRAIT  = PORTRAIT_IN  * DPI;
+const LANDSCAPE = LANDSCAPE_IN * DPI;
+
+const PROSE_CHARS   = 48;   // median cell length above which a column is prose
+const PROSE_MIN_IN  = 2.0;  // narrower than this and prose becomes a skyscraper
+const PROSE_MIN     = PROSE_MIN_IN * DPI;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════════════════════════════════ */
+const TABLES = {
+
+  research: {
+    id:'research',
+    title:'Research Source Inventory',
+    sub:'Campaign planning · FIFA World Cup 2026',
+    note:"Priya's table, exactly as exported.",
+    cols:[
+      {k:'n',    label:'#',               role:'identity', align:'r', num:true},
+      {k:'meth', label:'Method',          role:'identity'},
+      {k:'vend', label:'Vendor / Source'},
+      {k:'aud',  label:'Audience'},
+      {k:'geo',  label:'Geography'},
+      {k:'samp', label:'Sample',          align:'r', nb:true},
+      {k:'win',  label:'Window',          nb:true},
+      {k:'spend',label:'Spend',           align:'r', nb:true},
+      {k:'out',  label:'Output'},
+      {k:'own',  label:'Owner',           nb:true},
+      {k:'notes',label:'Notes'}
+    ],
+    rows:[
+      {n:'1', meth:'Survey', vend:'Kantar', aud:'Adults 18-34', geo:'US', samp:'1,200', win:'Apr-May 2026', spend:'$18K', out:'Deck + data', own:'J. Reyes',
+       notes:'Quant survey covering fandom depth and viewing intent for the World Cup. Weighted to census benchmarks and fielded in two waves to track shift ahead of kickoff.'},
+      {n:'2', meth:'Social listening', vend:'Brandwatch', aud:'Sports fans', geo:'Global', samp:'n/a', win:'Jan-Jun 2026', spend:'$9K', out:'Sentiment report', own:'T. Nguyen',
+       notes:'Ongoing listening stream tracking brand mentions and competitor share of voice. Sentiment scoring flagged rising negativity around ticketing that the team should monitor closely.'},
+      {n:'3', meth:'Expert interviews', vend:'Independent consultants', aud:'Category experts', geo:'US/UK', samp:'8', win:'Mar 2026', spend:'$12K', out:'Synthesis memo', own:'M. Ortiz',
+       notes:'One-on-one interviews with sponsorship and media strategists to stress-test the activation concept. Findings informed the revised channel mix and pacing plan for Q3.'},
+      {n:'4', meth:'Secondary research', vend:'Nielsen / GWI', aud:'General population', geo:'Global', samp:'n/a', win:'Ongoing', spend:'$6K', out:'Slide summary', own:'K. Park',
+       notes:'Desk research synthesizing existing syndicated data on streaming habits and major event viewership trends. Used to validate assumptions before commissioning primary research.'}
+    ]
+  },
+
+  deliverables:{
+    id:'deliverables',
+    title:'Deliverables Tracker',
+    sub:'Campaign planning · FIFA World Cup 2026',
+    note:'The narrow end of the deck — five short columns.',
+    cols:[
+      {k:'n',   label:'#',           role:'identity', align:'r', num:true},
+      {k:'del', label:'Deliverable', role:'identity'},
+      {k:'own', label:'Owner',       nb:true},
+      {k:'due', label:'Due',         nb:true},
+      {k:'st',  label:'Status'}
+    ],
+    rows:[
+      {n:'1', del:'Trends report (60 pp)',      own:'M. Ortiz', due:'W6',  st:'In progress'},
+      {n:'2', del:'Trend matrix (1 pg)',        own:'J. Reyes', due:'W5',  st:'In progress'},
+      {n:'3', del:'Case-study deck (15 slides)',own:'T. Nguyen',due:'W6',  st:'Not started'},
+      {n:'4', del:'Recommendations memo',       own:'K. Park',  due:'W6',  st:'Not started'},
+      {n:'5', del:'Stakeholder readout',        own:'M. Ortiz', due:'W7',  st:'Scheduled'}
+    ]
+  },
+
+  mediaplan:{
+    id:'mediaplan',
+    title:'Media Plan — Flight Schedule',
+    sub:'Campaign planning · FIFA World Cup 2026',
+    note:'The wide end of the deck — fifteen columns, prose included.',
+    cols:[
+      {k:'n',    label:'#',           role:'identity', align:'r', num:true},
+      {k:'chan', label:'Channel',     role:'identity'},
+      {k:'plac', label:'Placement',   role:'identity'},
+      {k:'fmt',  label:'Format'},
+      {k:'mkt',  label:'Market'},
+      {k:'aud',  label:'Audience'},
+      {k:'start',label:'Flight Start',nb:true},
+      {k:'end',  label:'Flight End',  nb:true},
+      {k:'imp',  label:'Impressions', align:'r', nb:true},
+      {k:'cpm',  label:'CPM',         align:'r', nb:true},
+      {k:'bud',  label:'Budget',      align:'r', nb:true},
+      {k:'mix',  label:'% Mix',       align:'r', nb:true},
+      {k:'kpi',  label:'Primary KPI'},
+      {k:'own',  label:'Owner',       nb:true},
+      {k:'notes',label:'Notes'}
+    ],
+    rows:[
+      {n:'1', chan:'Connected TV', plac:'Roku / Hulu', fmt:'15s + 30s', mkt:'US', aud:'Adults 18-34', start:'01 Apr 2026', end:'14 Jun 2026', imp:'42,500,000', cpm:'$28.40', bud:'$1,207,000', mix:'34.2%', kpi:'Reach', own:'J. Reyes',
+       notes:'Front-loaded against the group stage with a hard pacing cap in the fortnight before kickoff to avoid competing with rights-holder inventory at peak price.'},
+      {n:'2', chan:'Social video', plac:'TikTok / Reels', fmt:'6s + 9:16', mkt:'US / UK', aud:'Sports fans', start:'15 Apr 2026', end:'19 Jul 2026', imp:'88,200,000', cpm:'$9.10', bud:'$802,600', mix:'22.7%', kpi:'Video views', own:'T. Nguyen',
+       notes:'Always-on across the tournament window with creative refreshed every ten days to hold frequency without fatigue on the core audience.'},
+      {n:'3', chan:'Online video', plac:'YouTube', fmt:'Bumper + skip', mkt:'Global', aud:'Adults 18-34', start:'01 May 2026', end:'19 Jul 2026', imp:'61,400,000', cpm:'$14.75', bud:'$905,650', mix:'25.6%', kpi:'Completed views', own:'M. Ortiz',
+       notes:'Carries the hero film in full and the cutdowns against match-highlight adjacency, with exclusions applied to user-generated re-uploads.'},
+      {n:'4', chan:'Audio', plac:'Spotify / podcast', fmt:'30s read', mkt:'US', aud:'General population', start:'01 May 2026', end:'14 Jun 2026', imp:'18,900,000', cpm:'$22.00', bud:'$415,800', mix:'11.8%', kpi:'Frequency', own:'K. Park',
+       notes:'Host-read placements on the three highest-affinity football podcasts, scheduled to land the week each host market plays its opening fixture.'},
+      {n:'5', chan:'Out of home', plac:'Host-city DOOH', fmt:'Digital 6-sheet', mkt:'US / MX / CA', aud:'Sports fans', start:'01 Jun 2026', end:'19 Jul 2026', imp:'9,600,000', cpm:'$19.30', bud:'$185,280', mix:'5.7%', kpi:'Awareness', own:'J. Reyes',
+       notes:'Concentrated within a two-mile radius of the eleven US host venues and dayparted to matchday arrival and departure windows only.'}
+    ]
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CLASSIFY — prose detection by measured median cell length
+   ═══════════════════════════════════════════════════════════════════════ */
+function median(a){
+  const s=[...a].sort((x,y)=>x-y);
+  const m=Math.floor(s.length/2);
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;
+}
+function classify(t){
+  t.cols.forEach(c=>{
+    if(c.role==='identity'){c._role='identity';return;}
+    const med = median(t.rows.map(r=>String(r[c.k]||'').length));
+    c._median = med;
+    c._role = med > PROSE_CHARS ? 'prose' : 'short';
+  });
+  return t;
+}
+Object.values(TABLES).forEach(classify);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEASURE — real widths, in the real font, from the real DOM
+   ═══════════════════════════════════════════════════════════════════════ */
+const measureHost = document.getElementById('measure');
+
+function measureCols(t, cols){
+  const tbl = document.createElement('table');
+  tbl.className = 'fx';
+  tbl.style.width = 'max-content';
+  tbl.style.tableLayout = 'auto';
+
+  const thead = document.createElement('thead');
+  const htr = document.createElement('tr');
+  cols.forEach(c=>{
+    const th = document.createElement('th');
+    // headers are allowed two lines: measure the longer word, not the whole label
+    const longest = c.label.split(/\s+/).reduce((a,b)=>a.length>=b.length?a:b,'');
+    th.textContent = longest;
+    htr.appendChild(th);
+  });
+  thead.appendChild(htr);
+  tbl.appendChild(thead);
+
+  const tb = document.createElement('tbody');
+  t.rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    cols.forEach(c=>{
+      const td = document.createElement('td');
+      td.textContent = String(r[c.k] ?? '');
+      td.style.whiteSpace = 'nowrap';
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb);
+
+  measureHost.innerHTML = '';
+  measureHost.appendChild(tbl);
+
+  const widths = Array.from(tbl.querySelectorAll('thead th')).map(th=>Math.ceil(th.getBoundingClientRect().width));
+  measureHost.innerHTML = '';
+  return widths;
+}
+
+function analyse(t){
+  const shortCols = t.cols.filter(c=>c._role !== 'prose');
+  const proseCols = t.cols.filter(c=>c._role === 'prose');
+
+  const shortW = measureCols(t, shortCols);
+  const shortTotal = shortW.reduce((a,b)=>a+b,0);
+
+  // rung 0 keeps prose in the grid and needs it at a readable width
+  const rung0Need = shortTotal + proseCols.length * PROSE_MIN;
+
+  let rung;
+  if (rung0Need <= PORTRAIT)        rung = 0;
+  else if (shortTotal <= PORTRAIT)  rung = 1;
+  else if (shortTotal <= LANDSCAPE) rung = 2;
+  else                              rung = 3;
+
+  return {
+    shortCols, proseCols, shortW, shortTotal, rung0Need, rung,
+    proseLeftover: Math.max(0, PORTRAIT - shortTotal)
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RENDER — one renderer, four rungs
+   ═══════════════════════════════════════════════════════════════════════ */
+function esc(s){
+  return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function cellClass(c){
+  const cl=[];
+  if(c.nb) cl.push('nb');
+  if(c.align==='r') cl.push('ta-r');
+  if(c.num) cl.push('num');
+  return cl.length? ' class="'+cl.join(' ')+'"' : '';
+}
+function headClass(c){
+  return c.align==='r' ? ' class="ta-r"' : '';
+}
+
+function renderGrid(t, cols, rows, opts={}){
+  const proseCols = opts.prose || [];
+  let h = '<table class="fx"><thead><tr>';
+  cols.forEach(c=>{ h += '<th'+headClass(c)+'>'+esc(c.label)+'</th>'; });
+  h += '</tr></thead>';
+  rows.forEach(r=>{
+    h += '<tbody class="rec">';
+    h += '<tr class="data">';
+    cols.forEach(c=>{ h += '<td'+cellClass(c)+'>'+esc(r[c.k])+'</td>'; });
+    h += '</tr>';
+    proseCols.forEach(pc=>{
+      const v = String(r[pc.k]||'');
+      if(!v) return;
+      h += '<tr><td class="note" colspan="'+cols.length+'"><span class="note-label">'+esc(pc.label)+'</span>'+esc(v)+'</td></tr>';
+    });
+    h += '</tbody>';
+  });
+  h += '</table>';
+  return h;
+}
+
+function renderTable(t, rung){
+  const a = analyse(t);
+
+  if(rung === 0){
+    // everything in the grid, prose included — honest about failing when it does
+    return renderGrid(t, t.cols, t.rows, {});
+  }
+  if(rung === 1 || rung === 2){
+    return renderGrid(t, a.shortCols, t.rows, {prose:a.proseCols});
+  }
+  // rung 3 — column-group continuation
+  const idCols = t.cols.filter(c=>c.role==='identity');
+  const rest   = a.shortCols.filter(c=>c.role!=='identity');
+
+  const idW = measureCols(t, idCols).reduce((x,y)=>x+y,0);
+  const budget = LANDSCAPE - idW;
+
+  // pack the remaining columns into groups that fit the budget
+  const w = measureCols(t, rest);
+  const groups = [];
+  let cur = [], curW = 0;
+  rest.forEach((c,i)=>{
+    if(curW + w[i] > budget && cur.length){ groups.push(cur); cur=[]; curW=0; }
+    cur.push(c); curW += w[i];
+  });
+  if(cur.length) groups.push(cur);
+
+  let h = '';
+  groups.forEach((g, gi)=>{
+    const cols = idCols.concat(g);
+    if(gi>0) h += '<div class="cont-tag">'+esc(t.title)+' — continued ('+(gi+1)+' of '+groups.length+')</div>';
+    h += renderGrid(t, cols, t.rows, {prose: gi===groups.length-1 ? a.proseCols : []});
+  });
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SHEET WRAPPER
+   ═══════════════════════════════════════════════════════════════════════ */
+function sheet(t, rung, opts={}){
+  const ls = rung >= 2;
+  const cls = 'sheet' + (ls?' sheet--ls':'') + (opts.zoom!==false ? ' ' + (opts.zoom||'zoomed') : '');
+  return '<div class="'+cls+'">'
+    + '<p class="xp-kicker">OMNI+ CANVAS — DATA EXPORT</p>'
+    + '<h3 class="xp-title">'+esc(t.title)+'</h3>'
+    + '<p class="xp-sub">'+esc(t.sub)+' · Exported July 27, 2026</p>'
+    + '<hr class="xp-rule">'
+    + renderTable(t, rung)
+    + '<div class="xp-foot">Exported from OMNI+ Canvas · '+esc(t.title)+(ls?' · landscape page':'')+'</div>'
+    + '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   §04 — interactive demo
+   ═══════════════════════════════════════════════════════════════════════ */
+const rail = document.getElementById('demoRail');
+const readout = document.getElementById('readout');
+const seg = document.getElementById('rungSeg');
+const T = TABLES.research;
+
+const RUNG_CAPTION = [
+  ['Rung 0 — measured, prose still in the grid', 'is-bad'],
+  ['Rung 1 — prose demoted, portrait',           'is-good'],
+  ['Rung 2 — prose demoted, landscape',          'is-good'],
+  ['Rung 3 — column-group continuation',         'is-good']
+];
+
+function inch(px){ return (px/DPI).toFixed(2)+'in'; }
+
+function drawReadout(a, shown){
+  const fits0 = a.rung0Need <= PORTRAIT;
+  const fits1 = a.shortTotal <= PORTRAIT;
+  const fits2 = a.shortTotal <= LANDSCAPE;
+  const proseNames = a.proseCols.map(c=>c.label+' (median '+c._median+' chars)').join(', ') || 'none';
+
+  readout.innerHTML =
+    '<div class="r-row"><span class="r-k">columns</span><span class="r-v">'+T.cols.length+' total — '+a.shortCols.length+' short, '+a.proseCols.length+' prose</span></div>'
+  + '<div class="r-row"><span class="r-k">detected as prose</span><span class="r-v">'+esc(proseNames)+'</span></div>'
+  + '<hr>'
+  + '<div class="r-row"><span class="r-k">measured short columns</span><span class="r-v">'+inch(a.shortTotal)+' &nbsp;('+a.shortTotal+'px)</span></div>'
+  + '<div class="r-row"><span class="r-k">+ prose at 2.00in minimum</span><span class="r-v">'+inch(a.rung0Need)+' &nbsp;('+a.rung0Need+'px)</span></div>'
+  + '<div class="r-row"><span class="r-k">portrait budget</span><span class="r-v">'+inch(PORTRAIT)+'</span></div>'
+  + '<div class="r-row"><span class="r-k">landscape budget</span><span class="r-v">'+inch(LANDSCAPE)+'</span></div>'
+  + '<hr>'
+  + '<div class="r-row"><span class="r-k">rung 0 · all in grid</span><span class="r-v '+(fits0?'ok':'no')+'">'+(fits0?'fits':'does not fit — prose would get '+inch(a.proseLeftover)+', below the 2.00in floor')+'</span></div>'
+  + '<div class="r-row"><span class="r-k">rung 1 · prose demoted</span><span class="r-v '+(fits1?'ok':'no')+'">'+(fits1?'fits portrait':'still '+inch(a.shortTotal-PORTRAIT)+' too wide')+'</span></div>'
+  + '<div class="r-row"><span class="r-k">rung 2 · landscape</span><span class="r-v '+(fits2?'ok':'no')+'">'+(fits2?'fits landscape':'still too wide')+'</span></div>'
+  + '<hr>'
+  + '<div class="r-row"><span class="r-k">ladder selects</span><span class="r-v r-verdict">RUNG '+a.rung+' — '+RUNG_CAPTION[a.rung][0].replace(/^Rung \d+ — /,'')+'</span></div>'
+  + (shown!==a.rung ? '<div class="r-row"><span class="r-k">currently showing</span><span class="r-v">rung '+shown+' (manual override)</span></div>' : '');
+}
+
+function drawDemo(rung){
+  const a = analyse(T);
+  const [cap, tone] = RUNG_CAPTION[rung];
+  rail.innerHTML =
+      '<div><div class="sheet-cap '+tone+'"><span class="dot"></span>'+cap+'</div>'
+    + sheet(T, rung, {zoom:'zoomed-lg'})
+    + '</div>';
+  drawReadout(a, rung);
+  Array.from(seg.querySelectorAll('button')).forEach(b=>{
+    b.setAttribute('aria-pressed', String(Number(b.dataset.rung)===rung));
+  });
+}
+
+seg.addEventListener('click', e=>{
+  const b = e.target.closest('button');
+  if(!b) return;
+  drawDemo(Number(b.dataset.rung));
+});
+document.getElementById('autoBtn').addEventListener('click', ()=>{
+  drawDemo(analyse(T).rung);
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   §05 — generalization grid
+   ═══════════════════════════════════════════════════════════════════════ */
+const RUNG_NAME = ['Rung 0 · measured only','Rung 1 · prose demoted','Rung 2 · landscape','Rung 3 · continuation'];
+
+function drawGen(){
+  const host = document.getElementById('genGrid');
+  host.innerHTML = ['deliverables','research','mediaplan'].map(key=>{
+    const t = TABLES[key];
+    const a = analyse(t);
+    return '<div class="gen-row">'
+      + '<div class="gen-head">'
+        + '<h3 class="gen-t">'+esc(t.title)+'</h3>'
+        + '<span class="gen-badge">'+t.cols.length+' columns</span>'
+        + '<span class="gen-badge b-'+a.rung+'">'+RUNG_NAME[a.rung]+'</span>'
+        + '<span class="gen-badge">measured '+inch(a.shortTotal)+'</span>'
+      + '</div>'
+      + '<p class="gen-d">'+esc(t.note)+' '
+        + (a.rung===0 ? 'Fits portrait with every column in the grid — nothing else applies.'
+        : a.rung===1 ? 'The short columns fit portrait once the prose column steps out of the grid.'
+        : a.rung===2 ? 'Too wide for portrait even with prose demoted, so this table’s pages turn landscape.'
+        : 'Too wide even landscape, so the columns continue in groups with the identity columns repeated.')
+      + '</p>'
+      + '<div class="sheet-rail"><div>'
+        + '<div class="sheet-cap is-good"><span class="dot"></span>'+RUNG_NAME[a.rung]+'</div>'
+        + sheet(t, a.rung, {zoom:'zoomed-lg'})
+      + '</div></div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   §06 — print
+   ═══════════════════════════════════════════════════════════════════════ */
+const printRoot = document.getElementById('printRoot');
+
+function buildFixedDoc(stress){
+  return ['deliverables','research','mediaplan'].map(key=>{
+    let t = TABLES[key];
+    if(stress && key === 'research'){
+      // multi-page stress: proves the header repeats and rows stay whole
+      const rows = [];
+      for(let i=0;i<stress;i++){
+        t.rows.forEach((r,j)=>rows.push(Object.assign({}, r, {n:String(i*t.rows.length+j+1)})));
+      }
+      t = Object.assign({}, t, {rows});
+    }
+    const a = analyse(t);
+    return sheet(t, a.rung, {zoom:false});
+  }).join('');
+}
+
+function buildBrokenDoc(){
+  // today's behaviour: every column in the grid, evenly divided, on portrait paper
+  const t = TABLES.research;
+  let h = '<div class="sheet">'
+    + '<p class="xp-kicker">OMNI+ CANVAS — DATA EXPORT</p>'
+    + '<h3 class="xp-title">'+esc(t.title)+'</h3>'
+    + '<p class="xp-sub">'+esc(t.sub)+' · current export behaviour</p>'
+    + '<hr class="xp-rule">'
+    + '<table class="bk"><colgroup>'
+    + t.cols.map((c,i)=>'<col style="width:'+(i===t.cols.length-1?31:69/(t.cols.length-1))+'%">').join('')
+    + '</colgroup><thead><tr>'
+    + t.cols.map(c=>'<th>'+esc(c.label.toUpperCase())+'</th>').join('')
+    + '</tr></thead><tbody>'
+    + t.rows.map(r=>'<tr>'+t.cols.map(c=>'<td'+(c.k==='notes'?' class="notes"':'')+'>'+esc(r[c.k])+'</td>').join('')+'</tr>').join('')
+    + '</tbody></table></div>';
+  return h;
+}
+
+let printCleanup = null;
+function doPrint(html){
+  printRoot.innerHTML = html;
+  document.body.classList.add('exporting');
+  printCleanup = ()=>{
+    document.body.classList.remove('exporting');
+    printRoot.innerHTML = '';
+    printCleanup = null;
+  };
+  window.addEventListener('afterprint', function once(){
+    window.removeEventListener('afterprint', once);
+    if(printCleanup) printCleanup();
+  });
+  window.print();
+}
+
+document.getElementById('printBtn').addEventListener('click', ()=>doPrint(buildFixedDoc()));
+document.getElementById('printBrokenBtn').addEventListener('click', ()=>doPrint(buildBrokenDoc()));
+
+/* ═══════════════════════════════════════════════════════════════════════
+   §07 — copy reply
+   ═══════════════════════════════════════════════════════════════════════ */
+document.getElementById('copyBtn').addEventListener('click', async (e)=>{
+  const txt = document.getElementById('replyBody').innerText.trim();
+  try{
+    await navigator.clipboard.writeText(txt);
+    e.target.textContent = 'Copied';
+    setTimeout(()=>{ e.target.textContent='Copy'; }, 1600);
+  }catch(err){
+    e.target.textContent = 'Select and copy';
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOOT — fonts must be ready before anything is measured
+   ═══════════════════════════════════════════════════════════════════════ */
+function boot(){
+  // ?export=fixed | ?export=broken — headless entry point, no print dialog
+  const q = new URLSearchParams(location.search);
+  const mode = q.get('export');
+  const stress = Number(q.get('stress')) || 0;
+  if(mode === 'fixed' || mode === 'broken'){
+    printRoot.innerHTML = mode === 'fixed' ? buildFixedDoc(stress) : buildBrokenDoc();
+    document.body.classList.add('exporting');
+    document.documentElement.setAttribute('data-export-ready','1');
+    return;
+  }
+  drawDemo(analyse(TABLES.research).rung);
+  drawGen();
+  document.documentElement.setAttribute('data-export-ready','1');
+}
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(boot);
+}else{
+  window.addEventListener('load', boot);
+}
+</script>
+</body>
+</html>

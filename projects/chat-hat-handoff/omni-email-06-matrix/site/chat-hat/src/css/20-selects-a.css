@@ -1,0 +1,457 @@
+  /* ═══ AG.1 — Strip · Cards · List, one control (PLAN.md §AG,
+     replacing Z.2's Slots/List pair — "Cards" is Z.2's old default
+     view, renamed; List is unchanged). The toggle now shows once
+     there is ≥1 select (not just with a plan — Strip/Cards are a
+     density choice, not plan-only); List stays a plan-only button
+     inside it, per AG.1's "List only with a plan, as today". ═══ */
+  .pt-selects-view-toggle { display: none; align-items: center; gap: 2px; margin-left: auto; }
+  .pt-selects-label.has-toggle .pt-selects-view-toggle { display: inline-flex; }
+  /* AG.4 — "View all", gated the same as the toggle, riding right
+     after it (the toggle's own margin-left:auto already pushes both
+     to the row's right edge together). Specificity, not just source
+     order, has to win the "hidden" state here — .pt-hdr-chip's own
+     base rule (declared later in the sheet) sets display:inline-flex
+     at the same single-class weight a bare .pt-selects-viewall-btn
+     rule would carry, so both sides are scoped under .pt-selects-label
+     to out-rank it either way. */
+  .pt-selects-label .pt-selects-viewall-btn { display: none; margin-left: 8px; }
+  .pt-selects-label.has-toggle .pt-selects-viewall-btn { display: inline-flex; }
+  /* List only ever shows with a plan (AG.1); Strip/Cards are always
+     the first two once the toggle itself is visible. */
+  .pt-view-btn[data-select-view="list"] { display: none; }
+  .pt-selects-label.has-plan .pt-view-btn[data-select-view="list"] { display: inline-flex; }
+  /* .graphics-view-btn's own rules (~L5378), copied verbatim under a
+     class of their own — see the toggle's markup comment for why it
+     can't just wear the shell's literal class here. */
+  .pt-view-btn {
+    position: relative; /* anchors its own .pt-package-tip */
+    width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; border-radius: 6px; color: var(--text-subtle);
+    cursor: pointer; transition: background 200ms ease, color 200ms ease;
+  }
+  .pt-view-btn:hover { background: rgba(15, 23, 42, 0.05); color: var(--text-strong); }
+  body[data-theme="dark"] .pt-view-btn:hover { background: rgba(255, 255, 255, 0.06); }
+  .pt-view-btn.active { color: var(--text-strong); background: rgba(15, 23, 42, 0.06); }
+  body[data-theme="dark"] .pt-view-btn.active { background: rgba(255, 255, 255, 0.08); }
+  .pt-view-btn:focus, .pt-view-btn:focus-visible { outline: none; }
+  /* AG.1 "icons with tooltips" — .pt-package-tip's own recipe (dark
+     pill above the control, small pointer, opacity/transform only),
+     reused verbatim rather than a second tooltip idiom. */
+  .pt-view-btn--tip .pt-package-tip { bottom: calc(100% + 6px); }
+  .pt-view-btn--tip:hover .pt-package-tip,
+  .pt-view-btn--tip:focus-visible .pt-package-tip { opacity: 1; transform: translate(-50%, 0); }
+  /* Slots (Z.2.3) — one ruled row per plan size; block instead of the
+     resting flex-wrap so the rows stack. Row rule uses the concept
+     rows' own overshoot (§AB.3, AL.8's splitter-reach correction):
+     the left reach matches .pt-sheet-main's real padding + the 6px
+     under the splitter, the right -32 reaches .pt-sheet-main's real
+     right edge, same as #ptConceptSection's own rule just below in
+     the cascade. Selects sits at a fixed offset (AL.3 — never
+     centred), so unlike the append tile this needs no per-call JS. */
+  .pt-selects-grid.pt-selects-grid--slots { display: block; }
+  .pt-slot-group { position: relative; padding-top: 20px; }
+  .pt-slot-group:first-child { padding-top: 0; }
+  .pt-slot-group:first-child::before { display: none; }
+  .pt-slot-group::before {
+    content: ''; position: absolute; left: calc(-6px - var(--pt-stage-inset, 28px)); right: -32px; top: -10px; height: 0.5px;
+    background: var(--line-solid, rgba(15, 23, 42, 0.10)); pointer-events: none;
+  }
+  .pt-slot-row-head { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--text-strong); margin: 0 0 12px; }
+  .pt-slot-row-head span { color: var(--text-subtle); font-weight: 500; }
+  .pt-slot-extra .pt-slot-row-head { color: var(--text-subtle); }
+  .pt-slot-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; padding-bottom: 20px; }
+  .pt-slot-tile { flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; }
+  .pt-slot-tile .pt-select-card { width: 100%; }
+  /* Matches .pt-banner-card-head's own 20px (its gap to the banner
+     beneath it is this same flex column's 8px, already shared) — an
+     open tile has no head row, but the dashed box still lands where
+     the MEDIA starts, so a mixed filled/open row reads as one rank. */
+  .pt-slot-ghost-spacer { height: 20px; flex-shrink: 0; }
+  .pt-slot-ghost {
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px dashed var(--line-solid); border-radius: 10px;
+    color: var(--text-subtle); font-size: 10.5px; font-weight: 500;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  }
+  /* List (Z.2.4) — the trafficker's table, in its own small recipe:
+     this page's global .list-header (the shell's own gallery, ~L6102)
+     carries `display:none` at rest for a `[data-view="list"]` parent
+     this section never has, so the visual language is reproduced
+     fresh (own class names) rather than the literal classes reused,
+     which would either inherit that reset or the gallery's own
+     5-column template (thumb/prompt/date/model/actions — wrong shape
+     for #·Size·Unit·Headline·Image·Status). */
+  .pt-slist { display: none; }
+  .pt-slist.is-active { display: block; }
+  .pt-slist-header {
+    display: grid; grid-template-columns: 28px 72px 66px minmax(80px,1fr) minmax(0,120px) 130px;
+    column-gap: 14px; align-items: center; padding: 0 8px 10px;
+    border-bottom: 0.5px solid var(--line); margin-bottom: 4px;
+  }
+  .pt-slist-cell { font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: -0.05px; color: var(--text-strong); }
+  .pt-slist-group { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--text-strong); padding: 16px 8px 8px; }
+  .pt-slist-group:first-child { padding-top: 8px; }
+  .pt-slist-group span { color: var(--text-subtle); font-weight: 500; }
+  .pt-slist-row {
+    display: grid; grid-template-columns: 28px 72px 66px minmax(80px,1fr) minmax(0,120px) 130px;
+    column-gap: 14px; align-items: center; padding: 7px 8px; border-radius: 6px;
+    box-shadow: inset 0 -0.5px 0 var(--line); transition: background 140ms ease;
+  }
+  .pt-slist-row.is-filled { cursor: pointer; }
+  .pt-slist-row.is-filled:hover { background: var(--hover-soft); }
+  .pt-slist-num { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-subtle); }
+  .pt-slist-size { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-body); }
+  .pt-slist-thumb { width: 58px; height: 44px; border-radius: 5px; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pt-slist-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .pt-slist-thumb.is-open { background: transparent; border: 1.5px dashed var(--line-solid); }
+  .pt-slist-headline { font-family: var(--font-sans); font-size: 13px; color: var(--text-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pt-slist-headline.is-open { color: var(--text-subtle); }
+  .pt-slist-image { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pt-slist-status { display: inline-flex; align-items: center; gap: 6px; font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .pt-slist-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .pt-slist-status.is-filled { color: #1a7f4b; }
+  .pt-slist-status.is-open { color: var(--text-subtle); }
+  /* The kebab inherits .pt-banner-frame-edit's placement and reveal —
+     only its glyph and hit area change. */
+  .pt-select-kebab { cursor: pointer; }
+  .pt-select-kebab svg { width: 12px; height: 12px; color: #131517; }
+  .pt-select-menu { width: 190px; padding: 5px; }
+  .pt-select-menu-item {
+    display: block; width: 100%;
+    padding: 9px 10px; border: 0; border-radius: 7px;
+    background: transparent; color: var(--text-body);
+    font: inherit; font-size: 12.5px; text-align: left; cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .pt-select-menu-item:hover { background: var(--hover-soft); color: var(--text-strong); }
+  /* V3 (PLAN.md §V) — Body/CTA's own "Write 3 more" is disabled only
+     for its 900ms beat (no lit state otherwise, unlike the switch it
+     replaced), so this is the one .pt-select-menu-item that is ever
+     actually disabled. */
+  .pt-select-menu-item:disabled { color: var(--text-subtle); cursor: default; }
+  .pt-select-menu-item:disabled:hover { background: transparent; }
+  /* §BZ — the shared kebab recipe's own destructive row (Studio
+     overflow's "Delete <version>") and the hairline that separates it
+     from the plain actions above — same row anatomy, no icon, no
+     dialog, just the house's quiet destructive red. The sheet's own
+     kebab has no destructive row yet, so both of these sit unused
+     there until one needs them. */
+  .pt-select-menu-divider { height: 0.5px; margin: 4px 6px; background: var(--line); }
+  .pt-select-menu-item--danger { color: var(--omni-primitive-brand-red, #ff2c1e); }
+  .pt-select-menu-item--danger:hover { background: color-mix(in srgb, var(--omni-primitive-brand-red, #ff2c1e) 10%, transparent); color: var(--omni-primitive-brand-red, #ff2c1e); }
+  /* Each select grows its own footer of actions — remove, and a
+     read-only production preview. */
+  .pt-select-card { position: relative; }
+  /* A brief mark on arrival — two near-identical cards appear side by
+     side and only the unit id tells them apart, so the new one says
+     which it is rather than making you read for it. */
+  .pt-select-card.pt-select-is-new { animation: ptSelectArrive 620ms cubic-bezier(0.22,1,0.36,1); }
+  @keyframes ptSelectArrive {
+    0%   { opacity: 0; transform: translateY(6px) scale(0.97); }
+    60%  { opacity: 1; transform: none; }
+    100% { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-select-card.pt-select-is-new { animation: none; }
+  }
+  /* 9/16 — the select card's Locked / Preview sizes chip row retired
+     ("remove this from selects"); the lock is implicit now. */
+
+  /* Production sizes — the full IAB roster, grouped, ticked. */
+  /* No inner cap — the popover itself is now the scroller (sized to
+     the viewport by positionSheetPop), so a nested one would trap the
+     list in a box inside a box. */
+  .pt-prod-sizes { display: flex; flex-direction: column; gap: 2px; }
+  .pt-prod-sizes::-webkit-scrollbar { width: 6px; }
+  .pt-prod-sizes::-webkit-scrollbar-thumb { background: var(--line-solid); border-radius: 6px; }
+  .pt-prod-group {
+    position: sticky; top: -12px; z-index: 1;
+    background: var(--card-bg);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-subtle);
+    padding: 10px 8px 6px;
+  }
+  /* V3 (PLAN.md §V, from V1's review) — .pt-prod-row/-shape/-dim/-tick
+     (the old Ratios recipe) are gone: Ships at draws on
+     .pt-set-item--pick now, the same rows Board at already used, so
+     there is one recipe instead of two for the same popover. The
+     roster's seldom-picked tail waits behind the '+ N more' row
+     sizeGroupRowsHTML builds — the editor's own .pt-editor-swap-more/
+     -caret disclosure, reused verbatim, and this is just the flex
+     column its revealed rows sit in, matching .pt-prod-sizes' own
+     2px rhythm. */
+  .pt-sizes-more-list { display: flex; flex-direction: column; gap: 2px; }
+  .pt-sizes-more-list[hidden] { display: none; }
+
+  /* Preview surface — the editor's shell, none of its controls. */
+  .pt-preview-figma { margin-left: auto; flex-shrink: 0; }
+  .pt-preview-body {
+    flex: 1; min-height: 0; overflow-y: auto;
+    padding: 28px 32px 64px;
+    display: flex; flex-wrap: wrap; align-content: flex-start;
+    gap: 28px;
+  }
+  .pt-preview-unit { display: flex; flex-direction: column; gap: 8px; }
+  .pt-preview-unit-head {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; color: var(--text-subtle);
+  }
+  .pt-preview-unit-name { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--text-body); }
+  .pt-preview-empty { margin: 0; font-size: 13px; color: var(--text-subtle); }
+  .pt-selects-empty { margin: 0; font-size: 13px; color: var(--text-subtle); }
+  /* BI.1 (Bryan, 9/16: "we can remove the dashed line around this and
+     make it more of a subnote below the Selects header") — the ghost
+     slot's dashed frame, fixed width (was --pt-quiet-w) and inset
+     padding all retire; one quiet line, left edge and font family/
+     weight/colour unchanged from the slot recipe. --pt-quiet-w may
+     now be unused (the band's own quiet line already dropped it,
+     9/16) — left defined where it's still read, nowhere else grep
+     finds it. */
+  .pt-selects-ghost {
+    display: block;
+    font-family: 'Inter', var(--font-sans); font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--text-subtle);
+  }
+  /* The sentence's plus is the card head's own button, inert: same
+     classes, same glyph, so it cannot drift from the real one. */
+  /* AE.4 — optically inline with the sentence: middle + a 1px lift,
+     not the -6px drop that read low against the lowercase x-height. */
+  .pt-select-btn--inline { display: inline-flex; vertical-align: middle; position: relative; top: -1px; margin: 0 3px; pointer-events: none; }
+  .pt-selects-empty-plus {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--line-solid); background: var(--card-bg);
+    color: var(--text-body);
+  }
+  .pt-selects-empty-plus svg { display: block; } /* a drawn plus sits dead centre; a typed one never quite did */
+  /* Populated / empty are mutually exclusive — JS toggles .is-empty on
+     the section rather than poking two elements' display. */
+  .pt-canvas-section.is-empty .pt-selects-grid { display: none; }
+  .pt-canvas-section:not(.is-empty) .pt-selects-empty { display: none; }
+  /* BI.1 — the subnote sits 6px under the header (strip/grid/list are
+     all display:none in this state, so the header's own margin-bottom
+     is the only gap the empty state ever sees; 14px, sized for the
+     grid that usually follows it, would read too far off the note). */
+  .pt-canvas-section.is-empty .pt-selects-label { margin-bottom: 6px; }
+
+  /* ── "Add to selects" — a + on every banner that reveals its label on
+     hover (icon-only at rest so nine of them don't shout), and latches
+     to a green check once the banner is in Selects. Same green the
+     Scored chip already uses. ── */
+  .pt-select-btn {
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; flex-shrink: 0;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--line); border-radius: 999px;
+    color: var(--text-subtle);
+    font: inherit; font-size: 11px; font-weight: 600; letter-spacing: -0.05px;
+    cursor: pointer; white-space: nowrap;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+  }
+  .pt-select-btn:hover { color: var(--text-strong); border-color: rgba(15,23,42,0.22); background: var(--hover-soft); }
+  body[data-theme="dark"] .pt-select-btn:hover { border-color: rgba(255,255,255,0.24); }
+  .pt-select-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pt-select-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; flex: 0 0 18px;
+  }
+  .pt-select-icon svg { width: 9px; height: 9px; display: block; }
+  /* The label is a tooltip ABOVE the button, on its own layer — the
+     button keeps its 20px footprint. It used to widen the pill, which
+     shoved the row's own contents around on every hover. */
+  .pt-select-label {
+    position: absolute; bottom: calc(100% + 7px); left: 50%;
+    transform: translate(-50%, 3px);
+    z-index: 30;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--text-strong);
+    color: var(--pg-bg);
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0;
+    white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* The little pointer, so the tip reads as belonging to this button
+     and not to the card behind it. */
+  .pt-select-label::after {
+    content: '';
+    position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--text-strong);
+  }
+  .pt-select-btn:hover .pt-select-label,
+  .pt-select-btn:focus-visible .pt-select-label,
+  .pt-banner-remove-btn:hover:not(:disabled) .pt-select-label,
+  .pt-banner-remove-btn:focus-visible .pt-select-label {
+    opacity: 1; transform: translate(-50%, 0);
+  }
+  /* A disabled "−" (a unit that is the last one standing) must not
+     advertise an action it will refuse. */
+  .pt-banner-remove-btn:disabled .pt-select-label { display: none; }
+  /* The head clips at 20px tall, so a tip parked above it would be
+     cut off without this. */
+  .pt-banner-card-head { overflow: visible; }
+  .pt-select-btn.is-selected {
+    border-color: rgba(26, 127, 75, 0.32);
+    color: #1a7f4b;
+    background: rgba(26, 127, 75, 0.07);
+  }
+  .pt-select-btn.is-selected:hover { border-color: rgba(26, 127, 75, 0.45); color: #1a7f4b; background: rgba(26, 127, 75, 0.12); }
+  /* One glyph swap, no layout shift — both live in the button and the
+     state picks which paints. */
+  .pt-select-btn .pt-select-check { display: none; }
+  .pt-select-btn.is-selected .pt-select-plus { display: none; }
+  .pt-select-btn.is-selected .pt-select-check { display: block; }
+  /* 9/10 — the board's unit-remove "−" never shows (Bryan); a select
+     carries a "−" in the +'s own slot instead, the same button recast. */
+  #ptConcepts .pt-banner-remove-btn { display: none !important; }
+  .pt-select-btn--remove .pt-select-minus { display: block; width: 11px; height: 11px; }
+  .pt-select-btn--remove:hover { border-color: rgba(15, 23, 42, 0.22); color: var(--text-strong); background: var(--hover-soft); }
+  body.is-painter-shared .pt-select-btn { display: none !important; }
+
+  /* ══ AG.2 — the strip: one row of 64px-tall clone frames (the
+     History tile's own clone-and-scale recipe, boardPictureHTML),
+     width = 64 × aspect clamped 40–180. Never wraps — scrolls
+     horizontally with scroll-snap + a fade at whichever edge still
+     has more content (updateStripFade, wired to scroll/resize). With
+     a plan, grouped by size in the slot-row-head voice; open spaces
+     draw as dashed frames at the same 64px scale so the strip still
+     reads as the list filling up. Built by syncSelectsSection
+     alongside #ptSelects/#ptSelectsList (Z.2's own pattern). .is-empty
+     hides it the same way it already hides #ptSelects. ══ */
+  .pt-canvas-section.is-empty .pt-selects-strip { display: none; }
+  /* AG.1 — which of Strip/Cards/List shows is a data attribute on the
+     SECTION (syncSelectsViewVisibility), not an inline style on each
+     view's own root: resetCanvasSectionCentering (fitAllBannerScales'
+     first step, run on every select add/remove/resize/popover) blanks
+     #ptSelects and #ptSelectsStrip's own inline width/display back to
+     '' so it can re-measure them for the shared-left-edge pass — an
+     inline `display:none` there would get silently cleared the next
+     time anything triggered a fit, re-revealing whichever view had
+     just been hidden that way. These three rules key off the id (not
+     a class) so they outrank .pt-selects-grid, .pt-selects-grid--slots
+     and any other plain-class rule on the same elements regardless of
+     source order. */
+  #ptSelectsSection[data-select-view="strip"] #ptSelects,
+  #ptSelectsSection[data-select-view="list"] #ptSelects { display: none; }
+  #ptSelectsSection[data-select-view="cards"] #ptSelectsStrip,
+  #ptSelectsSection[data-select-view="list"] #ptSelectsStrip { display: none; }
+  #ptSelectsSection[data-select-view="strip"] #ptSelectsList,
+  #ptSelectsSection[data-select-view="cards"] #ptSelectsList { display: none; }
+  .pt-strip-group { padding-top: 20px; }
+  .pt-strip-group:first-child { padding-top: 0; }
+  .pt-strip-group + .pt-strip-group { border-top: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.10)); }
+  .pt-strip-row {
+    display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 12px;
+    overflow-x: auto; overflow-y: hidden; cursor: grab;
+    scroll-snap-type: x proximity;
+    padding: 2px 2px 6px; margin: 0 -2px -6px;
+    /* The fade (below) is the row's own scroll affordance — a native
+       bar under it as well would read as two competing hints; hidden
+       the same way this file already hides one (.persona-selector). */
+    scrollbar-width: none;
+    --fade-l: 0px; --fade-r: 0px;
+    mask-image: linear-gradient(to right, transparent 0, black var(--fade-l), black calc(100% - var(--fade-r)), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black var(--fade-l), black calc(100% - var(--fade-r)), transparent 100%);
+  }
+  .pt-strip-row::-webkit-scrollbar { display: none; }
+  .pt-strip-row.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+  .pt-strip-frame {
+    position: relative; flex: 0 0 auto; scroll-snap-align: start;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+  }
+  .pt-strip-frame-pic {
+    display: block; overflow: hidden; border-radius: 6px; position: relative; background: var(--card-bg);
+    border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    pointer-events: none; /* the frame itself is the click target */
+    transition: transform 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-strip-frame:hover .pt-strip-frame-pic,
+  .pt-strip-frame:focus-visible .pt-strip-frame-pic {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+  }
+  .pt-strip-frame-id {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9.5px; color: var(--text-subtle); line-height: 1;
+  }
+  .pt-strip-frame--ghost .pt-slot-ghost { border-radius: 6px; font-size: 9px; }
+  .pt-strip-frame-remove {
+    position: absolute; top: -6px; right: -6px;
+    width: 18px; height: 18px;
+    background: var(--card-bg);
+    opacity: 0; pointer-events: none;
+    transition: opacity 140ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .pt-strip-frame:hover .pt-strip-frame-remove,
+  .pt-strip-frame-remove:focus-visible {
+    opacity: 1; pointer-events: auto;
+  }
+  body.is-painter-shared .pt-strip-frame-remove { display: none !important; }
+  /* AG.3 — add/remove in place: a fresh frame grows from width 0 with
+     the house rise; a removed one shrinks the same way before the DOM
+     drops it (removeSelectCard's own animation window). */
+  .pt-strip-frame--enter { animation: ptStripFrameEnter 320ms cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes ptStripFrameEnter { from { width: 0; opacity: 0; } }
+  .pt-strip-frame--exit {
+    overflow: hidden; pointer-events: none;
+    transition: width 220ms cubic-bezier(0.22,1,0.36,1), opacity 220ms cubic-bezier(0.22,1,0.36,1), margin-left 220ms cubic-bezier(0.22,1,0.36,1);
+    width: 0 !important; opacity: 0; margin-left: -12px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-strip-frame--enter { animation: none; }
+    .pt-strip-frame--exit { transition: none; }
+  }
+
+  /* ══ AG.4 — the Selects viewer: #ptPackage's own inset recipe
+     (spans the stage column, short of the History rail; the Media
+     bar substitutes for a local topbar — see that block's comment).
+     Every select at natural size (no fit pass touches this
+     container), grouped exactly like the strip when a plan exists. ══ */
+  .pt-editor.pt-selects-viewer {
+    margin-top: var(--pt-topbar-h, 64px);
+    width: calc(100% - 220px);
+    justify-self: start;
+  }
+  @media (max-width: 1539px) {
+    .pt-editor.pt-selects-viewer { width: 100%; }
+  }
+  .pt-selects-viewer-close { top: 16px; right: 16px; transform: none; z-index: 2; }
+  .pt-selects-viewer-body { display: flex; flex-direction: column; min-width: 0; }
+  .pt-viewer-group { padding-top: 24px; }
+  .pt-viewer-group:first-child { padding-top: 0; }
+  .pt-viewer-group + .pt-viewer-group { border-top: 0.5px solid var(--line); }
+  .pt-viewer-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px; }
+  .pt-viewer-tile { display: flex; flex-direction: column; gap: 8px; }
+  .pt-viewer-tile--ghost .pt-slot-ghost { border-radius: 10px; }
+
+  /* AG.3 — chrome that exists in Cards only (the score cell, a plan's
+     size-group heads) crossfades in on a
+     switch instead of popping; switchSelectsView toggles this for
+     ~400ms on the incoming grid. */
+  .pt-selects-grid.pt-view-crossfade .pt-unit-lockup .pt-score-wrap,
+  .pt-selects-grid.pt-view-crossfade .pt-slot-row-head {
+    animation: ptSelectsChromeIn 320ms cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes ptSelectsChromeIn { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-selects-grid.pt-view-crossfade .pt-unit-lockup .pt-score-wrap,
+    .pt-selects-grid.pt-view-crossfade .pt-slot-row-head { animation: none; }
+  }
+
+  .pt-concepts { display: flex; flex-direction: column; }
+  /* Rows carry no header of their own any more (9/3), so the rule +
+     48px that separated one titled block from the next would read as
+     an arbitrary line across a single grid. Even gaps instead. */
+  /* 9/10 (Bryan: "I don't want the hairline separating the concepts to
+     sit directly on the bottom of the banners — there should be some
+     space") — every row pays 24px below its cards as well as above its
+     head, so the rule between two rows sits in the middle of a 48px gap,
+     not on the artwork. */
+  .pt-concept-group { display: flex; flex-direction: column; gap: 14px; padding: 24px 0; }
+

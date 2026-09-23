@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+  OMNI component: hero
+  Project: Agents Store
+  Note: .store-bleed--hero — full-bleed featured-agent hero (video omitted; scrim + content + rotation dots)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agents Store — hero · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/agents-store.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<section class="store-bleed store-bleed--hero store-bleed--video" id="heroBleed" data-agent-idx="0">
+            <div class="store-bleed-scrim" aria-hidden="true"></div>
+            <div class="store-hero-blur" aria-hidden="true">
+              <span class="store-hero-blur-l3"></span>
+              <span class="store-hero-blur-l2"></span>
+              <span class="store-hero-blur-l1"></span>
+            </div>
+            <div class="store-bleed-content">
+              <div class="store-bleed-eyebrow-row">
+                <span class="store-bleed-eyebrow">FEATURED AGENT</span>
+                <span class="store-bleed-eyebrow-rule" aria-hidden="true"></span>
+                <span class="store-bleed-eyebrow-id" id="heroAgentId">NO. 247</span>
+              </div>
+              <h1 class="store-bleed-title" id="heroAgentTitle">Brand Asset <em>Generator</em></h1>
+              <p class="store-bleed-sub" id="heroAgentSub">An on-brand creative engine that spins campaign-ready assets — film, stills, and product renders — from a single brief.</p>
+              <div class="store-bleed-meta-bar">
+                <span class="store-bleed-meta-item">
+                  <span class="store-bleed-meta-label">Publisher</span>
+                  <span class="store-bleed-meta-value" id="heroAgentPublisher">OMNI Labs</span>
+                </span>
+                <span class="store-bleed-meta-item">
+                  <span class="store-bleed-meta-label">Installs</span>
+                  <span class="store-bleed-meta-value" id="heroAgentInstalls">4,210</span>
+                </span>
+                <span class="store-bleed-meta-item">
+                  <span class="store-bleed-meta-label">Rating</span>
+                  <span class="store-bleed-meta-value" id="heroAgentRating"><i class="bx bxs-star"></i>4.9</span>
+                </span>
+                <span class="store-bleed-meta-item">
+                  <span class="store-bleed-meta-label">Updated</span>
+                  <span class="store-bleed-meta-value" id="heroAgentUpdated">2d ago</span>
+                </span>
+                <span class="store-bleed-meta-item">
+                  <span class="store-bleed-meta-label">Version</span>
+                  <span class="store-bleed-meta-value" id="heroAgentVersion">v2.4</span>
+                </span>
+              </div>
+              <div class="store-bleed-actions">
+                <button class="store-cta-primary" type="button"><i class="bx bx-download"></i>Install</button>
+                <button class="store-cta-secondary store-cta-secondary--onvideo" type="button"><i class="bx bx-right-arrow-alt"></i>Learn More</button>
+              </div>
+            </div>
+            <aside class="store-rot" aria-label="Featured agents">
+              <ol class="store-rot-list" role="tablist">
+                <li class="store-rot-dot is-active" data-rot-idx="0" role="tab" aria-selected="true" tabindex="0" aria-label="Featured agent 1">
+                  <span class="store-rot-fill"></span>
+                </li>
+                <li class="store-rot-dot" data-rot-idx="1" role="tab" tabindex="0" aria-label="Featured agent 2">
+                  <span class="store-rot-fill"></span>
+                </li>
+              </ol>
+            </aside>
+          </section>
+</body>
+</html>

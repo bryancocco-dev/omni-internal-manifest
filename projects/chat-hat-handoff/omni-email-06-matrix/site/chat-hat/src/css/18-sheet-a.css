@@ -1,0 +1,1117 @@
+  /* ══ 9/10 — the copy pools. A hint under the title says what the
+     list is; each row is the line (click to edit in place), the units
+     carrying it in mono, and a remove; the two ways to grow the pool
+     share one footer row on the toolbar's own chip recipe; the fit
+     choice sits under its own heading. ══ */
+  .pt-copy-hint { margin: -2px 0 10px; font-size: 12px; line-height: 1.4; color: var(--text-subtle); }
+  .pt-cta-row-units {
+    flex-shrink: 0; margin-left: 6px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-subtle);
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .pt-cta-row-units:empty { display: none; }
+  .pt-cta-row-text { cursor: text; border-radius: 4px; padding: 1px 4px; margin: -1px -4px; }
+  .pt-cta-row-text:hover { background: var(--hover-soft); }
+  .pt-cta-row-text[contenteditable="true"] {
+    background: var(--card-bg); outline: 1.5px solid var(--accent); outline-offset: 0;
+    box-shadow: 0 0 0 3px var(--accent-soft); white-space: normal; overflow: visible; text-overflow: clip;
+  }
+  .pt-cta-row-text:empty::before { content: attr(data-placeholder); color: var(--text-subtle); }
+  .pt-cta-row.is-new { animation: pt-copy-row-in 1400ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @keyframes pt-copy-row-in { 0% { background: var(--accent-soft); } 100% { background: transparent; } }
+  .pt-copy-actions { display: flex; gap: 8px; padding: 2px 0 6px; }
+  .pt-copy-action { height: 30px; padding: 0 10px; font-size: 12px; }
+  .pt-copy-action-spark { width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: -2px; color: var(--accent); }
+  .pt-copy-action-spark::before { content: '\2726'; font-size: 12px; line-height: 12px; }
+  .pt-copy-action.is-writing { opacity: 0.6; }
+  .pt-copy-action.is-writing .pt-copy-action-spark { animation: pt-progress-pulse 900ms ease-in-out infinite; }
+  .pt-copy-sec { padding-top: 8px; }
+  .pt-cta-input {
+    flex: 1; min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--pg-bg); color: var(--text-body);
+    font: inherit; font-size: 12.5px;
+  }
+  .pt-cta-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-cta-add-btn {
+    flex-shrink: 0; width: 34px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--card-bg);
+    color: var(--text-body); font-size: 16px; line-height: 1; cursor: pointer;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+  .pt-cta-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  /* V3 (PLAN.md §V) — .pt-cta-gen/-label/-sub served only the dip-
+     switch's own label row, gone with it (Body/CTA's footer button
+     reuses the Generate popover's .pt-generate-pop-hr/--secondary
+     recipe instead — see the markup above). */
+
+  /* Fit — Body copy only. Two-option radio row set, the same
+     .pt-set-item--pick anatomy the size/template pickers use (glyph ·
+     name · sub · radio), just stacked directly in the popover rather
+     than behind another pill. Shrink to fit is the default, and is
+     labelled as such right here — the UI answers the handoff's "does
+     it scale to fit by default" question on its own. */
+  .pt-body-fit {
+    display: flex; flex-direction: column; gap: 1px;
+    margin: 2px 0 10px; padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  .pt-sg-row { display: flex; align-items: center; gap: 12px; padding: 9px 8px; border-radius: 9px; }
+  .pt-sg-row + .pt-sg-row { border-top: 1px solid var(--line); }
+  .pt-sg-swatch { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; }
+  .pt-sg-swatch-ink { background: #131517; }
+  .pt-sg-specimen {
+    width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #131517; color: #C29049;
+    font-family: 'Montserrat', var(--font-sans); font-weight: 800; font-size: 12px;
+  }
+  .pt-sg-griffin { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; background: #131517; border-radius: 7px; padding: 4px; }
+  .pt-sg-cta-sample { pointer-events: none; }
+  .pt-sg-label { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .pt-sg-label-title { font-size: 12px; font-weight: 700; color: var(--text-body); }
+  .pt-sg-label-sub { font-size: 10.5px; color: var(--text-subtle); line-height: 1.35; }
+
+  /* --- Concept groups + banner cards ---
+     P12 (9/1): sections are 48px apart with a 60%-opacity hairline
+     between them (never before the first), replacing the old flat
+     32px flex-gap. */
+  /* ═══ Canvas sections — Concept and Selects, the two the rail nav
+     addresses. The sheet's own H1 still names the document; these name
+     the bands inside it, so they sit a size below it in the same
+     family rather than competing. ═══ */
+  .pt-canvas-section + .pt-canvas-section { margin-top: 56px; }
+
+  /* ══ Q (9/10) — MAIN + RAIL. Bryan picked comp 02 of the layout
+     options ("clean… use existing patterns… utilise the space a bit
+     nicer… mainly functional"): the board keeps its rows, the dead
+     space to its right becomes a sticky rail — counts, a concept index,
+     the Selects shortlist, Ratios and Package — and the card heads calm
+     down to a tag row (mono id, the + always there, the − and the
+     kebab on hover). Everything in the rail is the same DOM the sheet
+     already had (the Selects section, the two production controls),
+     moved, not rebuilt. ══ */
+  /* 9/10 (Bryan, on the rail: "let's bake this stuff back up into near
+     the concept sheet section") — the summary leaves the right rail and
+     sits as one BAND directly under the toolbar's rule, the way it
+     already did below 1540: the counts as a ruled table, the concept
+     index beside them, Ratios and Package at the band's right end; a
+     rule closes it. The board takes the whole column beneath. */
+  /* W.1 (9/10) — a second column returns: not Q's old summary band
+     (that stays gone), the boards HISTORY rail. Folds to a row under
+     1200 — scoped to THIS rail's sheet mount only (see the media
+     query below): .pt-boards-rail also mounts inside media-mode's own
+     two-column stage (Y), which never folds and must not inherit
+     this reorder. */
+  /* AB — Studio's frame: four tracks left to right — the tool rail,
+     its drawer, the stage (.pt-sheet-main), the History rail — as
+     flex siblings reaching the canvas column's true edges, in place
+     of the old two-column grid. */
+  /* AE.1 — one rail geometry, rest and sheet: .pt-sheet-body is a
+     stretch frame (both columns run the frame's full height, so the
+     rail's sticky range spans it edge to edge) and no longer lets
+     #canvas's own top padding (the canvas-header clearance, ~L3358)
+     double up on the rail's sticky math — the margin below cancels
+     it for this whole frame, .pt-sheet-main's own padding-top puts it
+     straight back for the MAIN column only, so the band's top edge
+     lands exactly on the bar's rule and the rail's sticky `top` (see
+     .pt-boards-rail) can read as literally "the bar's height", one
+     formula shared with the resting mount. */
+  .pt-sheet-body { display: flex; align-items: stretch; position: relative; margin-top: calc(-1 * var(--canvas-header-h, 64px)); }
+  /* Fix round — overflow:hidden joins min-width:0: a flex item's
+     content-based floor (the same min-width:auto quirk documented
+     elsewhere in this file for .pt-editor-controls/.pt-editor-body)
+     could otherwise hold the track — and the cards inside it, before
+     the JS fit pass catches up — wider than the space the rail/
+     drawer/History actually leave it, which is what let A3 slide
+     under the History rail while the drawer was still opening. */
+  /* AL.3 — left padding is the SAME --pt-stage-inset the bar's Back
+     pill uses (not a second, independently-tuned number), so
+     centerCanvasSections' own offset-0 content lands exactly under
+     Back; right/top/bottom are unchanged. */
+  /* overflow: clip, not hidden — the same clipping at the same box,
+     but clip does NOT make this element a scroll container, so the
+     sticky Selects block below sticks against #canvas (the real
+     scroller) instead of against a box that never scrolls. */
+  .pt-sheet-main { flex: 1 1 auto; min-width: 0; overflow: clip; overflow-clip-margin: 6px; /* Bryan, 9/15: the band, tray and Selects bleed 6px past this column's padding box to meet the splitter's hairline (AL.8) — the clip edge has to reach that far too, or the last 6px never paint */ padding: calc(var(--canvas-header-h, 64px) + 24px) 32px 45vh var(--pt-stage-inset, 28px); }
+  /* AD.1 (Bryan, 9/14, on seeing §AB's left rail: "if this is the
+     direction you're going for this panel I don't like it — I want
+     this stuff to still be roughly in the top of the page the way it
+     was, just handled differently") — replaces §AB.2's rail + drawer
+     (and their push/overlay CSS, retired with them) with a grounded
+     band: three groups — DESIGN · COPY · OUTPUT — in one row, each a
+     mono eyebrow then FIELD buttons, directly under the bar.
+     Full-bleed (the negative margin cancels .pt-sheet-main's own
+     24/32 padding above); .pt-sheet-main's stage below is the full
+     column width again. */
+  /* Wrap is content-driven, not a viewport media query: .pt-sheet-
+     main sits beside the chat panel AND the History rail, so its own
+     available width already varies well below the viewport figure a
+     max-width query would see — at 1440 with the chat open the band
+     had far less than 1440 to work with, .pt-sheet-main's own
+     overflow:hidden (AB's fix-round guard) silently clipped Legal/
+     CTA/OUTPUT off the end instead of wrapping to them. flex-wrap:
+     wrap + a padding-derived height (12 top/bottom + the 32px field
+     = 56, no explicit height needed) means it always wraps to fit
+     whatever room it actually has, at any viewport. */
+  /* §BN.2 (9/18, "Should be always on screen / Should stick"), re-anchored
+     by §BO.2 — the band used to stick directly beneath #ptSelectsSection
+     (itself sticky, top: 0); Selects has retired, so the band is the
+     first thing in the sheet's own scroll flow now and sticks at the
+     scroll top itself (wireSheetBand sets --pt-band-sticky-top: 0px).
+     Same ground/hairline/no-shadow as at rest — nothing about the
+     band's own look changes when it's the one stuck. */
+  .pt-sheet-band {
+    display: flex; align-items: center; flex-wrap: wrap;
+    min-height: 62px; /* BH.2 — the stacked cell's own floor: 8+8 row padding + 6+6 cell padding + 34 (two lines, 2px gap) */
+    position: sticky; top: var(--pt-band-sticky-top, 0px); z-index: 10;
+    /* AL.8 — full-bleed cancels .pt-sheet-main's own padding on each
+       side (AD.1's own note above); that padding is asymmetric
+       (--pt-stage-inset left, a flat 32 right), and the left side
+       also owes the 6px reach under the splitter the row rules below
+       now carry, so a flat -32px here left this rule's own bottom
+       border 2px short of the splitter's hairline. */
+    margin: -24px -32px 0 calc(-6px - var(--pt-stage-inset, 28px)); /* AT — the 24px below now rides .pt-band-tray (0 tall when closed); §BO.2 — the band leads the sheet now and cancels the column's own top padding itself, the job §BN.2's Selects section used to do */
+    padding: 8px 28px; /* BH.2 — the stacked cells carry their own 6px vertical padding now, so the row needs less of its own */
+    gap: 12px 20px; /* BH.2 — cells 20px apart (was 2, the flat fields' own rhythm), 12px between wrapped rows (was 8) */
+    background: var(--canvas-bg);
+    border-bottom: 0.5px solid var(--line);
+  }
+  .pt-sheet-band-group { display: flex; align-items: center; gap: 6px; flex-shrink: 0; } /* 9/15 — chips 6px apart, the original's own rhythm */
+  /* The two field groups dissolve into the band's own flow
+     (display: contents) so the chips pack as ONE wrapping row — a
+     narrow stage wraps between any two chips instead of dropping a
+     whole group to its own line and stranding a chip on another
+     (1306 with the chat open read as four rows otherwise). The count
+     lockup stays a real group; the hairline separators are already the
+     band's own children. [hidden] keeps winning below. §BP folded-in
+     (a) — the OUTPUT group (Export to Figma + Package) stays a real
+     group too, so its own margin-left:auto (below) can push it to the
+     row's far end; a wrapped narrow band still just drops it to its
+     own line, same as any group would. */
+  .pt-sheet-band-group:not(.pt-band-count):not(.pt-band-output):not([hidden]) { display: contents; }
+  /* AE.8 — the DESIGN/COPY/OUTPUT eyebrows are gone (Bryan: "what
+     they are is kinda self explanatory"); the hairline separators
+     below are the only thing marking the three groups apart now. */
+  .pt-sheet-band-group.pt-band-output { margin-left: auto; }
+  .pt-sheet-band-sep { width: 1px; height: 28px; margin: 0 16px; background: var(--line); flex-shrink: 0; align-self: center; } /* BH.2 — 28 tall to match the cell's own two-line height, 16 either side (was 18/10) */
+  /* Below 1200 (the same breakpoint .pt-boards-rail already folds
+     at) the separators retire — a stray hairline mid-wrap, between
+     whichever two groups happen to land on the same line, reads as a
+     mistake rather than structure once the band is reliably multi-
+     line at this width. Above 1200 a separator can still appear at a
+     wrapped line's edge on the rarer narrow-chat-open case above;
+     left in since there the wrap is the exception, not the rule. */
+  @media (max-width: 1200px) {
+    .pt-sheet-band-sep { display: none; }
+  }
+  /* §BN.1 — the band's own rest state is "all" now, never empty: zero
+     selected reads as the same count-lockup cell as 1+ does, just with
+     "All N units" for its value and no Clear (syncBandFieldsUI). The
+     old two-rest-state paragraph (a quiet line + "Select all" link)
+     retired with the AJ.2/BH.2 "hidden entirely at zero" rule it
+     belonged to — there's no longer a state where the band has nothing
+     to show a count for. */
+  /* BH.2 (Bryan, 9/16: "I still don't really love the look of this —
+     ... hard to tell what's going on... too dense/crowded") — the
+     count lockup is a CELL too now, the same two-line shape as the
+     fields beside it (BH.1's eyebrow-over-value recipe): the eyebrow
+     "Selected" over the value ("2 units") with Clear riding 10px
+     after it on the value line, so the row reads as one continuous
+     rhythm from its first cell to its last instead of a lone chip-era
+     "2 selected · Clear" line. */
+  .pt-band-count {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    gap: 2px;
+    padding: 6px 10px; /* BH.1's own cell padding, so the count reads as one of the cells */
+  }
+  .pt-band-count-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    line-height: 14px;
+    color: var(--text-subtle);
+  }
+  .pt-band-count-value-row { display: flex; align-items: center; gap: 10px; }
+  .pt-band-count-text {
+    font-family: 'Inter', var(--font-sans); font-size: 13px; font-weight: 600; line-height: 18px;
+    color: var(--text-strong);
+  }
+  .pt-band-empty-link {
+    display: inline; background: none; border: 0; padding: 0; margin-left: 10px; cursor: pointer;
+    font-family: 'Inter', var(--font-sans); font-size: 13px; font-weight: 500;
+    color: var(--accent);
+  }
+  .pt-band-count .pt-band-empty-link { margin-left: 0; } /* the value row's own 10px gap carries Clear instead */
+  .pt-band-empty-link:hover { text-decoration: underline; }
+  /* §BW — "no need to see this unless the user starts selecting, then
+     there should be a nice reveal animation": the scope cell + its own
+     divider (ptBandCountGroup/ptBandSepA) are wrapped together as ONE
+     collapsing unit so they enter/leave as a single beat and take
+     their share of the band's own `gap: 12px 20px` with them (no dead
+     gap left at LAYOUT when collapsed). Width via grid-template-
+     columns 1fr<->0fr — the exact fr-unit fix 16-shell-f-painter-
+     base.css's .pt-copy-field-row-wrap already uses to collapse a
+     variable-size box without a jump (that one's on grid-template-
+     ROWS; this is the same trick on columns) — never [hidden], so the
+     collapse can run in both directions (a plain display swap can't
+     transition). The visual fade is its own inner element
+     (.pt-band-scope-row) rather than living on the width-collapsing
+     wrapper, so the "no jump" width animation and the "nice reveal"
+     fade can use their own easing without fighting each other; the
+     fade reuses ca-chip-enter's own opacity/blur(6px) values verbatim
+     (15-hat-a.css, "a blur-fade + slight rise… ported verbatim" is
+     this same codebase's own reuse instinct) as a transition instead
+     of that one-shot animation, since Clear/deselect must reverse it,
+     not just play it once. */
+  .pt-band-scope-collapse {
+    display: grid; grid-template-columns: 1fr;
+    align-items: center;
+    overflow: hidden;
+    transition: grid-template-columns 260ms cubic-bezier(0.16,1,0.3,1),
+                margin-right 260ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-band-scope-row {
+    display: flex; align-items: center; min-width: 0;
+    opacity: 1; filter: none;
+    transition: opacity 260ms cubic-bezier(0.16,1,0.3,1), filter 260ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-band-scope-collapse.is-collapsed {
+    grid-template-columns: 0fr;
+    margin-right: -20px; /* eats the band's own column-gap after this item so LAYOUT leads flush, not with a dead 20px gap, once the cell is fully collapsed */
+  }
+  .pt-band-scope-collapse.is-collapsed .pt-band-scope-row {
+    opacity: 0; filter: blur(6px);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-band-scope-collapse, .pt-band-scope-row { transition: none !important; } /* RUNBOOK — reduced motion is instant everywhere */
+  }
+  /* [hidden] paired with the class, not left to the bare attribute —
+     the house gotcha (see .pt-sheet-skel-foot's own note): a same-
+     specificity author rule (.pt-band-empty-link/.pt-sheet-band-group
+     both set an explicit display above/below) silently beats [hidden]
+     alone since origin trumps specificity. syncBandFieldsUI toggles
+     these via .hidden — without this pairing every one of them stayed
+     visible regardless. */
+  #ptBandClearBtn[hidden], /* §BN.1 — no Clear while the band applies to "all" */
+  .pt-sheet-band[hidden], /* §BN.1 — no board on the sheet yet: the strip and its hairline go too */
+  .pt-sheet-band-group[hidden],
+  .pt-sheet-band-sep[hidden] { display: none; }
+  /* BH.1 (Bryan, 9/16: "I still don't really love the look of this —
+     now it's kinda hard to tell what's going on inside it. Feels too
+     dense/crowded") — the 9/16 properties row's seven label-value
+     pairs ran into one string with only a weight change marking where
+     a pair ends, and nothing said the values were pickers. Each field
+     is now a small CELL with its own footprint: the label as a tiny
+     eyebrow OVER its value (the drawer's own .pt-editor-drawer-
+     eyebrow voice, reused rather than redrawn) and a caret after the
+     value that says "this opens" — the .pt-hdr-chip box, border,
+     shadow and inset highlight stay cancelled here (the class stays
+     for the shared font recipe and the tray's aria wiring), a soft
+     fill on hover (--hover-soft) and the rail's own active recipe
+     while its tray is open (--nav-selected ground, accent ink on the
+     eyebrow, value AND caret). */
+  .pt-sheet-band .pt-band-field.pt-hdr-chip {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    position: relative;
+    height: auto; padding: 6px 10px; gap: 2px; /* BH.1 — the eyebrow/value lines sit 2px apart */
+    border-radius: 8px;
+    background: transparent; border-color: transparent; box-shadow: none;
+    color: var(--text-subtle);
+  }
+  .pt-sheet-band .pt-band-field.pt-hdr-chip:not(:disabled):hover {
+    background: var(--hover-soft); border-color: transparent; color: var(--text-body);
+  }
+  .pt-sheet-band .pt-band-field.pt-hdr-chip[aria-expanded="true"],
+  .pt-sheet-band .pt-band-field.pt-hdr-chip[aria-expanded="true"]:hover {
+    background: var(--nav-selected); border-color: transparent; color: var(--accent);
+  }
+  .pt-band-field-icon { display: none; } /* 9/16 — label · value carries the meaning; the seven glyphs were the 150px that pushed the row to a second line at 1880 with the chat open */
+  /* the eyebrow — .pt-editor-drawer-eyebrow's own recipe (mono caps,
+     letter-spaced, --text-subtle) at the smaller 10/14 this row
+     needs; color:inherit so it follows the button's own hover/open
+     tint rather than a second color rule. */
+  .pt-band-field-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    line-height: 14px;
+    color: inherit;
+  }
+  /* the value line: the count plus its caret, 6px apart */
+  .pt-band-field-value { display: flex; align-items: center; gap: 6px; }
+  /* the value — plain text in the strong voice (no tag), one line
+     with an ellipsis; Mixed / None in the quiet voice; the accent
+     while its tray is open; nothing when nothing is shared */
+  .pt-band-field .pt-editor-ctrl-count {
+    margin-left: 0; padding: 0; border-radius: 0; background: transparent;
+    font-family: 'Inter', var(--font-sans); font-size: 13px; font-weight: 600; letter-spacing: -0.1px; text-transform: none; line-height: 18px;
+    color: var(--text-strong);
+    max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    transition: color 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pt-band-field .pt-editor-ctrl-count.is-mixed { font-weight: 500; color: var(--text-subtle); }
+  .pt-band-field .pt-editor-ctrl-count:empty { display: none; }
+  /* §BN.3 — Style's own sub-value: the colorway, read only when it's
+     been overridden off the picked style's own default (or "Mixed") —
+     a quieter second value on the same line rather than a second stack
+     line, so the cell's own two-line (eyebrow/value) height never grows. */
+  .pt-band-field-subvalue {
+    font-family: 'Inter', var(--font-sans); font-size: 11px; font-weight: 500; line-height: 18px;
+    color: var(--text-subtle);
+    max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pt-band-field-subvalue::before { content: '\00b7\0020'; } /* a middle-dot separator from the style name before it */
+  /* the caret — SET_ICONS.caret's own glyph, pasted inline since this
+     is static markup (no JS run to render it): 10px, --text-subtle,
+     always present — it is what says "picker" now that the chip's
+     box and badge are gone. */
+  .pt-band-field-caret { display: flex; align-items: center; flex-shrink: 0; }
+  /* .pt-hdr-chip svg (21-sheet-b.css) sizes every chip glyph at 14px
+     and tints it accent on hover — right for the retired icon spans,
+     wrong for a 10px caret that should stay quiet until the tray
+     actually opens; both overridden here at higher specificity. */
+  .pt-sheet-band .pt-band-field.pt-hdr-chip .pt-band-field-caret svg {
+    width: 10px; height: 10px;
+    color: var(--text-subtle);
+  }
+  .pt-sheet-band .pt-band-field.pt-hdr-chip:not(:disabled):hover .pt-band-field-caret svg {
+    color: var(--text-subtle); /* the hover fill is the affordance, not an accent caret */
+  }
+  .pt-band-field[aria-expanded="true"] .pt-editor-ctrl-count,
+  .pt-band-field[aria-expanded="true"] .pt-editor-ctrl-count.is-mixed { color: var(--accent); }
+  .pt-band-field[aria-expanded="true"] .pt-band-field-subvalue { color: var(--accent); }
+  .pt-sheet-band .pt-band-field.pt-hdr-chip[aria-expanded="true"] .pt-band-field-caret svg,
+  .pt-sheet-band .pt-band-field.pt-hdr-chip[aria-expanded="true"]:hover .pt-band-field-caret svg {
+    color: var(--accent);
+  }
+  /* Legal's own indicator is a dot, not a number — .pt-chip-dot in
+     the same inline lane the numeric counts sit in (not the retired
+     rail's stacked-under-the-label version). */
+  /* ══ §BP — the band's LIGHTBOX (colleague feedback via Bryan, 9/18,
+     on the open Imagery tray: "Instead of drawers, can we do these as
+     lightboxes?"). Supersedes AT's in-flow push panel — reuses the
+     Package overlay's own recipe verbatim (§AF/BC, 19-package-a.css
+     .pt-editor.pt-package: fixed viewport scrim, window-wide blur, a
+     centred card, house blur-fade motion — the scrim colour/blur and
+     the card's scale+fade entrance are the SAME values, not a new
+     pattern) rather than the sheet's own grid-cell trick, since this
+     overlays the whole canvas, band included, not just #canvas. The
+     band never expands for this — fixed height, keeps §BN's sticky
+     band short. ══ */
+  .pt-band-lightbox {
+    position: fixed; inset: 0; z-index: 5000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px;
+    background: rgba(15, 23, 42, 0.32);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 320ms;
+  }
+  .pt-band-lightbox[data-visible="1"] {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    transition: opacity 360ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0s;
+  }
+  /* The card — house elevated shadow, scale .98 → 1 + fade (260ms,
+     house ease), same as Package's own card. Unlike Package's fixed
+     860-tall manifest, this card SIZES TO ITS CONTENT (§BP: "size the
+     card to its content… capped to the viewport with internal
+     scroll") — max-height, not height, and no explicit height at all. */
+  .pt-band-lightbox-card {
+    position: relative;
+    width: min(var(--pt-band-lightbox-w, 640px), calc(100% - 64px));
+    max-height: min(720px, calc(100% - 64px));
+    display: flex; flex-direction: column;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px var(--shadow-card), 0 4px 12px var(--shadow-card);
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 260ms cubic-bezier(0.16,1,0.3,1), transform 260ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-band-lightbox-card:focus, .pt-band-lightbox-card:focus-visible { outline: none; } /* BC.1 — focus lands on the card itself, no ring of its own */
+  .pt-band-lightbox[data-visible="1"] .pt-band-lightbox-card { opacity: 1; transform: scale(1); }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-band-lightbox, .pt-band-lightbox-card { transition: none; }
+  }
+  /* Per-field width (§BP: "Imagery wide; Legal/CTA narrow") — the
+     roster/strip fields get the most room, Headline/CTA sit at a
+     comfortable reading width, Legal (one column of long lines)
+     narrowest. */
+  .pt-band-lightbox[data-band-tool="imagery"] .pt-band-lightbox-card { --pt-band-lightbox-w: 720px; }
+  /* Style needs the most room of all — its widest brand group
+     (Corvache) is 3 roster cards wide (3×240px + 2×12px gaps =
+     744px); 820 clears that with the card's own 24px side padding
+     and a thin scrollbar to spare (the max-width:100% fallback above
+     still catches a narrower viewport). */
+  .pt-band-lightbox[data-band-tool="style"] .pt-band-lightbox-card { --pt-band-lightbox-w: 820px; }
+  .pt-band-lightbox[data-band-tool="layouts"] .pt-band-lightbox-card { --pt-band-lightbox-w: 640px; }
+  .pt-band-lightbox[data-band-tool="headlines"] .pt-band-lightbox-card,
+  .pt-band-lightbox[data-band-tool="cta"] .pt-band-lightbox-card { --pt-band-lightbox-w: 520px; }
+  .pt-band-lightbox[data-band-tool="legal"] .pt-band-lightbox-card { --pt-band-lightbox-w: 440px; }
+  /* HEAD — the field's own name + scope ("Imagery · All 9 units"),
+     the close X (app-modal-close, the shell's own dialog close). */
+  .pt-band-lightbox-head {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 56px; padding: 0 16px 0 20px;
+    border-bottom: 0.5px solid var(--line);
+  }
+  .pt-band-lightbox-title {
+    font-family: var(--font-sans); font-size: 15px; font-weight: 600; letter-spacing: -0.1px;
+    color: var(--text-strong);
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pt-band-lightbox-close { position: static; transform: none; flex-shrink: 0; }
+  /* BODY — #ptBandTray is the card's own scrollable body now (was the
+     push panel itself); #ptBandTrayInner/.pt-band-tray-pane and
+     everything inside are byte-identical to §AT, only their container
+     changed. Bryan, 9/15 ("give the drawer a very light background
+     color across all options"): the same light ground kept. */
+  .pt-band-tray {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto; overscroll-behavior: contain;
+    scrollbar-width: thin; scrollbar-color: rgba(15,23,42,0.22) transparent;
+    background: color-mix(in srgb, var(--panel-bg-3) 40%, var(--canvas-bg));
+  }
+  .pt-band-tray::-webkit-scrollbar { width: 10px; }
+  .pt-band-tray::-webkit-scrollbar-track { background: transparent; }
+  .pt-band-tray::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+  .pt-band-tray::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.32); background-clip: content-box; }
+  .pt-band-tray-inner { padding: 16px 24px 24px; }
+  /* ══ AU — what each pane HOLDS (Bryan, 9/15: "designed really
+     beautifully and nicely… I didn't like how there were a bunch of
+     pills to select from. The layout should be smart, clean,
+     functional"). No pill chips anywhere in the tray. Two vocabularies
+     only — TILES where a picture is the choice (Layout, the Style
+     covers, Color, Imagery), pick ROWS where a line is (Headline, CTA,
+     Legal) — both the house recipes (setPickItemHTML's row, the
+     roster's cover card, the colorway specimen card, the swap thumb),
+     every pane on a grid the eye scans. One inner rhythm (AU.7): the
+     band's own 28px stage padding, 12px between tiles and cards, 40px
+     between columns, the right-end pair behind a hairline with 24px
+     either side; no eyebrows (AE.8 — the band's active field names
+     the pane), the "Mixed" note the only prose. ══ */
+  /* A pane is one flex row: [the Mixed note, its own line when shown]
+     [the options] [an end group at the right]. [hidden] paired with
+     the class (the house gotcha, see #ptBandClearBtn[hidden] above). */
+  .pt-band-tray-pane { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 0; }
+  .pt-band-tray-pane[hidden] { display: none; }
+  /* "Mixed — pick a line to set them all" when the selection doesn't
+     share one value for the field (exactly when no tile or row is
+     checked): one quiet sans note in the field voice, leading the
+     pane on its own line — never an eyebrow, never a chip. */
+  .pt-band-tray-mixed {
+    flex: 0 0 100%;
+    font-family: 'Inter', var(--font-sans);
+    font-size: 12px; font-weight: 500; letter-spacing: -0.05px; line-height: 16px;
+    color: var(--text-subtle);
+  }
+  .pt-band-tray-mixed[hidden] { display: block; visibility: hidden; } /* Bryan, 9/15 ("the options feel hard to click — sorta buggy"): the note keeps its line when hidden, so a pick that clears it never shifts the rows 24px up under the pointer */
+  /* The options row grows into whatever the line leaves beside the
+     end group. Basis 320px, neither auto nor 0: with auto the row's
+     basis is its whole max-content width and it wrapped under the
+     end group; with 0 it FIT on the Mixed note's own line (a 0-wide
+     item always fits after a 100% one) and came out 0px wide. */
+  .pt-band-tray .pt-band-tray-row {
+    display: flex; flex-direction: row; flex-wrap: wrap; align-items: stretch;
+    gap: 12px;
+    flex: 1 1 320px; min-width: 0;
+  }
+  /* The end group (Headline's Shrink to fit / Fixed size, Legal's
+     Inline / Scroll box): the pair's two rows STACKED at the pane's
+     right end, set off from the columns by a hairline with 24px either
+     side; stretched so the hairline runs the grid's full height. */
+  .pt-band-tray-end {
+    display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+    flex: 0 0 auto; align-self: stretch;
+    margin-left: 24px; padding-left: 24px;
+    border-left: 0.5px solid var(--line);
+  }
+  /* The pair (renderBodyFitRows / renderLegalStyleRows): two pick rows
+     in the house anatomy — glyph · name · the radio ring — at the copy
+     rows' own 28px, stacked; .pt-body-fit's popover-era top rule and
+     margins retire here. */
+  .pt-band-tray-pair {
+    display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+    margin: 0; padding: 0; border-top: 0;
+  }
+  .pt-band-tray-pair .pt-set-item--pick {
+    grid-template-columns: 22px auto 16px; column-gap: 10px;
+    height: 28px; padding: 0 8px; width: auto; border-radius: 6px;
+  }
+  .pt-band-tray-pair .pt-set-item--pick .pt-set-item-name { font-family: 'Inter', var(--font-sans); font-size: 12.5px; font-weight: 500; letter-spacing: -0.05px; }
+
+  /* ── AU.1 Layout — TILES. Each .pt-set-item--pick row stands up as a
+     tile: the icon lane is the layout DRAWN at 72×48 (bandLayoutTileSVG
+     — layoutWireframeInner's own hairline strokes, the resting
+     viewfinder's recipe) on the card ground with a hairline, the name
+     beneath in the label voice (sans 12/500, the sub riding as a
+     title). The shared layout wears the accent ring (the cover's own
+     ring recipe) and the accent name; hover is the card hover ground
+     (the 4% ink wash, .pt-set-item's own) over the whole tile. The
+     radio ring retires — the ring IS the radio. Generated layout =
+     the dashed tile, last. ── */
+  .pt-band-tray-tiles .pt-set-item--pick {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    width: 92px; flex: 0 0 auto; padding: 6px 6px 7px; border-radius: 8px; /* nine uniform columns: 9 × 92 + 8 × 12 = 924, one row in the 958 the stage leaves at 1880 with the chat open; 80 inside holds "Type-forward" (79px) on one line so no name runs past two */
+    transition: background 140ms ease;
+  }
+  .pt-band-tray-tiles .pt-set-item--pick .pt-set-item-icon {
+    box-sizing: border-box; overflow: hidden;
+    width: 72px; height: 48px; border-radius: 6px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line-solid);
+    color: var(--text-subtle);
+    transition: border-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
+  }
+  .pt-band-tray-tiles .pt-set-item--pick .pt-set-item-icon svg { width: 100%; height: 100%; }
+  .pt-band-tray-tiles .pt-set-item--pick .pt-set-item-icon rect { stroke-width: 1; }
+  .pt-band-tray-tiles .pt-set-item--pick[data-variety-template="diagonal"] .pt-set-item-icon { border: 1px dashed var(--line-solid); }
+  .pt-band-tray-tiles .pt-set-item--pick:hover .pt-set-item-icon { border-color: color-mix(in srgb, var(--accent) 40%, var(--line-solid)); }
+  .pt-band-tray-tiles .pt-set-item--pick.is-active .pt-set-item-icon { border-color: var(--accent); box-shadow: inset 0 0 0 0.5px var(--accent), 0 0 0 2px var(--accent-soft); color: var(--accent); }
+  .pt-band-tray-tiles .pt-set-item--pick .pt-set-item-labels { flex-direction: column; align-items: center; width: 100%; }
+  /* The name wraps inside its 80px column (the tile's width) — the
+     long names take two lines, the short ones one; the row stretches
+     every tile to the same height so the grid stays even. */
+  .pt-band-tray-tiles .pt-set-item--pick .pt-set-item-name {
+    font-family: 'Inter', var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: -0.05px; line-height: 15px;
+    color: var(--text-body); text-align: center; white-space: normal; width: 100%;
+  }
+  .pt-band-tray-tiles .pt-set-item--pick.is-active .pt-set-item-name { color: var(--accent); }
+  .pt-band-tray-tiles .pt-set-item-radio { display: none; }
+
+  /* ── AU.5 Headline / CTA — pick ROWS in columns. Each row is the
+     house pick row (setPickItemHTML, data-copy-i) at 28px: the radio
+     at the LEFT (the recipe's own ring, reordered), the line in sans
+     13 on one line with an ellipsis, no glyph lane (copy has none).
+     Column-major in up to three columns (grid-auto-flow: column; the
+     row count rides --pt-copy-rows-3 / -2 from renderCopyList), 8px
+     between rows, 40px between columns; two columns at a mid stage
+     (720–900, is-mid), one sideways strip below 720 (is-narrow). ── */
+  .pt-band-tray .pt-band-tray-copy {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--pt-copy-rows-3, 3), 28px);
+    gap: 8px 40px;
+    align-items: stretch;
+  }
+  .pt-band-tray.is-mid .pt-band-tray-copy {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--pt-copy-rows-2, 5), 28px);
+  }
+  /* AU.6 Legal — ONE column (the lines are long), top to bottom. */
+  .pt-band-tray .pt-band-tray-copy--one,
+  .pt-band-tray.is-mid .pt-band-tray-copy--one { grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: 28px; }
+  .pt-band-tray-copy .pt-set-item--pick {
+    grid-template-columns: 16px minmax(0, 1fr); column-gap: 10px;
+    height: 28px; padding: 0 8px; border-radius: 6px; width: 100%; min-width: 0;
+  }
+  .pt-band-tray-copy .pt-set-item--pick .pt-set-item-icon { display: none; }
+  .pt-band-tray-copy .pt-set-item--pick .pt-set-item-radio { order: -1; }
+  .pt-band-tray-copy .pt-set-item--pick .pt-set-item-labels { min-width: 0; }
+  .pt-band-tray-copy .pt-set-item--pick .pt-set-item-name {
+    font-family: 'Inter', var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: -0.05px;
+    color: var(--text-body);
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pt-band-tray-copy .pt-set-item--pick.is-active .pt-set-item-name { color: var(--accent); }
+  .pt-band-tray-copy .pt-set-item--pick .pt-set-item-sub { font-size: 11px; flex: 0 0 auto; }
+  .pt-band-tray .pt-cta-empty { margin: 0; font-size: 12px; color: var(--text-subtle); }
+
+  /* §BT — Color comes from the style guide only: the band's Color
+     specimen cards (.pt-band-tray-swatches .pt-color-spec-row) and the
+     style-color group wrapper (.pt-band-tray-style-color) retired. */
+
+  /* ── The strips. 9/16 (Bryan: "make it so the drawers don't cut off
+     content — see the image fading into a gradient"): every strip
+     WRAPS now — the Imagery thumbs, the Style roster's groups and
+     cards, and every row in the narrow regime — so every thumb, card
+     and row shows and the tray simply grows (it pushes the sheet down
+     by design, §AT). No sideways scroll, no edge fade, at any width;
+     updateStripFade still runs on these rows and finds nothing to
+     fade (the AU.4 / AT one-row strips with the Selects strip's own
+     mask retired here). ── */
+  .pt-band-tray .pt-band-tray-strip,
+  .pt-band-tray .pt-set-roster-all:not([hidden]),
+  .pt-band-tray.is-narrow .pt-band-tray-row {
+    flex-wrap: wrap;
+    overflow: visible;
+    --fade-l: 0px; --fade-r: 0px;
+    mask-image: none; -webkit-mask-image: none;
+  }
+  .pt-band-tray .pt-band-tray-strip { gap: 12px; }
+  .pt-band-tray .pt-editor-swap-thumb { width: 60px; height: 60px; border-radius: 6px; flex: 0 0 auto; }
+  /* Bryan, 9/15 ("the drawer editor should have the same options as the
+     imagery panel"): the Imagery pane carries the hat menu's own
+     three — a search line above the strip, the Add-image tile leading
+     the strip, and the See-all "View gallery →" beneath it (Your
+     Gallery in single-pick, the pick applying to the selection). */
+  /* §BP review (coordinator) — the old drawer's own 320px cap on this
+     row was harmless full-bleed (plenty of line left for the grid to
+     wrap into beside it), but in the lightbox's own narrower, fixed-
+     width card it left the search box stranded in a mostly-empty
+     left "column" with the thumb grid squeezed to its right instead
+     of using the card's full width below it. No cap: the row (and
+     the input inside it) spans the card edge to edge, same as the
+     header above it; the grid gets the full width on its own line
+     next, same as the layout tiles/roster panes already do. */
+  .pt-band-tray-search { flex: 0 0 100%; }
+  .pt-band-tray-search .pt-cta-input { width: 100%; height: 32px; }
+  .pt-band-tray .pt-band-image-add { width: 60px; height: 60px; flex: 0 0 auto; border-radius: 6px; }
+  .pt-band-tray .pt-editor-swap-thumb[hidden] { display: none; } /* the search's own hide — the thumb's display rule would beat the bare attribute */
+  .pt-band-tray-gallery { flex: 0 0 100%; margin-top: 4px; padding: 10px 2px 0; border-top: 0.5px solid var(--line); }
+  /* AT — below a 720px stage (wireSheetBand's own ResizeObserver
+     sets .is-narrow; 1306 with the chat open is 540) every row is a
+     single strip that scrolls sideways instead of wrapping, so the
+     tray stays one row tall and the first row of units stays in
+     view beneath it — the whole point of §AT. The copy grids become
+     a strip of rows (each shrink-wrapped, capped so a legal line
+     still ellipsizes); the end pair drops to its own line, its two
+     rows side by side, the hairline gone with the column it set off. */
+  .pt-band-tray.is-narrow .pt-band-tray-copy { display: flex; gap: 8px; }
+  .pt-band-tray.is-narrow .pt-band-tray-copy .pt-set-item--pick { width: auto; max-width: 320px; flex: 0 0 auto; }
+  .pt-band-tray.is-narrow .pt-band-tray-end { flex: 0 0 100%; align-self: auto; flex-direction: row; margin-left: 0; padding-left: 0; border-left: 0; }
+  .pt-band-tray.is-narrow .pt-band-tray-pair { flex-direction: row; gap: 4px; }
+  /* ── AU.2 The Style strip: brandRosterColHTML's own roster (one
+     builder with the hat's Styles panel — nothing drifts) laid as
+     ONE strip. Each brand group is a block (wrapRosterGroupsForTray):
+     the roster's own head leading — the line's name at left, its
+     "Brand book →" link at right, the recipe that landed today — over
+     its covers in a row; blocks 40px apart, cards 12px. The panel's
+     own eyebrow, sub, search and empty state retire in the tray (the
+     active field names the pane; a strip is browsed, not searched —
+     wireBrandRosterCol's search wiring simply never sees input here). ── */
+  .pt-band-tray-roster { flex: 1 1 320px; min-width: 0; display: block; }
+  .pt-band-tray.is-narrow .pt-band-tray-roster .pt-band-tray-roster-group { flex: 1 1 100%; } /* 9/16 — a narrow tray stacks the groups so no card is cut off */ /* the same real basis as .pt-band-tray-row above, for the same reason */
+  .pt-band-tray-roster > .pt-set-sec,
+  .pt-band-tray-roster > .pt-set-roster-eyebrow-sub,
+  .pt-band-tray-roster > .pt-set-roster-search,
+  .pt-band-tray-roster > [data-roster-matches],
+  .pt-band-tray-roster .pt-set-roster-empty { display: none; }
+  .pt-band-tray-roster .pt-set-roster-all:not([hidden]) { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px 40px; } /* 9/16 — the groups wrap too */
+  /* §BP — the lightbox card is narrower than the old full-bleed tray
+     ever was, so a group's own max-content width (Corvache's own 3
+     cards, 744px) can now exceed the card's interior: max-width:100%
+     lets it shrink to the roster's actual line width when it must,
+     so .pt-band-tray-roster-cards' own flex-wrap genuinely wraps the
+     cards instead of the group (and its "Brand book" link) running
+     off the card's own right edge. */
+  .pt-band-tray-roster .pt-band-tray-roster-group { display: flex; flex-direction: column; align-items: stretch; gap: 8px; flex: 0 0 auto; max-width: 100%; }
+  .pt-band-tray-roster .pt-set-roster-group-head { padding: 0 2px; min-width: 0; }
+  .pt-band-tray-roster .pt-set-roster-group-head .pt-set-roster-group-name { white-space: nowrap; }
+  .pt-band-tray-roster .pt-band-tray-roster-cards { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; }
+  /* The roster's card whole — cover · name · line · radio (the recipe's
+     own lanes) — 232 wide on the card ground with a hairline; the
+     checked card takes the accent hairline + wash, its cover the
+     cover's own ring, its radio the dot. */
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card {
+    width: 240px; flex: 0 0 auto; /* 9/16 (Bryan: "text looks cramped in these"): 240 wide again on the compact 44 × 58 cover, so the text lane is 146px (was 108 at 196 — "Fall 2026 Launch" broke mid-name) */
+    grid-template-columns: 44px 1fr 14px; column-gap: 10px; padding: 8px 10px 8px 8px;
+    border: 0.5px solid var(--line-solid); background: var(--card-bg); border-radius: 10px;
+    transition: background 140ms ease, border-color 140ms ease;
+  }
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line-solid)); }
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card.is-active { border-color: var(--accent); background: var(--accent-soft); }
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card .pt-set-item-icon { width: 64px; height: 84px; }
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card .pt-set-item-labels { gap: 3px; } /* 9/16 — air between the name and its line */
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card .pt-set-item-sub { line-height: 1.3; }
+  .pt-band-tray-roster .pt-set-roster-all .pt-set-item--card .pt-set-item-name { white-space: normal; line-height: 1.3; } /* "Certified Pre-Owned" takes two lines beside its cover rather than running into the radio */
+  /* (the tray's 64 × 84 cover overrides retired 9/15 — the roster's own 44 × 58 cover applies) */
+  /* canvas-graphics' own studio rail (/TINKER/canvas-graphics
+     ~L17465), ported with its values. The item recipe itself
+     (.c4-edit-rail-item/-label) is already in this file for the
+     Studio editor's revision history (~L10794) and is reused
+     verbatim below, not redefined — this class only supplies what's
+     new here: placement, the sticky clearance, the fold and the
+     empty state. Mounted twice (here and in media-mode at rest);
+     renderBoardsRail() keeps both in sync. AB.4 — moved out of
+     .pt-sheet-body's own grid column to a flex track at the far
+     right edge of the canvas column, alongside the tool rail/drawer. */
+  /* AE.1 — no top offset beyond the bar itself, no margin: this one
+     rule is now geometry-identical in both mounts (.pt-sheet-body's
+     own frame cancels #canvas's clearance above, and the resting
+     .pt-mm-stage never had it to cancel), so `top` reads literally as
+     "the bar's height" and `height` (not a max-height fudged by -48)
+     runs the column to the viewport's own bottom, own scroll inside. */
+  /* 9/16 (Bryan: "no need to put board 1 below the HISTORY eyebrow
+     here") — the rail's count line retires everywhere, the static
+     mounts and the one renderBoardsRail builds alike: each item names
+     its own board, so the eyebrow leads straight into the list. The
+     element and its write hooks stay so no writer dangles. A real
+     rule, not the bare [hidden] attribute — the house gotcha. */
+  .c4-edit-rail-count { display: none; }
+  /* §BS (coordinator/Bryan, 9/18: "remove the History rail entirely")
+     — .pt-boards-rail's own geometry/fold/empty-state rules retired
+     here: both mounts (the sheet's, §BO; media-mode's own, above) are
+     gone from the HTML now, so nothing reads them. .c4-edit-rail-item/
+     -label/-list/etc. stay — that shared recipe (12-shell-c-persona.
+     css) still serves the Studio revision-history rail (43-body-
+     overlays.html), untouched. */
+  /* AE.5 (supersedes AB.4's six-up grid + "+N"), AL.17 (Bryan, round
+     2: "remove the micro volume grid and the timestamp; drop the
+     accent chip over the picture") — an item is exactly two things
+     now: this tile (one real .pt-banner clone, the board's first
+     unit, at its size's own aspect — boardPictureHTML, no overlay
+     chip any more) and one baseline meta line underneath, the name
+     and the count (.pt-board-item-meta). */
+  .pt-board-item-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    min-height: 64px; /* a wide board's own strip is short enough that padding alone wouldn't give it a quiet ground; box/tower tiles (already taller) are unaffected */
+  }
+  .pt-board-item-pic { display: block; flex-shrink: 0; overflow: hidden; border-radius: 2px; pointer-events: none; }
+  /* AL.5 — the history-rail live thumbnail's own shell: a plain block
+     wrapper (never .pt-banner-card — see boardPictureHTML's own
+     comment) around the cloned .pt-banner, which already carries its
+     real px size via data-size; nothing here needs flex/gap, there's
+     only ever the one child. */
+  .pt-board-item-banner { display: block; }
+  /* AL.5 — root cause of "the griffin mark renders several times too
+     large" in the history-rail live thumbnail, found empirically (a
+     zoomed screenshot, then a real computed-style trace) rather than
+     guessed: .c4-edit-rail-item img (line ~10853, a generic "make the
+     rail thumbnail image fill its box" rule meant for a real photo
+     poster) has HIGHER specificity (.class + type, 0-1-1) than
+     .pt-banner-logo's own rule (one class, 0-1-0) — so it silently won
+     over the logo's own --logo-h sizing the instant boardPictureHTML's
+     clone (a full .pt-banner, corner mark included) landed inside a
+     .c4-edit-rail-item, stretching the mark to width:100% of its
+     column instead of its intended ~24px cap. Never touched the
+     shared rail rule itself (it's correct for the real use it was
+     written for, and reused well beyond this one spot) — this
+     re-asserts the mark's own real sizing with enough specificity
+     (three classes) to beat it back, scoped to just this container so
+     nothing else that rule touches is affected. */
+  .pt-board-item-pic .pt-board-item-banner .pt-banner-logo {
+    width: auto;
+    height: var(--logo-h, clamp(14px, 10cqh, 24px));
+  }
+  /* AL.17 — one baseline-aligned line under the picture: the board's
+     name at the left (accent when the item is active — the sans
+     voice, not mono, so it reads as a name not a measurement) and its
+     count/size at the right (the mono voice, quiet). Replaces
+     .pt-board-item-time's leading micro-volume-grid + trailing
+     timestamp — this is the whole line now. */
+  /* 9/16 (Bryan: "remove this text, and left align copy to the left
+     edge of the other text below a generation") — the "Board N" label
+     retires with its own rules; the count is the line, starting on the
+     item's own left edge rather than being pushed to the far end by a
+     space-between pair that no longer exists. */
+  .pt-board-item-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 4px 4px 2px 6px; /* 9/16 — 6px left so the line starts flush with the picture's own edge, not 2px inside it */
+  }
+  .pt-board-item-count {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-subtle);
+    white-space: nowrap;
+  }
+  /* The board's own "Concept" label is redundant now that every row
+     announces itself (CONCEPT A · 3 variants · best 89); the section
+     keeps its id and rail-nav target, only the heading goes. */
+  .pt-sheet-main #ptConceptSection > .pt-section-label { display: none; }
+  .pt-sheet-main #ptConceptSection .pt-concept-group:first-child { padding-top: 0; }
+  /* §BP folded-in (a) — #ptConceptToolbar (§BO.6's home for Package +
+     Export to Figma, pushed to the row's far right) retires along with
+     the 16px gap it reserved above the first row: both chips moved
+     into the band itself, right end, after LEGAL (18-sheet-a.css's
+     .pt-band-output rule, above). */
+  /* Selects, above the board: its head speaks the concept rows' own
+     eyebrow (SELECTS · 0), its cards sit on the board's columns. */
+  /* 9/10 (Bryan: "have Selects match the same font style as Concept A")
+     — the section title in the sans at 13/600, the count beside it in
+     mono. */
+  .pt-sheet-main .pt-selects-label {
+    display: flex; align-items: baseline; gap: 10px;
+    margin: 0 0 14px; padding: 0; border: 0;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600; letter-spacing: -0.1px; text-transform: none;
+    color: var(--text-strong);
+  }
+  .pt-sheet-main .pt-selects-label .pt-section-count { font-size: 10.5px; letter-spacing: 0; text-transform: none; }
+  .pt-sheet-main .pt-selects-grid { gap: 16px; }
+  .pt-sheet-main .pt-selects-empty { font-size: 12.5px; }
+  .pt-sheet-main .pt-canvas-section + .pt-canvas-section { margin-top: 20px; }
+  /* 9/10 (Bryan: "have hairlines separate the concepts from each other
+     — nice and clean"): a rule above the concept section and above
+     every concept row after the first (and the ghost tile), each
+     running the main column AND the 28px gap so it lands on the spine —
+     the board reads as one ruled grid off one line. 24px from rule to
+     row head, the group's own padding. */
+  .pt-sheet-main #ptConceptSection { position: relative; padding-top: 24px; }
+  /* Bryan, 9/15 ("this should travel with the user as they scroll"):
+     the Selects section rides along under the Media bar while the
+     board scrolls — sticky on the sheet's own scrollport, flush under
+     the Media bar, on
+     the sheet's ground, bled to the stage's edges exactly like the
+     band (AL.8's 34/32 reach) so nothing scrolls up the gutters
+     beside it. Its bottom hairline IS the rule that used to sit on
+     the concept section's top (that ::before retires when it follows
+     this block), and the 20px gap moves inside as padding — so at
+     rest the geometry is unchanged: content, 20px, one 0.5px rule,
+     the rows. */
+  /* Bryan, 9/15 ("make the selects area above the Select units to edit
+     panel"): the Selects section LEADS the sheet — flush under the
+     Media bar (the -24px top cancels the column's own padding, the
+     band's old job), 20px of its own air above the label, its bottom
+     hairline the rule the band sits under. Still sticky (above): the
+     band and its tray scroll under it. */
+  .pt-sheet-main #ptSelectsSection {
+    position: sticky; top: 0; z-index: 11; /* 0, not the bar's height: #canvas's own padding-top already clears the bar, and a sticky inset is measured from that content edge (the old .pt-sheet-actions note) */
+    background: var(--canvas-bg);
+    margin: -24px -32px 0 calc(-6px - var(--pt-stage-inset, 28px));
+    padding: 20px 32px 20px calc(6px + var(--pt-stage-inset, 28px));
+    border-bottom: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.10));
+  }
+  /* The concept section follows the band now: its own bottom rule is
+     the separator, so the section's own top rule retires. §BP — the
+     lightbox is a fixed overlay (never in flow, open or closed), so
+     it's the section's constant DOM sibling now instead of the old
+     push tray's — same rule, new selector. */
+  .pt-sheet-main .pt-band-lightbox + #ptConceptSection { margin-top: 0; }
+  .pt-sheet-main .pt-band-lightbox + #ptConceptSection::before { display: none; }
+  /* 9/10 (Bryan: "have the hairline separating concepts extend from
+     edge to edge like the one below concept sheet") — the row rules
+     overshoot the column by a viewport either side, exactly as the
+     toolbar's rule does, and #canvas (overflow-x: hidden) trims them
+     at the pane's own edges. */
+  /* AB.3 — the overshoot now reaches exactly .pt-sheet-main's own
+     edges (the splitter's hairline on the left, the History rail's on
+     the right), not a viewport either side: the stage is a flex
+     sibling of the two rails now, not the whole padded/centered view,
+     so the old -100vw trick would have run the rule UNDER the rail/
+     drawer/History tracks instead of stopping at them. -32px matches
+     .pt-sheet-main's own right padding below (the overshoot cancels
+     it, same "reach past your own inset" logic as before).
+     AL.8 (Bryan: "there's a small gap on all of them now") — the LEFT
+     side was still 4px short: .pt-sheet-main's own left padding is
+     --pt-stage-inset (28px, AL.3's shared edge), not a flat 32, and
+     the splitter sits a further 6px beyond THAT (the same "6px reach
+     under the splitter" #canvas already carries — see its own
+     comment). -32px on the left cancelled only 32 of the 34 (28+6)
+     needed, landing 2px inside the splitter's own box instead of
+     flush with its hairline (which reads through it, since .splitter
+     is transparent) — the same shortfall .pt-sheet-band's full-bleed
+     margin below carries too. */
+  .pt-sheet-main #ptConceptSection::before {
+    content: ''; position: absolute; left: calc(-6px - var(--pt-stage-inset, 28px)); right: -32px; top: 0; height: 0.5px;
+    background: var(--line-solid, rgba(15, 23, 42, 0.10)); pointer-events: none;
+  }
+  .pt-sheet-main .pt-concepts > * { position: relative; }
+  /* 9/18 — no hairline between banner rows (Bryan: "remove the hairline
+     between the banner rows"); the rows separate by space alone. */
+  .pt-sheet-main .pt-concepts > .pt-concept-ghost::before {
+    content: none;
+    top: -24px; /* 9/10: the tile has 48px above it; the rule sits mid-gap, not on its dashed edge */
+    /* AL.3 amendment + AL.8 — unlike a regular concept row (whose
+       rule sits on the OUTER, always-full-width .pt-concept-group
+       while only an inner child gets centred), the ghost tile IS its
+       own rule's anchor AND the block AL.3 centres — so the shared
+       rule's fixed 34/32 overshoot above would fall short by however
+       far this block now sits from each true edge. centerCanvasSections
+       recomputes the exact shortfall into these two custom properties
+       every time it repositions the tile (resize, size/volume change);
+       the fallback here is the shared rule's own plain case (an
+       unfitted/full-width tile, no extra reach needed). */
+    left: calc(-1 * var(--pt-ghost-reach-left, 34px));
+    right: calc(-1 * var(--pt-ghost-reach-right, 32px));
+  }
+  body.is-painter-shared #ptPackageBtn { display: none; } /* AD.1 — Package now sits in the band's OUTPUT group */
+  /* Concept row header — an eyebrow, a meta line the rail keeps
+     honest, and the + sizes chip at the row's end. */
+  /* 9/10 (Bryan: "different font for Concept A… a nicer treatment for
+     this text") — the row head is a title row now: the letter mark
+     (the sheet's own .pt-concept-letter circle), "Concept A" in the
+     sans at 13/600 like a section title, and the meta (3 variants ·
+     best 89) in mono at the row's right edge, where the "+ sizes"
+     chip used to sit. 28px tall — the mark's 26 plus the 2px under. */
+  /* §BO.4 — the "Concept A/B/C" eyebrow (.pt-concept-k) retires; the
+     row head stays (below) so a row keeps its spacing. */
+  .pt-concept-row-head { display: flex; align-items: center; gap: 10px; min-height: 20px; padding: 0 0 2px; } /* 9/10: the letter mark is gone (Bryan) — the title alone */
+  /* AL.7 — the label was a plain eyebrow (was AJ.1's own click
+     target, "the label toggles its whole row"); row-level selection
+     moved onto its own checkbox, just before it — see
+     initSelectionClicks. */
+  /* AQ.5 (Bryan, 9/15: "the corner check... has to be the best
+     looking version of a checkbox") — the row's own checkbox is no
+     longer a bespoke 16px square; it takes the unit corner check's
+     OWN recipe (.pt-unit-check, 21-sheet-b.css — one class, reused,
+     see buildConceptSheetDOM), reseated here since the row head is
+     plain flow, not artwork the box needs to float over, and shown
+     on the row/board's own terms (hover, "has-selection", checked/
+     mixed) rather than a card's hover. AQ.5 note — this also retires
+     the two-glyph-siblings-in-one-flex-box layout that put the old
+     dash off-centre at the box's right edge; the shared recipe's own
+     dash (21-sheet-b.css) is absolutely centred instead. */
+  /* (the row checkbox that sat before "Concept A" retired 9/15 — Bryan: "remove the checks next to the concepts") */
+  .pt-concept-meta { display: none; } /* 9/10 (Bryan): "3 variants · best 89" is superfluous — the row's cards say both */
+  .pt-concept-meta:empty { display: none; }
+  /* AJ.1 — "the concept label shows '· 3 selected' in the count
+     voice when any of its units are": .pt-section-count's own mono
+     recipe, a dedicated span so syncSheetRail's own [data-concept-meta]
+     write (the retired "3 variants · best 89", still CSS-hidden above)
+     never fights it. */
+  .pt-concept-selected {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    color: var(--text-subtle);
+  }
+  .pt-concept-selected:empty { display: none; }
+  /* §BO.5 — §BL's drag-select hint line (.pt-concept-hint-line)
+     retires along with its "learned" logic; the row head it rode on
+     no longer names its concept either (§BO.4). */
+  /* (AQ — the card head's own hover-reveal of the − and the kebab is
+     gone with the head chrome: the kebab lives in the artwork's action
+     cluster now, 21-sheet-b.css.) */
+  .pt-section-label {
+    display: flex; align-items: center; gap: 9px;
+    margin: 0 0 24px; /* 8px floor, was 20 — still well under the
+      56px .pt-canvas-section+.pt-canvas-section gap above it, so the
+      label keeps reading closer to its own content than to whatever
+      section came before. */
+    font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--text-strong);
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--line);
+  }
+  /* Same demotion as the toolbar's own .pt-variety-count, and for the
+     same reason: a filled pill next to a section title reads heavier
+     than a count needs to. The label's own 9px flex gap already gives
+     it room, so it needs no padding/enclosure of its own to read as a
+     distinct, structural number. */
+  .pt-section-count {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  /* ── Package: the toolbar's one primary action, so it is the one
+     filled chip in a row of outlines. Two-line label because "for
+     Trafficking" is the destination, not part of the verb. ── */
+  /* Qualified with .pt-hdr-chip because both classes sit on these
+     buttons and the plain .pt-hdr-chip rule is defined later in this
+     sheet — unqualified, it won on source order and painted the one
+     primary action the same white as the outline chips beside it. */
+  .pt-hdr-chip.pt-package-btn {
+    /* 9/10 — same 32px / 8px-radius box as every other chip in the
+       row (see .pt-hdr-chip), filled with the accent: still the one
+       primary action, no longer the one pill. */
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 32px; padding: 0 10px;
+    border: 0.5px solid transparent; border-radius: 8px;
+    background: var(--accent); color: var(--text-button);
+    box-shadow: none;
+    font: inherit; cursor: pointer;
+    transition: background 160ms ease, opacity 160ms ease, box-shadow 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+  /* No Package until there is a select (Bryan, 9/15: "there should be
+     no package button until selects have been made") — syncPackageButton
+     sets [hidden] at zero, and the rule above's own display:inline-flex
+     silently beat the bare attribute (the house gotcha, see
+     #ptBandClearBtn[hidden]); paired with the class it wins. */
+  .pt-hdr-chip.pt-package-btn[hidden] { display: none; }
+  .pt-hdr-chip.pt-package-btn svg { width: 14px; height: 14px; flex-shrink: 0; color: inherit; }
+  .pt-package-labels { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.08; }
+  .pt-package-main { font-size: 12.5px; font-weight: 600; letter-spacing: -0.1px; }
+  .pt-package-sub { font-size: 9.5px; opacity: 0.72; letter-spacing: 0.02em; }
+  .pt-hdr-chip.pt-package-btn:not(:disabled):hover {
+    background: color-mix(in srgb, var(--accent) 88%, #000);
+    border-color: transparent; color: var(--text-button);
+    box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 32%, transparent);
+  }
+  /* Disabled reads as "not yet", not as broken: it keeps its shape and
+     loses its fill, so the row still shows where the action will be. */
+  .pt-hdr-chip.pt-package-btn:disabled {
+    background: transparent; color: var(--text-subtle);
+    border-color: var(--line-solid, rgba(15, 23, 42, 0.10)); cursor: default;
+    box-shadow: none;
+  }
+  .pt-hdr-chip.pt-package-btn:disabled svg { color: var(--text-subtle); }
+  .pt-hdr-chip.pt-package-btn:disabled .pt-package-sub { opacity: 0.6; }
+
+  /* Generate's popover footer (V2, PLAN.md §V) — a rule, then two
+     action rows: the primary append gets Package's own accent-fill/
+     hover recipe (the chip beside it borrows the same look one level
+     up), the quiet replace reuses .pt-select-menu-item's existing
+     full-width "menu action" row — the combined selector below only
+     adds the footer's own spacing/centering, at higher specificity
+     than either class alone so it doesn't depend on source order. */
+  .pt-generate-pop-hr { height: 0.5px; background: var(--line-solid, rgba(15, 23, 42, 0.10)); margin: 10px -12px; }
+  .pt-generate-action--primary {
+    display: block; width: 100%; margin-top: 6px;
+    height: 34px; border-radius: 8px; border: 0.5px solid transparent;
+    background: var(--accent); color: var(--text-button);
+    font: inherit; font-size: 12.5px; font-weight: 600; text-align: center;
+    cursor: pointer;
+    transition: background 160ms ease;
+  }
+  .pt-generate-action--primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); }
+  .pt-generate-action--secondary.pt-select-menu-item { margin-top: 6px; text-align: center; }
+
+  /* #ptPackageBtn only (the `--tip` modifier — Send to Figma and Apply
+     changes keep the two-line .pt-package-sub above as-is): "for
+     Trafficking" was the destination, not part of the verb, so the
+     handoff note was right — it reads better as a hover/focus tip than as a
+     second line every viewer has to read past. Same recipe as
+     .pt-select-label (dark pill, small pointer, opacity/transform only
+     — the chip's own 36px footprint never moves). */
+  .pt-package-btn--tip { position: relative; }
+  .pt-package-tip {
+    position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translate(-50%, 3px);
+    z-index: 30;
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: var(--text-strong);
+    color: var(--pg-bg);
+    font-family: var(--font-sans);
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0.02em;
+    white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .pt-package-tip::after {
+    content: '';
+    position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--text-strong);
+  }
+  .pt-package-btn--tip:hover .pt-package-tip,
+  .pt-package-btn--tip:focus-visible .pt-package-tip {
+    opacity: 1; transform: translate(-50%, 0);
+  }
+  /* Disabled ("inert until there is a shortlist") is already inert to
+     hover/focus as a native button, but this keeps it honest even so —
+     no tip advertising a destination it can't yet deliver to. */
+  .pt-package-btn--tip:disabled .pt-package-tip { display: none; }
+
+  /* ── Trafficking: a handoff document. AF moved the old flat field/
+     value sheet (.pt-traffic-sheet/-row, read-only) into the Package
+     overlay's own panel as real editable controls (below) — the
+     success/pending voice and the folder tree survive verbatim,
+     reused by the overlay's APPROVAL rows and CONTENTS disclosure. ── */
+  .pt-traffic-ok { color: #1a7f4b; font-weight: 600; }
+  .pt-traffic-pending { color: #a25208; font-weight: 600; }
+
+
+  /* 9/18 — the sheet as one even grid with breathing room (Bryan: "make
+     sure these look nicely grided but with breathing room"). Row labels,
+     the row rule and the selection line all retired, so the empty row
+     head and the group's own padding only added dead height: rows now
+     sit one gutter apart, and columns get a matching, generous gutter. */
+  .pt-sheet-main .pt-concept-row-head { display: none; }
+  .pt-sheet-main .pt-concept-group { padding: 0; gap: 0; }
+  .pt-sheet-main .pt-concepts { gap: 40px; }
+  .pt-sheet-main .pt-shape-row { gap: 32px; }

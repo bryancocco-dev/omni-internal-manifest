@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email Template — All Options</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html {
+    background:#ffffff;
+    scroll-behavior:auto;
+  }
+  body { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; color:#1b1d21; }
+  .wrap { max-width:1376px; margin:0 auto; padding:64px 48px 96px; }
+  .sep {
+    display:flex; align-items:center; gap:16px;
+    margin:56px 0 32px;
+  }
+  .sep:first-of-type { margin-top:0; }
+  .sep .num {
+    font-family:'Fira Code','Courier New',Courier,monospace;
+    font-size:12px; letter-spacing:0.08em; color:#9b9dac;
+  }
+  .sep .rule { flex:1; height:1px; background:rgba(15,23,42,0.14); }
+  .pair {
+    display:grid; grid-template-columns:1fr 1fr; gap:24px;
+    align-items:start;
+  }
+  iframe { display:block; width:100%; border:0; background:#ffffff; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="sep"><span class="num">01</span><span class="rule"></span></div>
+    <div class="pair">
+      <iframe src="option-1.html" scrolling="no"></iframe>
+      <iframe src="option-1.html?media=image" scrolling="no"></iframe>
+    </div>
+
+    <div class="sep"><span class="num">02</span><span class="rule"></span></div>
+    <div class="pair">
+      <iframe src="option-2.html" scrolling="no"></iframe>
+      <iframe src="option-2.html?media=image" scrolling="no"></iframe>
+    </div>
+
+    <div class="sep"><span class="num">04</span><span class="rule"></span></div>
+    <div class="pair">
+      <iframe src="option-4.html" scrolling="no"></iframe>
+      <iframe src="option-4.html?media=image" scrolling="no"></iframe>
+    </div>
+
+    <div class="sep"><span class="num">06</span><span class="rule"></span></div>
+    <div class="pair">
+      <iframe src="option-6.html" scrolling="no"></iframe>
+      <iframe src="option-6.html?media=image" scrolling="no"></iframe>
+    </div>
+
+  </div>
+
+<script>
+(function () {
+  function trim(fr) {
+    try {
+      var d = fr.contentDocument;
+      if (!d || !d.head || d.getElementById('embed-trim')) return;
+      var st = d.createElement('style');
+      st.id = 'embed-trim';
+      st.textContent = '.meta-strip{display:none!important}' +
+        'html,body{background:#ffffff!important}' +
+        'body{padding:0!important}' +
+        '.email-column,.page-inner{margin:0 auto!important}';
+      d.head.appendChild(st);
+    } catch (e) {}
+  }
+  function size(fr) {
+    try {
+      trim(fr);
+      var d = fr.contentDocument;
+      if (!d || !d.body) return;
+      fr.style.height = Math.max(d.documentElement.scrollHeight, d.body.scrollHeight) + 'px';
+    } catch (e) {}
+  }
+  var frames = Array.prototype.slice.call(document.querySelectorAll('iframe'));
+  frames.forEach(function (fr) {
+    fr.addEventListener('load', function () {
+      size(fr);
+      setTimeout(function () { size(fr); }, 300);
+    });
+  });
+  window.addEventListener('resize', function () { frames.forEach(size); });
+
+  /* ---- smooth wheel scrolling (lerp) ---- */
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var target = window.scrollY;
+  var current = window.scrollY;
+  var animating = false;
+  var EASE = 0.12;
+
+  function maxScroll() {
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+  function tick() {
+    var diff = target - current;
+    if (Math.abs(diff) < 0.4) {
+      current = target;
+      window.scrollTo(0, current);
+      animating = false;
+      return;
+    }
+    current += diff * EASE;
+    window.scrollTo(0, current);
+    requestAnimationFrame(tick);
+  }
+  function push(delta) {
+    target = Math.min(maxScroll(), Math.max(0, target + delta));
+    if (!animating) {
+      animating = true;
+      current = window.scrollY;
+      requestAnimationFrame(tick);
+    }
+  }
+  function onWheel(e) {
+    if (reduce || e.ctrlKey) return;      // let pinch-zoom through
+    e.preventDefault();
+    push(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY);
+  }
+  // native scrolls (scrollbar drag, keyboard, find-in-page) resync the target
+  window.addEventListener('scroll', function () {
+    if (!animating) { target = window.scrollY; current = window.scrollY; }
+  }, { passive: true });
+
+  if (!reduce) {
+    window.addEventListener('wheel', onWheel, { passive: false });
+    // wheel events over an iframe never reach us — forward them from inside
+    frames.forEach(function (fr) {
+      fr.addEventListener('load', function () {
+        try {
+          fr.contentDocument.addEventListener('wheel', onWheel, { passive: false });
+        } catch (e) {}
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

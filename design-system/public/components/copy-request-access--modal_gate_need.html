@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+  OMNI component: modal_gate_need
+  Project: Access
+  Note: .qa-gate-card (need) — full-viewport "You Need Access" gate, recipient side of a ?shared= link (optional message + signed-in-as row)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access — modal_gate_need · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/copy-request-access.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="qa-gate" style="position:static;background:transparent;padding:24px;">
+  <div class="qa-gate-card">
+    <img class="qa-gate-logo" src="/_assets/copy-request-access/omni-logo.png" alt="OMNI">
+    <div class="qa-gate-art error">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="10.5" width="14" height="9.5" rx="2"/>
+        <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
+        <circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <h1>You Need Access</h1>
+    <div class="qa-gate-file">
+      <span class="qa-gate-file-icon">
+        <svg width="13" height="13" viewBox="0 0 11.6668 11.665" fill="none"><path d="M6.64962 0.0543193C5.68778 -0.0773318 4.70831 0.0312136 3.79864 0.370267C2.88897 0.70932 2.0774 1.26833 1.43637 1.9974C0.887745 2.62926 0.480685 3.3712 0.242533 4.17339C0.0043799 4.97559 -0.0593513 5.81946 0.0556197 6.64832C0.364786 8.91982 2.07279 10.8524 4.3052 11.4585C4.80286 11.5947 5.31641 11.6641 5.83237 11.665L5.9152 11.6644C6.2101 11.6606 6.49927 11.5824 6.75585 11.4369C7.01243 11.2915 7.22811 11.0836 7.38287 10.8326C7.53815 10.5829 7.62776 10.298 7.64336 10.0043C7.65897 9.7107 7.60006 9.4179 7.47212 9.15315L7.35604 8.91049C7.26675 8.73604 7.22483 8.54122 7.23445 8.34549C7.24407 8.14977 7.3049 7.96 7.41087 7.79515C7.56249 7.54886 7.80002 7.36752 8.07757 7.28617C8.35511 7.20483 8.65296 7.22926 8.91354 7.35474L9.15387 7.46965C9.3942 7.58515 9.6497 7.64407 9.91279 7.64407C10.3732 7.64171 10.8144 7.45931 11.1421 7.13588C11.4698 6.81245 11.6579 6.37366 11.6663 5.91332C11.6735 5.36965 11.6042 4.82767 11.4604 4.30332C10.8537 2.07149 8.92112 0.363486 6.64962 0.0543193ZM9.65845 6.4179L9.41812 6.30299C8.35179 5.79082 7.04395 6.18749 6.4227 7.17449C5.9922 7.86049 5.94845 8.67715 6.3037 9.41565L6.41979 9.65832C6.4633 9.74647 6.48341 9.84433 6.4782 9.9425C6.47299 10.0407 6.44263 10.1358 6.39004 10.2189C6.33878 10.3037 6.26658 10.374 6.18037 10.4229C6.09416 10.4719 5.99683 10.4978 5.8977 10.4983H5.83237C5.41953 10.4972 5.00863 10.4417 4.61029 10.3332C2.82354 9.84848 1.45854 8.30382 1.21179 6.4914C1.02454 5.11765 1.41712 3.79465 2.31604 2.76449C2.82747 2.17779 3.47748 1.72828 4.20695 1.45687C4.93641 1.18546 5.72216 1.10077 6.4927 1.21049C8.30512 1.45724 9.84979 2.82282 10.3345 4.60899C10.45 5.03482 10.5055 5.46882 10.499 5.8964C10.492 6.36715 10.0061 6.58649 9.65845 6.4179Z" fill="currentColor"/><circle cx="3.20794" cy="7.28996" r="0.875" fill="currentColor"/><circle cx="3.20794" cy="4.95662" r="0.875" fill="currentColor"/><circle cx="4.95794" cy="3.20662" r="0.875" fill="currentColor"/><circle cx="7.29127" cy="3.20662" r="0.875" fill="currentColor"/></svg>
+      </span>
+      <span class="qa-gate-file-meta">
+        <span class="qa-gate-file-title">Outcomes Forecast</span>
+        <span class="qa-gate-file-canvas">Meridian Transatlantic Launch</span>
+      </span>
+    </div>
+    <p>This file is restricted. Request access from the owner, or switch to an account that can open it.</p>
+    <textarea class="qa-gate-msg" placeholder="Message (optional)"></textarea>
+    <button class="qa-gate-btn" data-gate-request>Request access</button>
+    <div class="qa-gate-account">
+      <span class="qa-gate-avatar" style="background:#be123c;">TR</span>
+      <span>Signed in as <b>tomasr.reyes@omc.com</b></span>
+      <a data-gate-switch>Switch account</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

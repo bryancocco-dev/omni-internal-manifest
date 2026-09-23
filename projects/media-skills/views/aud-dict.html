@@ -1,0 +1,62 @@
+<style>
+  /* Data Dictionary — standalone shared component (extracted from
+     aud-list per Bryan): shows on every audience view via the global
+     fragment stack, ahead of Source Inventory. Classes retain their
+     original audl-dict names (no collisions — aud-list no longer
+     defines them). */
+  .audl-dict-title {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text-strong);
+  }
+  .audl-dict-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 32px;
+  }
+  .audl-dict-col { display: flex; flex-direction: column; gap: 20px; }
+  .audl-dict-row { display: flex; align-items: flex-start; gap: 24px; }
+  .audl-dict-term { flex: none; width: 168px; padding-top: 2px; }
+  .audl-dict-def { flex: 1; min-width: 0; margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-body); }
+  .audl-dict-line { border: none; border-top: 0.5px solid var(--line); margin: 0; }
+  .audl-dict-title {
+    font: 500 10px/1.6 var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-subtle);
+    padding-bottom: 12px;
+  }
+  @media (max-width: 900px) {
+    .audl-dict-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+  <section class="audl-dict" data-reveal>
+    <h2 class="audl-dict-title">Data Dictionary</h2>
+    <div class="audl-dict-grid">
+      <div class="audl-dict-col">
+        <div class="audl-dict-row">
+          <span class="audl-dict-term audl-source-chip"><svg class="audl-ico-data"><use href="#audl-ico-data"></use></svg>Corvache Data</span>
+          <p class="audl-dict-def">Lörem ipsum poligen makronas i transfett. Tris orade pretrening. Padäns mesat ast fyjybelt trangen. Dedöl mikroligt: fins jäng. Spoilervarning bepp. Pan trina. Kugt keda. Mirade isasade miktig till fåss tetrafagen. Kide prock om än artdöden heterovis. Prengen spevis bäsam, belig. Defas egosade i keltisk tiger, röligt.</p>
+        </div>
+        <hr class="audl-dict-line">
+        <div class="audl-dict-row">
+          <span class="audl-dict-term audl-term-chip"><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Tech Savvy</span>
+          <p class="audl-dict-def">Lörem ipsum poligen makronas i transfett. Tris orade pretrening. Padäns mesat ast fyjybelt trangen. Dedöl mikroligt: fins jäng. Spoilervarning bepp. Pan trina. Kugt keda. Mirade isasade miktig till fåss tetrafagen. Kide prock om än artdöden heterovis. Prengen spevis bäsam, belig. Defas egosade i keltisk tiger, röligt.</p>
+        </div>
+      </div>
+      <div class="audl-dict-col">
+        <div class="audl-dict-row">
+          <span class="audl-dict-term audl-source-chip"><svg class="audl-ico-data"><use href="#audl-ico-data"></use></svg>Comscore</span>
+          <p class="audl-dict-def">Lörem ipsum poligen makronas i transfett. Tris orade pretrening. Padäns mesat ast fyjybelt trangen. Dedöl mikroligt: fins jäng. Spoilervarning bepp. Pan trina. Kugt keda. Mirade isasade miktig till fåss tetrafagen. Kide prock om än artdöden heterovis. Prengen spevis bäsam, belig. Defas egosade i keltisk tiger, röligt.</p>
+        </div>
+        <hr class="audl-dict-line">
+        <div class="audl-dict-row">
+          <span class="audl-dict-term audl-term-chip"><svg class="audl-ico-folder"><use href="#audl-ico-folder"></use></svg>Mid-High Income</span>
+          <p class="audl-dict-def">Lörem ipsum poligen makronas i transfett. Tris orade pretrening. Padäns mesat ast fyjybelt trangen. Dedöl mikroligt: fins jäng. Spoilervarning bepp. Pan trina. Kugt keda. Mirade isasade miktig till fåss tetrafagen. Kide prock om än artdöden heterovis. Prengen spevis bäsam, belig. Defas egosade i keltisk tiger, röligt.</p>
+        </div>
+      </div>
+    </div>
+  </section>

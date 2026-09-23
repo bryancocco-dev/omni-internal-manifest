@@ -1,0 +1,99 @@
+<!doctype html>
+<!--
+  OMNI component: modal_agentpicker
+  Project: Manifest
+  Note: #agentsModal — Required Agents modal: search + scope sidebar + paginated table; Light single-select shown with real radio inputs (radio-dot CSS inlined here since it is normally gated on body[data-mode="light"])
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manifest — modal_agentpicker · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-manifest.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<style>#agentsModalDemo .app-modal-th-check{visibility:hidden}
+#agentsModalDemo .app-modal-check input.omni-agent-radio{border-radius:50%}
+#agentsModalDemo .app-modal-check input.omni-agent-radio:checked{background:transparent;border-color:var(--accent)}
+#agentsModalDemo .app-modal-check input.omni-agent-radio::after{background-image:none;background:var(--accent);border-radius:50%;inset:4px}
+#agentsModalDemo .app-modal-check input.omni-agent-radio:checked::after{opacity:1;transform:scale(1)}</style>
+  <div class="app-modal open" id="agentsModalDemo" role="dialog" aria-modal="true" aria-labelledby="agentsModalTitle" style="position:static;visibility:visible;pointer-events:auto">
+    <div class="app-modal-card app-modal-card-wide" role="document">
+      <header class="app-modal-head">
+        <h2 class="app-modal-title" id="agentsModalTitle">Required Agents</h2>
+        <button class="app-modal-close" type="button" aria-label="Close" id="agentsModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </header>
+      <div class="app-modal-searchwrap">
+        <span class="app-modal-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search" aria-label="Search agents">
+        </span>
+      </div>
+      <div class="app-modal-body">
+        <ul class="app-modal-sidebar" role="tablist" aria-label="Agent scope">
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Excluded</span></li>
+          <li role="tab" aria-selected="false"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">Included</span></li>
+          <li role="tab" class="active" aria-selected="true"><span class="app-modal-sidebar-dot"></span><span class="app-modal-sidebar-label">My Agents</span></li>
+        </ul>
+        <div class="app-modal-content">
+          <div class="app-modal-table" role="table" aria-label="Agents">
+            <div class="app-modal-thead" role="row">
+              <div class="app-modal-th app-modal-th-check" role="columnheader">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select all"></span>
+              </div>
+              <div class="app-modal-th app-modal-th-name" role="columnheader">Agent</div>
+              <div class="app-modal-th app-modal-th-desc" role="columnheader">Description</div>
+              <div class="app-modal-th app-modal-th-date" role="columnheader">Date Modified</div>
+            </div>
+            <div class="app-modal-tbody" id="agentsModalRows">
+              <div class="app-modal-row" data-name="Copywriter">
+                <span class="app-modal-check"><input type="radio" class="omni-agent-radio" name="omniAgentRadio" aria-label="Select Copywriter" checked></span>
+                <span class="app-modal-row-name">Copywriter</span>
+                <span class="app-modal-row-desc">A creative copywriter crafts engaging, persuasive content across briefs and channels.</span>
+                <span class="app-modal-row-date">May 10, 2026</span>
+              </div>
+              <div class="app-modal-row" data-name="Strategist">
+                <span class="app-modal-check"><input type="radio" class="omni-agent-radio" name="omniAgentRadio" aria-label="Select Strategist"></span>
+                <span class="app-modal-row-name">Strategist</span>
+                <span class="app-modal-row-desc">A creative strategist develops innovative concepts and platform-spanning narratives.</span>
+                <span class="app-modal-row-date">May 09, 2026</span>
+              </div>
+              <div class="app-modal-row" data-name="Account">
+                <span class="app-modal-check"><input type="radio" class="omni-agent-radio" name="omniAgentRadio" aria-label="Select Account"></span>
+                <span class="app-modal-row-name">Account</span>
+                <span class="app-modal-row-desc">An account manager builds and maintains client relationships day-to-day.</span>
+                <span class="app-modal-row-date">May 07, 2026</span>
+              </div>
+              <div class="app-modal-row" data-name="Prompt Engineer">
+                <span class="app-modal-check"><input type="radio" class="omni-agent-radio" name="omniAgentRadio" aria-label="Select Prompt Engineer"></span>
+                <span class="app-modal-row-name">Prompt Engineer</span>
+                <span class="app-modal-row-desc">Structures prompts and chains for repeatable, brand-aligned model output.</span>
+                <span class="app-modal-row-date">May 04, 2026</span>
+              </div>
+            </div>
+          </div>
+          <div class="app-modal-pagination" id="agentsModalPagination">
+            <button class="app-modal-page-btn" type="button" aria-label="Previous" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="app-modal-page-meta">1/17</span>
+            <button class="app-modal-page-btn" type="button" aria-label="Next">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<!--
+  OMNI component: sheet_broken
+  Project: PDF Tables
+  Note: .sheet.zoomed (paired pages) — miniature "printed page" mockup of a failed export: overprinted headers, mid-token hyphenation, a torn row spanning the page break, PAGE N OF N mark
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — sheet_broken · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="sheet-rail">
+          <div>
+            <div class="sheet-cap is-bad"><span class="dot"></span>Today's export — page 1</div>
+            <div class="sheet zoomed">
+              <h3 class="xp-title" style="font-size:17pt;margin-bottom:14px;">Research Source Inventory</h3>
+              <table class="bk">
+                <colgroup>
+                  <col style="width:3.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:8%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:9%"><col style="width:5.5%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:31%">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>#</th><th>METHOD</th><th>VENDOR / SOURCE</th><th>AUDIENCE</th>
+                    <th>GEOGRAPHY<span class="flagdot">1</span></th><th>SAMPLE</th><th>WINDOW</th><th>SPEND</th>
+                    <th>OUTPUT</th><th>OWNER</th><th>NOTES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="num">1</td><td>Survey</td><td>Kantar</td><td>Adults 18-34</td>
+                    <td>US</td><td>1,200</td><td>Apr-May 2026</td><td>$18-K<span class="flagdot">3</span></td>
+                    <td>Deck + data</td><td>J. Reyes</td>
+                    <td class="notes">Quant survey covering fandom depth and viewing intent for the World Cup. Weighted to census benchmarks and fielded in two waves to track shift ahead of kickoff.<span class="flagdot">4</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num">2</td><td>Social listening</td><td class="ovf">Brandwatch</td><td class="ovf">Sports fans</td>
+                    <td>Global</td><td>n/a</td><td>Jan-Jun 2026</td><td>$9K</td>
+                    <td>Sentiment report</td><td class="ovf">T. Nguyen</td>
+                    <td class="notes">Ongoing listening stream tracking brand mentions and competitor share of voice. Sentiment scoring flagged rising negativity around ticketing that the team should monitor closely.</td>
+                  </tr>
+                  <tr>
+                    <td class="num">3</td><td>Expert interviews</td><td class="ovf">Independent consultants</td><td class="ovf">Category experts</td>
+                    <td>US/UK</td><td>8</td><td>Mar 2026</td><td>$12-K</td>
+                    <td class="ovf">Synthesis memo</td><td>M. Ortiz</td>
+                    <td class="notes">One-on-one interviews with sponsorship and media strategists to stress-test the activation concept. Findings informed the revised channel mix and pacing plan for Q3.</td>
+                  </tr>
+                  <tr class="torn">
+                    <td class="num">4</td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td>
+                    <td></td><td></td>
+                    <td class="notes">Desk research synthesizing existing syndicated data on streaming habits and<span class="flagdot">5</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="pg-mark">PAGE 1 OF 2</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sheet-cap is-bad"><span class="dot"></span>Today's export — page 2</div>
+            <div class="sheet zoomed">
+              <table class="bk">
+                <colgroup>
+                  <col style="width:3.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:8%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:9%"><col style="width:5.5%">
+                  <col style="width:7.5%"><col style="width:6%"><col style="width:31%">
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td class="num"></td><td class="ovf">Secondary research</td><td class="ovf">Nielsen / GWI<span class="flagdot">2</span></td><td class="ovf">General population</td>
+                    <td>Global</td><td>n/a</td><td>Ongoing</td><td>$6K</td>
+                    <td class="ovf">Slide summary</td><td>K. Park</td>
+                    <td class="notes">major event viewership trends. Used to validate assumptions before commissioning primary research.</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="pg-mark">PAGE 2 OF 2</div>
+            </div>
+          </div>
+        </div>
+</body>
+</html>

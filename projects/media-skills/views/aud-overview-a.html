@@ -1,0 +1,901 @@
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     aud-overview-a — Audience Overview, upper half (Figma 19:14221)
+     Prefix: audoa-. Scoped entirely to this fragment. See PLAN.md.
+     ═══════════════════════════════════════════════════════════════ */
+
+  .audoa-root { display: flex; flex-direction: column; gap: 28px; }
+
+  /* local tokens for hues without a direct var (color-mix off theme
+     tokens only — nothing here is a freestanding hex driving color) */
+  .audoa-root {
+    --audoa-chip-bg: color-mix(in srgb, var(--accent) 16%, var(--card-bg) 84%);
+    --audoa-chip-ink: var(--accent);
+    --audoa-pill-bg: color-mix(in srgb, var(--ms-chart-2) 55%, var(--card-bg) 45%);
+    --audoa-pill-ink: #14161c;
+    --audoa-d1: var(--ms-chart-2);
+    --audoa-d3: color-mix(in srgb, var(--ms-chart-2) 70%, black 30%);
+    --audoa-d4: var(--ms-chart-8);
+    --audoa-d2: color-mix(in srgb, var(--ms-chart-2) 55%, white 45%);
+    --audoa-d0: color-mix(in srgb, var(--ms-chart-2) 40%, var(--ms-chart-8) 60%);
+  }
+  body.ms-app[data-theme="dark"] .audoa-root { --audoa-pill-ink: #14161c; }
+
+  .audoa-card {
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+  .audoa-eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-subtle);
+    margin: 0 0 12px;
+  }
+  .audoa-spark { width: 11px; height: 11px; color: var(--accent); margin-right: 6px; display: inline-block; vertical-align: -1px; flex: none; }
+
+  /* ---------- cover — document-style cover ported verbatim from
+     aud-list's F39 FANLIGHT treatment (round 6 system roll-out); see
+     PLAN.md "System roll-out (round 6)". Replaces the old title/export
+     header module — its content (the page title) moves into the cover;
+     the export button is dropped per the roll-out spec. ---------- */
+  .audoa-cover-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .audoa-cover-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px 40px;
+  }
+  .audoa-cover-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: 260px;
+  }
+  .audoa-cover-meta-label {
+    font: 400 12px/1.5 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-subtle);
+  }
+  .audoa-cover-meta-value {
+    font: 500 14px/1.4 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+    color: var(--text-strong);
+  }
+  .audoa-cover-meta-aside {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .audoa-cover-date {
+    font: 400 13px/1 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-strong);
+  }
+
+  .audoa-cover-title {
+    margin: 48px 0 0;
+    font: 400 54px/1.05 'Helvetica Neue', 'Inter', sans-serif;
+    letter-spacing: -0.025em;
+    color: var(--text-strong);
+    max-width: 900px;
+  }
+
+  .audoa-cover-panel {
+    position: relative;
+    margin-top: 32px;
+    height: 640px;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--ms-cover-field, var(--accent-soft));
+    isolation: isolate;
+  }
+
+  /* ---- F39 FANLIGHT — verbatim port (Bryan's directive, carried
+     through from aud-list's own port of canvas-book-ends' `.cbe-f-39` /
+     `.cbe-f39-sym`, sym=a19 (FIELD) — the same real asset the live
+     document view itself renders, not a re-derived formula). Only the
+     container box is ours; all cbe- markup/paths stay verbatim. ---- */
+  .audoa-cover-panel .cbe-parallax {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  }
+  .audoa-cover-panel .cbe-f39-sym {
+    position: absolute; left: -115%; bottom: 0;
+    width: 266%; aspect-ratio: 1 / 1;
+    transform: translateY(56%);
+    background: transparent;
+    animation: audoaCbeSpinTY 200s linear infinite;
+  }
+  @keyframes audoaCbeSpinTY {
+    from { transform: translateY(56%) rotate(0deg); }
+    to   { transform: translateY(56%) rotate(360deg); }
+  }
+  .audoa-cover-panel .cbe-inline-sym {
+    position: absolute; display: block; pointer-events: none;
+    width: 78%; height: 78%; left: 11%; top: 11%;
+  }
+  .audoa-cover-panel .cbe-piece {
+    animation: audoaCbeShapeBuildIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes audoaCbeShapeBuildIn {
+    from { opacity: 0; filter: blur(10px); }
+    to   { opacity: 1; filter: blur(0); }
+  }
+  body.ms-motion-off .audoa-cover-panel .cbe-f39-sym { animation: none; }
+  body.ms-motion-off .audoa-cover-panel .cbe-piece { animation: none; opacity: 1; filter: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .audoa-cover-panel .cbe-f39-sym { animation: none; }
+    .audoa-cover-panel .cbe-piece { animation: none; opacity: 1; filter: none; }
+  }
+
+  .audoa-cover-stamp {
+    position: absolute; left: 24px; bottom: 24px; right: 24px;
+    z-index: 2;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--text-strong);
+  }
+  .audoa-cover-stamp-grid { display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
+  .audoa-cover-stamp-head { display: inline-flex; align-items: stretch; margin-bottom: 8px; }
+  .audoa-cover-stamp-box {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--text-strong);
+    padding: 3px 10px;
+  }
+  .audoa-cover-stamp-box svg { width: 10px; height: 10px; color: currentColor; flex: none; }
+  .audoa-cover-stamp-box b { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.02em; }
+  .audoa-cover-stamp-city {
+    display: inline-flex; align-items: center;
+    border: 1px solid var(--text-strong); border-left: 0;
+    padding: 3px 11px;
+    font-size: 9px; letter-spacing: 0.32em;
+  }
+  .audoa-cover-stamp-line { margin: 0 0 4px; font-size: 9.5px; letter-spacing: 0.1em; }
+  .audoa-cover-stamp-line i { font-style: normal; color: var(--text-subtle); }
+  .audoa-cover-stamp-chip {
+    display: inline-block;
+    border: 1px dashed var(--text-subtle);
+    padding: 4px 10px;
+    margin-top: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: var(--text-strong);
+  }
+  .audoa-cover-stamp-tools {
+    font-size: 9px; letter-spacing: 0.1em; line-height: 1.75;
+    white-space: nowrap; padding-bottom: 2px;
+  }
+  .audoa-cover-stamp-tools i { font-style: normal; color: var(--text-subtle); margin-left: 8px; }
+
+  @media (max-width: 720px) {
+    .audoa-cover-meta { flex-direction: column; }
+    .audoa-cover-meta-aside { align-items: flex-start; }
+    .audoa-cover-title { font-size: 40px; }
+    .audoa-cover-panel { height: 340px; }
+    .audoa-cover-stamp-grid { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+
+  /* ---------- hero ---------- */
+  .audoa-hero { display: flex; gap: 22px; align-items: stretch; }
+  .audoa-hero-photo {
+    flex: none; width: 228px; height: 227px; border-radius: 14px;
+    overflow: hidden; background: var(--panel-bg-3);
+  }
+  .audoa-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .audoa-hero-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .audoa-hero-title-row { display: flex; align-items: center; gap: 10px; }
+  .audoa-hero-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 6px;
+    background: var(--panel-bg-3); color: var(--text-subtle);
+    font-size: 12px; font-weight: 600;
+  }
+  .audoa-hero-title { font-size: 18px; font-weight: 600; color: var(--text-strong); margin: 0; }
+  .audoa-ai-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--audoa-chip-bg); color: var(--audoa-chip-ink);
+    border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600;
+  }
+  .audoa-hero-desc { font-size: 13px; line-height: 1.6; color: var(--text-body); margin: 0; }
+
+  .audoa-defbox { border: 0.5px solid var(--line); border-radius: 12px; padding: 14px 16px; position: relative; }
+  .audoa-def-sources {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding-bottom: 12px; margin-bottom: 10px; border-bottom: 0.5px solid var(--line);
+    padding-right: 26px;
+  }
+  .audoa-def-link { position: absolute; top: 14px; right: 14px; color: var(--text-subtle); }
+  .audoa-chip-source {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--audoa-chip-bg); color: var(--audoa-chip-ink);
+    border-radius: 8px; padding: 5px 10px 5px 8px;
+    font-family: var(--ms-mono);
+    font-size: 11.5px; font-weight: 500;
+  }
+  .audoa-dot { width: 5px; height: 5px; border-radius: 50%; flex: none; }
+  .audoa-def-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-family: var(--ms-mono);
+    font-size: 11.5px; margin-top: 8px;
+  }
+  .audoa-def-row:first-of-type { margin-top: 0; }
+  .audoa-op { font-weight: 600; color: var(--text-strong); font-size: 11px; letter-spacing: 0.02em; }
+  .audoa-chip-def {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--hover-soft); border: 0.5px solid var(--line);
+    color: var(--text-body); border-radius: 8px; padding: 5px 9px 5px 8px;
+  }
+  .audoa-chip-def svg:last-child { color: var(--text-subtle); flex: none; }
+
+  .audoa-hero-stats { flex: none; display: flex; gap: 26px; align-self: center; padding-left: 8px; }
+  .audoa-stat-big { text-align: right; }
+  .audoa-stat-big b { display: block; font-size: 28px; font-weight: 400; color: var(--text-strong); }
+  .audoa-stat-big span { font-size: 12px; color: var(--text-subtle); }
+
+  /* ---------- 4-tile stat row ---------- */
+  .audoa-tilerow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .audoa-tile { background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .audoa-tile-label { font-size: 12.5px; color: var(--text-subtle); margin: 0 0 8px; }
+  .audoa-tile-value { font-size: 21px; font-weight: 400; color: var(--text-strong); margin: 0; }
+
+  /* ---------- exec summary / insight ---------- */
+  .audoa-prose { font-size: 13.5px; line-height: 1.7; color: var(--text-body); margin: 0; }
+  .audoa-prose em { color: var(--text-strong); font-style: italic; }
+
+  /* ---------- sub-audiences ---------- */
+  .audoa-sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .audoa-sub-card {
+    background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; border-left: 3px solid var(--audoa-accent, var(--accent));
+  }
+  .audoa-sub-card.c2 { --audoa-accent: var(--ms-chart-4); }
+  .audoa-sub-card.c3 { --audoa-accent: var(--ms-chart-2); }
+  .audoa-sub-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .audoa-sub-title { font-size: 14.5px; font-weight: 600; color: var(--text-strong); margin: 0; }
+  .audoa-sub-num { font-size: 12.5px; font-weight: 400; color: var(--audoa-accent, var(--accent)); flex: none; }
+  .audoa-sub-desc { font-size: 12.5px; line-height: 1.55; color: var(--text-body); margin: 0 0 12px; }
+
+  /* ---------- demographics ---------- */
+  .audoa-demo-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .audoa-demo-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .audoa-panel { background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+  .audoa-panel-title { font-size: 13px; color: var(--text-subtle); margin: 0 0 16px; }
+
+  .audoa-split { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .audoa-split b { font-size: 20px; font-weight: 400; color: var(--text-strong); flex: none; }
+  .audoa-split-bar { flex: 1; height: 6px; border-radius: 4px; background: var(--line); position: relative; overflow: hidden; }
+  .audoa-split-bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 4px; display: block; }
+  .audoa-split-lbl { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-subtle); }
+
+  .audoa-edu-row { display: flex; gap: 26px; }
+  .audoa-edu-item b { display: block; font-size: 20px; font-weight: 400; color: var(--text-strong); }
+  .audoa-edu-item span { font-size: 12px; color: var(--text-subtle); }
+
+  .audoa-bars { display: flex; align-items: flex-end; gap: 10px; height: 150px; margin-bottom: 8px; }
+  .audoa-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+  .audoa-bar-pct { font-size: 11px; color: var(--text-subtle); }
+  .audoa-bar-shape { width: 100%; max-width: 34px; border-radius: 4px 4px 2px 2px; background: var(--accent); }
+  .audoa-bar-shape.blue { background: var(--ms-chart-2); }
+  .audoa-bar-cat { font-size: 10.5px; color: var(--text-subtle); text-align: center; }
+
+  .audoa-donut-wrap { display: flex; align-items: center; gap: 26px; }
+  .audoa-donut { position: relative; width: 176px; height: 176px; flex: none; border-radius: 50%;
+    background: conic-gradient(
+      var(--audoa-d1) 0% 52%,
+      var(--audoa-d3) 52% 58%,
+      var(--audoa-d4) 58% 61%,
+      var(--audoa-d2) 61% 83%,
+      var(--audoa-d0) 83% 100%
+    );
+  }
+  .audoa-donut::after { content: ""; position: absolute; inset: 22%; border-radius: 50%; background: var(--card-bg); }
+  .audoa-donut-lbl { position: absolute; top: 50%; left: 50%; font-size: 11px; font-weight: 400; color: var(--text-strong);
+    transform: translate(-50%, -50%) rotate(var(--a)) translate(0, -66px) rotate(calc(-1 * var(--a))); }
+  .audoa-legend { display: flex; flex-direction: column; gap: 14px; }
+  .audoa-legend-row { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-body); }
+  .audoa-legend-sw { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+
+  .audoa-plat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .audoa-plat-row:last-of-type { margin-bottom: 8px; }
+  .audoa-plat-icon {
+    width: 26px; height: 26px; border-radius: 8px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 10px; font-weight: 600; overflow: hidden;
+  }
+  .audoa-plat-name { font-size: 13px; color: var(--text-body); width: 84px; flex: none; }
+  .audoa-plat-track { flex: 1; height: 6px; border-radius: 4px; background: var(--line); overflow: hidden; }
+  .audoa-plat-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .audoa-plat-val { font-size: 13px; font-weight: 400; color: var(--text-strong); width: 34px; text-align: right; flex: none; }
+
+  /* ---------- interests / attitudes / behaviors ---------- */
+  .audoa-iab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .audoa-iab-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+  .audoa-iab-row:last-child { margin-bottom: 0; }
+  .audoa-iab-name-wrap { min-width: 0; }
+  .audoa-iab-cat { display: block; font-size: 10.5px; letter-spacing: 0.04em; color: var(--text-subtle); margin-bottom: 2px; }
+  .audoa-iab-name { font-size: 13px; font-weight: 600; color: var(--text-strong); }
+  .audoa-iab-chips { display: flex; gap: 6px; flex: none; }
+  .audoa-pill-target, .audoa-pill-idx {
+    font-family: var(--ms-mono);
+    font-size: 11px; font-weight: 400; border-radius: 6px; padding: 4px 8px; white-space: nowrap;
+  }
+  .audoa-pill-target { background: var(--audoa-pill-bg); color: var(--audoa-pill-ink); }
+  .audoa-pill-idx { background: var(--audoa-chip-bg); color: var(--audoa-chip-ink); }
+
+  /* ---------- lifestyle values needs (3-panel) ---------- */
+  .audoa-lv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .audoa-lv-item { border-left: 2px solid var(--line); padding-left: 12px; margin-bottom: 16px; }
+  .audoa-lv-item:last-child { margin-bottom: 0; }
+  .audoa-lv-item b { display: block; font-size: 13px; font-weight: 600; color: var(--text-strong); margin-bottom: 3px; }
+  .audoa-lv-item p { font-size: 12px; line-height: 1.5; color: var(--text-body); margin: 0; }
+  .audoa-ins-chip {
+    display: inline-block; background: var(--audoa-chip-bg); color: var(--audoa-chip-ink);
+    font-family: var(--ms-mono);
+    font-size: 11.5px; font-weight: 500; border-radius: 8px; padding: 8px 12px;
+    margin-bottom: 10px;
+  }
+  .audoa-ins-chip:last-child { margin-bottom: 0; }
+
+  /* ---------- lifestyle 4-col mini-bar ---------- */
+  .audoa-mb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .audoa-mb-row { margin-bottom: 14px; }
+  .audoa-mb-row:last-child { margin-bottom: 8px; }
+  .audoa-mb-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .audoa-mb-name { font-size: 12.5px; color: var(--text-body); }
+  .audoa-mb-idx {
+    font-family: var(--ms-mono);
+    font-size: 11px; font-weight: 400; border-radius: 4px; padding: 2px 6px; flex: none;
+    background: var(--audoa-chip-bg); color: var(--audoa-chip-ink);
+  }
+  .audoa-mb-track { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .audoa-mb-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .audoa-mb-fill.blue { background: var(--ms-chart-2); }
+  .audoa-mb-fill.sky { background: var(--ms-chart-7); }
+  .audoa-mb-fill.red { background: var(--ms-chart-4); }
+
+  @media (max-width: 1100px) {
+    .audoa-hero { flex-direction: column; }
+    .audoa-hero-stats { align-self: flex-start; padding-left: 0; }
+    .audoa-tilerow, .audoa-sub-grid, .audoa-demo-row3, .audoa-demo-row2, .audoa-iab-grid, .audoa-lv-grid { grid-template-columns: 1fr 1fr; }
+    .audoa-mb-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ═══ OUR-WORLD PASS (round 6, 2026-08-05) — Swiss integration over
+     the Figma-sourced layout. Structure/copy retained; typography,
+     radii, and restraint are ours. Delete this block to restore the
+     original treatment. ═══ */
+
+  /* cover: meta block → reference look: stacked single column, mono
+     values (ported from aud-list's own Swiss pass). */
+  .audoa-cover-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex-wrap: nowrap;
+  }
+  .audoa-cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .audoa-cover-meta-value {
+    font: 400 13.5px/1.5 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--text-strong);
+    max-width: 46ch;
+  }
+  .audoa-cover-date {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.08em;
+  }
+
+  /* module heading rows: mono uppercase eyebrows w/ a hairline under
+     the header, separating it from its own content (existing copy
+     only); gap-below (12px pad + 1px hairline) stays under gap-above
+     (30px matte padding). */
+  .audoa-eyebrow {
+    font: 500 10px/1.6 var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-subtle);
+    padding-bottom: 0;
+  }
+
+  /* module-root cards sitting directly on a matte: no border/shadow of
+     their own — interior boxes (panels/tiles/sub-cards/defbox) below
+     keep their hairlines */
+  .audoa-card { border-radius: 8px; border: none; }
+  .audoa-tile, .audoa-panel, .audoa-sub-card, .audoa-defbox { border-radius: 8px; }
+  .audoa-hero-photo { border-radius: 6px; }
+
+  /* labels under big stat numerals → mono uppercase; numerals get
+     tabular figures */
+  .audoa-stat-big b, .audoa-split b, .audoa-edu-item b { font-variant-numeric: tabular-nums; }
+  .audoa-stat-big span {
+    font-family: var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+  }
+  .audoa-split-lbl {
+    font-family: var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+  }
+  .audoa-edu-item span {
+    font-family: var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+  }
+</style>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="audoa-ico-sparkle" viewBox="0 0 8.25 8.25">
+    <path d="M4.22326 6.18192L3.23359 5.64419L2.69303 4.66133C2.67215 4.623 2.64125 4.59099 2.60359 4.56869C2.56593 4.54638 2.52292 4.53461 2.47909 4.53461C2.43506 4.53467 2.39185 4.54644 2.35394 4.56873C2.31603 4.59101 2.28481 4.62299 2.26352 4.66133L1.72296 5.64419L0.743092 6.18192C0.704647 6.20317 0.672612 6.23425 0.650309 6.27196C0.628005 6.30967 0.616244 6.35262 0.616244 6.39637C0.616244 6.44012 0.628005 6.48307 0.650309 6.52077C0.672612 6.55848 0.704647 6.58956 0.743092 6.61081L1.72296 7.14854L2.26352 8.12328C2.28481 8.16163 2.31603 8.1936 2.35394 8.21588C2.39185 8.23817 2.43506 8.24995 2.47909 8.25C2.52292 8.25 2.56593 8.23823 2.60359 8.21592C2.64125 8.19362 2.67215 8.16161 2.69303 8.12328L3.23359 7.14854L4.22326 6.61081C4.26171 6.58956 4.29374 6.55848 4.31604 6.52077C4.33835 6.48307 4.35011 6.44012 4.35011 6.39637C4.35011 6.35262 4.33835 6.30967 4.31604 6.27196C4.29374 6.23425 4.26171 6.20317 4.22326 6.18192ZM0.127114 1.59343L0.799958 1.96059L1.16904 2.62991C1.19016 2.6682 1.22124 2.70013 1.25902 2.72238C1.2968 2.74462 1.33989 2.75636 1.3838 2.75636C1.4277 2.75636 1.47079 2.74462 1.50857 2.72238C1.54635 2.70013 1.57743 2.6682 1.59855 2.62991L1.96437 1.95246L2.63721 1.58531C2.6757 1.5643 2.7078 1.53339 2.73017 1.4958C2.75253 1.45822 2.76433 1.41535 2.76433 1.37168C2.76433 1.32801 2.75253 1.28514 2.73017 1.24756C2.7078 1.20997 2.6757 1.17906 2.63721 1.15805L1.96437 0.795771L1.59528 0.126449C1.57416 0.0881627 1.54309 0.0562265 1.50531 0.0339814C1.46753 0.0117364 1.42443 0 1.38053 0C1.33663 0 1.29353 0.0117364 1.25575 0.0339814C1.21797 0.0562265 1.1869 0.0881627 1.16578 0.126449L0.799958 0.795771L0.127114 1.16292C0.0886266 1.18393 0.0565223 1.21485 0.0341603 1.25243C0.0117982 1.29001 0 1.33288 0 1.37655C0 1.42023 0.0117982 1.4631 0.0341603 1.50068C0.0565223 1.53826 0.0886266 1.56917 0.127114 1.59019V1.59343ZM8.11934 3.09535L7.08068 2.53L6.51235 1.4984C6.49147 1.46007 6.46057 1.42806 6.42291 1.40576C6.38525 1.38345 6.34224 1.37168 6.29841 1.37168C6.25494 1.37231 6.2124 1.38436 6.17512 1.40661C6.13783 1.42887 6.10713 1.46053 6.08611 1.4984L5.51452 2.53L4.47749 3.09535C4.43883 3.11639 4.4066 3.14742 4.38418 3.18516C4.36176 3.2229 4.34999 3.26596 4.35011 3.30979C4.35011 3.35339 4.36194 3.39618 4.38436 3.43364C4.40679 3.4711 4.43896 3.50184 4.47749 3.52261L5.51452 4.08796L6.08611 5.12118C6.1074 5.15953 6.13862 5.1915 6.17653 5.21378C6.21443 5.23607 6.25765 5.24785 6.30168 5.2479C6.34551 5.2479 6.38852 5.23613 6.42618 5.21382C6.46383 5.19152 6.49474 5.15951 6.51562 5.12118L7.08394 4.08796L8.12261 3.52261C8.16114 3.50184 8.19331 3.4711 8.21573 3.43364C8.23815 3.39618 8.24999 3.35339 8.24999 3.30979C8.24979 3.26563 8.23753 3.22234 8.21452 3.18457C8.19151 3.1468 8.15861 3.11596 8.11934 3.09535Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<div class="audoa-root">
+
+  <!-- Cover -->
+  <section class="audoa-cover" data-reveal>
+    <div class="audoa-cover-meta">
+      <div class="audoa-cover-meta-row">
+        <div class="audoa-cover-meta-item">
+          <span class="audoa-cover-meta-label">Client</span>
+          <span class="audoa-cover-meta-value">Corvache</span>
+        </div>
+        <div class="audoa-cover-meta-item">
+          <span class="audoa-cover-meta-label">Assignment</span>
+          <span class="audoa-cover-meta-value">Audience Strategy</span>
+        </div>
+        <div class="audoa-cover-meta-item">
+          <span class="audoa-cover-meta-label">Submission Window</span>
+          <span class="audoa-cover-meta-value">Mar 01 &mdash; May 24</span>
+        </div>
+        <div class="audoa-cover-meta-item">
+          <span class="audoa-cover-meta-label">Status</span>
+          <span class="audoa-cover-meta-value">For Strategy Review</span>
+        </div>
+      </div>
+      <div class="audoa-cover-meta-aside">
+        <span class="audoa-cover-date">08.05.2026</span>
+      </div>
+    </div>
+
+    <h1 class="audoa-cover-title">Audience Overview</h1>
+
+    <div class="audoa-cover-panel" data-audoa-panel>
+      <div class="cbe-parallax">
+        <div class="cbe-f39-sym" aria-hidden="true" data-sym="a19">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1721.367 753.619 150.633 150.631" class="cbe-inline-sym" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g id="audoa-ring-src" class="cbe-ring-src">
+            <path d="M 1759.901 826.363 L 1723.635 822.551 L 1723.903 819.991 L 1760.17 823.803 L 1759.901 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.0s"/>
+            <path d="M 1760.372 822.532 L 1724.702 814.95 L 1725.237 812.432 L 1760.907 820.014 L 1760.372 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.012s"/>
+            <path d="M 1761.24 818.771 L 1726.558 807.502 L 1727.354 805.054 L 1762.036 816.323 L 1761.24 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.024s"/>
+            <path d="M 1762.496 815.122 L 1729.182 800.291 L 1730.23 797.938 L 1763.543 812.771 L 1762.496 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.036s"/>
+            <path d="M 1764.127 811.624 L 1732.546 793.391 L 1733.833 791.161 L 1765.414 809.395 L 1764.127 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.047s"/>
+            <path d="M 1766.115 808.316 L 1736.613 786.882 L 1738.126 784.799 L 1767.628 806.233 L 1766.115 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.059s"/>
+            <path d="M 1768.438 805.234 L 1741.338 780.833 L 1743.061 778.92 L 1770.161 803.321 L 1768.438 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.071s"/>
+            <path d="M 1771.07 802.411 L 1746.669 775.311 L 1748.582 773.589 L 1772.983 800.689 L 1771.07 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.083s"/>
+            <path d="M 1773.982 799.879 L 1752.548 770.377 L 1754.63 768.864 L 1776.065 798.366 L 1773.982 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.095s"/>
+            <path d="M 1777.144 797.665 L 1758.911 766.084 L 1761.14 764.797 L 1779.373 796.378 L 1777.144 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.107s"/>
+            <path d="M 1780.52 795.794 L 1765.688 762.48 L 1768.04 761.433 L 1782.872 794.747 L 1780.52 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.119s"/>
+            <path d="M 1784.073 794.286 L 1772.803 759.604 L 1775.251 758.809 L 1786.521 793.491 L 1784.073 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.131s"/>
+            <path d="M 1787.763 793.158 L 1780.181 757.488 L 1782.699 756.953 L 1790.281 792.623 L 1787.763 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.142s"/>
+            <path d="M 1791.552 792.421 L 1787.74 756.154 L 1790.3 755.885 L 1794.112 792.152 L 1791.552 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.154s"/>
+            <path d="M 1795.397 755.619 H 1797.971 V 792.085 H 1795.397 Z Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.166s"/>
+            <path d="M 1801.816 792.421 L 1799.255 792.152 L 1803.068 755.885 L 1805.627 756.154 L 1801.816 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.178s"/>
+            <path d="M 1805.604 793.158 L 1803.086 792.623 L 1810.668 756.953 L 1813.186 757.488 L 1805.604 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.19s"/>
+            <path d="M 1809.295 794.286 L 1806.847 793.491 L 1818.116 758.809 L 1820.564 759.604 L 1809.295 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.202s"/>
+            <path d="M 1812.847 795.794 L 1810.496 794.747 L 1825.328 761.433 L 1827.68 762.48 L 1812.847 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.214s"/>
+            <path d="M 1816.223 797.665 L 1813.994 796.378 L 1832.227 764.797 L 1834.456 766.084 L 1816.223 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.225s"/>
+            <path d="M 1819.385 799.879 L 1817.302 798.366 L 1838.737 768.864 L 1840.819 770.377 L 1819.385 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.237s"/>
+            <path d="M 1822.297 802.411 L 1820.384 800.688 L 1844.785 773.589 L 1846.698 775.311 L 1822.297 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.249s"/>
+            <path d="M 1824.93 805.234 L 1823.207 803.321 L 1850.307 778.92 L 1852.03 780.833 L 1824.93 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.261s"/>
+            <path d="M 1827.252 808.316 L 1825.739 806.233 L 1855.241 784.799 L 1856.754 786.882 L 1827.252 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.273s"/>
+            <path d="M 1829.24 811.624 L 1827.953 809.395 L 1859.533 791.161 L 1860.821 793.391 L 1829.24 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.285s"/>
+            <path d="M 1830.871 815.122 L 1829.824 812.77 L 1863.138 797.938 L 1864.185 800.29 L 1830.871 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.297s"/>
+            <path d="M 1832.128 818.771 L 1831.332 816.323 L 1866.014 805.055 L 1866.809 807.503 L 1832.128 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.308s"/>
+            <path d="M 1832.996 822.532 L 1832.461 820.014 L 1868.13 812.432 L 1868.665 814.95 L 1832.996 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.32s"/>
+            <path d="M 1833.466 826.363 L 1833.197 823.803 L 1869.464 819.991 L 1869.733 822.551 L 1833.466 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.332s"/>
+            <path d="M 1759.901 826.363 L 1723.635 822.551 L 1723.903 819.991 L 1760.17 823.803 L 1759.901 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.344s"/>
+            <path d="M 1760.372 822.532 L 1724.702 814.95 L 1725.237 812.432 L 1760.907 820.014 L 1760.372 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.356s"/>
+            <path d="M 1761.24 818.771 L 1726.558 807.502 L 1727.354 805.054 L 1762.036 816.323 L 1761.24 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.368s"/>
+            <path d="M 1762.496 815.122 L 1729.182 800.291 L 1730.23 797.938 L 1763.543 812.771 L 1762.496 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.38s"/>
+            <path d="M 1764.127 811.624 L 1732.546 793.391 L 1733.833 791.161 L 1765.414 809.395 L 1764.127 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.392s"/>
+            <path d="M 1766.115 808.316 L 1736.613 786.882 L 1738.126 784.799 L 1767.628 806.233 L 1766.115 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.403s"/>
+            <path d="M 1768.438 805.234 L 1741.338 780.833 L 1743.061 778.92 L 1770.161 803.321 L 1768.438 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.415s"/>
+            <path d="M 1771.07 802.411 L 1746.669 775.311 L 1748.582 773.589 L 1772.983 800.689 L 1771.07 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.427s"/>
+            <path d="M 1773.982 799.879 L 1752.548 770.377 L 1754.63 768.864 L 1776.065 798.366 L 1773.982 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.439s"/>
+            <path d="M 1777.144 797.665 L 1758.911 766.084 L 1761.14 764.797 L 1779.373 796.378 L 1777.144 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.451s"/>
+            <path d="M 1780.52 795.794 L 1765.688 762.48 L 1768.04 761.433 L 1782.872 794.747 L 1780.52 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.463s"/>
+            <path d="M 1784.073 794.286 L 1772.803 759.604 L 1775.251 758.809 L 1786.521 793.491 L 1784.073 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.475s"/>
+            <path d="M 1787.763 793.158 L 1780.181 757.488 L 1782.699 756.953 L 1790.281 792.623 L 1787.763 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.486s"/>
+            <path d="M 1791.552 792.421 L 1787.74 756.154 L 1790.3 755.885 L 1794.112 792.152 L 1791.552 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.498s"/>
+            <path d="M 1795.397 755.619 H 1797.971 V 792.085 H 1795.397 Z Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.51s"/>
+            <path d="M 1801.816 792.421 L 1799.255 792.152 L 1803.068 755.885 L 1805.627 756.154 L 1801.816 792.421 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.522s"/>
+            <path d="M 1805.604 793.158 L 1803.086 792.623 L 1810.668 756.953 L 1813.186 757.488 L 1805.604 793.158 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.534s"/>
+            <path d="M 1809.295 794.286 L 1806.847 793.491 L 1818.116 758.809 L 1820.564 759.604 L 1809.295 794.286 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.546s"/>
+            <path d="M 1812.847 795.794 L 1810.496 794.747 L 1825.328 761.433 L 1827.68 762.48 L 1812.847 795.794 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.558s"/>
+            <path d="M 1816.223 797.665 L 1813.994 796.378 L 1832.227 764.797 L 1834.456 766.084 L 1816.223 797.665 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.569s"/>
+            <path d="M 1819.385 799.879 L 1817.302 798.366 L 1838.737 768.864 L 1840.819 770.377 L 1819.385 799.879 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.581s"/>
+            <path d="M 1822.297 802.411 L 1820.384 800.688 L 1844.785 773.589 L 1846.698 775.311 L 1822.297 802.411 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.593s"/>
+            <path d="M 1824.93 805.234 L 1823.207 803.321 L 1850.307 778.92 L 1852.03 780.833 L 1824.93 805.234 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.605s"/>
+            <path d="M 1827.252 808.316 L 1825.739 806.233 L 1855.241 784.799 L 1856.754 786.882 L 1827.252 808.316 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.617s"/>
+            <path d="M 1829.24 811.624 L 1827.953 809.395 L 1859.533 791.161 L 1860.821 793.391 L 1829.24 811.624 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.629s"/>
+            <path d="M 1830.871 815.122 L 1829.824 812.77 L 1863.138 797.938 L 1864.185 800.29 L 1830.871 815.122 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.641s"/>
+            <path d="M 1832.128 818.771 L 1831.332 816.323 L 1866.014 805.055 L 1866.809 807.503 L 1832.128 818.771 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.653s"/>
+            <path d="M 1832.996 822.532 L 1832.461 820.014 L 1868.13 812.432 L 1868.665 814.95 L 1832.996 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.664s"/>
+            <path d="M 1833.466 826.363 L 1833.197 823.803 L 1869.464 819.991 L 1869.733 822.551 L 1833.466 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.676s"/>
+            <path d="M 1759.901 826.363 L 1723.635 822.551 L 1723.903 819.991 L 1760.17 823.803 L 1759.901 826.363 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.688s"/>
+            <path d="M 1760.372 822.532 L 1724.702 814.95 L 1725.237 812.432 L 1760.907 820.014 L 1760.372 822.532 Z" fill="var(--accent)" class="cbe-piece" style="animation-delay:0.7s"/>
+          </g><use href="#audoa-ring-src" transform="rotate(90 1796.683 828.935)"/><use href="#audoa-ring-src" transform="rotate(180 1796.683 828.935)"/><use href="#audoa-ring-src" transform="rotate(270 1796.683 828.935)"/></svg>
+        </div>
+      </div>
+      <div class="audoa-cover-stamp">
+        <div class="audoa-cover-stamp-grid">
+          <div>
+            <div class="audoa-cover-stamp-head">
+              <span class="audoa-cover-stamp-box"><svg><use href="#audoa-ico-sparkle"></use></svg><b>&copy;OMNI</b></span>
+              <span class="audoa-cover-stamp-city">S&nbsp;F&nbsp;O</span>
+            </div>
+            <p class="audoa-cover-stamp-line">ALGORITHMICALLY GENERATED</p>
+            <p class="audoa-cover-stamp-line" data-audoa-dims>DIMENSIONS: &mdash; <i>&middot; MCQT &middot; 44.68N&middot;06.80E</i></p>
+            <div class="audoa-cover-stamp-chip">For Corvache</div>
+          </div>
+          <div class="audoa-cover-stamp-tools">
+            <div>GRAPHICS<i>3.4</i></div>
+            <div>VIDEO<i>6.1</i></div>
+            <div>AUDIO<i>1.5</i></div>
+            <div>TEXT<i>1.8</i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    /* Stamp's own DIMENSIONS line only — the fanlight art above is the
+       ported F39/a19 component itself (verbatim markup + CSS, see the
+       <style> block), not JS-generated, so this script's only job is
+       reading the panel's real rendered size for that line. */
+    var root = document.currentScript.closest('.ms-frag') || document;
+    var panel = root.querySelector('[data-audoa-panel]');
+    var dimsEl = root.querySelector('[data-audoa-dims]');
+    if (!panel || !dimsEl) return;
+    var w = panel.clientWidth || 900, h = panel.clientHeight || 640;
+    dimsEl.innerHTML = 'DIMENSIONS: ' + Math.round(w) + ' × ' + Math.round(h) + ' PX <i>· MCQT · 44.68N·06.80E</i>';
+  })();
+  </script>
+
+  <!-- Hero: Affluent Travelers -->
+  <section class="audoa-card audoa-hero" data-reveal>
+    <div class="audoa-hero-photo"><img src="assets/img/aud-affluent.png" alt="Affluent Travelers"></div>
+    <div class="audoa-hero-body">
+      <div class="audoa-hero-title-row">
+        <span class="audoa-hero-num">1</span>
+        <h2 class="audoa-hero-title">Affluent Travelers</h2>
+        <span class="audoa-ai-chip" data-build="pop">✦ AI</span>
+      </div>
+      <p class="audoa-hero-desc">Quality-seeking 45-64 year olds with high household incomes. Luxury-oriented, risk-averse, and highly receptive to premium brands across digital channels.</p>
+      <div class="audoa-defbox">
+        <a class="audoa-def-link" href="#" aria-label="Open definition"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6.5 4H3.5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.8 2.5H13.5V6.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 2.7 7.8 8.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+        <div class="audoa-def-sources">
+          <span class="audoa-chip-source" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-6)"></i><svg width="11" height="13" viewBox="0 0 13 15" fill="none"><path d="M1.5 1.5h6.8L11.5 4.7v8.8a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1"/></svg>Comscore</span>
+          <span class="audoa-chip-source" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-2)"></i><svg width="11" height="13" viewBox="0 0 13 15" fill="none"><path d="M1.5 1.5h6.8L11.5 4.7v8.8a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1"/></svg>Acxiom</span>
+          <span class="audoa-chip-source" data-build="pop"><i class="audoa-dot" style="background:var(--accent)"></i><svg width="11" height="13" viewBox="0 0 13 15" fill="none"><path d="M1.5 1.5h6.8L11.5 4.7v8.8a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1"/></svg>Corvache Data</span>
+        </div>
+        <div class="audoa-def-row">
+          <span class="audoa-chip-def" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-6)"></i>Luxury Auto Intentions<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></span>
+          <span class="audoa-op">AND</span>
+          <span class="audoa-chip-def" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-2)"></i>Tech Savvy<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></span>
+          <span class="audoa-op">AND</span>
+        </div>
+        <div class="audoa-def-row">
+          <span class="audoa-chip-def" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-3)"></i>Mid-High Income<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></span>
+          <span class="audoa-op">OR</span>
+          <span class="audoa-chip-def" data-build="pop"><i class="audoa-dot" style="background:var(--accent)"></i>Existing US Corvache Customers<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></span>
+        </div>
+        <div class="audoa-def-row">
+          <span class="audoa-op">INCLUDE</span>
+          <span class="audoa-chip-def" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-2)"></i>Read 2026 EV Safety Reports<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></span>
+          <span class="audoa-op">AND</span>
+          <span class="audoa-chip-def" data-build="pop"><i class="audoa-dot" style="background:var(--ms-chart-3)"></i>Safety Aware<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></span>
+        </div>
+      </div>
+    </div>
+    <div class="audoa-hero-stats">
+      <div class="audoa-stat-big"><b data-countup>2.1M</b><span>People</span></div>
+      <div class="audoa-stat-big"><b data-countup>889K</b><span>Households</span></div>
+    </div>
+  </section>
+
+  <!-- Stat tile row -->
+  <section class="audoa-tilerow" data-reveal>
+    <div class="audoa-tile" data-reveal><p class="audoa-tile-label">Gender split</p><p class="audoa-tile-value" data-countup>50/50</p></div>
+    <div class="audoa-tile" data-reveal><p class="audoa-tile-label">Marital status</p><p class="audoa-tile-value" data-countup>63% married</p></div>
+    <div class="audoa-tile" data-reveal><p class="audoa-tile-label">Top HHI bracket</p><p class="audoa-tile-value" data-countup>$300-500K</p></div>
+    <div class="audoa-tile" data-reveal><p class="audoa-tile-label">College educated</p><p class="audoa-tile-value" data-countup>67%</p></div>
+  </section>
+
+  <!-- Executive Summary -->
+  <section class="audoa-card" data-reveal>
+    <p class="audoa-eyebrow"><svg class="audoa-spark" viewBox="0 0 8.25 8.25" aria-hidden="true"><use href="#audoa-ico-sparkle"></use></svg>Executive Summary</p>
+    <p class="audoa-prose">Affluent travelers are a high-value, low-volume segment of 2.1M adults aged 45-64 with household incomes predominantly between $300K-$500K. They are defined by a rare but powerful combination of financial conservatism and luxury-seeking behavior - they spend premium but justify it through quality, not status. Their strongest media affinities lie in streaming audio (Apple Music, 420Ix) and premium news (NY Times, 348Ix), with Instagram leading social at 158Ix. Geographically concentrated in coastal metros, particularly the Northeast and California. Key strategic flag: high index signals across finance and health categories suggest a values-led creative approach will outperform aspirational messaging for this audience.</p>
+    <div class="ms-ai-attr">Generated by claude-opus-4.5 based on: Google, MRI-Simmons 2024, Nielsen Audio</div>
+  </section>
+
+  <!-- Sub-audiences -->
+  <section data-reveal>
+    <p class="audoa-eyebrow">Sub-audiences</p>
+    <div class="audoa-sub-grid">
+      <div class="audoa-sub-card c1" data-reveal>
+        <div class="audoa-sub-top"><p class="audoa-sub-title">Luxury Seekers</p><span class="audoa-sub-num">920K</span></div>
+        <p class="audoa-sub-desc">Quality-driven buyers gravitating toward premium, white-glove experiences.</p>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-sub-card c2" data-reveal>
+        <div class="audoa-sub-top"><p class="audoa-sub-title">Adventure Travellers</p><span class="audoa-sub-num">780K</span></div>
+        <p class="audoa-sub-desc">Active explorers seeking safaris, driving, hiking, skiing -- always premium &amp; safe.</p>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-sub-card c3" data-reveal>
+        <div class="audoa-sub-top"><p class="audoa-sub-title">Confident Investors</p><span class="audoa-sub-num">400K</span></div>
+        <p class="audoa-sub-desc">financially savvy; active online investors consuming finance &amp; business content.</p>
+        <div class="ms-source">Source: Google</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demographics -->
+  <section data-reveal>
+    <p class="audoa-eyebrow">Demographics</p>
+    <div class="audoa-demo-row3" style="margin-bottom:14px;">
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Gender</p>
+        <div class="audoa-split"><b>50%</b><div class="audoa-split-bar"><i data-build="bar-h" style="width:50%"></i></div><b>50%</b></div>
+        <div class="audoa-split-lbl"><span>Female</span><span>Male</span></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Marital Status</p>
+        <div class="audoa-split"><b>63%</b><div class="audoa-split-bar"><i data-build="bar-h" style="width:63%"></i></div><b>37%</b></div>
+        <div class="audoa-split-lbl"><span>Married</span><span>Single</span></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Education</p>
+        <div class="audoa-edu-row">
+          <div class="audoa-edu-item"><b>84%</b><span>High School</span></div>
+          <div class="audoa-edu-item"><b>67%</b><span>College</span></div>
+          <div class="audoa-edu-item"><b>14%</b><span>Graduate</span></div>
+        </div>
+        <div class="ms-source" style="margin-top:26px;">Source: Google</div>
+      </div>
+    </div>
+
+    <div class="audoa-demo-row2" style="margin-bottom:14px;">
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Age Group</p>
+        <div class="audoa-bars">
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">13%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:65%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">16%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:80%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">12%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:60%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">20%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:100%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">20%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:100%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">10%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:50%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">8%</span><span class="audoa-bar-shape" data-build="bar-v" style="height:40%"></span></div>
+        </div>
+        <div class="audoa-bars" style="height:auto; margin-bottom:0;">
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">18-24</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">25-34</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">35-44</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">45-54</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">55-64</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">65-74</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">75+</span></div>
+        </div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Household Income (HHI)</p>
+        <div class="audoa-bars">
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">10%</span><span class="audoa-bar-shape blue" data-build="bar-v" style="height:33%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">10%</span><span class="audoa-bar-shape blue" data-build="bar-v" style="height:33%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">20%</span><span class="audoa-bar-shape blue" data-build="bar-v" style="height:67%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">30%</span><span class="audoa-bar-shape blue" data-build="bar-v" style="height:100%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">20%</span><span class="audoa-bar-shape blue" data-build="bar-v" style="height:67%"></span></div>
+          <div class="audoa-bar-col"><span class="audoa-bar-pct">10%</span><span class="audoa-bar-shape blue" data-build="bar-v" style="height:33%"></span></div>
+        </div>
+        <div class="audoa-bars" style="height:auto; margin-bottom:0;">
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">220-225K</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">225-250K</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">250-300K</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">300-500K</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">500K-1M</span></div>
+          <div class="audoa-bar-col" style="height:auto;"><span class="audoa-bar-cat">1MM+</span></div>
+        </div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+    </div>
+
+    <div class="audoa-demo-row2">
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Children in Household</p>
+        <div class="audoa-donut-wrap">
+          <div class="audoa-donut" data-build="fade" role="img" aria-label="Children in household distribution">
+            <span class="audoa-donut-lbl" style="--a:93.6deg">52%</span>
+            <span class="audoa-donut-lbl" style="--a:198deg">6%</span>
+            <span class="audoa-donut-lbl" style="--a:214deg">3%</span>
+            <span class="audoa-donut-lbl" style="--a:259deg">22%</span>
+            <span class="audoa-donut-lbl" style="--a:329deg">17%</span>
+          </div>
+          <div class="audoa-legend">
+            <div class="audoa-legend-row"><i class="audoa-legend-sw" data-build="pop" style="background:var(--audoa-d0)"></i>0 - 17%</div>
+            <div class="audoa-legend-row"><i class="audoa-legend-sw" data-build="pop" style="background:var(--audoa-d1)"></i>1 - 52%</div>
+            <div class="audoa-legend-row"><i class="audoa-legend-sw" data-build="pop" style="background:var(--audoa-d2)"></i>2 - 22%</div>
+            <div class="audoa-legend-row"><i class="audoa-legend-sw" data-build="pop" style="background:var(--audoa-d3)"></i>3 - 6%</div>
+            <div class="audoa-legend-row"><i class="audoa-legend-sw" data-build="pop" style="background:var(--audoa-d4)"></i>4+ - 3%</div>
+          </div>
+        </div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Top Media Platforms (Index)</p>
+        <div class="audoa-plat-row">
+          <span class="audoa-plat-icon" style="background:#e0335f">♪</span>
+          <span class="audoa-plat-name">Apple Music</span>
+          <span class="audoa-plat-track"><span class="audoa-plat-fill" data-build="bar-h" style="width:100%"></span></span>
+          <span class="audoa-plat-val">420</span>
+        </div>
+        <div class="audoa-plat-row">
+          <span class="audoa-plat-icon" style="background:#1a1a1a">T</span>
+          <span class="audoa-plat-name">NY Times</span>
+          <span class="audoa-plat-track"><span class="audoa-plat-fill" data-build="bar-h" style="width:83%"></span></span>
+          <span class="audoa-plat-val">348</span>
+        </div>
+        <div class="audoa-plat-row">
+          <span class="audoa-plat-icon" style="background:#1a1a1a">a</span>
+          <span class="audoa-plat-name">Amazon</span>
+          <span class="audoa-plat-track"><span class="audoa-plat-fill" data-build="bar-h" style="width:82%"></span></span>
+          <span class="audoa-plat-val">345</span>
+        </div>
+        <div class="audoa-plat-row">
+          <span class="audoa-plat-icon" style="background:#cc1414">CNN</span>
+          <span class="audoa-plat-name">CNN</span>
+          <span class="audoa-plat-track"><span class="audoa-plat-fill" data-build="bar-h" style="width:75%"></span></span>
+          <span class="audoa-plat-val">316</span>
+        </div>
+        <div class="audoa-plat-row">
+          <span class="audoa-plat-icon" style="background:#1db954">♫</span>
+          <span class="audoa-plat-name">Spotify</span>
+          <span class="audoa-plat-track"><span class="audoa-plat-fill" data-build="bar-h" style="width:39%"></span></span>
+          <span class="audoa-plat-val">162</span>
+        </div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interests, attitudes & behaviors -->
+  <section data-reveal>
+    <p class="audoa-eyebrow">Interests, attitudes &amp; behaviors</p>
+    <div class="audoa-iab-grid">
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Interests &amp; Behaviours</p>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Collectibles</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">50% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Tennis</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">68% Target</span><span class="audoa-pill-idx">424Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Home decor</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">82% Target</span><span class="audoa-pill-idx">384Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">General Exercise</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">60% Target</span><span class="audoa-pill-idx">177Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Yoga</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">68% Target</span><span class="audoa-pill-idx">355Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Hotels &amp; lodging</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">95% Target</span><span class="audoa-pill-idx">333Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Books</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">88% Target</span><span class="audoa-pill-idx">298Ix</span></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Segment Attitudes</p>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-cat">Luxury</span><span class="audoa-iab-name">Quality Seekers</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">75% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-cat">Investor</span><span class="audoa-iab-name">Confident Online Investor</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">81% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-cat">Financial</span><span class="audoa-iab-name">Financially Conservative</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">29% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-cat">Joy</span><span class="audoa-iab-name">Family Fulfillers</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">45% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Media Behaviours</p>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Ads on &amp; business news</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">103% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Streaming video</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">94% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Streaming audio</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">41% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Personal investing content</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">33% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="audoa-iab-row"><div class="audoa-iab-name-wrap"><span class="audoa-iab-name">Heavy social media</span></div><div class="audoa-iab-chips"><span class="audoa-pill-target">92% Target</span><span class="audoa-pill-idx">132Ix</span></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle, values & needs — 3 panels -->
+  <section data-reveal>
+    <p class="audoa-eyebrow">Lifestyle, values &amp; needs</p>
+    <div class="audoa-lv-grid">
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Lifestyle Preferences</p>
+        <div class="audoa-lv-item"><b>Cultural Interests</b><p>Art fairs, wine tasting, charity galas, fine dining, upscale social circles</p></div>
+        <div class="audoa-lv-item"><b>Adventure Enthusiasts</b><p>Safaris, diving, hiking, skiing - always premium &amp; safe</p></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Values &amp; Motivation</p>
+        <div class="audoa-lv-item"><b>Freedom &amp; Flexibility</b><p>Bespoke adventures, private travel, extended vacations</p></div>
+        <div class="audoa-lv-item"><b>Exclusivity &amp; Personalisation</b><p>White-glove, concierge-like brand experience</p></div>
+        <div class="audoa-lv-item"><b>Control &amp; Preparedness</b><p>Risk-averse, medical, financial &amp; assets security</p></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Insurance Needs</p>
+        <span class="audoa-ins-chip" data-build="pop">Travel Insurance</span>
+        <span class="audoa-ins-chip" data-build="pop">High-Value Item Coverage</span>
+        <span class="audoa-ins-chip" data-build="pop">Second Home / Vacation Property</span>
+        <span class="audoa-ins-chip" data-build="pop">Liability Protection</span>
+        <div class="ms-source">Source: Google</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle, values & needs — 4-col mini-bar -->
+  <section data-reveal>
+    <p class="audoa-eyebrow">Lifestyle, values &amp; needs</p>
+    <div class="audoa-mb-grid">
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Lifestyle</p>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Proactive health &amp; wellness</span><span class="audoa-mb-idx">+167</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill" data-build="bar-h" style="width:100%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Financially conservative</span><span class="audoa-mb-idx">+165</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill" data-build="bar-h" style="width:99%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Quality seekers</span><span class="audoa-mb-idx">+85</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill" data-build="bar-h" style="width:51%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Online discount seeker</span><span class="audoa-mb-idx">+52</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill" data-build="bar-h" style="width:31%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Confident online investor</span><span class="audoa-mb-idx">+6</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill" data-build="bar-h" style="width:4%"></div></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Interests</p>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Viewership: Football</span><span class="audoa-mb-idx">+118</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill blue" data-build="bar-h" style="width:100%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Viewership: Golf</span><span class="audoa-mb-idx">+81</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill blue" data-build="bar-h" style="width:69%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Outdoor activities</span><span class="audoa-mb-idx">+63</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill blue" data-build="bar-h" style="width:53%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Food &amp; dining (cooking)</span><span class="audoa-mb-idx">+48</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill blue" data-build="bar-h" style="width:41%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Viewership: Movies on TV</span><span class="audoa-mb-idx">+7</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill blue" data-build="bar-h" style="width:6%"></div></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Online Habits</p>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Investing</span><span class="audoa-mb-idx">+117</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill sky" data-build="bar-h" style="width:100%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Retirement planning</span><span class="audoa-mb-idx">+108</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill sky" data-build="bar-h" style="width:92%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Discount stock brokerage</span><span class="audoa-mb-idx">+86</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill sky" data-build="bar-h" style="width:74%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Financial tools &amp; tech</span><span class="audoa-mb-idx">+76</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill sky" data-build="bar-h" style="width:65%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Regional / local bank</span><span class="audoa-mb-idx">+64</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill sky" data-build="bar-h" style="width:55%"></div></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+      <div class="audoa-panel" data-reveal>
+        <p class="audoa-panel-title">Shopping behaviors</p>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Health &amp; beauty products</span><span class="audoa-mb-idx">+77</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill red" data-build="bar-h" style="width:100%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">In-store shoppers</span><span class="audoa-mb-idx">+53</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill red" data-build="bar-h" style="width:69%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Online shopper in HH</span><span class="audoa-mb-idx">+49</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill red" data-build="bar-h" style="width:64%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Charitable organisation</span><span class="audoa-mb-idx">+45</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill red" data-build="bar-h" style="width:58%"></div></div></div>
+        <div class="audoa-mb-row"><div class="audoa-mb-top"><span class="audoa-mb-name">Convenience stores</span><span class="audoa-mb-idx">+19</span></div><div class="audoa-mb-track"><div class="audoa-mb-fill red" data-build="bar-h" style="width:25%"></div></div></div>
+        <div class="ms-source">Source: Google</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insight -->
+  <section class="audoa-card" data-reveal>
+    <p class="audoa-eyebrow"><svg class="audoa-spark" viewBox="0 0 8.25 8.25" aria-hidden="true"><use href="#audoa-ico-sparkle"></use></svg>Insight</p>
+    <p class="audoa-prose">This audience over-indexes most strongly on health&amp;wellness (+167) and financial conservatism (+165) simultaneously — a rare pairing that suggests they respond best to messaging that frames luxury as <em>smart, earned investment</em> rather than indulgence. Avoid aspirational or status-driven creative.</p>
+    <div class="ms-ai-attr">Generated by claude-opus-4.5 based on: Google, MRI-Simmons 2024, Nielsen Audio</div>
+  </section>
+
+</div>

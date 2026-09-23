@@ -1,0 +1,5715 @@
+  /* Masthead --------------------------------------------------------------- */
+  .persona-masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 18px var(--p-pad-x);
+    border-bottom: 1px solid var(--p-line);
+    gap: 24px;
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+  }
+  .persona-masthead .pm-left { color: var(--p-strong); }
+  .persona-masthead .pm-center { display: none; }
+  .persona-masthead .pm-right { display: flex; gap: 32px; }
+
+  /* Hero ------------------------------------------------------------------- */
+  /* Full-bleed editorial cover: hero portrait fills the card, faint
+     5×5 grid lines and corner mono labels sit on top, big display
+     title with an italic serif accent anchors the lower-middle. */
+  /* Only the active persona-hero renders. Tab clicks toggle the
+     is-active class via JS so each persona swaps its full hero
+     spread (portrait, title, subtitle, overlay tags). */
+  .persona-page .persona-hero { display: none; }
+  .persona-page .persona-hero.is-active { display: block; }
+  .persona-page.layout-2 .persona-hero.is-active { display: grid; }
+
+  /* Mode-swap transition — applied briefly while toggling between
+     single and compare views; the page blurs + dims, the layout
+     classes change at the dimmed midpoint, then it re-clarifies. */
+  .persona-page {
+    transition:
+      filter 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .persona-page.is-mode-swapping {
+    filter: blur(10px) saturate(0.85);
+    opacity: 0.5;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-page { transition: opacity 180ms linear; filter: none !important; }
+    .persona-page.is-mode-swapping { opacity: 0.4; }
+  }
+
+  /* Full-canvas-width when comparing — the stack expands past its
+     default --stack-w so 2 or 3 columns get the full container area. */
+  .persona-view.is-comparing-view {
+    --stack-w: calc(100% - 32px) !important;
+  }
+
+  /* ─── Persona chat stage ──────────────────────────────────────────────
+     Active when .persona-view.is-chat-mode is set. Hides the regular
+     persona-page/selector/finale and shows 1-3 large circular portraits
+     for the participating personas, plus an End Chat button. Each circle
+     has a hover popup with quick stats. */
+  .persona-view.is-chat-mode .persona-selector,
+  .persona-view.is-chat-mode .persona-page,
+  .persona-view.is-chat-mode .persona-finale {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-12px);
+    transition:
+      opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .persona-view .persona-selector,
+  .persona-view .persona-page,
+  .persona-view .persona-finale {
+    transition:
+      opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .persona-view.is-chat-mode .persona-page,
+  .persona-view.is-chat-mode .persona-finale { display: none; }
+  /* Persona-selector is removed from layout (not just hidden) in chat
+     mode so the chat stage can use the FULL visible canvas area for
+     vertical centering — otherwise the selector's 71px reservation
+     biases the centered content downward. */
+  .persona-view.is-chat-mode .persona-selector {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .persona-chat-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: calc(100dvh - 112px);
+    padding: 40px 32px;
+    background: transparent;
+    gap: 48px;
+    opacity: 0;
+    transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+  }
+  .persona-chat-stage.is-mounted { opacity: 1; }
+  /* Hide the persona-view card backing in chat mode so the circles
+     sit on whatever the canvas-bg is — no white panel behind them. */
+  .persona-view.is-chat-mode { background: transparent !important; }
+
+  .persona-chat-end-btn {
+    position: fixed;
+    top: 96px;
+    right: 56px;
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--p-line);
+    color: var(--p-strong);
+    font-family: var(--p-font-sans);
+    font-size: 12.5px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    transition: background 200ms, border-color 200ms, color 200ms, box-shadow 200ms;
+  }
+  .persona-chat-end-btn:hover {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.22);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
+  }
+  .persona-chat-end-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  .persona-chat-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .persona-chat-header-label {
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+  }
+  .persona-chat-header-title {
+    font-family: var(--p-font-sans);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--p-strong);
+  }
+
+  .persona-chat-circles {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 56px;
+    flex-wrap: nowrap;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(3)) {
+    gap: 28px;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(4)) {
+    gap: 18px;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(4)) .persona-chat-circle {
+    width: 208px;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(4)) .pcc-portrait {
+    height: 242px;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(5)) {
+    gap: 14px;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(5)) .persona-chat-circle {
+    width: 178px;
+  }
+  .persona-chat-circles:has(.persona-chat-circle:nth-child(5)) .pcc-portrait {
+    height: 208px;
+  }
+
+  /* Phone-call style card — rounded rectangle, portrait at top,
+     name + persona tag mid, red hang-up button at bottom. Each
+     card animates in via pcc-rise and out via pcc-leave when the
+     user hangs up on that persona. */
+  .persona-chat-circle {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 240px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    overflow: visible;
+    box-shadow:
+      0 8px 24px rgba(15, 23, 42, 0.07),
+      0 28px 64px rgba(15, 23, 42, 0.04);
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition:
+      opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 440ms cubic-bezier(0.22, 1, 0.36, 1),
+      width 480ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* One-shot entry — applied via JS on mount, stripped after animation.
+     Keeping rise on the base rule re-fires it whenever the .is-typing
+     animation property is added/removed, which blanks the card. */
+  .persona-chat-circle.is-entering {
+    animation: pcc-rise 760ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .persona-chat-circle.is-leaving {
+    opacity: 0;
+    transform: scale(0.82) translateY(-8px);
+    filter: blur(10px);
+    width: 0;
+    margin-left: -28px;
+    margin-right: -28px;
+    pointer-events: none;
+  }
+  @keyframes pcc-rise {
+    from { opacity: 0; transform: scale(0.86) translateY(24px); }
+  }
+  .persona-chat-circle.is-entering:nth-child(1) { animation-delay: 140ms; }
+  .persona-chat-circle.is-entering:nth-child(2) { animation-delay: 280ms; }
+  .persona-chat-circle.is-entering:nth-child(3) { animation-delay: 420ms; }
+
+  .pcc-portrait {
+    width: 100%;
+    height: 280px;
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+    background: #0d1530;
+    position: relative;
+    box-shadow: none;
+  }
+  .pcc-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px 24px 0 0;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+    pointer-events: none;
+  }
+  .pcc-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+    display: block;
+    transform: scale(1);
+    transition: transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Subtle Ken-Burns push when this persona is actively chatting — eases in
+     on .is-typing, eases back out when the class is removed. */
+  .persona-chat-circle.is-typing .pcc-portrait img {
+    transform: scale(1.08);
+    transition: transform 2200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pcc-body {
+    padding: 18px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .pcc-hangup {
+    appearance: none;
+    border: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #fff;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    align-self: center;
+    margin: 2px 0 18px;
+    box-shadow:
+      0 4px 12px rgba(220, 38, 38, 0.28),
+      0 1px 3px rgba(220, 38, 38, 0.18);
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      background 200ms,
+      box-shadow 240ms;
+  }
+  .pcc-hangup:hover {
+    background: #b91c1c;
+    transform: scale(1.08);
+    box-shadow:
+      0 8px 18px rgba(220, 38, 38, 0.38),
+      0 3px 6px rgba(220, 38, 38, 0.22);
+  }
+  .pcc-hangup:active { transform: scale(0.96); }
+  .pcc-hangup svg { width: 16px; height: 16px; fill: currentColor; display: block; }
+  .pcc-hangup:focus-visible {
+    outline: 2px solid #dc2626;
+    outline-offset: 3px;
+  }
+  /* Typing state — premium and quiet. No rotation, no border ring.
+     The card lifts a hair and casts a soft accent-colored ambient
+     shadow underneath, breathing slowly. Entry and exit are handled
+     by the base CSS transition (transform + box-shadow easing), and
+     the breath animation is delayed by the transition duration so
+     it picks up smoothly from the at-rest lifted state instead of
+     snapping to keyframe 0%. */
+  .persona-chat-circle.is-typing {
+    transform: translateY(-3px);
+    box-shadow:
+      0 10px 28px rgba(15, 23, 42, 0.08),
+      0 30px 64px rgba(15, 23, 42, 0.05),
+      0 12px 40px -6px rgba(24, 88, 238, 0.16);
+    animation: pcc-typing-wave 1.6s linear 620ms infinite;
+  }
+  /* Soundwave-style pulse — irregular, multi-peaked, ~1.6s loop. Reads
+     like a voice waveform: small/medium/loud beats stacked at uneven
+     intervals, sharper than a slow breath. */
+  @keyframes pcc-typing-wave {
+    0%  { box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08), 0 30px 64px rgba(15, 23, 42, 0.05), 0 12px 40px -6px rgba(24, 88, 238, 0.16); }
+    8%  { box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09), 0 34px 72px rgba(15, 23, 42, 0.06), 0 18px 56px -5px rgba(24, 88, 238, 0.34); }
+    14% { box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08), 0 30px 64px rgba(15, 23, 42, 0.05), 0 12px 40px -6px rgba(24, 88, 238, 0.18); }
+    22% { box-shadow: 0 13px 34px rgba(15, 23, 42, 0.10), 0 36px 76px rgba(15, 23, 42, 0.06), 0 22px 64px -5px rgba(24, 88, 238, 0.42); }
+    30% { box-shadow: 0 11px 30px rgba(15, 23, 42, 0.08), 0 32px 68px rgba(15, 23, 42, 0.05), 0 14px 44px -6px rgba(24, 88, 238, 0.22); }
+    40% { box-shadow: 0 15px 38px rgba(15, 23, 42, 0.11), 0 42px 88px rgba(15, 23, 42, 0.07), 0 26px 76px -3px rgba(24, 88, 238, 0.52); }
+    50% { box-shadow: 0 11px 30px rgba(15, 23, 42, 0.08), 0 32px 68px rgba(15, 23, 42, 0.05), 0 14px 42px -6px rgba(24, 88, 238, 0.20); }
+    58% { box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09), 0 34px 72px rgba(15, 23, 42, 0.06), 0 18px 54px -5px rgba(24, 88, 238, 0.32); }
+    66% { box-shadow: 0 14px 36px rgba(15, 23, 42, 0.10), 0 38px 80px rgba(15, 23, 42, 0.06), 0 22px 64px -4px rgba(24, 88, 238, 0.44); }
+    74% { box-shadow: 0 11px 30px rgba(15, 23, 42, 0.08), 0 32px 68px rgba(15, 23, 42, 0.05), 0 15px 46px -6px rgba(24, 88, 238, 0.24); }
+    82% { box-shadow: 0 15px 38px rgba(15, 23, 42, 0.11), 0 42px 88px rgba(15, 23, 42, 0.07), 0 24px 72px -3px rgba(24, 88, 238, 0.48); }
+    90% { box-shadow: 0 11px 30px rgba(15, 23, 42, 0.08), 0 32px 68px rgba(15, 23, 42, 0.05), 0 14px 44px -6px rgba(24, 88, 238, 0.22); }
+    96% { box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09), 0 34px 72px rgba(15, 23, 42, 0.06), 0 16px 50px -5px rgba(24, 88, 238, 0.28); }
+    100% { box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08), 0 30px 64px rgba(15, 23, 42, 0.05), 0 12px 40px -6px rgba(24, 88, 238, 0.16); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-chat-circle.is-typing { animation: none; transform: none; }
+  }
+
+  .pcc-name {
+    font-family: var(--p-font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--p-strong);
+    letter-spacing: -0.2px;
+    text-align: center;
+    line-height: 1.3;
+    min-height: calc(1.3em * 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pcc-meta {
+    font-family: var(--p-font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Hover popup with persona quick-stats */
+  .pcc-info-popup {
+    position: absolute;
+    top: calc(100% + 18px);
+    left: 50%;
+    width: 280px;
+    padding: 16px 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--p-line);
+    border-radius: 10px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(6px);
+    transition:
+      opacity 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 10;
+  }
+  .persona-chat-circle:hover .pcc-info-popup {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .pcc-info-popup dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 18px;
+    row-gap: 8px;
+    margin: 0;
+  }
+  .pcc-info-popup dt {
+    font-family: var(--p-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    margin: 0;
+  }
+  .pcc-info-popup dd {
+    margin: 0;
+    font-family: var(--p-font-sans);
+    color: var(--p-strong);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  /* Persona-bot chat messages (left panel) — distinct from default bot */
+  .msg.persona-bot .msg-avatar { padding: 0; overflow: hidden; background: #0d1530; }
+  .msg.persona-bot .msg-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+  .msg.system { padding: 8px 0; }
+  .msg-system-text {
+    text-align: center;
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+  }
+  /* OMNI Agent system message — looks like a system note from the orchestrator. */
+  .msg.omni-system {
+    margin: 0;
+    padding: 1px 14px;
+    background: transparent;
+  }
+  .msg.omni-system .omni-bubble {
+    display: inline-flex;
+    align-items: baseline;
+    padding: 0;
+    font-family: var(--p-font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--p-subtle);
+    background: transparent;
+    border: 0;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .msg.omni-system .omni-dot { display: none; }
+  .msg.omni-system .omni-status {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--p-strong);
+    font-weight: 500;
+  }
+  .msg.omni-system .omni-sep {
+    display: inline-block;
+    width: 1px;
+    height: 9px;
+    background: rgba(15, 23, 42, 0.20);
+    margin: 0 10px;
+    transform: translateY(1px);
+    flex-shrink: 0;
+  }
+  .msg.omni-system .omni-body {
+    color: var(--p-body);
+    text-transform: none;
+    letter-spacing: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .msg.omni-system .omni-time {
+    margin-left: 12px;
+    color: rgba(15, 23, 42, 0.42);
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  /* Hide the original Acme greeting when persona chat is live */
+  .chat-stream.is-persona-chat-active > .msg.bot:not(.persona-bot):not(.persona-chat-injected) {
+    display: none;
+  }
+  /* Override the legacy `.msg:not(:first-of-type) { display: none; opacity: 0 }`
+     rule so our injected chat messages actually render — and animate them
+     in with a soft rise + blur lift. */
+  .chat-stream .msg.persona-chat-injected,
+  .chat-stream .msg.omni-system {
+    display: flex !important;
+    visibility: visible !important;
+    animation: msg-bubble-rise 540ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .chat-stream .msg.omni-system {
+    animation: omni-lockup-rise 760ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+  .chat-stream .msg.omni-system .omni-bubble {
+    animation: omni-bubble-wipe 820ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes msg-bubble-rise {
+    from { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes omni-lockup-rise {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes omni-bubble-wipe {
+    0%   { clip-path: inset(0 100% 0 0); }
+    50%  { clip-path: inset(0 0 0 0); }
+    100% { clip-path: inset(0 0 0 0); }
+  }
+  .chat-stream .msg.is-leaving {
+    animation: msg-bubble-leave 360ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+  @keyframes msg-bubble-leave {
+    from { opacity: 1; transform: translateY(0); filter: blur(0); }
+    to   { opacity: 0; transform: translateY(-6px); filter: blur(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-stream .msg.persona-chat-injected,
+    .chat-stream .msg.omni-system {
+      animation: opacity-fade-in 200ms linear both;
+    }
+    @keyframes opacity-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  }
+  /* Typing indicator — orbital sparkle from the canvas_2 .thinking
+     loader. Sparkle core pulse-rotates, two satellites orbit on
+     opposing tracks, Fira Code label breathes alongside. Replaces the
+     old italic "<name> is typing" + 3-dot bouncing row. */
+  .msg.is-typing-indicator .body {
+    padding: 2px 0;
+    background: transparent;
+  }
+  /* Override the legacy `.thinking { display: none; opacity: 0 }`
+     rule from the canvas_2 dialogue-cycle code so the orbital sparkle
+     actually renders inside the typing-indicator bubble. */
+  .chat-stream .msg.is-typing-indicator .thinking {
+    display: flex !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .persona-chat-circle { animation: none; opacity: 1; transform: none; }
+    .persona-chat-stage { transition: opacity 200ms linear; }
+  }
+
+  /* Scroll-reveal — sections start dim + lifted, ease into place when
+     they cross the viewport threshold. JS arms / re-arms on persona
+     change and mode swap. Mirrors canvas_2's brief-rise feel. */
+  .persona-page .persona-revealable {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 760ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .persona-page .persona-revealable.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-page .persona-revealable {
+      transition: opacity 200ms linear;
+      transform: none;
+    }
+  }
+
+  /* ─── Compare mode layout ─────────────────────────────────────────────
+     When .is-comparing is set on the persona-page, the original single-
+     view sections all hide; a separately-rendered .persona-compare-cols
+     container (built by JS) shows side-by-side columns, each containing
+     a full clone of the hero + non-hero sections for one persona. */
+  .persona-page.is-comparing > .persona-hero,
+  .persona-page.is-comparing > .persona-demos,
+  .persona-page.is-comparing > .persona-pullquote,
+  .persona-page.is-comparing > .persona-section,
+  .persona-page.is-comparing > .persona-imagepair,
+  .persona-page.is-comparing > .persona-twoup,
+  .persona-page.is-comparing > .persona-footer {
+    display: none !important;
+  }
+  .persona-compare-cols {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    min-height: calc(100vh - 184px);
+  }
+  .persona-compare-cols .persona-column {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 50%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--p-line);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(10px);
+    transition:
+      opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 480ms cubic-bezier(0.22, 1, 0.36, 1),
+      flex-basis 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .persona-compare-cols[data-count="1"] .persona-column { flex-basis: 100%; }
+  .persona-compare-cols[data-count="2"] .persona-column { flex-basis: 50%; }
+  .persona-compare-cols[data-count="3"] .persona-column { flex-basis: 33.3333%; }
+  .persona-compare-cols[data-count="4"] .persona-column { flex-basis: 25%; }
+  .persona-compare-cols[data-count="5"] .persona-column { flex-basis: 20%; }
+  /* Alternating subtle backing so each column reads as distinct at a glance. */
+  .persona-compare-cols .persona-column:nth-child(even) {
+    background: rgba(15, 23, 42, 0.045);
+  }
+  body[data-theme="dark"] .persona-compare-cols .persona-column:nth-child(even) {
+    background: rgba(255, 255, 255, 0.045);
+  }
+  /* 4+ columns get a stripped-down hero — the small metadata text rows
+     (top OMNI/research/year row, lat/long mid-row) clutter narrow widths,
+     so hide them and keep just the portrait + title + name chip. */
+  .persona-compare-cols[data-count="4"] .persona-column .ph-tags--top,
+  .persona-compare-cols[data-count="4"] .persona-column .ph-tags--mid,
+  .persona-compare-cols[data-count="5"] .persona-column .ph-tags--top,
+  .persona-compare-cols[data-count="5"] .persona-column .ph-tags--mid {
+    display: none;
+  }
+  /* 4+ columns: collapse the demographics 2x2 grid into a single stack. */
+  .persona-compare-cols[data-count="4"] .persona-column .persona-demos .pd-grid,
+  .persona-compare-cols[data-count="5"] .persona-column .persona-demos .pd-grid {
+    grid-template-columns: 1fr !important;
+    row-gap: 18px;
+  }
+  .persona-compare-cols .persona-column.is-mounted {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  /* Outbound column — shrinks to width 0 + fades + blurs so remaining
+     columns smoothly expand into the freed space. */
+  .persona-compare-cols .persona-column.is-leaving {
+    flex-basis: 0 !important;
+    flex-grow: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+    filter: blur(10px);
+    border-right-color: transparent;
+  }
+  .persona-compare-cols .persona-column:last-child { border-right: none; }
+  /* Cloned hero in a column — display: block, full column width. */
+  .persona-compare-cols .persona-column .persona-hero {
+    display: block !important;
+    width: 100%;
+  }
+  /* Narrow-column overrides for cloned sections — collapse 2/3-column
+     grids back to single column inside each comparison column. */
+  .persona-compare-cols .persona-column .pf-twocol { grid-template-columns: 1fr !important; row-gap: 24px; }
+  .persona-compare-cols .persona-column .persona-imagepair { grid-template-columns: 1fr !important; }
+  .persona-compare-cols .persona-column .persona-twoup { grid-template-columns: 1fr !important; }
+  .persona-compare-cols .persona-column .persona-twoup .ptu-col-channels { border-top: 1px solid var(--p-line); }
+  .persona-compare-cols .persona-column .persona-twoup .ptu-col-channels::before { display: none; }
+  .persona-compare-cols .persona-column .persona-demos .pd-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .persona-compare-cols .persona-column .persona-section .ps-anchor {
+    padding-left: var(--p-pad-x);
+    padding-right: var(--p-pad-x);
+    border-right: none;
+    width: 100%;
+    text-align: left;
+  }
+  .persona-compare-cols .persona-column .persona-section .ps-content {
+    border-left: none;
+    padding-left: var(--p-pad-x);
+    padding-right: var(--p-pad-x);
+  }
+  /* Back-cover finale hides while comparing. */
+  .persona-finale.is-compare-hidden { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-compare-cols .persona-column {
+      transition: opacity 200ms linear;
+      transform: none;
+      filter: none;
+    }
+  }
+
+  /* Premium reveal — the active hero materializes with a soft blur lift.
+     Fires every time .is-active is added (initial paint + every tab swap). */
+  .persona-page .persona-hero.is-active {
+    animation: persona-hero-reveal 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .persona-page .persona-hero.is-active .ph-portrait img {
+    animation:
+      persona-portrait-blur 820ms cubic-bezier(0.22, 1, 0.36, 1) both,
+      persona-portrait-zoom 3600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .persona-page .persona-hero.is-active .ph-tags,
+  .persona-page .persona-hero.is-active .ph-title {
+    animation: persona-overlay-rise 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  /* Chip uses its own keyframe so the translateX(-50%) center rule
+     isn't overwritten by the animation's transform. */
+  .persona-page .persona-hero.is-active .ph-subtitle:not(.ph-subtitle--alt) {
+    animation: persona-chip-rise 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .persona-page .persona-hero.is-active .ph-subtitle.ph-subtitle--alt {
+    animation: persona-overlay-rise 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .persona-page .persona-hero.is-active .ph-title { animation-delay: 80ms; }
+  .persona-page .persona-hero.is-active .ph-subtitle { animation-delay: 140ms; }
+  .persona-page .persona-hero.is-active .ph-tags--mid { animation-delay: 60ms; }
+  @keyframes persona-hero-reveal {
+    from { opacity: 0; filter: blur(22px) saturate(0.7); }
+    to   { opacity: 1; filter: blur(0)   saturate(1); }
+  }
+  /* Hero reveal is two independent layers running simultaneously: the
+     blur clears in 820ms while a slow Ken-Burns zoom runs underneath
+     for 3.6s. The image appears already-in-motion as the blur lifts,
+     and keeps drifting for a few more seconds after the page settles. */
+  @keyframes persona-portrait-blur {
+    from { filter: saturate(0.85) contrast(1.05) blur(14px); }
+    to   { filter: saturate(0.85) contrast(1.05) blur(0); }
+  }
+  @keyframes persona-portrait-zoom {
+    from { transform: scale(1.0); }
+    to   { transform: scale(1.045); }
+  }
+  @keyframes persona-overlay-rise {
+    from { opacity: 0; transform: translateY(8px); filter: blur(8px); }
+    to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  }
+  @keyframes persona-chip-rise {
+    from { opacity: 0; transform: translate(-50%, 8px); filter: blur(8px); }
+    to   { opacity: 1; transform: translate(-50%, 0);   filter: blur(0); }
+  }
+
+  /* Demographics value flip — swaps in cleanly on persona switch. The
+     .is-flipping class is toggled by JS around the textContent swap so
+     each cell briefly blurs/dims, content updates at the dark midpoint,
+     and the new value rises in. Cells stagger by index for a wave. */
+  .persona-demos.is-flipping .pd-card-value {
+    animation: persona-demos-flip 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .persona-demos.is-flipping .pd-card:nth-child(1) .pd-card-value { animation-delay: 0ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(2) .pd-card-value { animation-delay: 35ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(3) .pd-card-value { animation-delay: 70ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(4) .pd-card-value { animation-delay: 105ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(5) .pd-card-value { animation-delay: 50ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(6) .pd-card-value { animation-delay: 85ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(7) .pd-card-value { animation-delay: 120ms; }
+  .persona-demos.is-flipping .pd-card:nth-child(8) .pd-card-value { animation-delay: 155ms; }
+  @keyframes persona-demos-flip {
+    0%   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+    42%  { opacity: 0; transform: translateY(-6px); filter: blur(8px); }
+    58%  { opacity: 0; transform: translateY(6px);  filter: blur(8px); }
+    100% { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-demos.is-flipping .pd-card-value { animation: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-page .persona-hero.is-active,
+    .persona-page .persona-hero.is-active .ph-portrait img,
+    .persona-page .persona-hero.is-active .ph-tags,
+    .persona-page .persona-hero.is-active .ph-title,
+    .persona-page .persona-hero.is-active .ph-subtitle { animation: none; }
+  }
+
+  .persona-hero {
+    position: relative;
+    height: calc(100dvh - var(--persona-hero-chrome, 184px) - 380px);
+    min-height: 480px;
+    overflow: hidden;
+    background: #0d1530;
+    color: #f4f1ea;
+    /* No top border — .persona-selector above already paints a
+       border-bottom hairline. Two stacked 1px lines read as a
+       duplicate. */
+    border-bottom: 1px solid var(--p-line);
+    isolation: isolate;
+    /* Container queries so type and label sizes track the hero's
+       actual width — pinching the stack resizer rescales everything
+       inside the header, not just the photo. */
+    container-type: inline-size;
+    container-name: persona-hero;
+  }
+  .persona-hero .ph-portrait {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .persona-hero .ph-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 22%;
+    filter: saturate(0.85) contrast(1.05);
+  }
+  /* Per-persona crops — push each portrait so the eyes land in the
+     gap between the OMNI top eyebrow and the title lockup. */
+  .persona-hero[data-persona-hero="casual"]     .ph-portrait img { object-position: 55% 29%; }
+  .persona-hero[data-persona-hero="enthusiast"] .ph-portrait img { object-position: 50% 50%; }
+  .persona-hero[data-persona-hero="pragmatist"] .ph-portrait img { object-position: 50% 40%; }
+  .persona-hero[data-persona-hero="eco"]        .ph-portrait img { object-position: 55% 38%; }
+  .persona-hero[data-persona-hero="status"]     .ph-portrait img { object-position: 50% 27%; }
+  /* Cool color-cast layer — gives the photo an editorial blue duotone
+     feel without manipulating the source file. */
+  .persona-hero .ph-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(18, 30, 70, 0.34) 0%, rgba(8, 14, 40, 0.44) 60%, rgba(6, 10, 30, 0.58) 100%),
+      linear-gradient(180deg, rgba(20, 40, 90, 0.44) 0%, rgba(20, 40, 90, 0.28) 100%);
+    background-blend-mode: multiply;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  /* Animated film grain — sits on top of the duotone overlay, jitters
+     subtly to give the portrait a "still alive" cinematic texture. */
+  .persona-hero .ph-portrait::before {
+    content: '';
+    position: absolute;
+    inset: -8%;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    background-repeat: repeat;
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 2;
+    animation: persona-grain 1.6s steps(8) infinite;
+    will-change: transform;
+  }
+  @keyframes persona-grain {
+    0%   { transform: translate(0, 0); }
+    12.5% { transform: translate(-5%, -3%); }
+    25%  { transform: translate(-8%, 5%); }
+    37.5% { transform: translate(8%, -5%); }
+    50%  { transform: translate(-3%, 8%); }
+    62.5% { transform: translate(5%, -8%); }
+    75%  { transform: translate(-8%, -5%); }
+    87.5% { transform: translate(7%, 6%); }
+    100% { transform: translate(0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .persona-hero .ph-portrait::before { animation: none; }
+  }
+  /* Subtle 5×5 grid lines floating on top of the photo. The grid is
+     shifted by -1px so the first vertical line at x=0 (which read as
+     a duplicate hairline overlaying the image's left edge) falls
+     just outside the visible area. The 4 remaining interior verticals
+     and 4 horizontals stay visible. */
+  .persona-hero .ph-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(244, 241, 234, 0.10) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(244, 241, 234, 0.10) 1px, transparent 1px);
+    background-size: 20% 20%;
+    background-position: -1px -1px;
+  }
+  /* Three mono-label rows positioned at top / mid / bottom of the
+     hero. Each row is a 3-column grid: left / center / right. */
+  .persona-hero .ph-tags {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 0 var(--p-pad-x);
+    font-family: var(--p-font-mono);
+    font-size: clamp(9px, 1.1cqw, 13px);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(244, 241, 234, 0.78);
+  }
+  /* Compare-mode narrow columns — tags get tight, the middle one hides. */
+  @container persona-hero (max-width: 420px) {
+    .persona-hero .ph-tags {
+      grid-template-columns: 1fr 1fr;
+      font-size: 8.5px;
+      letter-spacing: 0.12em;
+      gap: 0 8px;
+    }
+    .persona-hero .ph-tags > *:nth-child(2) { display: none; }
+    .persona-hero .ph-tags > *:nth-child(3) { text-align: right; }
+  }
+  .persona-hero .ph-tags--top    { top: 28px; }
+  .persona-hero .ph-tags--mid    { bottom: 28px; }
+  .persona-hero .ph-tags--bottom { bottom: 28px; }
+  .persona-hero .ph-tags > * { white-space: nowrap; }
+  .persona-hero .ph-tags > *:nth-child(2) { text-align: center; }
+  .persona-hero .ph-tags > *:nth-child(3) { text-align: right; }
+  /* The big editorial title block — anchored lower-middle. Mixes a
+     bold sans (Inter weight 700) with an italic serif (Instrument
+     Serif italic) for the accent word. */
+  .persona-hero .ph-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 22%;
+    z-index: 2;
+    margin: 0;
+    padding: 0 var(--p-pad-x);
+    text-align: center;
+    font-family: var(--p-font-sans);
+    font-weight: 700;
+    font-size: clamp(26px, 6cqw, 84px);
+    line-height: 0.96;
+    letter-spacing: -0.024em;
+    text-transform: uppercase;
+    color: #f4f1ea;
+    text-shadow: 0 1px 24px rgba(0, 0, 0, 0.35);
+  }
+  .persona-hero .ph-title em {
+    font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: -1px;
+    /* Optical alignment: serif italic typically reads visually
+       smaller at the same size — bump it slightly. */
+    font-size: 1.12em;
+    line-height: 0.9;
+    color: #f4f1ea;
+  }
+  /* Persona identity chip — dark mono caps pill (NAME, AGE — CITY,
+     STATE) anchored below the headline. Replaces the journey-arrow
+     subtitle. Scoped to the non-alt subtitle so layout-2's body
+     copy keeps its own treatment. */
+  .persona-hero .ph-subtitle:not(.ph-subtitle--alt) {
+    position: absolute;
+    left: 50%;
+    bottom: 14%;
+    transform: translateX(-50%);
+    z-index: 2;
+    margin: 0;
+    padding: 10px 18px;
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: var(--p-font-mono);
+    font-size: clamp(11px, 1.1cqw, 14px);
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #f4f1ea;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    max-width: none;
+  }
+  .persona-hero .ph-subtitle em {
+    font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+    font-style: italic;
+    color: rgba(244, 241, 234, 0.92);
+    padding: 0 2px;
+  }
+  .persona-hero .ph-meta { display: none; }
+
+  /* Demographics — premium magazine spec layout =========================
+     Three-column grid of demographic cards. Each cell is a thin
+     hairline above a tiny mono label and a large thin display value.
+     No cell chrome, generous whitespace — reads like a luxury brochure
+     spec sheet. Section eyebrow at top, no row dividers, no borders. */
+  .persona-demos {
+    display: block;
+    padding: 0;
+    min-height: 380px;
+  }
+  /* Section header — Swiss modernist treatment. Both number and
+     section name read as same-size mono caps, separated by a thin
+     vertical rule. Reads as an architectural section divider. */
+  .persona-demos .pd-head {
+    padding: 56px var(--p-pad-x) 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+  .persona-demos .pd-num {
+    font-family: var(--p-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    display: inline-flex;
+    align-items: center;
+  }
+  .persona-demos .pd-num::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background: var(--p-line);
+    margin: 0 20px;
+  }
+  .persona-demos .pd-label {
+    font-family: var(--p-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-strong);
+  }
+  /* Demographics — 4-col card grid with a hairline above each cell.
+     Tiny mono caps label, thin sans value below. No cell chrome,
+     generous whitespace. */
+  .persona-demos .pd-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 36px;
+    row-gap: 40px;
+    padding: 8px var(--p-pad-x) 72px;
+  }
+  .persona-demos .pd-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 16px;
+    border-top: 1px solid var(--p-line);
+    min-width: 0;
+  }
+  .persona-demos .pd-card-label {
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    margin: 0;
+  }
+  .persona-demos .pd-card-value {
+    font-family: var(--p-font-sans);
+    font-size: clamp(13px, 1.05vw, 15px);
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+    color: var(--p-strong);
+    font-variant-numeric: tabular-nums;
+    word-break: break-word;
+    margin: 0;
+  }
+  @media (max-width: 900px) {
+    .persona-demos .pd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .persona-demos .pd-grid { grid-template-columns: 1fr; row-gap: 32px; }
+  }
+
+  /* Pull quote — editorial callout on a soft accent-tinted background.
+     Hanging serif italic quote glyph in accent blue, italic body,
+     attribution as a left-aligned mono caps coda below. No hairlines —
+     the background color does the separating work. */
+  .persona-pullquote {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 44px var(--p-pad-x);
+    background: var(--accent-soft);
+    align-items: flex-start;
+  }
+  .persona-pullquote .pq-mark {
+    display: block;
+    font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(72px, 7vw, 112px);
+    line-height: 0.6;
+    color: var(--accent);
+    margin: 14px 0 -10px;
+    padding: 0;
+    user-select: none;
+  }
+  .persona-pullquote .pq-body {
+    margin: -6px 0 0;
+    font-family: var(--p-font-sans);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.35;
+    color: var(--p-strong);
+    letter-spacing: -0.4px;
+    max-width: 760px;
+  }
+  .persona-pullquote .pq-attr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    text-align: left;
+    margin-top: 10px;
+  }
+  .persona-pullquote .pq-attr-sep {
+    color: var(--p-subtle);
+    opacity: 0.6;
+  }
+
+  /* Section frame (eyebrow above + full-width content below) -------------- */
+  .persona-section {
+    display: block;
+    border-bottom: 1px solid var(--p-line);
+  }
+  .persona-section .ps-anchor {
+    /* Swiss modernist section header — mono caps number + section
+       name separated by a thin vertical rule. */
+    padding: 56px var(--p-pad-x) 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+  .persona-section .ps-num {
+    font-family: var(--p-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    display: inline-flex;
+    align-items: center;
+  }
+  .persona-section .ps-num::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background: var(--p-line);
+    margin: 0 20px;
+  }
+  .persona-section .ps-eyebrow {
+    font-family: var(--p-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-strong);
+  }
+  .persona-section .ps-content {
+    padding: 56px var(--p-pad-x);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .persona-section .ps-title {
+    font-family: var(--p-font-sans);
+    font-weight: 300;
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -1.4px;
+    color: var(--p-strong);
+    max-width: 720px;
+  }
+
+  /* Feature — Psychographics (editorial spread) ===========================
+     Premium magazine-feature treatment: a wide hero image opens the
+     spread, then a lede + body in a narrow reading column, with the
+     two data points (Affinity Cluster / Signal Source) sitting between
+     prose blocks as hairline meta bands. Observed Behaviors close out
+     as a refined numbered list with display-sized roman numerals. */
+
+  /* Hero banner ----------------------------------------------------------- */
+  .persona-feature .pf-hero {
+    margin: 8px 0 32px;
+    width: 100%;
+    overflow: hidden;
+    background: var(--line);
+    position: relative;
+  }
+  .persona-feature .pf-hero img {
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    display: block;
+  }
+  .persona-feature .pf-hero-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    margin-top: 14px;
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+  }
+
+  /* Generous white space above the 03 PSYCHOGRAPHICS anchor so the
+     pull quote's accent band has breathing room before the next
+     chapter opens. Eyebrow stays tight to the image below it.
+     Bottom padding zeroed so the section-closing hairline sits at
+     the same 28px offset below the IV item as the hairline above it. */
+  .persona-section.persona-feature .ps-anchor {
+    padding-top: 96px;
+    padding-bottom: 12px;
+  }
+  .persona-section.persona-feature .ps-content {
+    padding-top: 4px;
+    padding-bottom: 0;
+  }
+
+  /* Two-column body: prose on the left (wider), affinity + signal
+     stacked small on the right as marginalia. */
+  .persona-feature .pf-twocol {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+    column-gap: 56px;
+    align-items: start;
+  }
+  .persona-feature .pf-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    /* Nudge up so the first label sits optically aligned with the
+       cap-height of the lede's opening line on the left column. */
+    padding-top: 6px;
+  }
+  .persona-feature .pf-meta-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .persona-feature .pf-meta-block + .pf-meta-block {
+    padding-top: 18px;
+    border-top: 1px solid var(--p-line);
+  }
+  .persona-feature .pf-meta-label {
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    margin: 0;
+  }
+  .persona-feature .pf-meta-value {
+    font-family: var(--p-font-sans);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--p-strong);
+    font-weight: 400;
+    margin: 0;
+  }
+
+  /* Reading column — narrower for editorial rhythm */
+  .persona-feature .pf-prose-body {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 620px;
+    font-family: var(--p-font-sans);
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--p-body);
+  }
+  .persona-feature .pf-prose-body .pf-lede {
+    font-family: var(--p-font-sans);
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--p-strong);
+    font-weight: 300;
+    letter-spacing: -0.2px;
+  }
+
+  /* Observed Behaviors — premium numbered list */
+  .persona-feature .pf-behaviors {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 24px;
+    padding-bottom: 48px;
+  }
+  .persona-feature .pf-behaviors-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--p-line);
+    margin-bottom: 4px;
+  }
+  .persona-feature .pf-behaviors-title {
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    font-weight: 400;
+    margin: 0;
+  }
+  .persona-feature .pf-behaviors-count {
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+  }
+  .persona-feature .pf-interests {
+    display: flex;
+    flex-direction: column;
+  }
+  .persona-feature .pf-interests li {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--p-line);
+    align-items: start;
+  }
+  .persona-feature .pf-interests li:last-child { border-bottom: none; }
+  .persona-feature .pfi-num {
+    font-family: var(--p-font-mono);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    align-self: start;
+    padding-top: 4px;
+    min-width: 24px;
+  }
+  .persona-feature .pfi-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 560px;
+  }
+  .persona-feature .pfi-title {
+    font-family: var(--p-font-sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: -0.15px;
+    color: var(--p-strong);
+    margin: 0;
+  }
+  .persona-feature .pfi-desc {
+    font-family: var(--p-font-sans);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--p-body);
+    margin: 0;
+  }
+
+  /* Strip — Behaviors. Two-column treatment: section title left,
+     italic supporting copy right. Bottom padding tightened so the
+     strip flows directly into the image pair below. */
+  .persona-section.persona-strip { border-bottom: none; }
+  /* Tight gap between the 04 Behaviors eyebrow and the section's
+     "Behaviors & Media Habits" headline below. */
+  .persona-section.persona-strip .ps-anchor {
+    padding-bottom: 8px;
+  }
+  .persona-strip .ps-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+    padding-top: 8px;
+    padding-bottom: 24px;
+  }
+  .persona-strip .ps-title {
+    font-family: var(--p-font-sans);
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: var(--p-strong);
+    margin: 0;
+  }
+  .persona-strip .ps-lede {
+    font-family: var(--p-font-sans);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--p-body);
+    margin: 0;
+    /* Optically nudge so the italic lede's cap-height sits on the
+       same line as the headline's cap-height on the left column. */
+    padding-top: 10px;
+    letter-spacing: -0.05px;
+  }
+
+  /* Image pair — sits inset by var(--p-pad-x) on each side so the
+     pair lines up with the psychographics hero image above (which
+     also lives inside ps-content's lateral padding). */
+  .persona-imagepair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0 var(--p-pad-x);
+    padding-bottom: 8px;
+  }
+  .persona-imagepair .pip-fig {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .persona-imagepair .pip-fig + .pip-fig { border-left: 1px solid var(--p-line); }
+  .persona-imagepair .pip-fig img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .persona-imagepair .pip-fig figcaption {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    padding: 6px 10px;
+    background: rgba(10, 10, 10, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f7f7f7;
+  }
+
+  /* Two-up — Motivations + Channels --------------------------------------- */
+  .persona-twoup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--p-line);
+  }
+  .persona-twoup .ptu-col {
+    padding: 32px var(--p-pad-x) 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .persona-twoup .ptu-col-channels {
+    /* Vertical divider rendered as a pseudo-element so it matches
+       the height of the text content (matches the column's own
+       top + bottom padding), not the whole section. */
+    position: relative;
+  }
+  .persona-twoup .ptu-col-channels::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 32px;
+    bottom: 64px;
+    width: 1px;
+    background: var(--p-line);
+    pointer-events: none;
+  }
+  .persona-twoup .ptu-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding-bottom: 0;
+  }
+  .persona-twoup .ptu-num {
+    font-family: var(--p-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    display: inline-flex;
+    align-items: center;
+  }
+  .persona-twoup .ptu-num::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background: var(--p-line);
+    margin: 0 20px;
+  }
+  .persona-twoup .ptu-title {
+    font-family: var(--p-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--p-strong);
+  }
+  /* Both two-up lists share the same row layout — mono number on row 1
+     col 1, mono caps name on row 1 col 2, sans description on row 2
+     col 2. Hairlines top + between rows so the two columns mirror
+     each other visually. */
+  .persona-twoup .ptu-list,
+  .persona-twoup .ptu-channels {
+    display: flex;
+    flex-direction: column;
+  }
+  .persona-twoup .ptu-list li,
+  .persona-twoup .ptu-channels li {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 16px;
+    row-gap: 6px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--p-line);
+    align-items: baseline;
+  }
+  .persona-twoup .ptu-list li:last-child,
+  .persona-twoup .ptu-channels li:last-child {
+    border-bottom: none;
+  }
+  .persona-twoup .ptu-num-item,
+  .persona-twoup .pch-num {
+    grid-row: 1;
+    grid-column: 1;
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--p-subtle);
+  }
+  .persona-twoup .ptu-item-title,
+  .persona-twoup .pch-name {
+    grid-row: 1;
+    grid-column: 2;
+    margin: 0;
+    font-family: var(--p-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--p-strong);
+    font-weight: 500;
+  }
+  .persona-twoup .ptu-item-desc,
+  .persona-twoup .pch-detail {
+    grid-row: 2;
+    grid-column: 2;
+    margin: 0;
+    font-family: var(--p-font-sans);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--p-body);
+  }
+  .persona-twoup .pch-detail em { font-style: italic; color: var(--p-strong); }
+
+  /* Footer — tags --------------------------------------------------------- */
+  .persona-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 32px var(--p-pad-x) 40px;
+    gap: 32px;
+  }
+  .persona-footer .pft-label {
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p-subtle);
+    flex-shrink: 0;
+  }
+  .persona-footer .pft-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: baseline;
+  }
+  .persona-footer .pft-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px 5px;
+    border: 1px solid var(--p-line);
+    border-radius: 999px;
+    font-family: var(--p-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--p-body);
+    line-height: 1;
+  }
+  .persona-footer .pft-tag-x { display: none; }
+
+  /* Responsive — collapse hero, two-up, feature-body at narrow widths */
+  @media (max-width: 900px) {
+    .persona-view { --p-pad-x: 32px; --p-anchor-w: 140px; }
+    .persona-hero .ph-tags { font-size: 9.5px; letter-spacing: 0.14em; }
+    .persona-hero .ph-title { font-size: clamp(26px, 5.2vw, 46px); bottom: 24%; letter-spacing: -1.6px; }
+    .persona-hero .ph-subtitle { font-size: 14px; bottom: 16%; }
+    .persona-demos { grid-template-columns: 1fr; }
+    .persona-demos .pd-head { padding: 36px var(--p-pad-x) 12px; }
+    .persona-demos .pd-list { margin: 0 var(--p-pad-x); padding: 8px 0 32px; }
+    .persona-demos .pd-row { grid-template-columns: 140px 1fr; column-gap: 20px; }
+    .persona-pullquote { padding: 48px var(--p-pad-x); gap: 14px; }
+    .persona-pullquote .pq-body { font-size: 24px; }
+    .persona-section { grid-template-columns: 1fr; }
+    .persona-section .ps-anchor { padding: 36px var(--p-pad-x) 8px; flex-direction: row; align-items: baseline; gap: 16px; }
+    .persona-section .ps-content { padding: 24px var(--p-pad-x) 48px; border-left: none; }
+    .persona-section .ps-title { font-size: 34px; letter-spacing: -1px; }
+    .persona-section.persona-feature .ps-anchor { padding-top: 24px; padding-bottom: 0; }
+    .persona-section.persona-feature .ps-content { padding-top: 6px; }
+    .persona-feature .pf-twocol { grid-template-columns: 1fr; row-gap: 28px; }
+    .persona-feature .pf-interests li { grid-template-columns: max-content 1fr; column-gap: 14px; padding: 22px 0; }
+    .persona-feature .pfi-num { font-size: 10px; }
+    .persona-strip .ps-lede { font-size: 18px; }
+    .persona-twoup { grid-template-columns: 1fr; }
+    .persona-twoup .ptu-col { padding: 40px var(--p-pad-x); }
+    .persona-twoup .ptu-col-channels { border-left: none; border-top: 1px solid var(--p-line); }
+    .persona-twoup .ptu-title { font-size: 28px; }
+    .persona-twoup .ptu-list li,
+    .persona-twoup .ptu-channels li { grid-template-columns: 32px 1fr; padding: 14px 0; }
+    .persona-footer { padding: 28px var(--p-pad-x) 36px; flex-direction: column; gap: 12px; }
+  }
+  @media (max-width: 640px) {
+    .persona-view { --p-pad-x: 20px; padding: 0 12px 48px; }
+    .persona-masthead { flex-direction: column; align-items: flex-start; padding: 14px var(--p-pad-x); gap: 6px; }
+    .persona-hero .ph-tags { grid-template-columns: 1fr 1fr; font-size: 8.5px; gap: 4px 8px; }
+    .persona-hero .ph-tags > *:nth-child(2) { display: none; }
+    .persona-hero .ph-tags > *:nth-child(3) { text-align: right; }
+    .persona-hero .ph-title { font-size: clamp(22px, 6.6vw, 34px); bottom: 22%; letter-spacing: -1.2px; }
+    .persona-hero .ph-subtitle { font-size: 13px; bottom: 14%; }
+    .persona-demos .pd-row { grid-template-columns: 110px 1fr; column-gap: 16px; padding: 10px 0; }
+    .persona-demos .pd-row dt { font-size: 9px; }
+    .persona-demos .pd-row dd { font-size: 11px; }
+    .persona-pullquote .pq-body { font-size: 22px; }
+    .persona-section .ps-title { font-size: 28px; }
+    .persona-imagepair { grid-template-columns: 1fr; }
+    .persona-imagepair .pip-fig + .pip-fig { border-left: none; border-top: 1px solid var(--p-line); }
+  }
+
+  /* ========================================================================
+     canvas_4 — multi-section "Creative Assets" layout
+     Swiss flat treatment: full canvas width, hairline dividers between
+     sections, no card backings. Four sections stacked vertically:
+     Media (social/display ads) / Images / Video / Audio under a single
+     rail-nav chapter. Cards are rendered from JS data arrays in
+     initCanvas4Sections().
+     ====================================================================== */
+  .canvas4-view {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    color: var(--text-strong);
+    font-family: var(--font-sans);
+  }
+  /* Hide #canvas's scrollbar entirely on canvas_4 so the section
+     hairlines can run all the way to the right edge of the browser
+     window. Without this, the scrollbar gutter (~11px) eats into
+     content width and the hairlines stop short. Scroll still works
+     via wheel / trackpad / keyboard / touch — just no visible track. */
+  #main[data-tab="canvas4"] #canvas {
+    scrollbar-width: none;
+    /* Span across the splitter column so #canvas's left edge sits
+       flush against the chat panel's right edge. Without this, the
+       6px splitter gutter creates a visible gap between the chat
+       boundary and every canvas_4 hairline. The splitter itself
+       stays clickable (z-index override + transparent bg below). */
+    grid-column: 3 / 5;
+  }
+  #main[data-tab="canvas4"] > .splitter {
+    z-index: 5;
+    background: transparent;
+  }
+  #main[data-tab="canvas4"] #canvas::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+  .c4-section {
+    /* Full-bleed section with generous Swiss whitespace. Inner padding
+       sits inside the section so the hairline divider can span the
+       full canvas width edge-to-edge. */
+    width: 100%;
+    padding: 80px 48px 96px;
+    box-sizing: border-box;
+  }
+  /* Hairline divider between sections — pseudo-element with a small
+     negative left/right so it extends past the section's own box
+     edges and visually clips at #canvas's bounds. Using border-top
+     on the section box itself was subject to subpixel-render drift
+     at the left edge (~1px gap to the chat-splitter boundary); the
+     pseudo-element extension absorbs that drift so the line runs
+     truly flush on both sides. */
+  .c4-section {
+    position: relative;
+    /* Container query root for the ad-rail's column count. When the
+       chat-splitter eats into the canvas right side, the section's
+       inline-size shrinks even if the viewport doesn't — the rail
+       below responds via @container so cards stack down the page on
+       narrow canvases regardless of overall screen width. */
+    container-type: inline-size;
+  }
+  /* container-type makes each section a stacking context (implicit
+     contain: layout in Chrome / Safari). That otherwise traps any
+     open menu inside the section's bounds — the next section paints
+     over the panel where it crosses the boundary. Lift the section
+     above its siblings while a menu is open inside it so the panel
+     reads cleanly. */
+  .c4-section:has(.c4-unit-menu-panel.open),
+  .c4-section:has(.c4-type-dropdown.open),
+  .c4-section:has(.gco-menu.open) {
+    z-index: 100;
+  }
+  .c4-section + .c4-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -64px;
+    right: -64px;
+    height: 0.5px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  /* Same treatment for the finale section divider — it had its own
+     border-top declaration earlier; replace with the same pseudo. */
+  .c4-section-finale {
+    border-top: 0;
+    /* Disabled per Bryan — keeping the markup in place so it can be
+       re-enabled later by dropping this rule. */
+    display: none;
+  }
+  .c4-section-finale::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -64px;
+    right: -64px;
+    height: 0.5px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  @media (max-width: 900px) {
+    .c4-section { padding: 56px 24px 64px; }
+  }
+
+  /* Alternating section backgrounds — every other canvas_4 section
+     gets a "flat white" fill (#FFFFFF) over the canvas's default
+     slate-tinted #F5F7FA, producing a subtle checked rhythm down
+     the page. Finale section keeps its own dark poster background
+     and is explicitly excluded. Dark theme uses a slightly-lighter
+     panel tone so the contrast stays subtle in both themes. */
+  #canvas4View > .c4-section:nth-of-type(even):not(.c4-section-finale) {
+    background: #FFFFFF;
+  }
+  body[data-theme="dark"] #canvas4View > .c4-section:nth-of-type(even):not(.c4-section-finale) {
+    background: #1B1D21;
+  }
+
+  /* === canvas_4 pagination — reuses canvas_2 scope-pagination ===
+     Same typographic chrome (Fira Code prev / numerals / next, hairline
+     accent underline on active page). Just override margin so it sits
+     comfortably below the grid in canvas_4's open layout instead of
+     the tight table-board context it was authored for. */
+  .c4-pagination {
+    margin-top: 32px;
+    margin-bottom: 0;
+  }
+  .c4-pagination:empty { display: none; }
+
+  /* === canvas_4 finale — full-width canvas treatment ===
+     The bib-finale component on canvas_1 is a contained 5:6 poster.
+     On canvas_4 it spans the full canvas width as a horizontal hero
+     panel: edge-to-edge blue surface, no aspect-ratio constraint, no
+     max-height cap, content laid out in a top-row + body-row split
+     so the shape sits inline rather than dominating vertically. */
+  .c4-section-finale {
+    padding: 0;
+    border-top: 0.5px solid var(--line);
+  }
+  .canvas4-finale-board {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  .canvas4-finale-board .bib-finale-tagline {
+    aspect-ratio: auto;
+    max-height: none;
+    width: 100%;
+    padding: 80px 64px;
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 64px;
+    row-gap: 48px;
+    align-items: start;
+  }
+  /* Top row spans both columns (logo + eyebrow). */
+  .canvas4-finale-board .bib-finale-top {
+    grid-column: 1 / -1;
+    padding-bottom: 32px;
+  }
+  /* Shape — left column, second row. Sits inline at a contained size
+     so it reads as a sigil, not a hero poster. */
+  .canvas4-finale-board .bib-finale-shape {
+    width: 100%;
+    max-width: 280px;
+    margin: 0;
+    align-self: center;
+    grid-column: 1;
+    grid-row: 2;
+  }
+  /* Meta — right column, second row. 3-column layout for the
+     descriptive copy. Existing .bib-finale-meta CSS sets repeat(3,1fr)
+     and a top border; override the border since we're sitting next
+     to the shape instead of stacked below it. */
+  .canvas4-finale-board .bib-finale-meta {
+    grid-column: 2;
+    grid-row: 2;
+    border-top: 0;
+    padding-top: 0;
+  }
+  @media (max-width: 1100px) {
+    .canvas4-finale-board .bib-finale-tagline {
+      grid-template-columns: 1fr;
+      padding: 64px 48px;
+      row-gap: 56px;
+    }
+    .canvas4-finale-board .bib-finale-shape {
+      grid-column: 1;
+      grid-row: 2;
+      max-width: 240px;
+      margin: 0 auto;
+    }
+    .canvas4-finale-board .bib-finale-meta {
+      grid-column: 1;
+      grid-row: 3;
+    }
+  }
+  @media (max-width: 720px) {
+    .canvas4-finale-board .bib-finale-tagline { padding: 48px 24px; }
+    .canvas4-finale-board .bib-finale-meta {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  /* Section heading — eyebrow + title + lede. */
+  .c4-sec-head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 0; /* sits inside the toolbar now, no own bottom gap */
+    max-width: 600px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  /* Toolbar holds the section title cluster on the left + the
+     filter / search cluster on the right. Bottom-align the boxes
+     AND nudge the right cluster slightly further down so the
+     pill / icon footers land on the visual descender line of the
+     lede's last text line — which is where the lede paragraph
+     looks like it "ends" to the eye (a hair below the box
+     bottom, accounting for line-height half-leading). */
+  .c4-toolbar { align-items: flex-end; }
+  .c4-toolbar-row { align-items: flex-end; }
+  .c4-toolbar > .c4-toolbar-right,
+  .c4-toolbar-row > .c4-media-filters {
+    transform: translateY(8px);
+  }
+  .c4-sec-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .c4-sec-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 1.08;
+    letter-spacing: -1px;
+    margin: 0;
+    color: var(--text-strong);
+  }
+  .c4-sec-lede {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-body);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  /* Sub-section inside a c4-section (used by the Media section's
+     Social Media + Display split). Carries its own header + toolbar
+     + grid block; sub-blocks within one parent section share the
+     parent's chrome but each owns its own filters and grid. */
+  .c4-subsec {
+    display: block;
+    position: relative;
+    scroll-margin-top: 80px;
+  }
+  .c4-subsec + .c4-subsec {
+    margin-top: 96px;
+    padding-top: 80px;
+    border-top: 0.5px solid var(--line);
+  }
+  .c4-subsec-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+    max-width: 880px;
+  }
+  .c4-subsec-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .c4-subsec-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.4px;
+    margin: 0;
+    color: var(--text-strong);
+  }
+  .c4-subsec-lede {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-body);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  /* Section toolbar — search left, view-mode pills right. No hairline
+     under it; the section-divider hairlines between c4-sections do
+     all the structural work on canvas_4. */
+  .c4-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0;
+    margin-bottom: 28px;
+    /* Make the toolbar its own stacking context above the sibling
+       ad-rail so the Type dropdown (and any future popovers) draw
+       on top of cards — Reddit posts hover with transform, which
+       creates their own stacking context and would otherwise eat
+       the panel. */
+    position: relative;
+    z-index: 100;
+  }
+  /* Media-section filter pills (All / Feed / Story / Reel). Swiss
+     understated treatment — no background, just a soft underline on
+     hover, accent color on active. */
+  .c4-filter-pill {
+    height: 30px;
+    padding: 0 14px;
+    background: transparent;
+    border: 0;
+    color: var(--text-subtle);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    cursor: pointer;
+    border-radius: 15px;
+    /* Premium hover ease — longer duration, custom cubic-bezier
+       so the bg+color tween feels like a soft inhale instead of
+       a snap. Transform gets a quicker, springier curve for
+       tactile press feedback. Box-shadow tweens with the same
+       curve as bg so the inset edge lift feels coherent. */
+    transition:
+      background 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-filter-pill:hover {
+    color: var(--text-strong);
+    background: rgba(15, 23, 42, 0.05);
+    box-shadow: inset 0 0 0 0.5px rgba(15, 23, 42, 0.06);
+  }
+  .c4-filter-pill:active {
+    transform: scale(0.95);
+    transition-duration: 90ms;
+  }
+  .c4-filter-pill.active {
+    background: rgba(15, 23, 42, 0.085);
+    color: var(--text-strong);
+    font-weight: 600;
+    box-shadow:
+      inset 0 0 0 0.5px rgba(15, 23, 42, 0.06),
+      0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .c4-filter-pill.active:hover {
+    background: rgba(15, 23, 42, 0.11);
+  }
+  body[data-theme="dark"] .c4-filter-pill:hover {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+  }
+  body[data-theme="dark"] .c4-filter-pill.active {
+    background: rgba(255, 255, 255, 0.10);
+    box-shadow:
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.08),
+      0 1px 2px rgba(0, 0, 0, 0.18);
+  }
+  body[data-theme="dark"] .c4-filter-pill.active:hover {
+    background: rgba(255, 255, 255, 0.13);
+  }
+  .c4-filter-pill:focus,
+  .c4-filter-pill:focus-visible { outline: none; }
+  /* Display-size selectors carry a STACKED "Name / Dim" lockup.
+     They drop the standard pill chrome (no fill, no shadow, no
+     rounded corners) and read as Swiss-style tab labels: muted
+     text by default, strong text on hover with a faint underline,
+     bold text + accent underline on active. */
+  .c4-filter-pill.c4-display-size {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 6px;
+    height: auto;
+    padding: 6px 4px 8px;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: var(--text-subtle);
+    font-weight: 500;
+    line-height: 1.1;
+    transition:
+      color 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-bottom-color 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      font-weight 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-filter-pill.c4-display-size:hover {
+    color: var(--text-strong);
+    border-bottom-color: rgba(15, 23, 42, 0.18);
+  }
+  .c4-filter-pill.c4-display-size.active {
+    color: var(--text-strong);
+    border-bottom-color: #0a0a0a;
+    font-weight: 600;
+  }
+  .c4-filter-pill.c4-display-size.active:hover {
+    border-bottom-color: #0a0a0a;
+  }
+  body[data-theme="dark"] .c4-filter-pill.c4-display-size:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+  }
+  body[data-theme="dark"] .c4-filter-pill.c4-display-size.active {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-bottom-color: #ececef;
+  }
+  .c4-pill-name {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: inherit;
+    letter-spacing: -0.05px;
+    line-height: 1.1;
+  }
+  .c4-pill-dim {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    font-weight: 400;
+    color: var(--text-subtle);
+    line-height: 1.1;
+  }
+  .c4-filter-pill.c4-display-size:hover .c4-pill-dim,
+  .c4-filter-pill.c4-display-size.active .c4-pill-dim {
+    color: var(--text-strong);
+    opacity: 0.7;
+  }
+  /* Wider horizontal gap between display-size tabs so they read
+     as distinct labels rather than crowded pills. */
+  .c4-filter-group.c4-filter-group--tabs {
+    gap: 18px;
+  }
+  .c4-toolbar-left,
+  .c4-toolbar-right {
+    display: inline-flex;
+    /* Center children so the 36px search wrap and 30px view
+       buttons share a vertical midline — keeps the magnifier
+       icon visually centered with the view buttons. The cluster
+       itself stays bottom-aligned vs the section head via the
+       parent c4-toolbar rule. */
+    align-items: center;
+    gap: 4px;
+  }
+  /* ============ Image edit mode ============================
+     Full-takeover overlay anchored to the canvas right-side area.
+     Two-column grid (stage + history rail), 64px topbar. Enters
+     with a scale-up + fade on the stage, a slide-in on the rail,
+     and a fade on the topbar. Exits by reversing. Bounds are set
+     via JS on open by reading #canvas getBoundingClientRect, so the
+     overlay covers exactly the canvas-right area without clipping
+     into the chat panel on the left. */
+  .c4-edit-mode {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    display: grid;
+    /* Rail width is variable so the user can pinch-resize it. CSS
+       transition smooths the snap-back / snap-to-end; the JS sets
+       .is-rail-resizing during the drag to disable the transition
+       so live updates feel direct. Bounds: 70px floor, 280px cap. */
+    --rail-width: 280px;
+    grid-template-columns: 1fr var(--rail-width);
+    transition: grid-template-columns 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    grid-template-rows: 64px 1fr;
+    grid-template-areas:
+      "topbar topbar"
+      "stage  rail";
+    background: var(--canvas-bg);
+    color: var(--text-strong);
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 360ms;
+  }
+  .c4-edit-mode[data-visible="1"] {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 480ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0s,
+      grid-template-columns 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* During an active rail drag, disable the grid-template-columns
+     transition so the column width tracks the cursor 1:1. */
+  .c4-edit-mode.is-rail-resizing { transition: none !important; }
+
+  .c4-edit-topbar {
+    grid-area: topbar;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 24px;
+    border-bottom: 0.5px solid var(--line);
+    /* Fades in slightly later than the stage for a layered reveal. */
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 320ms cubic-bezier(0.22, 1, 0.36, 1) 120ms,
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1) 120ms;
+  }
+  .c4-edit-mode[data-visible="1"] .c4-edit-topbar {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .c4-edit-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px 6px 10px;
+    background: transparent;
+    border: 0.5px solid var(--line-solid);
+    border-radius: 999px;
+    color: var(--text-body);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    transition:
+      background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-edit-back:hover {
+    background: var(--hover-soft);
+    border-color: var(--text-subtle);
+    color: var(--text-strong);
+  }
+  .c4-edit-back:active { transform: scale(0.96); }
+  .c4-edit-back:focus,
+  .c4-edit-back:focus-visible { outline: none; }
+  .c4-edit-back svg { display: block; }
+
+  .c4-edit-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1 1 auto;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--text-subtle);
+    letter-spacing: -0.05px;
+  }
+  .c4-edit-meta strong {
+    color: var(--text-strong);
+    font-weight: 600;
+  }
+  .c4-edit-rev {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .c4-edit-rev-sep { opacity: 0.4; margin: 0 2px; }
+  .c4-edit-meta-dot { color: var(--text-subtle); opacity: 0.5; }
+  .c4-edit-prompt-mini {
+    max-width: 360px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .c4-edit-toolbar {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .c4-edit-tool {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    color: var(--text-body);
+    cursor: pointer;
+    transition:
+      background 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-edit-tool:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+  .c4-edit-tool:active { transform: scale(0.92); }
+  .c4-edit-tool:focus,
+  .c4-edit-tool:focus-visible { outline: none; }
+  .c4-edit-tool[disabled] {
+    opacity: 0.32;
+    cursor: not-allowed;
+  }
+  .c4-edit-tool[disabled]:hover {
+    background: transparent;
+    color: var(--text-body);
+  }
+  .c4-edit-tool.is-on {
+    background: var(--accent, #1858ee);
+    color: var(--text-button);
+  }
+  .c4-edit-tool svg { display: block; width: 14px; height: 14px; }
+  .c4-edit-tool-sep {
+    width: 0.5px;
+    height: 18px;
+    background: var(--line-solid);
+    margin: 0 4px;
+  }
+
+  .c4-edit-stage {
+    grid-area: stage;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 16px 14px;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+    min-width: 0;
+  }
+  .c4-edit-frame {
+    position: relative;
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 4px;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.06),
+      0 22px 60px rgba(15, 23, 42, 0.16);
+    /* Premium entry — scale up from 0.92 + fade. The grid centers the
+       frame in the stage so the scale origin reads as "lifting up". */
+    transform: scale(0.92);
+    opacity: 0;
+    transition:
+      transform 540ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 480ms cubic-bezier(0.22, 1, 0.36, 1);
+    /* Fills 92% of the binding stage dimension so the image
+       maximizes the available space. The other axis is whatever
+       aspect ratio dictates — JS sizes the frame on image load
+       (sizeEditFrame in the edit-mode init) so both dimensions
+       hit their target rather than max-width capping while
+       max-height runs free. */
+    max-width: 92%;
+    max-height: 92%;
+    cursor: none;
+    --split: 50%;
+  }
+  .c4-edit-frame.is-fit-fill { cursor: zoom-out; }
+  .c4-edit-frame[data-mode="compare"] { cursor: ew-resize; }
+  .c4-edit-mode[data-visible="1"] .c4-edit-frame {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .c4-edit-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Cap so a tall portrait can't push the hint past the stage.
+       Topbar (64) + stage padding (14+14) + mat padding (6+6) +
+       hint area (~26) ≈ 130 — round to 130. */
+    max-height: calc(100vh - 130px);
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  /* Current image — held hidden + blurred while the skeleton plays.
+     JS removes .is-loaded right before changing the src and adds
+     it back when the skeleton dissolves, producing a rack-focus
+     reveal: image blurs from 14px → 0 + opacity 0 → 1 as the
+     skeleton fades out. The transition is slightly longer than
+     the skeleton's exit so the focus pull feels deliberate. */
+  .c4-edit-img-current {
+    opacity: 0;
+    filter: blur(14px);
+    transition:
+      opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-edit-img-current.is-loaded {
+    opacity: 1;
+    filter: blur(0);
+  }
+  .c4-edit-img-prev {
+    position: absolute;
+    inset: 6px;
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+    object-fit: contain;
+    display: none;
+  }
+
+  /* Skeleton — quiet loading state. Minimal by design: a soft
+     accent-tinted base, a slow aurora drift, and a long full-tile
+     breath. No scan line, no grid, no hard edges — just gentle
+     motion that reads as "the system is thinking". */
+  .c4-edit-skeleton {
+    position: absolute;
+    inset: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 7%, rgba(15, 23, 42, 0.04)) 0%,
+      color-mix(in srgb, var(--accent) 4%, rgba(15, 23, 42, 0.09)) 100%);
+    /* Single quiet inset bloom — no harsh edge ring. */
+    box-shadow:
+      inset 0 0 80px color-mix(in srgb, var(--accent) 8%, transparent);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 3;
+    transition:
+      opacity 480ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 480ms;
+  }
+  body[data-theme="dark"] .c4-edit-skeleton {
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 12%, rgba(0, 0, 0, 0.18)) 0%,
+      color-mix(in srgb, var(--accent) 6%, rgba(0, 0, 0, 0.30)) 100%);
+    box-shadow:
+      inset 0 0 80px color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  .c4-edit-skeleton::before,
+  .c4-edit-skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  /* Aurora — three big, soft, heavily-blurred accent blobs drift
+     slowly. Higher blur radius (24px) keeps the motion ambient
+     rather than directional. */
+  .c4-edit-skeleton::before {
+    background:
+      radial-gradient(ellipse 80% 90% at 24% 30%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 68%),
+      radial-gradient(ellipse 80% 85% at 76% 38%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+      radial-gradient(ellipse 70% 80% at 50% 82%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 64%);
+    background-size: 220% 220%, 220% 220%, 220% 220%;
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    filter: blur(24px) saturate(1.1);
+    mix-blend-mode: screen;
+  }
+  /* Breath — a single radial accent wash that fades up and down on
+     a slow 5s loop. No directional movement, no hard edges. Reads
+     as a quiet "alive" pulse behind the aurora. */
+  .c4-edit-skeleton::after {
+    background: radial-gradient(ellipse 90% 90% at 50% 50%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 72%);
+    opacity: 0;
+    mix-blend-mode: screen;
+  }
+  .c4-edit-skeleton.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0s;
+  }
+  .c4-edit-skeleton.is-visible::before {
+    animation: c4-edit-skel-aurora 9s ease-in-out infinite;
+  }
+  .c4-edit-skeleton.is-visible::after {
+    animation: c4-edit-skel-breath 5s ease-in-out infinite;
+  }
+  @keyframes c4-edit-skel-aurora {
+    0%, 100% { background-position: 0% 0%, 100% 100%, 50% 50%; }
+    33%      { background-position: 60% 30%, 30% 70%, 80% 20%; }
+    66%      { background-position: 30% 70%, 70% 20%, 20% 80%; }
+  }
+  @keyframes c4-edit-skel-breath {
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 1; }
+  }
+  .c4-edit-frame[data-mode="compare"] .c4-edit-img-prev {
+    display: block;
+    clip-path: inset(0 calc(100% - var(--split, 50%)) 0 0);
+  }
+  /* Slider handle — only visible in compare mode. Vertical line spans
+     the frame; a circular grip in the middle is the drag affordance. */
+  .c4-edit-split-handle {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: calc(6px + (100% - 12px) * var(--split-frac, 0.5));
+    width: 2px;
+    background: var(--accent, #1858ee);
+    display: none;
+    cursor: ew-resize;
+    z-index: 5;
+    transform: translateX(-1px);
+  }
+  .c4-edit-frame[data-mode="compare"] .c4-edit-split-handle { display: block; }
+  .c4-edit-split-line { display: none; }
+  .c4-edit-split-grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    background: var(--accent, #1858ee);
+    color: #ffffff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .c4-edit-split-handle:hover .c4-edit-split-grip {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  /* Pin overlay — sits over the image with pointer-events:none so the
+     frame can still catch clicks for new pins. Individual pins
+     re-enable pointer-events so they can be hovered + clicked to
+     remove. */
+  .c4-edit-pins {
+    position: absolute;
+    inset: 6px;
+    pointer-events: none;
+    z-index: 4;
+  }
+  /* Pin — solid accent disc, thin inner light ring (separates the
+     pin from the image without a chunky white border), single
+     low-elevation shadow. No double-border halo, no radial shine,
+     no overshoot bounce. Reads as a precise marker, not clip art. */
+  .c4-edit-pin {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent, #1858ee);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+    /* Subtle drop: thin hairline shadow + minimal cast. No outer
+       accent halo. The inset 1px white sliver is just enough to
+       separate the disc from busy image content. */
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.20),
+      0 1px 2px rgba(15, 23, 42, 0.18),
+      0 3px 8px rgba(15, 23, 42, 0.12);
+    border: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    animation: c4-edit-pin-pop 340ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Single thin ring ripples outward on creation. 1px hairline,
+     short travel (1.0 → 1.9), opacity fades clean to 0. Forwards
+     fill so the ring doesn't replay. */
+  .c4-edit-pin::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--accent, #1858ee);
+    pointer-events: none;
+    transform-origin: center;
+    opacity: 0;
+    animation: c4-edit-pin-ring 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .c4-edit-pin:hover {
+    transform: translate(-50%, -50%) scale(1.06);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+      0 2px 4px rgba(15, 23, 42, 0.22),
+      0 4px 12px rgba(15, 23, 42, 0.16);
+  }
+  .c4-edit-pin:focus,
+  .c4-edit-pin:focus-visible { outline: none; }
+  @keyframes c4-edit-pin-pop {
+    0%   { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  }
+  @keyframes c4-edit-pin-ring {
+    0%   { transform: scale(1); opacity: 0.55; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
+
+  /* Floating cursor dot — replaces the OS crosshair. Tracks the
+     mouse over the image only (JS toggles .is-visible when the
+     pointer enters / leaves the image rect). pointer-events: none
+     so it never intercepts the click that would drop a pin. */
+  .c4-edit-cursor-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent, #1858ee);
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent),
+      0 2px 6px rgba(15, 23, 42, 0.18);
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 6;
+    will-change: transform, left, top;
+    transition:
+      opacity 140ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-edit-cursor-dot.is-visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  /* Click burst — JS toggles .is-bursting briefly so the dot flares
+     out and dissolves alongside the pin landing. */
+  .c4-edit-cursor-dot.is-bursting {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.2);
+    transition:
+      opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .c4-edit-hint {
+    margin: 12px 0 0;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-subtle);
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 320ms cubic-bezier(0.22, 1, 0.36, 1) 240ms,
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1) 240ms;
+  }
+  .c4-edit-mode[data-visible="1"] .c4-edit-hint {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .c4-edit-rail {
+    grid-area: rail;
+    border-left: 0.5px solid var(--line);
+    padding: 22px 16px;
+    overflow-y: auto;
+    transform: translateX(24px);
+    opacity: 0;
+    /* position:relative anchors the resize handle to the rail's
+       left edge. min-width:0 lets the rail shrink below its
+       natural content width when the user pinches it down. */
+    position: relative;
+    min-width: 0;
+    transition:
+      transform 540ms cubic-bezier(0.22, 1, 0.36, 1) 100ms,
+      opacity 480ms cubic-bezier(0.22, 1, 0.36, 1) 100ms,
+      padding 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Collapsed rail — when the user pinches below ~130px we hide
+     the head (eyebrow + count) and tighten the padding so just
+     the revision thumbnails remain. JS toggles .is-collapsed
+     based on the width threshold. */
+  .c4-edit-rail.is-collapsed {
+    padding: 14px 8px;
+  }
+  .c4-edit-rail.is-collapsed .c4-edit-rail-head {
+    display: none;
+  }
+
+  /* Rail resize handle — vertical strip on the rail's left edge.
+     Wider hit-target (8px) than visible affordance (2px center
+     line) so the cursor catches it easily. Hover + active states
+     bring the line forward in accent color and grow it a little
+     for tactile feedback. */
+  .c4-edit-rail-resize {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    width: 8px;
+    cursor: ew-resize;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    z-index: 7;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .c4-edit-rail-resize::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 44px;
+    border-radius: 2px;
+    background: var(--line-solid);
+    transform: translate(-50%, -50%);
+    transition:
+      background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      width 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-edit-rail-resize:hover::before,
+  .c4-edit-rail-resize:focus-visible::before {
+    background: var(--accent);
+    height: 64px;
+    width: 3px;
+  }
+  .c4-edit-mode.is-rail-resizing .c4-edit-rail-resize::before {
+    background: var(--accent);
+    height: 80px;
+    width: 3px;
+  }
+  .c4-edit-rail-resize:focus,
+  .c4-edit-rail-resize:focus-visible { outline: none; }
+  .c4-edit-mode[data-visible="1"] .c4-edit-rail {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  .c4-edit-rail::-webkit-scrollbar { width: 4px; }
+  .c4-edit-rail::-webkit-scrollbar-thumb {
+    background: var(--line-solid);
+    border-radius: 4px;
+  }
+  .c4-edit-rail-head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+  .c4-edit-rail-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .c4-edit-rail-count {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-strong);
+  }
+  .c4-edit-rail-count strong { font-weight: 600; }
+  .c4-edit-rail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .c4-edit-rail-item {
+    position: relative;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--hover-tint);
+    transition:
+      border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-edit-rail-item:hover {
+    border-color: var(--line-solid);
+    transform: translateY(-1px);
+  }
+  .c4-edit-rail-item.is-active {
+    border-color: var(--accent, #1858ee);
+  }
+  .c4-edit-rail-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .c4-edit-rail-label {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+  .c4-edit-rail-item.is-active .c4-edit-rail-label {
+    background: var(--accent, #1858ee);
+  }
+
+  /* Card hover badge — only shows when revisions.length > 1. Small
+     pill anchored top-left of the card so users see "this asset has
+     edit history" at a glance without entering edit mode. */
+  .gco-rev-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    background: rgba(18, 20, 26, 0.65);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    color: #ffffff;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition:
+      opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .graphics-card:hover .gco-rev-badge,
+  .graphics-card:focus-within .gco-rev-badge,
+  .graphics-card.has-open-menu .gco-rev-badge {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .gco-rev-badge svg { display: block; }
+
+  /* === Override canvas_3 graphics-grid for canvas_4 context ===
+     The canvas_3 grid was authored against a flex parent (graphics-view)
+     with overflow scrolling. Inside a canvas_4 section it sits in normal
+     document flow, so neutralize the flex/overflow rules while keeping
+     the column-count masonry + cascading reveal. */
+  .c4-graphics-grid {
+    flex: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+  /* Canvas_4 graphics menus inherit the base .gco-menu position:fixed
+     + z-index: 2000 chrome. Coordinates are set inline by the JS
+     positionMenu helper after hoisting the menu into <body> — the
+     card itself has will-change: transform, filter (containing-block
+     promotion) so position:fixed inside the card would otherwise
+     render relative to the card and stay clipped. */
+  .c4-graphics-grid .gco-menu { transform-origin: top right; }
+  /* List view inside canvas_4: full canvas width, no white card backing
+     (canvas_4 is flat; the page-level cream is the surround). */
+  .c4-graphics-grid[data-view="list"] {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  body[data-theme="dark"] .c4-graphics-grid[data-view="list"] {
+    background: transparent !important;
+  }
+  /* canvas_4 list-header bg matches the canvas surround so the sticky
+     header doesn't show the page bg through it. */
+  .c4-graphics-grid[data-view="list"] .list-header {
+    background: var(--canvas-bg) !important;
+  }
+
+  /* === Ad-unit cards for the Media section ===
+     35 units pulled from the Canvas Enhancements Figma social media
+     library, faceted by Platform (Meta / Instagram / LinkedIn /
+     Reddit) and Type (Image / Video / Carousel / Story / Reel /
+     Event / Document / Conversation / Branded / Collection / Instant
+     / Lead Gen / Thought Lead). Each card is a 280px-wide preview
+     with the creative at its native aspect ratio and a small footer
+     carrying platform name + spec. */
+  .c4-ad-rail {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    /* Bleed out of the c4-section's 48px horizontal padding so the
+       grid runs edge-to-edge of the canvas container. No left/right
+       container borders — flush against the chat-splitter on the
+       left and the browser edge on the right. */
+    margin-left: -48px;
+    margin-right: -48px;
+    /* Top + bottom edge hairlines as real borders on the rail.
+       Inter-row hairlines come from each cell's border-bottom
+       (cells in row N draw the hairline between row N and row
+       N+1 — works even when row N+1 is partial, because row N
+       cells always exist across the full row width). Last-row
+       cells get .is-last-row via JS and skip border-bottom so
+       only the rail's border-bottom paints at the bottom edge. */
+    border-top: 0.5px solid var(--line);
+    border-bottom: 0.5px solid var(--line);
+  }
+  /* Wide-screen target: 5 units per row. Hairline grid — each cell
+     carries right + bottom borders to form interior gridlines; the
+     last cell of each row drops its right border so nothing strokes
+     the canvas right edge. */
+  @container (max-width: 1400px) { .c4-ad-rail { grid-template-columns: repeat(4, 1fr); } }
+  @container (max-width: 1100px) { .c4-ad-rail { grid-template-columns: repeat(3, 1fr); } }
+  @container (max-width: 900px)  {
+    .c4-ad-rail {
+      grid-template-columns: repeat(2, 1fr);
+      margin-left: -24px;
+      margin-right: -24px;
+    }
+  }
+  /* Narrow container — single column so units stack vertically
+     down the page. Triggers whenever the canvas right side condenses
+     past 2-column legibility (chrome is 280px wide, so 2 cells at
+     <300px each cause chrome overflow) — driven by the section's
+     inline-size, so it fires when the chat panel takes most of the
+     screen even on a wide viewport. */
+  @container (max-width: 640px) {
+    .c4-ad-rail {
+      grid-template-columns: 1fr;
+      margin-left: -16px;
+      margin-right: -16px;
+    }
+    .c4-ad-unit {
+      padding: 28px 20px;
+      min-height: 0;
+    }
+  }
+
+  /* === Two-tier filter row for Media (Platform + Type) === */
+  .c4-toolbar-media {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .c4-toolbar-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  /* When the left toolbar slot is empty (search has moved to the
+     right cluster) push the remaining content to the right edge so
+     the layout looks intentional, not orphaned-left. */
+  .c4-toolbar-row > .c4-media-filters:only-child,
+  .c4-toolbar > .c4-toolbar-right:only-child { margin-left: auto; }
+
+  /* === Collapsible search (canvas_2 pattern) ====================
+     Icon by default (36×36), expands to ~240px on click. Matches
+     the scope-table-search behavior on canvas_2 boards. Lives in
+     the right toolbar cluster next to the filter pills / view
+     toggle so the affordance is paired with the other controls. */
+  .c4-search-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 240px;
+    height: 36px;
+    border: 0.5px solid var(--line);
+    border-radius: 8px;
+    background: var(--card-bg);
+    overflow: hidden;
+    flex-shrink: 0;
+    transition:
+      width 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .c4-search-wrap.collapsed {
+    width: 36px;
+    cursor: pointer;
+    background: transparent;
+    /* Keep borders in layout but make them invisible — preserves
+       the 36×36 footprint without a layout shift on expand. */
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .c4-search-wrap.collapsed:hover {
+    background: transparent;
+    box-shadow: none;
+  }
+  .c4-search-wrap.collapsed:active { transform: scale(0.97); }
+  /* Vertical hairline divider that separates the search cluster
+     from the filters on its right. Lives as a sibling in the
+     flex row so it inherits the row's gap on either side. */
+  .c4-filter-divider {
+    width: 0.5px;
+    height: 20px;
+    background: var(--line);
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .c4-search-wrap:not(.collapsed):focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .c4-search-icon-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    color: var(--text-subtle);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 200ms ease;
+  }
+  .c4-search-wrap:hover .c4-search-icon-btn,
+  .c4-search-wrap:focus-within .c4-search-icon-btn {
+    color: var(--text-strong);
+  }
+  .c4-search-icon-btn:focus,
+  .c4-search-icon-btn:focus-visible { outline: none; }
+  /* When collapsed the wrapper handles the click — let it through
+     to the wrapper (button is interactive otherwise). */
+  .c4-search-wrap.collapsed .c4-search-icon-btn { pointer-events: none; }
+  .c4-search-wrap input.c4-search {
+    width: 100%;
+    height: 100%;
+    padding: 0 32px 0 36px; /* right padding leaves room for close button */
+    border: 0;
+    background: transparent;
+    color: var(--text-strong);
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: -0.05px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-search-wrap input.c4-search::placeholder { color: var(--text-subtle); }
+  .c4-search-wrap input.c4-search::-webkit-search-cancel-button,
+  .c4-search-wrap input.c4-search::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .c4-search-wrap.collapsed input.c4-search {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .c4-search-wrap:not(.collapsed) input.c4-search {
+    opacity: 1;
+    transition-delay: 100ms;
+  }
+  /* Close (×) button — visible only when the wrap is expanded.
+     Clicking clears the query AND collapses the wrap. Matches
+     the canvas_2 scope-table-clear pattern. */
+  .c4-search-close {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    background: rgba(15, 23, 42, 0.08);
+    color: var(--text-subtle);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: 1;
+    transition:
+      background 200ms ease,
+      color 200ms ease,
+      opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-search-close:hover {
+    background: rgba(15, 23, 42, 0.14);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .c4-search-close {
+    background: rgba(255, 255, 255, 0.10);
+  }
+  body[data-theme="dark"] .c4-search-close:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+  .c4-search-close:focus,
+  .c4-search-close:focus-visible { outline: none; }
+  .c4-search-wrap.collapsed .c4-search-close {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .c4-filter-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .c4-filter-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-right: 8px;
+  }
+
+  /* === Media filter row layout — platform pills + type dropdown
+     sit side-by-side on the right. Bottom-aligned so the pills'
+     bottom edges sit on the same baseline as the bottom of the
+     lede paragraph in the title cluster on the left. The inner
+     filter-group keeps its default center alignment so the
+     "Size" / "Platform" label stays centered with the pill row. */
+  .c4-media-filters {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* === Type dropdown (multi-select with checkboxes) === */
+  .c4-type-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .c4-type-trigger {
+    height: 30px;
+    padding: 0 14px;
+    background: transparent;
+    border: 0;
+    color: var(--text-subtle);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    cursor: pointer;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition:
+      background 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-type-trigger:hover {
+    color: var(--text-strong);
+    background: rgba(15, 23, 42, 0.05);
+    box-shadow: inset 0 0 0 0.5px rgba(15, 23, 42, 0.06);
+  }
+  .c4-type-trigger:active {
+    transform: scale(0.95);
+    transition-duration: 90ms;
+  }
+  .c4-type-trigger:focus,
+  .c4-type-trigger:focus-visible { outline: none; }
+  .c4-type-trigger .c4-filter-label { margin-right: 0; transition: color 280ms cubic-bezier(0.4, 0, 0.2, 1); }
+  .c4-type-summary {
+    color: var(--text-strong);
+    font-weight: 600;
+    transition: color 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-type-caret {
+    color: var(--text-subtle);
+    /* Springy ease on rotation — overshoots slightly for snap. */
+    transition:
+      transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      color 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Open state — switches to an accent-tinted lockup so the user
+     gets clear visual feedback that the dropdown is the active
+     control. Caret rotates with the springy curve. */
+  .c4-type-dropdown.open .c4-type-trigger {
+    background: rgba(24, 88, 238, 0.08);
+    color: var(--accent);
+    box-shadow:
+      inset 0 0 0 0.5px rgba(24, 88, 238, 0.18),
+      0 1px 2px rgba(24, 88, 238, 0.06);
+  }
+  .c4-type-dropdown.open .c4-type-trigger .c4-filter-label,
+  .c4-type-dropdown.open .c4-type-trigger .c4-type-summary { color: var(--accent); }
+  .c4-type-dropdown.open .c4-type-caret {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+  body[data-theme="dark"] .c4-type-trigger:hover {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+  }
+  body[data-theme="dark"] .c4-type-dropdown.open .c4-type-trigger {
+    background: rgba(105, 156, 255, 0.14);
+    box-shadow:
+      inset 0 0 0 0.5px rgba(105, 156, 255, 0.28),
+      0 1px 2px rgba(0, 0, 0, 0.24);
+  }
+
+  .c4-type-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 260px;
+    max-width: 320px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    padding: 0;
+    /* Deeper premium shadow stack — a tight inner edge highlight,
+       a soft proximity glow, and a long-throw drop for depth. */
+    box-shadow:
+      0 0 0 0.5px rgba(15, 23, 42, 0.02),
+      0 2px 4px rgba(15, 23, 42, 0.04),
+      0 12px 28px rgba(15, 23, 42, 0.08),
+      0 28px 60px rgba(15, 23, 42, 0.10);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+    overflow: hidden;
+    /* Subtle frosted-glass surround so the panel reads premium
+       over the canvas without darkening the underlying content. */
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    /* Default = closed state. Animate opacity + transform from this
+       hidden pose into the open pose; pointer-events:none keeps the
+       invisible panel from catching clicks. */
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    transform-origin: top right;
+    pointer-events: none;
+    transition:
+      opacity 200ms cubic-bezier(0.4, 0, 1, 1),
+      transform 240ms cubic-bezier(0.4, 0, 1, 1);
+  }
+  body[data-theme="dark"] .c4-type-panel {
+    background: rgba(22, 24, 30, 0.94);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 0 0 0.5px rgba(255, 255, 255, 0.03),
+      0 2px 4px rgba(0, 0, 0, 0.32),
+      0 12px 28px rgba(0, 0, 0, 0.46),
+      0 28px 60px rgba(0, 0, 0, 0.56);
+  }
+  .c4-type-dropdown.open .c4-type-panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    /* Open uses a longer ease-out so the panel decelerates into
+       place — same curve canvas_2's title-menu + the canvas_4
+       chapter cascade use. Close (default state above) uses an
+       ease-in for a snappier dismissal. */
+    transition:
+      opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Search field — inset chip with bg tint instead of a flat
+     hairline-separated row. Focus state lifts the field to the
+     card surface + accent ring. */
+  .c4-type-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 10px 6px;
+    padding: 0 12px;
+    height: 34px;
+    background: rgba(15, 23, 42, 0.045);
+    border: 0.5px solid transparent;
+    border-radius: 9px;
+    color: var(--text-subtle);
+    flex-shrink: 0;
+    transition:
+      background 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body[data-theme="dark"] .c4-type-search-wrap {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .c4-type-search-wrap:hover {
+    background: rgba(15, 23, 42, 0.065);
+    color: var(--text-body);
+  }
+  body[data-theme="dark"] .c4-type-search-wrap:hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+  .c4-type-search-wrap:focus-within {
+    background: var(--card-bg);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(24, 88, 238, 0.12);
+    color: var(--accent);
+  }
+  body[data-theme="dark"] .c4-type-search-wrap:focus-within {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .c4-type-search-wrap svg { flex-shrink: 0; }
+  .c4-type-search-wrap input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-strong);
+    letter-spacing: -0.05px;
+    height: 100%;
+    padding: 0;
+  }
+  .c4-type-search-wrap input::placeholder {
+    color: var(--text-subtle);
+    opacity: 1;
+  }
+
+  /* Scrollable list — soft inner padding, premium scrollbar. */
+  .c4-type-list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 4px 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 23, 42, 0.20) transparent;
+  }
+  .c4-type-list::-webkit-scrollbar { width: 6px; }
+  .c4-type-list::-webkit-scrollbar-track { background: transparent; }
+  .c4-type-list::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.18);
+    border-radius: 6px;
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+  }
+  .c4-type-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 23, 42, 0.34);
+    background-clip: padding-box;
+  }
+  body[data-theme="dark"] .c4-type-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    background-clip: padding-box;
+  }
+
+  .c4-type-list-empty {
+    padding: 18px 12px;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    color: var(--text-subtle);
+    text-align: center;
+    letter-spacing: -0.05px;
+  }
+
+  /* Item row — tighter padding, smoother hover ease, and a soft
+     selected state when the inner checkbox is checked. */
+  .c4-type-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px 10px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+    letter-spacing: -0.05px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .c4-type-item:hover {
+    background: rgba(15, 23, 42, 0.05);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .c4-type-item:hover { background: rgba(255, 255, 255, 0.06); }
+  .c4-type-item:has(input[type="checkbox"]:checked) {
+    color: var(--text-strong);
+  }
+  .c4-type-item:has(input[type="checkbox"]:checked):hover {
+    background: rgba(24, 88, 238, 0.05);
+  }
+
+  /* Checkbox — premium SVG checkmark, rounded 4px corners, slight
+     scale-down on press. Replaces the rotated-border trick which
+     never aligned cleanly across browsers. */
+  .c4-type-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.2px solid rgba(15, 23, 42, 0.28);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    margin: 0;
+    transition:
+      background 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 120ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body[data-theme="dark"] .c4-type-item input[type="checkbox"] {
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+  .c4-type-item:hover input[type="checkbox"]:not(:checked) {
+    border-color: rgba(15, 23, 42, 0.48);
+  }
+  body[data-theme="dark"] .c4-type-item:hover input[type="checkbox"]:not(:checked) {
+    border-color: rgba(255, 255, 255, 0.48);
+  }
+  .c4-type-item input[type="checkbox"]:active {
+    transform: scale(0.9);
+  }
+  .c4-type-item input[type="checkbox"]:focus-visible {
+    box-shadow: 0 0 0 3px rgba(24, 88, 238, 0.18);
+    outline: none;
+  }
+  .c4-type-item input[type="checkbox"]:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    /* Inline SVG checkmark for pixel-clean rendering at any DPR. */
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 8.5 6.5 12 13 4.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 75% 75%;
+  }
+
+  /* "All types / All layouts" — slightly more prominent header row,
+     separated from the rest by a soft hairline. */
+  .c4-type-item-all {
+    border-bottom: 0.5px solid var(--line);
+    padding-bottom: 10px;
+    margin: 0 0 4px;
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+  .c4-type-item-all:hover {
+    border-radius: 8px 8px 0 0;
+  }
+  body[data-theme="dark"] .c4-type-item-all {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* === Ad-unit card with platform-specific chrome ===
+     Each card renders the unit inside the surface it'll run on — a
+     proper Meta / Instagram / LinkedIn / Reddit post mockup with
+     header, caption, media, CTA, and action bar. Story / Reel
+     variants render as full-bleed dark frames with story progress
+     bar / Reels-style chrome. Below the chrome sits a metadata
+     footer (platform dot + name + dims) so the catalog stays
+     scannable when filtering. */
+  .c4-ad-unit {
+    position: relative;
+    width: 100%;
+    /* Even padding all around so vertical whitespace between the
+       top/bottom hairlines and the chrome matches the horizontal
+       whitespace between the left/right hairlines and the chrome.
+       At 5-up canvas-full-width the cell is ~363px and the chrome
+       is locked at 280px, so the natural side-gap is ~41.5px;
+       40px padding lands the top/bottom in the same visual ballpark
+       so the cell reads as evenly inset on all four sides. */
+    padding: 40px;
+    /* Real borders, not pseudos — each hairline gets painted
+       exactly once so adjacent cells tile cleanly without alpha
+       compositing into a thicker/darker line.
+       border-bottom: every cell draws the divider between its
+       row and the row below. Row N-1 cells always exist across
+       all columns, so the hairline always extends full width —
+       even when row N (the last row) is partial. The last visible
+       row's cells get .is-last-row from JS and skip this border
+       so the rail's border-bottom handles the bottom edge.
+       border-right: vertical column dividers; the last cell of
+       each row drops it via the nth-child rules below. */
+    border-bottom: 0.5px solid var(--line);
+    border-right: 0.5px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    min-height: 660px;
+    box-sizing: border-box;
+    background-color: transparent;
+    /* Premium symmetric ease for the cell-hover background fill —
+       same curve in and out so it doesn't feel snappy-on / lazy-off. */
+    transition: background-color 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Hover fill — subtle slate tint that lands WITHIN the cell's
+     hairline bounds. Pad-area + chrome both sit on the tinted
+     ground; the chrome card itself keeps its own white surface
+     so the hover reads as "the area around the post lights up"
+     rather than darkening the post chrome. */
+  .c4-ad-unit:hover {
+    background-color: rgba(15, 23, 42, 0.05);
+  }
+  body[data-theme="dark"] .c4-ad-unit:hover {
+    background-color: rgba(255, 255, 255, 0.055);
+  }
+  /* Last-row cells skip their own border-bottom so the rail's
+     border-bottom is the single paint layer for the grid's bottom
+     edge. JS tags these dynamically based on visible cell count
+     and current grid column count. */
+  .c4-ad-unit.is-last-row { border-bottom: 0; }
+  @media (max-width: 900px) {
+    .c4-ad-unit { padding: 24px; min-height: 580px; }
+  }
+  /* Drop the right border on the last cell of every row so nothing
+     strokes the canvas right edge. Selector changes per breakpoint
+     to track the column count. */
+  .c4-ad-unit:nth-child(5n) { border-right: 0; }
+  @media (max-width: 1400px) {
+    .c4-ad-unit { border-right: 0.5px solid var(--line); }
+    .c4-ad-unit:nth-child(4n) { border-right: 0; }
+  }
+  @media (max-width: 1100px) {
+    .c4-ad-unit { border-right: 0.5px solid var(--line); }
+    .c4-ad-unit:nth-child(3n) { border-right: 0; }
+  }
+  @media (max-width: 900px) {
+    .c4-ad-unit { border-right: 0.5px solid var(--line); }
+    .c4-ad-unit:nth-child(2n) { border-right: 0; }
+  }
+  .c4-ad-frame {
+    width: 280px;
+    max-width: 100%;
+    background: #ffffff;
+    border: 0.5px solid rgba(15, 23, 42, 0.10);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    color: #0a0a0a;
+    font-family: var(--font-sans);
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .c4-ad-unit:hover .c4-ad-frame {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+  }
+
+  /* --- Header (avatar + handle + meta + more) --- */
+  .c4-ad-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 8px;
+  }
+  .c4-ad-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #4267B2;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .c4-ad-avatar-sq { border-radius: 5px; background: #0A66C2; overflow: hidden; }
+  .c4-ad-avatar-ig {
+    background: linear-gradient(135deg, #FCAF45 0%, #FD1D1D 38%, #C13584 62%, #833AB4 100%);
+    padding: 1.5px;
+  }
+  .c4-ad-avatar-ig > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .c4-ad-avatar-reddit { background: #FF4500; overflow: hidden; }
+  /* Brand image fills the avatar shape. inherit border-radius so the
+     same <img> rule works inside round Meta/IG/Reddit avatars and
+     the square LinkedIn one. */
+  .c4-ad-avatar img,
+  .c4-ad-avatar-ig > span img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: inherit;
+  }
+  .c4-ad-handle {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+    flex: 1;
+    line-height: 1.15;
+  }
+  .c4-ad-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .c4-ad-name-badge {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #1877F2;
+  }
+  .c4-ad-sub {
+    font-size: 10.5px;
+    color: #65676B;
+    font-weight: 400;
+  }
+  .c4-ad-more {
+    color: #65676B;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  /* --- Caption (body text above media) --- */
+  .c4-ad-caption {
+    padding: 0 12px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #0a0a0a;
+    letter-spacing: -0.08px;
+  }
+  .c4-ad-caption strong { font-weight: 600; }
+
+  /* --- Media area (the actual creative) --- */
+  .c4-ad-media {
+    width: 100%;
+    background: #1c1c1e;
+    overflow: hidden;
+    position: relative;
+    /* aspect-ratio set inline per unit */
+  }
+  .c4-ad-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 540ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .c4-ad-media img.loaded { opacity: 1; }
+  /* Type-glyph overlay (top-right of media) for non-image formats */
+  .c4-ad-unit-glyph {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    background: rgba(18, 20, 26, 0.78);
+    color: rgba(255, 255, 255, 0.96);
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    z-index: 2;
+  }
+  .c4-ad-unit-glyph svg { display: block; }
+
+  /* --- Link card (under media, varies per platform) --- */
+  .c4-ad-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #F0F2F5;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.08);
+  }
+  .c4-ad-link-text { min-width: 0; flex: 1; }
+  .c4-ad-link-host {
+    font-size: 9px;
+    color: #65676B;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  .c4-ad-link-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .c4-ad-cta-btn {
+    flex-shrink: 0;
+    height: 28px;
+    padding: 0 12px;
+    background: #E4E6EB;
+    color: #0a0a0a;
+    border: 0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: default;
+  }
+  /* Reddit link card uses dark CTA button */
+  .c4-ad-frame[data-platform="reddit"] .c4-ad-cta-btn {
+    background: #1A1A1B;
+    color: #ffffff;
+    border-radius: 14px;
+    height: 26px;
+    padding: 0 14px;
+  }
+  .c4-ad-frame[data-platform="reddit"] .c4-ad-link { background: #ffffff; border-top-color: rgba(15,23,42,0.04); }
+  /* LinkedIn link card — real LI layout stacks text rows on top
+     and presents the CTA as a full-width outlined-blue footer
+     button below. Restructure the existing flex layout to a
+     column so the button stretches across the card. */
+  .c4-ad-frame[data-platform="linkedin"] .c4-ad-link {
+    background: #F4F2EE;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px 12px;
+    gap: 10px;
+  }
+  .c4-ad-frame[data-platform="linkedin"] .c4-ad-link-text { width: 100%; }
+  .c4-ad-frame[data-platform="linkedin"] .c4-ad-cta-btn {
+    background: #ffffff;
+    color: #0A66C2;
+    border: 1px solid #0A66C2;
+    border-radius: 18px;
+    height: 30px;
+    padding: 0 14px;
+    width: 100%;
+    font-weight: 600;
+  }
+
+  /* --- Reactions / counts row --- */
+  .c4-ad-reactions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px 6px;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.06);
+    font-size: 11px;
+    color: #65676B;
+    line-height: 1;
+  }
+  .c4-ad-reactions-emoji {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+  }
+  .c4-ad-reactions-emoji-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #fff;
+  }
+  .c4-ad-reactions-emoji-dot + .c4-ad-reactions-emoji-dot { margin-left: -3px; }
+  .c4-ad-reactions-count { color: #65676B; font-weight: 400; margin-left: 2px; }
+  .c4-ad-reactions-meta {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  /* Each comments/shares item is a discrete clickable-style span,
+     separated by a small dot. Real FB / LinkedIn show these as
+     individual clickable items rather than one concatenated text
+     blob. */
+  .c4-ad-reactions-link {
+    color: #65676B;
+    font-weight: 400;
+  }
+  .c4-ad-reactions-link + .c4-ad-reactions-link::before {
+    content: '·';
+    color: #65676B;
+    margin-right: 8px;
+    margin-left: 0;
+  }
+  /* Reddit-specific: upvote/downvote at left, share pushed right */
+  .c4-ad-reddit-votes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px 10px;
+    font-size: 11.5px;
+    color: #1A1A1B;
+    font-weight: 600;
+  }
+  .c4-ad-reddit-votes-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: #F6F7F8;
+    border-radius: 12px;
+  }
+
+  /* --- Action bar (Like / Comment / Share / etc.) --- */
+  .c4-ad-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 6px 4px 8px;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.06);
+    color: #65676B;
+  }
+  .c4-ad-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #65676B;
+    padding: 4px 6px;
+    border-radius: 6px;
+  }
+  .c4-ad-action svg { color: currentColor; }
+
+  /* --- Story / Reel frames (full-bleed dark) --- */
+  .c4-ad-frame[data-chrome="story"],
+  .c4-ad-frame[data-chrome="reel"] {
+    background: #0a0a0a;
+    color: #ffffff;
+    border-radius: 18px;
+  }
+  .c4-ad-frame[data-chrome="story"] .c4-ad-media,
+  .c4-ad-frame[data-chrome="reel"]  .c4-ad-media {
+    aspect-ratio: 9 / 16;
+    background: #0a0a0a;
+    height: 100%;
+  }
+  .c4-ad-story-progress {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    gap: 4px;
+    z-index: 3;
+  }
+  .c4-ad-story-progress span {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.32);
+    border-radius: 1px;
+  }
+  .c4-ad-story-progress span.fill { background: rgba(255, 255, 255, 0.95); }
+  .c4-ad-story-header {
+    position: absolute;
+    top: 22px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 3;
+  }
+  .c4-ad-story-header .c4-ad-name { color: #fff; font-size: 11.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+  .c4-ad-story-header .c4-ad-sub  { color: rgba(255,255,255,0.78); font-size: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+  .c4-ad-story-header .c4-ad-more { color: #fff; }
+  .c4-ad-story-cta {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 18px;
+    background: #ffffff;
+    color: #0a0a0a;
+    border-radius: 18px;
+    font-size: 11.5px;
+    font-weight: 600;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    white-space: nowrap;
+  }
+  .c4-ad-story-input {
+    position: absolute;
+    bottom: 16px;
+    left: 12px;
+    right: 56px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 16px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 14px;
+    z-index: 3;
+  }
+  .c4-ad-story-actions {
+    position: absolute;
+    bottom: 20px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 3;
+    color: #fff;
+  }
+  .c4-ad-reel-side {
+    position: absolute;
+    right: 10px;
+    bottom: 84px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+    z-index: 3;
+  }
+  .c4-ad-reel-side svg { filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .c4-ad-reel-side span {
+    font-size: 10px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    margin-top: -4px;
+  }
+  .c4-ad-reel-footer {
+    position: absolute;
+    /* Lifted above the bottom CTA bar so handle + caption + music
+       line sit cleanly above the sticky CTA. Real IG Reels stacks
+       this order bottom-up: CTA bar → caption block → side rail. */
+    bottom: 68px;
+    left: 12px;
+    right: 80px;
+    z-index: 3;
+    color: #fff;
+    font-size: 11px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .c4-ad-reel-footer .c4-ad-name { color: #fff; font-weight: 600; margin-bottom: 4px; }
+
+  /* ===========================================================
+     === Platform-accurate chrome additions (depth pass) =======
+     ===========================================================
+     Below is every chrome component introduced for the 1:1
+     accuracy upgrade across Meta / Instagram / LinkedIn / Reddit.
+     Components are grouped by feature, not by platform, since
+     several are cross-platform (carousel dots, video overlay,
+     event date pin, etc.). Platform-specific tints are applied
+     via the .c4-ad-frame[data-platform=...] cascade where the
+     base styles already live. */
+
+  /* --- Carousel pagination dots --- */
+  .c4-ad-carousel-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    background: rgba(0, 0, 0, 0.42);
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 2;
+  }
+  .c4-ad-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+  }
+  .c4-ad-dot.is-active { background: #ffffff; }
+
+  /* --- Video play + duration overlay --- */
+  .c4-ad-video-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .c4-ad-video-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 0;
+  }
+  .c4-ad-video-duration {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.68);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-family: var(--font-sans);
+  }
+
+  /* --- Slideshow stack indicator (Meta Slideshow) --- */
+  .c4-ad-slide-stack-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.62);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* --- Instant Experience tag (Meta Instant) --- */
+  .c4-ad-instant-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.62);
+    color: #FFE15A;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* --- Event date pin (Meta Event / LinkedIn Event) --- */
+  .c4-ad-event-pin {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 2;
+    width: 44px;
+    background: #ffffff;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    font-family: var(--font-sans);
+  }
+  .c4-ad-event-pin-month {
+    background: #E41E26;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 2px 0;
+    text-transform: uppercase;
+  }
+  .c4-ad-event-pin-day {
+    color: #1a1a1a;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1;
+    padding: 5px 0 6px;
+  }
+
+  /* --- IG Shopping product tags --- */
+  .c4-ad-shop-tags {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .c4-ad-shop-tag {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transform: translate(-6px, -6px);
+  }
+  /* Right-anchored variant — tag is positioned via `right:` instead
+     of `left:`, the pill is the first DOM child, and the dot is
+     second. Pill grows inward from the dot (matches real IG, which
+     flips pills toward the image center when they'd overflow). */
+  .c4-ad-shop-tag-right {
+    transform: translate(6px, -6px);
+  }
+  .c4-ad-shop-tag-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgba(0, 0, 0, 0.18);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    flex-shrink: 0;
+  }
+  .c4-ad-shop-tag-pill {
+    background: #fff;
+    color: #0a0a0a;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: -0.05px;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.22);
+  }
+  .c4-ad-shop-bag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* --- Meta Branded "Paid partnership" tag --- */
+  .c4-ad-meta-partnership {
+    padding: 8px 12px 0;
+    font-size: 10.5px;
+    color: #65676B;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-meta-partnership strong { color: #050505; font-weight: 600; }
+
+  /* --- Collection product strip (Meta + IG Collection) --- */
+  .c4-ad-collection-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: #ffffff;
+  }
+  .c4-ad-collection-thumb {
+    aspect-ratio: 1 / 1;
+    background: #1c1c1e;
+    overflow: hidden;
+  }
+  .c4-ad-collection-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-ad-collection-strip-ig { padding: 0; }
+
+  /* --- Meta Lead Gen inline form --- */
+  .c4-ad-lead-form {
+    padding: 12px 14px 14px;
+    background: #ffffff;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: var(--font-sans);
+  }
+  .c4-ad-lead-form-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #050505;
+    letter-spacing: -0.1px;
+  }
+  .c4-ad-lead-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 7px 10px;
+    background: #F0F2F5;
+    border-radius: 6px;
+    border: 0.5px solid rgba(15, 23, 42, 0.06);
+  }
+  .c4-ad-lead-form-label {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #65676B;
+    font-weight: 600;
+  }
+  .c4-ad-lead-form-value {
+    font-size: 11.5px;
+    color: #050505;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-lead-form-submit {
+    background: #1877F2;
+    color: #fff;
+    align-self: stretch;
+    height: 32px;
+    border-radius: 6px;
+    margin-top: 2px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  /* --- IG sponsored CTA strip (every IG feed unit gets this) --- */
+  .c4-ad-ig-sponsored {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #ffffff;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.06);
+    font-family: var(--font-sans);
+  }
+  .c4-ad-ig-sponsored-from {
+    font-size: 11px;
+    color: #65676B;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .c4-ad-ig-sponsored-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #0a0a0a;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+    flex-shrink: 0;
+  }
+
+  /* --- IG action icons row ---
+     Tightened vertical rhythm: 10/12/8 padding gives the icons
+     room to breathe before the likes row sits below. */
+  .c4-ad-ig-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px 8px;
+    background: #ffffff;
+  }
+  .c4-ad-ig-bookmark { margin-left: auto; }
+
+  /* --- IG metadata rows: likes / caption / comments / timestamp.
+     Each row uses padding-top to set its own breathing room rather
+     than relying on the previous row's padding-bottom. This makes
+     the rhythm visually predictable and prevents the smushed look
+     when blocks have asymmetric internal spacing. */
+  .c4-ad-ig-likes {
+    padding: 2px 12px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.05px;
+    line-height: 1.35;
+    background: #ffffff;
+  }
+  /* IG caption — clamp to 2 lines with "more" always anchored to
+     the end of line 2 over a gradient fade. Real IG uses this
+     exact pattern: the caption text fills, the "more" pill sits
+     bottom-right of the caption box, and a horizontal gradient
+     fades the text behind it so it never overlaps the words. */
+  .c4-ad-ig-caption {
+    position: relative;
+    padding: 4px 12px 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #0a0a0a;
+    letter-spacing: -0.05px;
+    background: #ffffff;
+    /* Use -webkit-line-clamp so the 2nd line clips at a clean line
+       boundary instead of mid-letter. Plain max-height with
+       overflow: hidden can leave the top of a 3rd line peeking
+       through due to subpixel line-box rounding (line-height 1.4
+       at 12px = 16.8px per line, browsers round inconsistently). */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+  .c4-ad-ig-caption strong { font-weight: 600; margin-right: 4px; }
+  .c4-ad-ig-more {
+    position: absolute;
+    right: 12px;
+    bottom: 0;
+    padding-left: 28px;
+    color: #8E8E8E;
+    font-weight: 400;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, #ffffff 60%, #ffffff 100%);
+    pointer-events: none;
+  }
+  .c4-ad-ig-comments {
+    padding: 6px 12px 0;
+    font-size: 12px;
+    color: #8E8E8E;
+    letter-spacing: -0.05px;
+    line-height: 1.35;
+    background: #ffffff;
+  }
+  .c4-ad-ig-time {
+    padding: 6px 12px 12px;
+    font-size: 10px;
+    color: #8E8E8E;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.35;
+    background: #ffffff;
+    font-weight: 400;
+  }
+
+  /* --- Reels: sticky bottom CTA bar (BELOW the caption block) ---
+     Matches real IG Reels ad chrome where the CTA is the bottom-
+     most element — a full-width horizontal bar with the CTA text
+     centered and a chevron. The reel footer (handle + caption +
+     music) is lifted above this bar via its own bottom offset. */
+  .c4-ad-reel-cta {
+    position: absolute;
+    bottom: 14px;
+    left: 12px;
+    right: 64px;
+    z-index: 3;
+    padding: 9px 14px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #0a0a0a;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.05px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  }
+  /* Reels caption row + music line within footer */
+  .c4-ad-reel-cap {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.35;
+    margin-top: 2px;
+  }
+  .c4-ad-reel-music-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 6px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .c4-ad-reel-music {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-top: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  /* --- IG Explore grid ---
+     Real IG Explore mixes 1×1 and 2×2 tiles in a continuous scrolling
+     grid. Sponsored tiles look identical to organic tiles except for
+     a small "Sponsored" label in the bottom-left corner over a soft
+     dark gradient — NO outline, NO border, NO color highlight. This
+     matches actual Explore rendering. */
+  .c4-ad-frame-explore {
+    background: #000000 !important;
+    border-radius: 0 !important;
+  }
+  .c4-ad-explore-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: #000000;
+  }
+  .c4-ad-explore-cell {
+    aspect-ratio: 1 / 1;
+    background: #1c1c1e;
+    overflow: hidden;
+    position: relative;
+  }
+  .c4-ad-explore-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* Feature 2×2 tile — real Explore intersperses these. */
+  .c4-ad-explore-cell-feature {
+    grid-row: span 2;
+    grid-column: span 2;
+    aspect-ratio: auto;
+  }
+  /* Sponsored tile reads the same as any other tile; the only tell
+     is the corner label. Gradient is below the image and gives the
+     white text its contrast without darkening the whole tile. */
+  .c4-ad-explore-cell-main::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 36%;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .c4-ad-explore-sponsored {
+    position: absolute;
+    bottom: 5px;
+    left: 6px;
+    z-index: 1;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: -0.05px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* --- Reddit modern subreddit header --- */
+  .c4-ad-reddit-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 8px;
+  }
+  .c4-ad-reddit-sub-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #FF4500;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .c4-ad-reddit-sub-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .c4-ad-reddit-head-text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.2;
+  }
+  .c4-ad-reddit-sub-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1A1A1B;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-reddit-promoted {
+    color: #00875A;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .c4-ad-reddit-meta-line {
+    font-size: 10.5px;
+    color: #7C7C83;
+    font-weight: 400;
+    margin-top: 1px;
+  }
+  .c4-ad-reddit-join {
+    height: 24px;
+    padding: 0 10px;
+    border: 1px solid #0079D3;
+    background: transparent;
+    color: #0079D3;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+    font-family: inherit;
+    cursor: default;
+    flex-shrink: 0;
+  }
+  .c4-ad-reddit-title {
+    padding: 0 12px 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1A1A1B;
+    letter-spacing: -0.15px;
+    line-height: 1.25;
+  }
+  .c4-ad-reddit-body {
+    padding: 0 12px 10px;
+    font-size: 12px;
+    color: #1A1A1B;
+    line-height: 1.4;
+  }
+  .c4-ad-reddit-arrow { display: inline-block; vertical-align: middle; }
+  .c4-ad-frame[data-platform="reddit"] .c4-ad-reddit-votes-pill {
+    padding: 4px 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #F6F7F8;
+    color: #1A1A1B;
+    border-radius: 14px;
+    font-weight: 600;
+  }
+  .c4-ad-frame[data-platform="reddit"] .c4-ad-reddit-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    background: #F6F7F8;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1A1A1B;
+  }
+  .c4-ad-frame[data-platform="reddit"] .c4-ad-reddit-meta-pill:last-child {
+    margin-left: auto;
+  }
+
+  /* --- Reddit Conversation quoted reply --- */
+  .c4-ad-reddit-quoted {
+    margin: 8px 12px 0;
+    padding: 10px 12px;
+    background: #F6F7F8;
+    border-left: 3px solid #FF4500;
+    border-radius: 0 6px 6px 0;
+    font-family: var(--font-sans);
+  }
+  .c4-ad-reddit-quoted-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    color: #7C7C83;
+    margin-bottom: 4px;
+  }
+  .c4-ad-reddit-quoted-avatar {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #8A6FDF;
+    flex-shrink: 0;
+  }
+  .c4-ad-reddit-quoted-author {
+    color: #1A1A1B;
+    font-weight: 600;
+  }
+  .c4-ad-reddit-quoted-meta { color: #7C7C83; }
+  .c4-ad-reddit-quoted-body {
+    font-size: 12px;
+    color: #1A1A1B;
+    line-height: 1.4;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-reddit-quoted-foot {
+    margin-top: 6px;
+    font-size: 10.5px;
+    color: #7C7C83;
+    font-weight: 600;
+  }
+
+  /* --- LinkedIn "Promoted by" badge (Thought Lead) --- */
+  .c4-ad-li-promoted {
+    padding: 0 12px 6px;
+    margin-top: -2px;
+    font-size: 10.5px;
+    color: #5E5E5E;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-li-promoted strong { color: #0a0a0a; font-weight: 600; }
+
+  /* --- Person avatar (Thought Lead / Conversation / Spotlight) --- */
+  .c4-ad-avatar-person {
+    background: #ccc !important;
+    overflow: hidden;
+  }
+  .c4-ad-avatar-md { width: 40px !important; height: 40px !important; font-size: 0; }
+  .c4-ad-avatar-lg { width: 56px !important; height: 56px !important; font-size: 0; }
+
+  /* --- LinkedIn Document pager overlay --- */
+  .c4-ad-doc-pager {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.68);
+    color: #fff;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 2;
+    font-family: var(--font-sans);
+  }
+
+  /* --- LinkedIn Conversation InMail chrome --- */
+  .c4-ad-frame-inmail {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .c4-ad-inmail-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .c4-ad-inmail-headtext {
+    flex: 1;
+    min-width: 0;
+  }
+  .c4-ad-inmail-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.1px;
+  }
+  .c4-ad-inmail-role {
+    font-size: 11px;
+    color: #5E5E5E;
+    line-height: 1.3;
+    margin-top: 1px;
+  }
+  .c4-ad-inmail-meta {
+    font-size: 10.5px;
+    color: #888;
+    margin-top: 3px;
+  }
+  .c4-ad-inmail-bubble {
+    background: #F4F2EE;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #0a0a0a;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-inmail-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .c4-ad-inmail-opt {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    background: #ffffff;
+    color: #0A66C2;
+    border: 1px solid #0A66C2;
+    border-radius: 18px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: -0.05px;
+    font-family: inherit;
+    cursor: default;
+  }
+  .c4-ad-inmail-opt:last-child {
+    color: #5E5E5E;
+    border-color: #B8B8B8;
+  }
+  .c4-ad-inmail-footer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 0.5px solid rgba(15, 23, 42, 0.06);
+    font-size: 11px;
+    color: #5E5E5E;
+  }
+
+  /* --- LinkedIn Spotlight personalized ad --- */
+  .c4-ad-frame-spotlight {
+    padding: 18px 16px 16px;
+    text-align: center;
+    background: #ffffff !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .c4-ad-spotlight-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .c4-ad-spotlight-chev {
+    color: #5E5E5E;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .c4-ad-spotlight-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+    margin-top: 4px;
+  }
+  .c4-ad-spotlight-sub {
+    font-size: 11.5px;
+    color: #5E5E5E;
+    letter-spacing: -0.05px;
+  }
+  .c4-ad-spotlight-cta {
+    margin-top: 10px;
+    height: 32px !important;
+    padding: 0 22px !important;
+    background: #0A66C2 !important;
+    color: #fff !important;
+    border-radius: 16px !important;
+    border: 0 !important;
+    font-weight: 600;
+  }
+  .c4-ad-spotlight-promoted {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* --- LinkedIn Follower card --- */
+  .c4-ad-frame-follower {
+    background: #ffffff !important;
+    overflow: hidden;
+    position: relative;
+  }
+  .c4-ad-follower-banner {
+    width: 100%;
+    aspect-ratio: 4 / 1;
+    background: #1c1c1e;
+    overflow: hidden;
+  }
+  .c4-ad-follower-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-ad-follower-body {
+    padding: 0 16px 16px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .c4-ad-follower-logo {
+    margin-top: -28px;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 2px #fff;
+    padding: 2px;
+  }
+  .c4-ad-follower-name {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.2px;
+  }
+  .c4-ad-follower-sub {
+    font-size: 11.5px;
+    color: #5E5E5E;
+    letter-spacing: -0.05px;
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+  .c4-ad-follower-stats {
+    font-size: 11px;
+    color: #5E5E5E;
+    margin-top: 4px;
+  }
+  .c4-ad-follower-cta {
+    margin-top: 12px;
+    height: 32px !important;
+    padding: 0 22px !important;
+    background: #0A66C2 !important;
+    color: #fff !important;
+    border-radius: 16px !important;
+    border: 0 !important;
+    font-weight: 600;
+  }
+  .c4-ad-follower-promoted {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    margin: 0;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  /* === Display Ads chrome ====================================
+     Parametric layout system for IAB display ads: 7 standard
+     sizes (Billboard, Half Page, Leaderboard, Medium Rectangle,
+     Mobile Banner, Mobile Leaderboard, Skyscraper) × 8 layout
+     variants (V1 Split Zone, V2 Image Hero, V3 Product Focus,
+     V4 Hero Top, V6 Split Horizontal, V7 Copy First, V8 Full
+     Bleed Overlay, V9 Centered). Each unit is rendered at native
+     proportions, capped to a 280px × 500px display box so it
+     fits the standard c4-ad-unit cell. Templates carry an LLM-
+     populated logo + heading + body + CTA. */
+
+  .c4-display-frame {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    background: #0F1419;
+    color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    font-family: var(--font-sans);
+    line-height: 1.2;
+  }
+  .c4-display-image {
+    position: relative;
+    overflow: hidden;
+    background: #1c1c1e;
+    flex-shrink: 0;
+  }
+  .c4-display-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c4-display-image::after {
+    /* subtle gradient over images so white text on busy photos
+       stays readable across the variants that overlay copy. */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.28) 100%);
+    pointer-events: none;
+  }
+  .c4-display-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 8px 10px;
+    flex: 1;
+    min-width: 0;
+    color: #ffffff;
+  }
+  .c4-display-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+  .c4-display-logo {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+  }
+  .c4-display-heading {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    line-height: 1.18;
+    color: #ffffff;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  .c4-display-body {
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.72);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .c4-display-cta {
+    align-self: flex-start;
+    background: #ffffff;
+    color: #0a0a0a;
+    border: 0;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: -0.05px;
+    padding: 5px 9px;
+    border-radius: 2px;
+    cursor: default;
+    white-space: nowrap;
+  }
+
+  /* --- V1 · Split Zone : vertical 45/55 image-left / content-right --- */
+  .c4-display-frame.v1 { flex-direction: row; }
+  .c4-display-frame.v1 .c4-display-image { width: 45%; height: 100%; }
+  .c4-display-frame.v1 .c4-display-content { width: 55%; }
+
+  /* --- V2 · Image Hero : full image + bottom gradient panel --- */
+  .c4-display-frame.v2 { display: block; }
+  .c4-display-frame.v2 .c4-display-image { position: absolute; inset: 0; }
+  .c4-display-frame.v2 .c4-display-content {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 12px 12px 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.78) 20%, rgba(0,0,0,0) 100%);
+  }
+
+  /* --- V3 · Product Focus : centered headline + CTA over dark wash --- */
+  .c4-display-frame.v3 { display: block; }
+  .c4-display-frame.v3 .c4-display-image { position: absolute; inset: 0; }
+  .c4-display-frame.v3 .c4-display-content {
+    position: absolute;
+    inset: 0;
+    padding: 14px;
+    background: rgba(8, 12, 20, 0.55);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .c4-display-frame.v3 .c4-display-cta { align-self: center; }
+
+  /* --- V4 · Hero Top : image top 58%, content panel bottom 42% --- */
+  .c4-display-frame.v4 { flex-direction: column; }
+  .c4-display-frame.v4 .c4-display-image { width: 100%; height: 58%; }
+  .c4-display-frame.v4 .c4-display-content { width: 100%; height: 42%; padding: 8px 10px 10px; }
+
+  /* --- V6 · Split Horizontal : image top 50%, content bottom 50% --- */
+  .c4-display-frame.v6 { flex-direction: column; }
+  .c4-display-frame.v6 .c4-display-image { width: 100%; height: 50%; }
+  .c4-display-frame.v6 .c4-display-content { width: 100%; height: 50%; padding: 8px 10px 10px; }
+
+  /* --- V7 · Copy First : content 65%, small image accent 35% --- */
+  .c4-display-frame.v7 { flex-direction: row-reverse; }
+  .c4-display-frame.v7 .c4-display-image { width: 35%; height: 100%; }
+  .c4-display-frame.v7 .c4-display-content { width: 65%; }
+
+  /* --- V8 · Full Bleed Overlay : image full, copy in left-aligned wash --- */
+  .c4-display-frame.v8 { display: block; }
+  .c4-display-frame.v8 .c4-display-image { position: absolute; inset: 0; }
+  .c4-display-frame.v8 .c4-display-content {
+    position: absolute;
+    inset: 0;
+    padding: 14px 14px;
+    background: linear-gradient(to right, rgba(5,8,14,0.78) 30%, rgba(5,8,14,0) 70%);
+    justify-content: center;
+    max-width: 70%;
+  }
+
+  /* --- V9 · Centered : centered comp on solid gradient (no image) --- */
+  .c4-display-frame.v9 { display: block; background: linear-gradient(135deg, #1B2333 0%, #0A0F1A 100%); }
+  .c4-display-frame.v9 .c4-display-image { display: none; }
+  .c4-display-frame.v9 .c4-display-content {
+    position: absolute;
+    inset: 0;
+    padding: 14px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .c4-display-frame.v9 .c4-display-cta { align-self: center; }
+
+  /* Legacy parametric size-compression block was removed — frames
+     now render at native Figma pixel dimensions (Billboard 970×250,
+     Half Page 300×600, etc.) and per-size token overrides live in
+     the Figma 1:1 replica section below. */
+
+  /* ===== Banded grid (7 size-grouped bands) ====================
+     The c4-ad-rail wrapping the Display section is repurposed
+     into a vertical stack of size-grouped bands. Each band has
+     its own header (size name + native dims + variant count) and
+     its own grid sized to that ad's native width. Cells render
+     the ad chrome at literal Figma pixel dimensions — no zoom,
+     no fitting. */
+  .c4-ad-rail.c4-display-bands {
+    display: block !important;
+    padding: 0 !important;
+    grid-template-columns: none !important;
+    /* The wrapper inherits margin: 0 -48px from .c4-ad-rail (bleeds
+       edge-to-edge of canvas). The wrapper's top + bottom borders
+       are EXPLICITLY DROPPED here — those used to paint 44px above
+       and 56px below the grid (outside the band's padding), which
+       read as an orphaned top hairline disconnected from row 1, and
+       an extra bottom hairline 56px below the last row's framing
+       line. Each ROW now frames itself top+bottom via cell ::before
+       and ::after pseudos, so the grid's hairlines hug the cells
+       directly with no orphaned lines elsewhere. */
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+  }
+  /* Single-band view — only the band matching the active size pill
+     is rendered. Others are hidden entirely so the page focuses on
+     one ad format at a time. The band carries horizontal padding
+     to bring its inner content (band-head + grid) back inside the
+     section's content column at x=48 (aligned with the section
+     header above), AND vertical padding so the band-head sits
+     below the wrapper's top hairline with breathing room. */
+  .c4-display-band {
+    display: none;
+    padding: 0 48px 56px;
+    box-sizing: border-box;
+  }
+  .c4-display-band[data-band-active="1"] {
+    display: block;
+  }
+
+  /* Band header — labels the currently-visible size with name +
+     native dims + variant count. Aligned at the same left edge
+     as the section header and search input (x=48px from canvas
+     edge, inherited from c4-section padding). */
+  .c4-display-band-head {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 0 0 22px 0;
+    margin: 0 0 4px 0;
+  }
+
+  /* Persistent rail-head above the bands. Acts as a tab strip:
+     left mirrors the active band's name + dims, right carries the
+     search + size-pill cluster that used to sit in the section
+     toolbar. Search icon center-aligns with the (taller, stacked)
+     size pills so the magnifier doesn't float above them. */
+  .c4-display-rail-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 32px 48px 12px 48px;
+    flex-wrap: wrap;
+  }
+  .c4-display-rail-head-left {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+  .c4-display-rail-head-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .c4-display-rail-head-right .c4-filter-group {
+    align-items: center;
+    /* The collapsed magnifier is a 36×36 button with a 14×14 icon
+       centered — ~11px of empty box between the icon's right edge
+       and the divider, on top of the 4px flex gap. Mirror that on
+       the "Size" label side so the stroke reads as equidistant. */
+    margin-left: 11px;
+  }
+  .c4-display-band-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.25px;
+    color: #0a0a0a;
+    line-height: 1.1;
+  }
+  .c4-display-band-dims {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--text-subtle, #6B6B6B);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  /* Open-frame hairline grid — each cell paints ONLY its right +
+     bottom edges, no outer container border. Cells are left-aligned
+     and the grid is pulled LEFT by 32px (= cell padding-left) so
+     the leftmost ad chrome sits at the same x as the band-head
+     label and the section header — not 32px inside it. Internal
+     hairlines between adjacent cells are painted exactly once
+     (right border of cell N sits flush against the left edge of
+     cell N+1). */
+  .c4-display-band-grid {
+    display: grid;
+    gap: 0;
+    justify-content: start;
+    align-items: stretch;
+    background: transparent;
+    margin-left: -32px;
+  }
+  /* Billboard (970×250) — 1 ad per row stacked vertically. Uses
+     the same left-aligned margin-left: -32px pull as every other
+     band so the chrome's left edge sits at x=48 (aligned with the
+     band-head label + section header). The cell's border-right is
+     still dropped since there's no adjacent column for it to
+     separate from — that vertical hairline would otherwise appear
+     orphaned at the right edge of the single-column chrome. */
+  .c4-display-band[data-band="billboard"] .c4-ad-unit-display {
+    border-right: 0 !important;
+  }
+  /* Per-band column tracks = native ad width + 2× cell padding
+     (64px) so each ad chrome sits inside a generously-padded
+     hairline-bordered cell with 32px of breathing room on each
+     side. */
+  .c4-display-band[data-band="billboard"]      .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 1034px); }
+  .c4-display-band[data-band="leaderboard"]    .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 792px); }
+  .c4-display-band[data-band="half-page"]      .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 364px); }
+  .c4-display-band[data-band="med-rect"]       .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 364px); }
+  .c4-display-band[data-band="mobile-banner"]  .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 384px); }
+  .c4-display-band[data-band="mobile-lead"]    .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 384px); }
+  .c4-display-band[data-band="skyscraper"]     .c4-display-band-grid { grid-template-columns: repeat(auto-fill, 224px); }
+
+  /* Cell — each c4-ad-unit-display is one grid cell. Horizontal
+     hairlines between ROWS are painted by a pseudo-element that
+     bleeds out to ±50vw on each side, so the line runs from the
+     chat-dialog edge on the left to the right browser edge.
+     #canvas has overflow-x: hidden, which clips the bleed cleanly.
+     Vertical hairlines between cells in the same row are still
+     painted by border-right on each cell. */
+  .c4-ad-unit-display {
+    position: relative;
+    min-height: 0 !important;
+    padding: 28px 32px !important;
+    background: transparent !important;
+    border: 0 !important;
+    /* Opaque pre-composited line color (same token the row top/bottom
+       pseudos use). Using rgba(--line) here makes the column divider
+       drift darker when the hover-tint bg paints through it, while
+       the opaque pseudos stay constant — the mismatch reads as
+       "thicker/darker hairlines on hovered cells." */
+    border-right: 0.5px solid var(--line-solid) !important;
+    /* Inherit the .c4-ad-unit base's bg transition curve — keeps the
+       hover tint below from snapping in. */
+    transition: background-color 420ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex;
+    flex-direction: column;
+    /* Override the .c4-ad-unit base's align-items: center — the
+       foot lockup (280px wide) was sitting centered inside the
+       wider cell content area (e.g., 970px for Billboard), pushing
+       the caption text ~345px right of the chrome's left edge.
+       flex-start pins both the chrome wrapper and the foot to the
+       cell's left edge so the caption sits at the bottom-left of
+       the ad it labels. */
+    align-items: flex-start;
+    gap: 22px;
+    box-sizing: border-box;
+  }
+  /* Each cell paints ONLY its bottom hairline via ::after. The
+     previous design stacked ::before (row top) + the cell-above's
+     ::after at the same nominal y — subpixel anti-aliasing made
+     each 0.5px line blur over ~2 pixels, and the two doubled up
+     into a thicker / darker band at every row boundary. Single
+     paint per boundary fixes that. The grid container's ::before
+     (below) handles the first-row top edge. */
+  .c4-ad-unit-display::after {
+    content: '';
+    position: absolute;
+    left: -50vw;
+    right: -50vw;
+    bottom: 0;
+    height: 0.5px;
+    background: var(--line-solid);
+    pointer-events: none;
+  }
+  .c4-display-band-grid { position: relative; }
+  .c4-display-band-grid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50vw;
+    right: -50vw;
+    height: 0.5px;
+    background: var(--line-solid);
+    pointer-events: none;
+  }
+  .c4-display-center {
+    display: block;
+    width: auto;
+    min-height: 0;
+    flex: none;
+  }
+  .c4-ad-unit-display .c4-ad-unit-foot {
+    margin-top: 0;
+    padding: 0;
+    border: 0;
+  }
+  /* Foot widths match the chrome's native width per band so the
+     3-dot menu (anchored to the foot's right edge via flex) lands
+     exactly at the chrome's right edge instead of stopping at the
+     base 280px foot width. */
+  .c4-display-band[data-band="billboard"]      .c4-ad-unit-foot { width: 970px; }
+  .c4-display-band[data-band="leaderboard"]    .c4-ad-unit-foot { width: 728px; }
+  .c4-display-band[data-band="half-page"]      .c4-ad-unit-foot { width: 300px; }
+  .c4-display-band[data-band="med-rect"]       .c4-ad-unit-foot { width: 300px; }
+  .c4-display-band[data-band="mobile-banner"]  .c4-ad-unit-foot { width: 320px; }
+  .c4-display-band[data-band="mobile-lead"]    .c4-ad-unit-foot { width: 320px; }
+  .c4-display-band[data-band="skyscraper"]     .c4-ad-unit-foot { width: 160px; }
+  /* Skyscraper cells are 184px wide — the foot lockup needs tighter
+     compositional density at that width. */
+  .c4-display-band[data-band="skyscraper"] .c4-ad-unit-foot {
+    gap: 4px;
+  }
+  .c4-display-band[data-band="skyscraper"] .c4-ad-unit-name {
+    font-size: 11.5px;
+  }
+  .c4-display-band[data-band="skyscraper"] .c4-ad-unit-meta-line {
+    font-size: 10px;
+  }
+  /* Hide an empty band entirely (after filtering). */
+  .c4-display-band[data-empty="1"] { display: none; }
+  /* Hide cells filtered out by size / variant / search (no
+     pagination on Display — the dataset flag is the only filter
+     mechanism here). */
+  .c4-display-band-grid .c4-ad-unit[data-search-hidden] { display: none; }
+  /* Display cell hover — same soft slate tint social media cells use,
+     beats the !important transparent base above. The 420ms transition
+     on .c4-ad-unit-display fades it in / out symmetrically. */
+  .c4-ad-unit-display:hover {
+    background: rgba(15, 23, 42, 0.05) !important;
+  }
+  body[data-theme="dark"] .c4-ad-unit-display:hover {
+    background: rgba(255, 255, 255, 0.055) !important;
+  }
+
+  /* ============================================================
+     === Display Ads — Figma 1:1 replica (overrides above) ======
+     ============================================================
+     Frames render at NATIVE pixel dimensions per the Figma board
+     (e.g., Billboard 970×250, Medium Rectangle 300×250). The
+     wrapping cell applies CSS zoom to scale to fit its column.
+     Tokens (padding, font, color, stroke) match the Figma design
+     contexts extracted from node 2397:15020. */
+
+  /* Base frame — reset prior styling that targeted older classes */
+  .c4-display-frame {
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #ffffff;
+    line-height: 1.2;
+    border-radius: 0;
+    box-shadow: none;
+    flex-shrink: 0;
+    display: block;
+  }
+  .c4-display-frame.v1,
+  .c4-display-frame.v2,
+  .c4-display-frame.v3,
+  .c4-display-frame.v4 {
+    border: 1px solid #00001a;
+  }
+
+  /* Image zone */
+  .c4-display-frame .c4-display-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1c1c1e;
+    overflow: hidden;
+  }
+  .c4-display-frame .c4-display-img::after { content: none; } /* no extra gradient */
+  .c4-display-frame .c4-display-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Logo box */
+  .c4-display-frame .c4-display-logo {
+    width: 36px;
+    height: 36px;
+    border: 1px dashed rgba(255, 255, 255, 0.65);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: inherit;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .c4-display-frame .c4-display-logo-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    line-height: 1;
+  }
+
+  /* Heading / body / CTA tokens */
+  .c4-display-frame .c4-display-heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.15;
+    color: #ffffff;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    /* Use -webkit-box + line-clamp instead of plain display: block.
+       With block + overflow: hidden, multi-line wraps clip at the
+       container's bottom edge mid-letter (since text-overflow:
+       ellipsis only fires on single-line nowrap context). Line-clamp
+       truncates at a clean line boundary with proper "..." after
+       the last visible line — no obscured letters. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  .c4-display-frame .c4-display-heading-large {
+    font-size: 22px;
+    line-height: 1.1;
+  }
+  .c4-display-frame .c4-display-body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .c4-display-frame .c4-display-cta {
+    background: #ffffff;
+    color: #1f1f1f;
+    border: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 1;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 14px;
+    cursor: default;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Generic content panel reset (overrides earlier .c4-display-content) */
+  .c4-display-frame .c4-display-content {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    color: #ffffff;
+    width: auto;
+    height: auto;
+    padding: 0;
+    gap: 0;
+    background: transparent;
+    flex: none;
+    min-width: 0;
+    inset: auto;
+  }
+
+  /* === V1 · Split Zone =========================================
+     Image fills the top portion of the frame. Content panel sits
+     at the BOTTOM with AUTO HEIGHT (not a fixed 40%) — per Figma,
+     the dark panel grows as tall as its content requires and
+     overlaps the bottom of the image. Fixed 40% (= 100px on Med
+     Rect) was causing the panel's content to overflow and clip
+     at the top. */
+  .c4-display-frame.v1 .c4-display-img { height: 60%; }
+  .c4-display-frame.v1 .c4-display-content-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1f1f1f;
+    padding: 16px;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .c4-display-frame.v1 .c4-display-top-group {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding-right: 16px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .c4-display-frame.v1 .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v1 .c4-display-cta-row {
+    padding-right: 16px;
+    padding-bottom: 8px;
+    width: 100%;
+    display: flex;
+  }
+  .c4-display-frame.v1 .c4-display-cta {
+    width: 105px;
+    padding: 0;
+  }
+
+  /* === V2 · Image Hero ========================================= */
+  .c4-display-frame.v2 .c4-display-scrim-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .c4-display-frame.v2 .c4-display-content-overlay-bottom {
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.55);
+    padding: 16px;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v2 .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 7px;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v2 .c4-display-heading { font-size: 16px; }
+  .c4-display-frame.v2 .c4-display-body    { color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v2 .c4-display-cta {
+    height: 30px; border-radius: 15px; width: 89px;
+  }
+  .c4-display-frame.v2 .c4-display-logo-floating,
+  .c4-display-frame.v3 .c4-display-logo-floating {
+    position: absolute;
+    top: 11px;
+    left: 15px;
+    z-index: 2;
+  }
+  .c4-display-frame.v3 .c4-display-logo-floating { top: 7px; }
+
+  /* === V3 · Product Focus ===================================== */
+  .c4-display-frame.v3 .c4-display-img { height: 80%; }
+  .c4-display-frame.v3 .c4-display-scrim-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  /* Slim panel — Med Rect canonical: 71px tall, padding pb:16 px:16
+     (no padding-top), flex-row items-center justify-between. Was
+     mis-set to 20% (= 50px on Med Rect, too short for the 32px CTA
+     + 16px bottom padding) with no padding-bottom. */
+  .c4-display-frame.v3 .c4-display-content-slim {
+    bottom: 0; left: 0; right: 0;
+    height: 71px;
+    background: #1f1f1f;
+    padding: 0 16px 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .c4-display-frame.v3 .c4-display-content-slim > .c4-display-heading {
+    flex: 1;
+    min-width: 0;
+  }
+  .c4-display-frame.v3 .c4-display-cta {
+    height: 32px; border-radius: 16px; width: 121px; font-size: 12px;
+    /* Override generic .c4-display-cta align-self: flex-start so
+       the CTA sits vertically centered alongside the heading in
+       the flex-row slim panel (items-center on parent). Without
+       this, the CTA top-aligns and overlaps the heading text. */
+    align-self: center;
+  }
+
+  /* === V4 · Hero Top ========================================== */
+  .c4-display-frame.v4 .c4-display-scrim-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to top,
+      rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .c4-display-frame.v4 .c4-display-content-overlay-top {
+    top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.55);
+    padding: 16px;
+    gap: 14px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v4 .c4-display-text-group {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v4 .c4-display-heading { font-size: 16px; }
+  .c4-display-frame.v4 .c4-display-body    { color: rgba(255,255,255,0.85); }
+  .c4-display-frame.v4 .c4-display-cta-row {
+    position: absolute;
+    right: 15px;
+    bottom: 27px;
+    z-index: 2;
+  }
+  .c4-display-frame.v4 .c4-display-cta { width: 113px; }
+
+  /* === V6 · Split Horizontal — image left / dark right ======== */
+  /* Med Rect canonical 148px / 152px split = 49.33% / 50.67%.
+     Was 49.5 / 50.5 which left a ~0.5px seam at the divider. */
+  .c4-display-frame.v6 .c4-display-img { width: 49.33%; height: 100%; }
+  .c4-display-frame.v6 .c4-display-content-right {
+    top: 0; bottom: 0; right: 0;
+    width: 50.67%;
+    background: #1f1f1f;
+    padding: 16px 16px 32px;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .c4-display-frame.v6 .c4-display-top-group-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .c4-display-frame.v6 .c4-display-top-group-stacked .c4-display-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v6 .c4-display-heading { font-size: 13px; }
+  .c4-display-frame.v6 .c4-display-body    { font-size: 10px; }
+  .c4-display-frame.v6 .c4-display-cta {
+    height: 26px; width: 105px; border-radius: 13px; font-size: 10px;
+  }
+
+  /* === V7 · Copy First ======================================== */
+  .c4-display-frame.v7 .c4-display-wash-heavy {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    pointer-events: none;
+  }
+  .c4-display-frame.v7 .c4-display-content-fill {
+    top: 0; right: 0; bottom: 0; left: 0;
+    padding: 16px;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .c4-display-frame.v7 .c4-display-top-group-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v7 .c4-display-top-group-stacked .c4-display-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v7 .c4-display-cta {
+    height: 32px; width: 121px; font-size: 12px; border-radius: 16px;
+  }
+
+  /* === V8 · Full Bleed Overlay ================================ */
+  .c4-display-frame.v8 .c4-display-scrim-bottom-heavy {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.78) 100%);
+    pointer-events: none;
+  }
+  .c4-display-frame.v8 .c4-display-scrim-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .c4-display-frame.v8 .c4-display-content-fill {
+    top: 0; right: 0; bottom: 0; left: 0;
+    padding: 16px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .c4-display-frame.v8 .c4-display-top-group-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 16px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .c4-display-frame.v8 .c4-display-top-group-stacked .c4-display-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+  .c4-display-frame.v8 .c4-display-body { color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v8 .c4-display-cta-row-right {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 12px;
+    width: 100%;
+  }
+  .c4-display-frame.v8 .c4-display-cta {
+    height: 30px; width: 121px; font-size: 12px; border-radius: 15px;
+  }
+
+  /* === V9 · Centered ========================================== */
+  .c4-display-frame.v9 {
+    background: #ffffff; /* falls back to white if image fails */
+  }
+  .c4-display-frame.v9 .c4-display-scrim-bottom-heavy {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.78) 100%);
+    pointer-events: none;
+  }
+  .c4-display-frame.v9 .c4-display-scrim-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .c4-display-frame.v9 .c4-display-content-centered {
+    top: 0; right: 0; bottom: 0; left: 0;
+    padding: 16px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .c4-display-frame.v9 .c4-display-top-group-centered {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 16px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+  }
+  .c4-display-frame.v9 .c4-display-text-group-centered {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+    text-align: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .c4-display-frame.v9 .c4-display-body { color: rgba(255,255,255,0.92); }
+  .c4-display-frame.v9 .c4-display-cta-row-centered {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 12px;
+    width: 100%;
+  }
+  .c4-display-frame.v9 .c4-display-cta {
+    height: 30px; width: 121px; font-size: 12px; border-radius: 15px;
+  }
+
+  /* ===== Per-size Figma V1 tokens (NATIVE pixel sizes) ===========
+     Frames render at literal Figma dimensions (Billboard 970×250,
+     Half Page 300×600, etc.) per node 2397:15020. Tokens (logo box,
+     heading, body, CTA) override the Med-Rect-canonical baseline
+     above. V1 layout split is also overridden per size: horizontal
+     for Billboard / Leaderboard / Mobile Banner / Mobile Lead;
+     vertical for Half Page / Skyscraper. */
+

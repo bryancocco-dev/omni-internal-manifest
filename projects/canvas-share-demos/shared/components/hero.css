@@ -1,0 +1,235 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Full-bleed 100vh hero. Replaces the old metadata-block + inset rounded image
+   cover, which read as a PDF. Edge-to-edge cinematic image, no radius, no page
+   margin; title/subtitle/metadata composed ON the image; choreographed load;
+   parallax hand-off into the traditional document below (JS: initHeroParallax).
+   ───────────────────────────────────────────────────────────────────────── */
+
+.doc-hero {
+  /* The rail's own inside padding, named here so the type block above the
+     hairline can be set against the SAME number the labels below it use.
+     Equal ink-to-hairline on both sides is the goal; see cover-gen.css. */
+  --hero-rail-pad: clamp(18px, 2.4vh, 26px);
+  position: relative;
+  height: 100vh;
+  min-height: 560px;
+  width: 100%;
+  overflow: hidden;
+  background: #0a0b0d;
+  isolation: isolate;
+  /* Same separation the boards use between each other, so the hero hands off
+     into the document stack on the established rhythm rather than butting
+     straight against the first board. */
+  margin-bottom: var(--doc-section-gap);
+}
+
+/* Media — parallax target. Over-sized so the drift never reveals an edge. */
+.doc-hero__media {
+  position: absolute;
+  top: -8%;
+  left: 0;
+  width: 100%;
+  height: 116%;
+  will-change: transform;
+}
+.doc-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+  display: block;
+  /* Settle: the image releases from a slight push-in as the page opens. */
+  animation: docHeroImg 1800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hold the hero's entire choreography while an entrance owns the screen —
+   the branded intro cover (doc--intro-init) or the access gate (is-gated).
+   Without this the push-in + type stagger burn out unseen behind the cover;
+   with it, they fire the moment the cover lifts / the gate dissolves, making
+   the reveal the payoff. `both` fill keeps everything at frame 0 meanwhile. */
+.doc--intro-init .doc-hero__img,
+.doc--intro-init .doc-hero__title,
+.doc--intro-init .doc-hero__subtitle,
+.doc--intro-init .doc-hero__meta,
+body.is-gated .doc-hero__img,
+body.is-gated .doc-hero__title,
+body.is-gated .doc-hero__subtitle,
+body.is-gated .doc-hero__meta {
+  animation-play-state: paused;
+}
+@keyframes docHeroImg {
+  from { transform: scale(1.09); }
+  to { transform: scale(1); }
+}
+
+/* Scrim — only as much as legibility demands. Weighted to the bottom-left
+   where the type sits, so the sun flare and the pass stay open. */
+.doc-hero__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(6, 8, 11, 0.88) 0%, rgba(6, 8, 11, 0.55) 26%, rgba(6, 8, 11, 0.08) 52%, transparent 70%),
+    linear-gradient(to right, rgba(6, 8, 11, 0.52) 0%, transparent 46%);
+}
+
+.doc-hero__inner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* Named so the generative cover's tag can sit on the SAME rhythm — it is
+     absolutely positioned out of this column but must align to the type block
+     it no longer stacks with (cover-gen.css). Change it here, once. */
+  --hero-stack-gap: clamp(24px, 3.5vh, 44px);
+  gap: var(--hero-stack-gap);
+  padding: 0 var(--doc-edge-gutter) clamp(76px, 11vh, 104px);
+  will-change: transform, opacity;
+}
+
+/* ── type composition ───────────────────────────────────────────────────── */
+/* Width in % / px, NOT ch: `ch` here resolves against this block's inherited
+   16px font, not the 130px title — 20ch trapped the title in a ~160px column
+   and shattered it mid-word. */
+.doc-hero__type { max-width: min(1000px, 66%); }
+
+.doc-hero__title {
+  /* The 0.94 line-height clamps the line box tight to the cap height, so
+     descenders (the g in "Progress") hang BELOW it — 14px of margin let the
+     tail collide with the subtitle. Clear the descender, not just the box. */
+  margin: 0 0 clamp(24px, 2.6vh, 38px);
+  font-family: var(--doc-font-display);
+  font-weight: 300;
+  font-size: clamp(52px, 9vw, 132px);
+  line-height: 0.94;
+  letter-spacing: var(--doc-display-tracking, -2.2px);
+  color: #fff;
+  /* break-word, not anywhere: a long compound (Kraftfahrzeug-Haftpflicht-
+     versicherung) still breaks rather than blowing out the hero, but normal
+     titles are never split mid-word. See the language-support backlog. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+  text-wrap: balance;
+  animation: docHeroUp 1000ms cubic-bezier(0.16, 1, 0.3, 1) 240ms both;
+}
+
+.doc-hero__subtitle {
+  margin: 0;
+  max-width: 46ch;
+  font-family: var(--doc-font-body);
+  font-size: clamp(15px, 1.5vw, 19px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.74);
+  animation: docHeroUp 1000ms cubic-bezier(0.16, 1, 0.3, 1) 380ms both;
+}
+
+/* Metadata rail along the base — annual-report register, not a caption. */
+.doc-hero__meta {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(28px, 4vw, 68px);
+  padding-top: var(--hero-rail-pad);
+  animation: docHeroUp 1000ms cubic-bezier(0.16, 1, 0.3, 1) 520ms both;
+}
+/* The rule runs the FULL browser width while the labels stay on the edge
+   gutter — so it reads as an architectural line across the hero rather than a
+   boxed-in border. Bleeds out by the gutter each side; .doc-hero's
+   overflow:hidden clips it exactly at the viewport edges. */
+.doc-hero__meta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  /* Deliberately over-bled rather than inset by exactly the gutter: matching
+     the gutter left a ~4px sliver short (the meta box doesn't land precisely on
+     that value once the scrollbar is out of vw). .doc-hero's overflow:hidden
+     trims this to the viewport edges exactly, so it can't be short. */
+  left: -50vw;
+  right: -50vw;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+.doc-hero__cell { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.doc-hero__cell--date { margin-left: auto; text-align: right; }
+
+.doc-hero__lbl {
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.doc-hero__val {
+  font-family: var(--doc-font-mono);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.94);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Type + the meta hairline rise AND pull into focus — the same blur-resolve
+   signature as the board reveals and the intro. */
+@keyframes docHeroUp {
+  from { opacity: 0; transform: translateY(22px); filter: blur(12px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ── scroll affordance ──────────────────────────────────────────────────── */
+.doc-hero__scroll {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  pointer-events: none;
+  animation: docHeroUp 900ms cubic-bezier(0.16, 1, 0.3, 1) 760ms both;
+}
+.doc-hero__scroll-label {
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 8px rgba(6, 8, 11, 0.5);
+}
+.doc-hero__scroll-line {
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.75), transparent);
+  position: relative;
+  overflow: hidden;
+}
+.doc-hero__scroll-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, #fff, transparent);
+  animation: docHeroTrace 2200ms ease-in-out infinite;
+}
+@keyframes docHeroTrace {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-hero__img,
+  .doc-hero__title,
+  .doc-hero__subtitle,
+  .doc-hero__meta,
+  .doc-hero__scroll { animation: none; }
+  .doc-hero__scroll-line::after { animation: none; }
+}
+
+@media (max-width: 640px) {
+  .doc-hero__type { max-width: none; }
+  .doc-hero__cell--date { margin-left: 0; text-align: left; }
+}

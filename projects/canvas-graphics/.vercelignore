@@ -1,0 +1,25 @@
+# Vercel falls back to .gitignore only when this file is absent — once it
+# exists it is the whole list, so everything that must never ship is
+# named here explicitly rather than inherited.
+
+# the local Unsplash API key. Never deploy it, gate or no gate.
+.unsplash-key
+
+.DS_Store
+node_modules/
+.vercel
+*.zip
+.env
+.env.local
+.env.*.local
+dist/
+.next/
+.cache/
+.claude/
+.git/
+PLAN.md
+
+# Internal build notes are not a deliverable; the prototype is.
+CLAUDE.md
+SESSION.md
+DESIGN-BRIEF.md

@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+  OMNI component: table_alloc
+  Project: Gateway
+  Note: .gw-card .alloc — budget allocation table variant: lead-channel badge, CPM sub-line under the channel name, inline percentage bar in the budget cell, reach column, tfoot total
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gateway — table_alloc · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/gateway-v2.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<section class="gw-card">
+
+  <div class="gwc-head">
+    <div><h3 class="gwc-title">Prestige media allocation framework</h3></div>
+    <div class="gwc-right"><button class="row-more" type="button" aria-label="More options" aria-haspopup="menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button></div>
+  </div>
+
+  <div class="mig-meta">
+    <div class="mig-hero"><span class="k">Working media pool</span><span class="v">$4.2<em>M</em></span></div>
+    <span class="gwc-src">FY26 launch · 7 channels</span>
+  </div>
+  <table class="alloc">
+    <thead><tr><th>Channel</th><th>Budget</th><th class="num">Est. Reach</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="ch"><span class="nm">Digital Video<span class="alloc-lead">Lead</span></span><span class="sub">$12 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">32%</span><span class="alloc-bar"><i style="width:100%"></i></span></span></td>
+        <td class="num">47.2%</td>
+      </tr>
+      <tr>
+        <td class="ch"><span class="nm">Social Media</span><span class="sub">$11 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">24%</span><span class="alloc-bar"><i style="width:75%"></i></span></span></td>
+        <td class="num">60.1%</td>
+      </tr>
+      <tr>
+        <td class="ch"><span class="nm">Display</span><span class="sub">$15 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">14%</span><span class="alloc-bar"><i style="width:43.75%"></i></span></span></td>
+        <td class="num">40.1%</td>
+      </tr>
+      <tr>
+        <td class="ch"><span class="nm">Tech Press</span><span class="sub">$9 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">10%</span><span class="alloc-bar"><i style="width:31.25%"></i></span></span></td>
+        <td class="num">38.6%</td>
+      </tr>
+      <tr>
+        <td class="ch"><span class="nm">Email</span><span class="sub">$25 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">8%</span><span class="alloc-bar"><i style="width:25%"></i></span></span></td>
+        <td class="num">36.0%</td>
+      </tr>
+      <tr>
+        <td class="ch"><span class="nm">Influencer</span><span class="sub">$30 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">7%</span><span class="alloc-bar"><i style="width:21.875%"></i></span></span></td>
+        <td class="num">45.4%</td>
+      </tr>
+      <tr>
+        <td class="ch"><span class="nm">Podcasts</span><span class="sub">$18 CPM</span></td>
+        <td><span class="alloc-budget"><span class="n">5%</span><span class="alloc-bar"><i style="width:15.625%"></i></span></span></td>
+        <td class="num">30.2%</td>
+      </tr>
+    </tbody>
+    <tfoot><tr><td colspan="2">Working media · FY26 launch</td><td class="num">100%</td></tr></tfoot>
+  </table>
+  <a class="fg-link" href="#canvas=media-allocation">View full framework <svg viewBox="0 0 24 24"><path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg></a>
+        </section>
+</body>
+</html>

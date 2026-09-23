@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Components/Overview" />
+
+# Components — verbatim, 1-to-1 with the real projects
+
+Every component in this section is **extracted verbatim** from a live OMNI project:
+the exact markup and the exact CSS, with no rewriting. Each one renders inside an
+isolated `<iframe>` that carries the source project's real stylesheet and its real
+fonts/assets, so what you see here is pixel-identical to the component as it appears
+in the actual product page.
+
+## Reading a story
+
+A **provenance strip** sits above each component:
+
+- **Used in** — chips for every project that ships this exact component. The filled
+  blue chip is the project the markup/CSS was lifted from; outlined chips are other
+  projects that use the same component.
+- A right-aligned **note** records the class name(s) and any variant detail.
+
+## Duplicates are kept, not merged
+
+Components are grouped by **type** (Buttons, Cards, TopNav, …). Where the same
+component exists in more than one project — often with small differences — each
+project's version appears as a **sibling story** under that type, so the variants
+sit side by side and the divergence is visible. Nothing is normalised away; this is
+a faithful inventory of what actually ships today.
+
+> Canonical, token-wired versions of these components (wired to `--omni-*`) are
+> preserved in git tag **v0.4.0** and will return as a separate "Canonical" track
+> once the per-project variants are reconciled.
+
+## Theme
+
+The light/dark toolbar toggle drives `data-theme` inside each frame, so components
+render in their project's real light and dark palettes.

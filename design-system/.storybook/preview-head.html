@@ -1,0 +1,17 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* Apply the live OAI/OMNI font stack to every story by default.
+   * Components that need to override (e.g. brand display) do so
+   * explicitly via --omni-font-display / --omni-font-mono. */
+  html, body {
+    font-family: var(--omni-font-family-sans, 'Inter', system-ui, sans-serif);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  code, kbd, pre, samp, .mono {
+    font-family: var(--omni-font-family-mono, 'Fira Code', ui-monospace, monospace);
+  }
+</style>

@@ -1,0 +1,358 @@
+<style>
+  /* plan-tail — Source Inventory + Brief poster (round 3 addendum), plant-
+     prefix only. Structurally identical to views/aud-tail.html (audt-);
+     see that file's header comment for the lease-campaign line hints this
+     was ported from. Shows once, after plan-c. */
+
+  /* --- 1. Source Inventory (Swiss table) --- */
+  .plant-bib-h {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: -0.6px;
+    color: var(--text-strong);
+    margin: 0 0 16px;
+  }
+  .plant-bib-summary {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 400;
+    color: var(--text-body);
+    margin: 0 0 28px;
+    max-width: 860px;
+  }
+  .plant-bib-summary [data-countup] { color: var(--text-strong); font-weight: 600; }
+
+  .plant-bib-table-wrap { overflow-x: auto; }
+  .plant-bib-table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+  .plant-bib-table thead th {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-subtle);
+    text-align: left;
+    padding: 0 14px 10px 0;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+  .plant-bib-table thead th:last-child { padding-right: 0; }
+  .plant-bib-table tbody td {
+    padding: 12px 14px 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text-body);
+    vertical-align: top;
+  }
+  .plant-bib-table tbody td:last-child { padding-right: 0; }
+  .plant-bib-table tbody tr:last-child td { border-bottom: 0; }
+  .plant-bib-table tbody tr { transition: background 160ms ease; }
+  .plant-bib-table tbody tr:hover { background: var(--hover-tint); }
+
+  .plant-bib-n {
+    width: 30px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    color: var(--text-subtle);
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    padding-top: 14px !important;
+  }
+  .plant-bib-source { width: 25%; min-width: 200px; }
+  .plant-bib-source a {
+    color: var(--accent);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+    transition: opacity 200ms ease;
+  }
+  .plant-bib-source a:hover { opacity: 0.72; }
+
+  .plant-bib-tag {
+    width: 12%;
+    min-width: 100px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    color: var(--text-subtle);
+    white-space: nowrap;
+    padding-top: 14px !important;
+  }
+  .plant-bib-rel {
+    width: 12%;
+    min-width: 100px;
+    padding-top: 14px !important;
+  }
+  .plant-bib-rel-pip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    color: var(--text-body);
+    white-space: nowrap;
+  }
+  .plant-bib-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .plant-bib-rel.critical { color: var(--ms-neg); }
+  .plant-bib-rel.high     { color: var(--ms-chart-2); }
+  .plant-bib-rel.medium   { color: var(--text-subtle); }
+  .plant-bib-rel.critical .plant-bib-rel-pip,
+  .plant-bib-rel.high .plant-bib-rel-pip,
+  .plant-bib-rel.medium .plant-bib-rel-pip { color: var(--text-body); }
+
+  .plant-bib-coverage { color: var(--text-subtle); font-size: 12px; line-height: 1.55; }
+
+  /* --- 2. Brief poster (contained 5:6), ported from .bib-finale-* --- */
+  .plant-finale-wrap { display: flex; justify-content: center; }
+  .plant-finale-panel {
+    margin: 0;
+    padding: 48px;
+    width: 100%;
+    background-color: var(--accent);
+    color: #ffffff;
+    min-height: 760px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    position: relative;
+    border-radius: 0;
+  }
+  .plant-finale-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    background-repeat: repeat;
+    mix-blend-mode: overlay;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .plant-finale-top, .plant-finale-shape, .plant-finale-meta { position: relative; z-index: 2; }
+  .plant-finale-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+  }
+  .plant-finale-mark {
+    width: 76px;
+    height: auto;
+    display: block;
+    filter: brightness(0) invert(1);
+    flex-shrink: 0;
+  }
+  body[data-theme="dark"] .plant-finale-mark { filter: brightness(0); }
+  /* dark theme: poster hairlines go dark with the ink */
+  body[data-theme="dark"] .plant-finale-top { border-bottom-color: rgba(14, 15, 16, 0.4); }
+  body[data-theme="dark"] .plant-finale-meta { border-top-color: rgba(14, 15, 16, 0.4); }
+
+  /* the ring's slow spin — ported verbatim from canvas-book-ends
+     (.bib-finale-shape: 150s linear, 2.2s delay) */
+  .plant-finale-shape { animation: plant-shape-spin 150s linear 2200ms infinite; }
+  @keyframes plant-shape-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .plant-finale-shape { animation: none; } }
+  body.ms-motion-off .plant-finale-shape { animation: none; }
+  .plant-finale-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+    font-variant-numeric: tabular-nums;
+    align-self: center;
+    text-align: right;
+  }
+  body[data-theme="dark"] .plant-finale-eyebrow { color: rgba(14, 15, 16, 0.78); }
+  .plant-finale-shape {
+    position: relative;
+    width: 56%;
+    max-width: 380px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    align-self: center;
+  }
+  .plant-finale-shape-layer {
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    -webkit-mask-image: url('bib-shape.png');
+            mask-image: url('bib-shape.png');
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+  }
+  body[data-theme="dark"] .plant-finale-shape-layer { background: #0e0f10; }
+  .plant-finale-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.32);
+  }
+  .plant-finale-col { display: grid; grid-template-columns: 8px 1fr; gap: 10px; align-items: start; }
+  .plant-finale-num { width: 8px; height: 8px; background: #ffffff; display: block; margin-top: 6px; flex-shrink: 0; }
+  body[data-theme="dark"] .plant-finale-num { background: #0e0f10; }
+  .plant-finale-col p {
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+  }
+  body[data-theme="dark"] .plant-finale-col p { color: rgba(14, 15, 16, 0.88); }
+
+  @media (max-width: 640px) {
+    .plant-finale-meta { grid-template-columns: 1fr; gap: 16px; }
+    .plant-finale-panel { padding: 32px 24px; }
+  }
+</style>
+
+<section class="plant-bib" data-reveal>
+  <h2 class="plant-bib-h">Source Inventory</h2>
+  <p class="plant-bib-summary"><span data-countup>10</span> sources gathered across the campaign brief, vector-knowledge retrieval, syndicated media panels, and AI-generated plan synthesis for the Corvache Media Plan session. Primary themes: budget &amp; flight parameters, audience media consumption, channel &amp; partner performance modeling, and plan-variant comparison.</p>
+  <div class="plant-bib-table-wrap">
+    <table class="plant-bib-table" aria-label="Source inventory">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Source</th>
+          <th>Type</th>
+          <th>Relevance</th>
+          <th>Key Coverage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="plant-bib-n">01</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">MarketBrief123.pdf</a></td>
+          <td class="plant-bib-tag">Document</td>
+          <td class="plant-bib-rel critical"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="plant-bib-coverage">Brief chip in Plan Parameters (7); source document for Budget $18,000, Markets (US, EMEA), Optimization KPI (Awareness), Frequency Target 3.4x, and the 01 Mar&ndash;24 May 2026 flight window.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">02</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">Apex Auto Brand Guidelines</a></td>
+          <td class="plant-bib-tag">Vector Knowledge</td>
+          <td class="plant-bib-rel critical"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="plant-bib-coverage">Backs both Sources columns (&ldquo;write an apex auto email&hellip;&rdquo;, &ldquo;Create a persona for a Lux EV Buyer&rdquo;) and the Performance Enthusiasts audience card&rsquo;s blurb and definition builder.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">03</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">MRI-Simmons 2024</a></td>
+          <td class="plant-bib-tag">Syndicated Panel</td>
+          <td class="plant-bib-rel critical"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>Critical</span></td>
+          <td class="plant-bib-coverage">Media Consumption index bars (Connected TV, Streaming Audio, Social, Podcast, Digital Display, DOOH) and the Projected Outcome Model&rsquo;s spend-curve series.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">04</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">GWI Core Q3 2024</a></td>
+          <td class="plant-bib-tag">Syndicated Panel</td>
+          <td class="plant-bib-rel high"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>High</span></td>
+          <td class="plant-bib-coverage">Partner Affinity list (Peloton App Users 178 IDX &hellip;) and Channel Affinity list inside the expanded Performance Enthusiasts audience card.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">05</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">IHS Markit Automotive Q3 2024</a></td>
+          <td class="plant-bib-tag">Industry Data</td>
+          <td class="plant-bib-rel high"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>High</span></td>
+          <td class="plant-bib-coverage">Projected Outcome Model curve calibration and the Channel &amp; Partner Plan&rsquo;s per-partner IDX / Avg Reach columns.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">06</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">claude-opus-4.5</a></td>
+          <td class="plant-bib-tag">Generated</td>
+          <td class="plant-bib-rel high"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>High</span></td>
+          <td class="plant-bib-coverage">Media Plan Variants scoring (A &ndash; Effectiveness-First &ldquo;AI Pick&rdquo;, B &ndash; Efficiency &amp; Conversion, C &ndash; MMM-Constrained) and the &ldquo;&#10022; AI-Generated Projections&rdquo; banner.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">07</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">claude-opus-4.5</a></td>
+          <td class="plant-bib-tag">Generated</td>
+          <td class="plant-bib-rel high"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>High</span></td>
+          <td class="plant-bib-coverage">Plan Comparison recommendation copy, the four win-cards, and the Metric breakdown disclosure&rsquo;s Strategic Read column.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">08</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">Corvache Data</a></td>
+          <td class="plant-bib-tag">Proprietary</td>
+          <td class="plant-bib-rel medium"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>Medium</span></td>
+          <td class="plant-bib-coverage">Plan Summary stat tiles (Impressions 5.84MM, Cumulative reach 67.8%, Reach with decay 51.4%, Est. revenue $112,400) and the Budget allocation Partner/Channel splits.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">09</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">Nielsen Audio</a></td>
+          <td class="plant-bib-tag">Syndicated Panel</td>
+          <td class="plant-bib-rel medium"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>Medium</span></td>
+          <td class="plant-bib-coverage">Flighting Gantt&rsquo;s Audio channel group (The Smoking Tire, Bloomberg Radio) and the &ldquo;Reading at $28,099&rdquo; rail panel&rsquo;s Streaming Audio series.</td>
+        </tr>
+        <tr>
+          <td class="plant-bib-n">10</td>
+          <td class="plant-bib-source"><a href="#" onclick="return false;">Comscore</a></td>
+          <td class="plant-bib-tag">Provider</td>
+          <td class="plant-bib-rel medium"><span class="plant-bib-rel-pip"><span class="plant-bib-dot" data-build="pop"></span>Medium</span></td>
+          <td class="plant-bib-coverage">Channel &amp; Partner Plan&rsquo;s Online Video and News &amp; Display group placements (Car and Driver, Motor Trend+, Bloomberg Media, WSJ Motors).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="plant-finale" data-reveal data-matte="flush">
+  <div class="plant-finale-wrap">
+    <div class="plant-finale-panel" aria-label="Plan brief end card">
+      <div class="plant-finale-top">
+        <img class="plant-finale-mark" src="omni-logo.png" alt="OMNI+" />
+        <span class="plant-finale-eyebrow">Plan &middot; Corvache Media Plan &middot; Delivered 08.05.2026</span>
+      </div>
+      <div class="plant-finale-shape" aria-hidden="true">
+        <div class="plant-finale-shape-layer" data-build="fade"></div>
+      </div>
+      <div class="plant-finale-meta">
+        <div class="plant-finale-col">
+          <span class="plant-finale-num" aria-hidden="true" data-build="pop"></span>
+          <p><span data-countup>10</span> sources gathered across the campaign brief, vector-knowledge retrieval, syndicated media panels, and AI-generated plan synthesis. Primary themes: budget &amp; flight parameters, media consumption, and channel/partner performance.</p>
+        </div>
+        <div class="plant-finale-col">
+          <span class="plant-finale-num" aria-hidden="true" data-build="pop"></span>
+          <p>Corvache Media Plan session &mdash; $18,000 budget, 01 Mar&ndash;24 May 2026 flight, optimized for Awareness against the Performance Enthusiasts audience across three plan variants (A/B/C).</p>
+        </div>
+        <div class="plant-finale-col">
+          <span class="plant-finale-num" aria-hidden="true" data-build="pop"></span>
+          <p>Authored inside OMNI+ Canvas. Vector Knowledge Name: Brand Guidelines. Distributed for media and creative review.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

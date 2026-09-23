@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+  OMNI component: modal_coverlab
+  Project: Book Ends
+  Note: .cbe-modal-card (#bookendsModal) — Book Ends cover-lab: symbol chip-grid + tag chip-grid picker modal, shown open with the real default selections (05 FIELD symbol · V2 SPEC tag)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Ends — modal_coverlab · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-book-ends.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="app-modal open" id="bookendsModal" role="dialog" aria-modal="true" aria-labelledby="bookendsModalTitle" style="position:static;opacity:1;visibility:visible">
+  <div class="app-modal-card cbe-modal-card" role="document" style="position:static;top:auto;left:auto;max-height:none;transform:none;opacity:1">
+    <header class="app-modal-head">
+      <h2 class="app-modal-title" id="bookendsModalTitle">Book Ends — Choose a Cover</h2>
+      <div class="app-modal-head-actions">
+        <button class="app-modal-close" type="button" aria-label="Close" id="bookendsModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="cbe-mod-body">
+      <section>
+        <h3 class="cbe-mod-lbl">Cover Treatment</h3>
+        <div class="cbe-chips" id="cbeFrontChips">
+          <button type="button" class="cbe-chip" data-id="a11"><b>01</b>RAYS</button>
+          <button type="button" class="cbe-chip" data-id="a03"><b>02</b>TICK</button>
+          <button type="button" class="cbe-chip" data-id="a06"><b>03</b>BUBBLE</button>
+          <button type="button" class="cbe-chip" data-id="a07"><b>04</b>BURST</button>
+          <button type="button" class="cbe-chip active" data-id="a19"><b>05</b>FIELD</button>
+          <button type="button" class="cbe-chip" data-id="a21"><b>06</b>GRID</button>
+        </div>
+      </section>
+      <section>
+        <h3 class="cbe-mod-lbl">Tag</h3>
+        <div class="cbe-chips" id="cbeTagChips">
+          <button type="button" class="cbe-chip" data-tag="1"><b>V1</b>INSTRUMENT</button>
+          <button type="button" class="cbe-chip active" data-tag="2"><b>V2</b>SPEC</button>
+          <button type="button" class="cbe-chip" data-tag="3"><b>V3</b>ORBIT</button>
+          <button type="button" class="cbe-chip" data-tag="4"><b>V4</b>SEAL</button>
+          <button type="button" class="cbe-chip" data-tag="5"><b>V5</b>BARCODE</button>
+          <button type="button" class="cbe-chip" data-tag="6"><b>V6</b>LEDGER</button>
+          <button type="button" class="cbe-chip" data-tag="7"><b>V7</b>REGISTRY</button>
+          <button type="button" class="cbe-chip" data-tag="8"><b>V8</b>MARK</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+</body>
+</html>

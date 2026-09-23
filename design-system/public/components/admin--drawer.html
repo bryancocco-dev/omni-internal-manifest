@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  OMNI component: drawer
+  Project: Admin
+  Note: .drawer — right-edge bulk-edit panel (radio-line status/super-admin sections + empty workspaces/features list-tbl + footer save), opened state forced static
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — drawer · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/admin.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<aside class="drawer open" id="drawer" style="position:static;transform:none;box-shadow:none;width:100%;max-width:100%">
+      <div class="drawer-head">
+        <h2 id="drawerTitle">Editing 3 User Records</h2>
+        <i class="ph ph-x x" id="drawerClose"></i>
+      </div>
+      <div class="drawer-body">
+        <div class="dsec">
+          <h3 class="dsec-title">Status</h3>
+          <label class="radio-line on"><input type="radio" name="status" class="radio" checked> Keep current status</label>
+          <label class="radio-line"><input type="radio" name="status" class="radio"> Set all users to active</label>
+          <label class="radio-line"><input type="radio" name="status" class="radio"> Set all users to inactive</label>
+        </div>
+        <div class="dsec">
+          <h3 class="dsec-title">Super Admin Access</h3>
+          <label class="radio-line on"><input type="radio" name="sa" class="radio" checked> Keep current mixed state (3/3 super-admin)</label>
+          <label class="radio-line"><input type="radio" name="sa" class="radio"> Set all users to regular users</label>
+          <label class="radio-line"><input type="radio" name="sa" class="radio"> Set all users to super-admin</label>
+        </div>
+        <div class="dsec">
+          <h3 class="dsec-title">Workspaces</h3>
+          <table class="list-tbl">
+            <thead><tr><th>Workspace</th><th style="text-align:left">Role</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="3" class="empty" style="border:none">No workspaces added</td></tr></tbody>
+          </table>
+          <a class="addlink">Add Workspace</a>
+        </div>
+        <div class="dsec">
+          <h3 class="dsec-title">Features</h3>
+          <table class="list-tbl">
+            <thead><tr><th>Feature</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="2" class="empty" style="border:none">No features added</td></tr></tbody>
+          </table>
+          <a class="addlink">Add Feature</a>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <button class="btn btn-primary" id="saveUsers" disabled>Save Users</button>
+      </div>
+    </aside>
+</body>
+</html>

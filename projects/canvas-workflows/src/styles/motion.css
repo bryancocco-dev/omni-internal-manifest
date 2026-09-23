@@ -1,0 +1,436 @@
+/* ==========================================================================
+   Seam M3 — Choreography + chrome (MOTION PHASE, "The Current")
+   Owns two things every other seam leans on:
+     1. the shared easing/duration language (`--cw-e-*` / `--cw-d-*`,
+        PLAN.md "MOTION PHASE" -> "Global rules") — M1/M2 already reference
+        these via `var(--cw-e-out, <literal fallback>)` etc. since seams
+        build concurrently, so this file just needs to DEFINE the canonical
+        values (order relative to nodes.css/edges-motion.css doesn't matter
+        for that — custom-property lookups resolve against the final
+        cascade, not import order);
+     2. every GLOBAL `.react-flow__handle` state animation (connection-drag
+        breathe/dim). Per-KIND handle character (trigger flicker, human
+        option breathing, branch glints, ...) is nodes.css's (M2) — that
+        selector family targets kind/role classes, this one only ever
+        targets React Flow's own connection-state classes
+        (`connectingfrom` / `connectingto` / `valid` / `connectable`), so
+        the two never compete for the same declaration.
+   Also hosts the freestanding motion-only bits that don't belong to an
+   existing app.css component class: the landing ripple, the pointer
+   graph-swap mount fade (spotlight removed 2026-08-12). Chrome "physics" layered onto
+   EXISTING app.css selectors (toolbar buttons, apply button, issues pill,
+   palette rows, compiled-panel chips) lives in app.css itself instead —
+   see that file's own MOTION PHASE section.
+   Imported last in main.jsx (item 8): after cw-tokens/flow/app, so any
+   equal-specificity tie against flow.css's handle rules resolves in this
+   file's favor without needing extra selector weight.
+   ========================================================================== */
+
+#workflow-root {
+  /* ---- easing --------------------------------------------------------- */
+  --cw-e-out: cubic-bezier(0.22, 1, 0.36, 1); /* default glide */
+  --cw-e-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoot: pickups, pops, arrivals */
+  --cw-e-inout: cubic-bezier(0.65, 0, 0.35, 1); /* layout glides (animated Tidy up) */
+
+  /* ---- durations -------------------------------------------------------- */
+  --cw-d-1: 140ms;
+  --cw-d-2: 240ms;
+  --cw-d-3: 420ms;
+  --cw-d-4: 700ms;
+}
+
+/* ==========================================================================
+   Global handle-state animations — connection-drag only. Idle/hover-per-kind
+   character is nodes.css's; this block only ever fires while a connection is
+   actively being dragged (RF's `.connectingfrom` is only present on the
+   handle a drag started from — verified against the installed
+   @xyflow/react build, not guessed).
+   ========================================================================== */
+
+/* "A drag is in progress" = some handle in this pane currently carries
+   .connectingfrom. :has() lets every OTHER handle react without any extra
+   JS/state — RF doesn't proactively compute per-handle validity for the
+   whole graph (only the one under the pointer gets `.valid`), so this is
+   the closest a pure-CSS pass gets to "candidate targets come alive": every
+   connectable handle other than the drag's own origin softly breathes,
+   the one actually under the pointer gets the strongest state, and — since
+   we DO know precisely when the hovered one is invalid (`.connectingto`
+   without `.valid`) — that one dims instead of breathing. */
+#workflow-root
+  .react-flow:has(.react-flow__handle.connectingfrom)
+  .react-flow__handle.connectable:not(.connectingfrom) {
+  /* Standalone `scale`, never `transform` — the handle already uses
+     `transform: translate(...)` (flow.css / RF base) to center itself on
+     whichever side it's pinned to, and an `animation` touching `transform`
+     would clobber that positioning for the animation's duration. Standalone
+     `scale` composes with it instead, so the dot breathes in place. */
+  animation: cw-handle-breathe 1.6s var(--cw-e-inout) infinite;
+}
+
+#workflow-root
+  .react-flow:has(.react-flow__handle.connectingfrom)
+  .react-flow__handle.connectable:not(.connectingfrom)::after {
+  content: '';
+  position: absolute;
+  inset: 2.5px;
+  border-radius: 50%;
+  background: var(--cw-accent);
+  animation: cw-handle-aperture 1.6s var(--cw-e-inout) infinite;
+}
+
+/* The handle actually under the pointer while dragging, when it WOULD be a
+   valid connection (RF's own `isValidConnection` result, mirrored into the
+   `.valid` class) — the strongest, fastest state: this is where it wants
+   to land. Declared after the broad rule above so it wins the tie. */
+#workflow-root .react-flow__handle.connectingto.valid {
+  animation: cw-handle-breathe 0.8s var(--cw-e-spring) infinite;
+}
+#workflow-root .react-flow__handle.connectingto.valid::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--cw-accent);
+  animation: cw-handle-aperture 0.8s var(--cw-e-spring) infinite;
+}
+
+/* The handle under the pointer while dragging, when it would NOT be valid
+   (self-connect, a trigger as target, a source handle already spoken for —
+   state.jsx's own isValidConnection). Declared last so it wins over both
+   rules above for this one handle. */
+#workflow-root .react-flow__handle.connectingto:not(.valid) {
+  animation: none;
+  opacity: 0.4;
+}
+
+@keyframes cw-handle-breathe {
+  0%,
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--cw-accent) 35%, transparent);
+  }
+  50% {
+    scale: 1.25;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--cw-accent) 16%, transparent);
+  }
+}
+
+@keyframes cw-handle-aperture {
+  0%,
+  100% {
+    scale: 0;
+    opacity: 0;
+  }
+  50% {
+    scale: 1;
+    opacity: 0.9;
+  }
+}
+
+/* ==========================================================================
+   Landing ripple — palette drop, cw:add-from spawn, onNodeDragStop (M3
+   item 3). One <div> per event (state + timers live in FlowCanvas.jsx),
+   rendered through <ViewportPortal> so its inline `transform: translate()`
+   is in flow-space and pans/zooms with the graph. The two rings are its
+   ::before/::after so a single DOM node covers both, offset by a short
+   animation-delay.
+   ========================================================================== */
+#workflow-root .cw-ripple {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+#workflow-root .cw-ripple::before,
+#workflow-root .cw-ripple::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--cw-accent);
+  scale: 0;
+  opacity: 0.55;
+  animation: cw-ripple-ring 600ms var(--cw-e-out) both;
+}
+
+#workflow-root .cw-ripple::after {
+  animation-delay: 120ms;
+}
+
+@keyframes cw-ripple-ring {
+  from {
+    scale: 0;
+    opacity: 0.55;
+  }
+  to {
+    scale: 8;
+    opacity: 0;
+  }
+}
+
+
+
+/* ==========================================================================
+   Graph-swap fade (M3 item 5) — the inner stage wrapping <ReactFlow> in
+   FlowCanvas.jsx remounts (fresh `key`) on Load-from-instructions/Clear
+   (and on every ordinary overlay open, which is the same fresh-mount
+   pattern already relied on for measurement — see App.jsx), so a plain
+   mount animation is enough; no JS timing needed. Node materialize +
+   edge draw-on are what actually sell the swap (M2/M1) — this just keeps
+   the stage from popping in hard behind them.
+   ========================================================================== */
+#workflow-root .cw-flow-stage {
+  position: absolute;
+  inset: 0;
+  /* PLAN.md's M3 item 5 calls for "150ms" specifically; the shared token
+     vocabulary's closest match is --cw-d-1 (140ms) — 10ms off literal spec
+     vs. 90ms off for the next token up (--cw-d-2, 240ms), and staying on
+     the shared scale beats inventing a bespoke 150ms value one-off. */
+  animation: cw-graph-swap-fade var(--cw-d-1) var(--cw-e-out) both;
+}
+
+@keyframes cw-graph-swap-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---- prefers-reduced-motion ------------------------------------------------
+   Global rule (PLAN.md "MOTION PHASE" -> "Global rules"): every ambient loop
+   OFF, every entrance collapses to a fast fade. Button hover-lift/press-scale
+   (app.css) are deliberately left alone — those are instant, non-looping tap
+   feedback, not the ambient/entrance motion this rule targets. ------------- */
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root
+    .react-flow:has(.react-flow__handle.connectingfrom)
+    .react-flow__handle.connectable:not(.connectingfrom),
+  #workflow-root
+    .react-flow:has(.react-flow__handle.connectingfrom)
+    .react-flow__handle.connectable:not(.connectingfrom)::after,
+  #workflow-root .react-flow__handle.connectingto.valid,
+  #workflow-root .react-flow__handle.connectingto.valid::after {
+    animation: none;
+  }
+
+  /* Still communicate validity without the loop: a steady halo instead of
+     a breathing one, so the drag remains legible. */
+  #workflow-root
+    .react-flow:has(.react-flow__handle.connectingfrom)
+    .react-flow__handle.connectable:not(.connectingfrom) {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cw-accent) 20%, transparent);
+  }
+  #workflow-root
+    .react-flow:has(.react-flow__handle.connectingfrom)
+    .react-flow__handle.connectable:not(.connectingfrom)::after {
+    scale: 1;
+    opacity: 0.9;
+  }
+
+  #workflow-root .cw-ripple::before,
+  #workflow-root .cw-ripple::after {
+    animation: cw-ripple-fade 140ms linear both;
+  }
+  #workflow-root .cw-ripple::after {
+    animation-delay: 0ms;
+  }
+  @keyframes cw-ripple-fade {
+    from {
+      scale: 1;
+      opacity: 0.4;
+    }
+    to {
+      scale: 1;
+      opacity: 0;
+    }
+  }
+
+  #workflow-root .cw-flow-stage {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+
+/* Card-outline shockwave (Bryan) — when a block lands, the wave leaves the
+   whole card's edge rather than the cursor point. Two rounded-rect rings
+   scale out from the card's own footprint, offset in time like the point
+   ripple's pair. --cw-rw/--cw-rh are set inline by FlowCanvas. */
+#workflow-root .cw-ripple--box::before,
+#workflow-root .cw-ripple--box::after {
+  width: var(--cw-rw, 280px);
+  height: var(--cw-rh, 220px);
+  margin: 0;
+  border-radius: 16px;
+  transform-origin: center;
+  animation: cw-ripple-box 620ms var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+#workflow-root .cw-ripple--box::after {
+  animation-delay: 110ms;
+}
+
+@keyframes cw-ripple-box {
+  from {
+    scale: 0.92;
+    opacity: 0.55;
+  }
+  to {
+    scale: 1.14;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-ripple--box::before,
+  #workflow-root .cw-ripple--box::after {
+    animation: none;
+  }
+}
+
+/* ---- RUN SHOW A2 — paused beacon ------------------------------------------
+   "REUSE the existing box-ripple (spawnRipple) at low opacity" (PLAN.md) —
+   FlowCanvas.jsx's beacon interval calls the SAME spawnRipple as a card
+   landing, just tagged with this variant class. `opacity` on the container
+   (not its ::before/::after pseudo-elements, which already animate their
+   OWN opacity via cw-ripple-box above) composites multiplicatively with
+   whatever the pseudo-elements' keyframes are doing at any given frame —
+   the whole two-ring animation just renders dimmer throughout, geometry and
+   timing untouched, so this really is a reuse rather than a parallel ripple
+   system. No reduced-motion entry needed here: FlowCanvas.jsx's beacon
+   effect never starts the interval under prefers-reduced-motion at all (A4
+   — "beacon interval OFF"), so this class is never applied in that mode;
+   the existing .cw-ripple--box reduced-motion rule above would still
+   neutralize it even if it somehow were. --------------------------------- */
+#workflow-root .cw-ripple--beacon {
+  opacity: 0.45;
+}
+
+/* ==========================================================================
+   Node boom — silhouette pop + 12-shard burst, spawned on delete (NODE BOOM
+   PHASE, PLAN.md "## NODE BOOM PHASE" — "blow up a node when you trash it").
+   Same portal/anchor technique as the ripple above: one zero-size anchor div
+   per boom (FlowCanvas.jsx's `booms` array + BOOM_SHARDS), positioned via
+   inline `transform: translate()` at the node's CENTRE — not its top-left
+   corner like .cw-ripple above — since the burst needs to radiate from the
+   middle of the card. --boom-w/--boom-h size the silhouette to the card's
+   own footprint, same idea as --cw-rw/--cw-rh on the box-ripple above.
+   ========================================================================== */
+#workflow-root .cw-boom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 6; /* one above .cw-ripple's 5 — the burst reads on top of its own shockwave */
+}
+
+/* 1. Silhouette pop — reads as the card taking the hit: a fast overshoot
+   scale-up with a bright-to-accent-tint flash, then a collapse-and-fade.
+   180ms total (PLAN.md "The visual" item 1). Flash base is --cw-surface
+   (the card's own material) rather than a hardcoded white, so it stays
+   correct under dark/brand themes too. */
+#workflow-root .cw-boom-silhouette {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--boom-w, 280px);
+  height: var(--boom-h, 220px);
+  margin: calc(var(--boom-h, 220px) / -2) 0 0 calc(var(--boom-w, 280px) / -2);
+  border-radius: 16px;
+  transform-origin: center;
+  animation: cw-boom-silhouette 180ms var(--cw-e-spring) both;
+}
+
+@keyframes cw-boom-silhouette {
+  0% {
+    scale: 1;
+    background: var(--cw-surface);
+    opacity: 0.92;
+  }
+  40% {
+    scale: 1.08;
+    background: color-mix(in srgb, var(--cw-accent) 14%, var(--cw-surface));
+    opacity: 0.8;
+  }
+  100% {
+    scale: 0.92;
+    opacity: 0;
+  }
+}
+
+/* 2. Shards — 12 fragments flying outward on fixed per-index trajectories
+   (FlowCanvas.jsx's BOOM_SHARDS, computed once at module load — see that
+   file for the "no Math.random" reasoning). Each is its own zero-margin
+   rounded rect, centred on the boom anchor via the same negative-margin
+   trick as the silhouette above, and animates via CSS vars set inline per
+   shard (--shard-dx/--shard-dy/--shard-rot/--shard-size) so one shared
+   keyframe drives all twelve along their own path. 460ms + up to 60ms of
+   per-shard delay = the ~520ms total this whole section is scoped to
+   (PLAN.md heading). PLAN.md "The visual" item 2. */
+#workflow-root .cw-boom-shard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--shard-size, 8px);
+  height: var(--shard-size, 8px);
+  margin: calc(var(--shard-size, 8px) / -2) 0 0 calc(var(--shard-size, 8px) / -2);
+  border-radius: 3px;
+  opacity: 0;
+  animation: cw-boom-shard 460ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+#workflow-root .cw-boom-tint-a {
+  background: var(--cw-accent);
+}
+#workflow-root .cw-boom-tint-b {
+  background: var(--cw-text-3);
+}
+#workflow-root .cw-boom-tint-c {
+  background: var(--cw-border);
+}
+
+@keyframes cw-boom-shard {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(calc(var(--shard-dx) * 0.72), calc(var(--shard-dy) * 0.72))
+      rotate(calc(var(--shard-rot) * 0.55));
+    opacity: 0.85;
+  }
+  100% {
+    /* the extra +16px is the "slight downward gravity in the second half" —
+       layered on top of each shard's own outward direction, whichever way
+       that happens to be. */
+    transform: translate(var(--shard-dx), calc(var(--shard-dy) + 16px)) rotate(var(--shard-rot));
+    opacity: 0;
+  }
+}
+
+/* prefers-reduced-motion (PLAN.md: "no shards/silhouette; at most the
+   existing ripple") — the ripple call FlowCanvas.jsx makes alongside every
+   boom already has its own reduced-motion fallback earlier in this file;
+   this just turns the two boom-only pieces fully off. FlowCanvas.jsx's
+   fallback timer (not the animationend heal, which needs a real animation to
+   actually end) is what clears these booms from state when no animationend
+   ever fires here. */
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-boom-silhouette,
+  #workflow-root .cw-boom-shard {
+    animation: none;
+    opacity: 0;
+  }
+}

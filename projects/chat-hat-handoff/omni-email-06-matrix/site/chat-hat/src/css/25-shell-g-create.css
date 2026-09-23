@@ -1,0 +1,172 @@
+  /* ══ Create screen (#ptCreateScreen) — the topnav "+" button's
+     app-level Create surface, ported from Tabula's own Create page
+     (/TINKER/tabula/index.html, clean monochrome v3): hero "Create"
+     title, a search + category filter toolbar, and three section-
+     grouped card grids (Apps / Core Skills / Skills). Shares #canvas's
+     own grid cell exactly like .pt-editor/.pt-motion above (grid-
+     column:4/row:1 — "fixed to the canvas pane, chrome stays put,
+     Escape/Back returns") rather than the smaller measured-rect
+     .pt-env-overlay/.pt-skills-overlay contract, since Bryan's ask was
+     for this to read as a full canvas-pane screen — never a new
+     browser tab, never added to the header's canvas tab strip; the +
+     button just reveals this in place. z-index 60 (not 20), same
+     .c4-edit-mode-derived reason .pt-motion uses it — keeps the
+     bottom-right .chapter-nav pager fully occluded while open. Card
+     DATA is NOT duplicated here: the three grids below are built at
+     runtime from the exact same TABULA_SKILLS/SKILL_ICONS arrays the
+     "See all skills" overlay already uses (exposed on
+     window._ptTabulaSkills/_ptSkillIcons by initSkillsOverlay(), see
+     the JS) — one data source, two presentations. */
+  .pt-create-screen {
+    /* Spans EVERY column of .main (rail + chat + splitter + canvas), not just
+       the canvas cell — Bryan, 8/31: clicking + should "take over everything
+       below the main nav." .main sits directly under .topnav, so 1 / -1 is
+       exactly "below the nav." z-index clears .side-rail's own 15. */
+    grid-column: 1 / -1; grid-row: 1;
+    /* min-height:0 overrides the grid item's default content-based
+       floor (the same min-height:auto quirk flex items have) — without
+       it, this screen's genuinely-tall card grid grows the grid TRACK
+       itself past the viewport instead of clipping to it, since
+       .pt-editor/.pt-motion never hit this (their content never
+       exceeds one screen, so they never needed the override). */
+    min-height: 0;
+    position: relative;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas-bg);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 320ms;
+  }
+  /* While the Create screen is up, IT is the selected surface — so the
+     canvas tab drops its active treatment and the + carries a selected
+     backing instead (Bryan, 9/1). Reuses the tab's own selected tokens
+     (--nav-selected ground + --accent ink), so this is the existing
+     language, not a new one. Driven by body.pt-create-open. */
+  /* !important is deliberate here: this is an app-level state overriding a
+     component's OWN selected state (.tab.active sets color/background/weight
+     on itself), and the tab's live class is toggled by the shell's own JS —
+     so a specificity race is the wrong thing to depend on. */
+  body.pt-create-open .topnav .tab.active,
+  body.pt-create-open .topnav .tab {
+    color: var(--text-subtle) !important;
+    font-weight: 400 !important;
+    background: transparent !important;
+  }
+  body.pt-create-open .topnav .tab.active::after { opacity: 0 !important; }
+  body.pt-create-open .topnav .tab .tab-icon {
+    border-color: var(--line, rgba(15, 23, 42, 0.10)) !important;
+    color: var(--text-subtle) !important;
+  }
+  /* 9/1 re-treat: Bryan — "rather than a circle around the plus icon,
+     can it be a background fill ... like the selected state of the
+     canvas nav button." Was filling the existing 32px circle (reading
+     as a ring/disc); now takes .tab.active's own cell anatomy instead —
+     full-height stretched cell, tab-like 0/18px padding, square corners
+     — so it reads as a sibling of the tab strip, not a separate control.
+     Circular hover halo suppressed in this state (a round artifact on a
+     rectangular cell would look like a leftover). Rest/hover state when
+     NOT open is untouched — every declaration below is scoped under
+     body.pt-create-open. */
+  body.pt-create-open .add-tab {
+    align-self: stretch !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 18px !important;
+    /* Locked up flush with the Canvas tab — the rest state's 6px
+       margin-left is the gap Bryan flagged (9/1); a selected cell
+       butts its neighbor like any adjacent tab. */
+    margin-left: 0 !important;
+    border-radius: 0 !important;
+    background: var(--nav-selected) !important;
+    color: var(--accent) !important;
+    transform: none !important;
+  }
+  body.pt-create-open .add-tab:hover {
+    background: var(--nav-selected) !important;
+    transform: none !important;
+  }
+  body.pt-create-open .add-tab::before,
+  body.pt-create-open .add-tab:hover::before {
+    box-shadow: none !important;
+  }
+  .pt-create-frame {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    display: block;
+    background: var(--canvas-bg);
+  }
+  .pt-create-screen[data-visible="1"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 360ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0s;
+  }
+  /* Reveal rule for the reused .pt-editor-topbar component under THIS
+     screen's own data-visible gate — its base "at rest" opacity:0
+     rule already applies for free via the shared class (see the
+     .pt-editor-topbar block above); only the show state needs a
+     parallel selector scoped to this screen's own ancestor. */
+  .pt-create-screen[data-visible="1"] .pt-editor-topbar { opacity: 1; transform: translateY(0); }
+  /* display:flex (column) is load-bearing for the embedded frame: an
+     <iframe> is a replaced element with a 150px default height, so with a
+     plain block parent `flex:1` on the frame does nothing and it collapses
+     to 150px regardless of how tall the screen is. The frame scrolls
+     itself, so overflow-y:auto stays for the retired inner markup only. */
+  .pt-create-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+  .pt-create-inner {
+    max-width: 1400px; margin: 0 auto;
+    padding: 28px 32px 64px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1) 80ms, transform 360ms cubic-bezier(0.22,1,0.36,1) 80ms;
+  }
+  .pt-create-screen[data-visible="1"] .pt-create-inner { opacity: 1; transform: translateY(0); }
+  .pt-create-hero-row { margin-bottom: 22px; }
+  .pt-create-hero {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(30px, 3.4vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    color: var(--text-strong);
+  }
+  /* Search + filter toolbar — literal reuse of .pt-skills-toolbar/
+     .pt-skills-search/.pt-skills-filters/.pt-skills-filter (already
+     ported from Tabula for the "See all skills" overlay); this
+     modifier only zeroes the overlay-specific 24px side padding since
+     .pt-create-inner already supplies the page margin. */
+  .pt-create-toolbar.pt-skills-toolbar { padding: 0 0 22px; }
+  /* Section rule — Tabula's own .section-rule/.rule-label voice (a
+     quiet Fira Code uppercase eyebrow: Apps / Core Skills / Skills),
+     paired with one hairline in this shell's own Swiss vocabulary
+     (every section label elsewhere in this file sits on a rule). */
+  .pt-create-section + .pt-create-section { margin-top: 36px; }
+  .pt-create-section.is-empty { display: none; }
+  .pt-create-rule {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--line);
+  }
+  .pt-create-rule-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  @media (max-width: 1100px) {
+    .pt-create-inner { padding: 22px 20px 48px; }
+  }
+
+  @media (max-width: 1100px) {
+    .pt-motion-stage { min-height: 280px; }
+  }
+

@@ -1,0 +1,410 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Header + cover board — the "presentation front page" for a shared canvas.
+   Mirrors the OMNI+ Canvas cover board (.brief-meta / .brief-title /
+   .brief-cover): a mono meta strip, a large thin display title, and a
+   branded hero panel. The header is the slim share-context bar above it.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Premium masthead ────────────────────────────────────────────────────
+   A sticky, frosted OMNI header that frames the whole shared canvas. Generic
+   and reusable — brand mark + share context on the left, read-only status +
+   Share action on the right, hairline base. */
+.doc-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 14px 0;
+  background: color-mix(in srgb, var(--doc-page-bg) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}
+
+/* Base hairline as a full-VIEWPORT layer, not a border: the header lives
+   inside .doc, whose width narrows when the comments panel shifts the
+   column — a border would stop with it. This always connects to the
+   browser edges, in every state. */
+.doc-header::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -1px;
+  width: 100vw;
+  height: 1px;
+  background: var(--doc-rule);
+  pointer-events: none;
+}
+
+.doc-header__inner {
+  width: 100%;
+  padding: 0 var(--doc-edge-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--omni-space-8);
+}
+
+/* One optical line, three registers: identity (the co-brand lockup, heaviest),
+   title (quieter), state (quietest). Nothing stacked, nothing repeated —
+   "Shared canvas" language lives in the gate/intro/email, and the client name
+   lives in the lockup itself. */
+.doc-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.doc-header__logo {
+  /* The wordmark's letterforms fill the SVG's full height, so a 22px image
+     reads ~21px of solid black — towering over the brand name's ~13px caps.
+     17px sits the OMNI mass optically BETWEEN the 22px brand mark and the
+     brand name, so neither side of the × outweighs the other. */
+  height: 17px;
+  width: auto;
+  display: block;
+  flex: none;
+  /* Optical: the wordmark's ink rides ~1px high of the lockup's shared
+     midline (sparkle geometry) — seat it on the same band as the brand. */
+  translate: 0 1px;
+}
+
+/* Header sits on --doc-page-bg, so the mark follows the theme base. Matched
+   pair with the intro/colophon marks: a clean silhouette either way, rather
+   than invert()+brightness() which leaves grey halos on antialiased edges. */
+.doc-header__logo { filter: brightness(0); }
+[data-theme='dark'] .doc-header__logo { filter: brightness(0) invert(1); }
+
+.doc-header__divider {
+  width: 1px;
+  height: 18px;
+  background: var(--doc-rule);
+  flex: none;
+}
+
+.doc-header__context {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Doc title — deliberately a register below the brand name (smaller, lighter,
+   body ink) so the lockup reads identity → title → state in one glance. */
+.doc-header__title {
+  font-family: var(--doc-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.1px;
+  color: var(--doc-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* One tight, consistent lockup: status · divider · comments · Share — every
+   control the same 32px height, the two buttons sharing the real OMNI
+   8px-radius (var(--omni-radius-medium)), quiet ghost secondaries against the
+   filled accent primary. */
+.doc-header__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Read-only tag — a small, squared-off chip locked to the eyebrow row, sized
+   to the "SHARED CANVAS" label scale (no dot). */
+.doc-header__status {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-family: var(--doc-font-mono);
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--omni-radius-small);
+  background: color-mix(in srgb, var(--doc-ink-subtle) 12%, transparent);
+  color: var(--doc-ink-subtle);
+}
+
+/* Secondary labeled button in the header actions (download) — crisp white-fill,
+   defined border, dark icon + "Download" label, subtle lift so it holds its own
+   next to the filled Share primary. Same 32px height + radius as Share. */
+.doc-header__download {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-medium);
+  background: var(--doc-paper-bg);
+  color: var(--doc-ink-body);
+  font-family: var(--doc-font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.05px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 3px 8px rgba(15, 23, 42, 0.06);
+  transition: color var(--omni-transition-duration-fast) ease, border-color var(--omni-transition-duration-fast) ease, background var(--omni-transition-duration-fast) ease, box-shadow var(--omni-transition-duration-fast) ease;
+}
+.doc-header__download svg { width: 15px; height: 15px; flex: none; }
+.doc-header__download:hover {
+  color: var(--doc-ink-strong);
+  border-color: var(--doc-ink-subtle);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.10);
+}
+/* brief confirmation after a download fires */
+.doc-header__download.is-done {
+  color: var(--omni-primitive-brand-green01, #1f9d6b);
+  border-color: color-mix(in srgb, var(--omni-primitive-brand-green01, #1f9d6b) 55%, transparent);
+  box-shadow: none;
+}
+
+/* Publish CTA — inherits the Download ghost recipe (.doc-header__download)
+   wholesale; these rules add only what differs. Fixed min-width (measured at
+   the idle label's width) keeps the header from jumping as the label swaps
+   idle → "Publishing…" → "Published". Published state reuses the .is-done
+   green above (this button always carries .doc-header__download too), and it
+   STAYS rather than flashing back like the Download button does. */
+.doc-header__publish {
+  min-width: 196px; /* measured idle width ("Publish to Workspace") — the
+                        longest of the three label states, so busy/published
+                        never shrink the button */
+  justify-content: center;
+}
+.doc-header__publish[disabled] {
+  cursor: default;
+  pointer-events: none;
+}
+.doc-header__publish[disabled]:hover {
+  color: var(--doc-ink-body);
+  border-color: var(--doc-rule);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 3px 8px rgba(15, 23, 42, 0.06);
+}
+.doc-header__publish-icon {
+  display: inline-flex;
+  flex: none;
+}
+
+/* Narrow: three labelled buttons start crowding the title (title truncation
+   measured starting ~970px with all three present) — the Publish button
+   drops its label and goes icon-only, square 32×32, before that happens.
+   Download + Share keep their labels; the existing ≤640px rules (which hide
+   .doc-header__context entirely) are untouched and layer on top of this. */
+@media (max-width: 980px) {
+  .doc-header__publish-label { display: none; }
+  .doc-header__publish {
+    min-width: 0;
+    width: 32px;
+    padding: 0;
+    gap: 0;
+  }
+}
+
+.doc-header__comments-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  /* A true circle: equal width/height, no horizontal padding (padding was
+     stretching a single digit into an oval). box-border keeps the 2px ring
+     inside the 18px so the shape stays perfectly round. */
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--doc-accent);
+  color: var(--omni-text-on-bright-bg, #fff);
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  /* flex-centered so the numeral is optically centered (line-height metrics
+     were pushing it off) */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--doc-page-bg);
+}
+.doc-header__comments-count[hidden] { display: none; }
+
+/* Share — the primary action, verbatim OMNI .share-btn spec: 32px,
+   8px radius (not a pill), 13.5px medium, soft accent glow on hover. */
+.doc-header__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 32px;
+  padding: 0 15px;
+  font-family: var(--doc-font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.05px;
+  color: var(--omni-text-on-bright-bg, #fff);
+  background: var(--doc-accent);
+  border: none;
+  border-radius: var(--omni-radius-medium);
+  cursor: pointer;
+  transition: box-shadow var(--omni-transition-duration-fast) ease, filter var(--omni-transition-duration-fast) ease;
+}
+
+.doc-header__btn svg { width: 14px; height: 14px; }
+.doc-header__btn:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 2px 8px rgba(24, 88, 238, 0.22), 0 6px 18px rgba(24, 88, 238, 0.14);
+}
+
+/* ── Cover board ─────────────────────────────────────────────────────────── */
+.doc-cover {
+  position: relative;
+  background: var(--doc-paper-bg);
+  border-radius: var(--doc-card-radius);
+  padding: clamp(32px, 5vw, 56px) var(--doc-card-padding) var(--doc-card-padding);
+  margin-bottom: var(--doc-section-gap);
+}
+
+/* Vertically-stacked meta list — matches the real .brief-meta exactly: a
+   FLAT 12px mono for both label and value (only color distinguishes them —
+   the value is not a larger/bolder size), 1.6 line-height, date pinned to
+   the top-right corner at the same size. */
+.doc-cover__meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: start;
+  font-family: var(--doc-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--doc-ink-strong);
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--doc-rule);
+}
+
+.doc-cover__meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.doc-cover__meta-list .row { margin: 0; }
+
+.doc-cover__meta-list .lbl {
+  display: block;
+  color: var(--doc-ink-subtle);
+}
+
+.doc-cover__meta-list .val {
+  display: block;
+  color: var(--doc-ink-strong);
+}
+
+/* Clean date, upper-right of the cover meta row. */
+.doc-cover__meta-date {
+  justify-self: end;
+  font-family: var(--doc-font-mono);
+  font-size: 12px;
+  color: var(--doc-ink-strong);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 560px) {
+  .doc-cover__meta { grid-template-columns: 1fr; }
+  .doc-cover__meta-date { order: -1; justify-self: start; }
+}
+
+.doc-cover__kicker {
+  display: block;
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--doc-accent);
+  margin: 34px 0 18px;
+}
+
+.doc-cover__title {
+  font-family: var(--doc-font-display);
+  font-weight: 300;
+  font-size: clamp(40px, 7vw, 68px);
+  line-height: 1.04;
+  letter-spacing: var(--doc-display-tracking, -2.2px);
+  color: var(--doc-ink-strong);
+  /* Top margin gives breathing room below the meta hairline when there's no
+     kicker. When a kicker IS present it sits between them and owns that space,
+     so the adjacent-sibling rule below zeroes this out. */
+  margin: 34px 0 20px;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'ss01' 1;
+  text-rendering: geometricPrecision;
+}
+
+.doc-cover__kicker + .doc-cover__title { margin-top: 0; }
+
+.doc-cover__subtitle {
+  font-family: var(--doc-font-body);
+  font-size: clamp(17px, 2.2vw, 21px);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--doc-ink-subtle);
+  max-width: 46ch;
+  margin: 0 0 clamp(32px, 5vw, 48px);
+}
+
+/* Hero panel — the "cover art" of the title slide. A clean photo (or, with
+   no image supplied, the branded accent gradient + orbit motif) — no text
+   or logo overlay, just the image itself. */
+.doc-cover__art {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  border-radius: var(--omni-radius-large);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 140% at 12% 18%, rgba(255, 255, 255, 0.22), transparent 46%),
+    linear-gradient(135deg, var(--omni-gradient-stop-1, #1858ee), var(--omni-gradient-stop-2, #0b3392));
+}
+
+/* concentric orbit rings, drawn with layered radial rings on a pseudo-element */
+.doc-cover__art::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -6%;
+  transform: translateY(-50%);
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle at center,
+      transparent 0 26px,
+      rgba(255, 255, 255, 0.08) 26px 27px);
+  opacity: 0.9;
+}
+
+.doc-cover__art--photo { background: #14181f; }
+.doc-cover__art--photo::before { display: none; } /* drop the orbit rings */
+
+.doc-cover__art-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 640px) {
+  .doc-header__inner { flex-wrap: wrap; gap: 12px; }
+  .doc-header__context { display: none; }
+}
+
+/* Published = the standard accent highlight (not Download's green flash). */
+.doc-header__publish.is-done {
+  color: var(--doc-accent);
+  background: var(--doc-accent-soft);
+  border-color: color-mix(in srgb, var(--doc-accent) 45%, transparent);
+}

@@ -1,0 +1,921 @@
+  /* ══ REWORK 8/24 — Painter hat-wizard ═══════════════════════════
+     BRYAN RULING: the whole image/copy/layout/sizes walk-through
+     lives INSIDE the chat hat panel (#chatAuxPanel), never as
+     injected chat messages. Reuses the existing pt-tile/pt-tiles/
+     pt-layout-grid/pt-size-chips/pt-copy-input-row/pt-progress step
+     content verbatim (all generic enough to live in either host);
+     this block adds only the wizard's own chrome (back affordance +
+     step dots) and the in-place step-swap transition, modeled
+     directly on .ch-prompt.is-swapping's fade+blur technique a few
+     hundred lines up — that's the shell's own established motion
+     language for "content changes without the card itself leaving."
+     ══ REDESIGN 8/25 — Bryan rejected the post-generation hat summary
+     block outright (the "Media · Coast Road" pill + divider + follow-
+     up chips pinned in the hat). Removed entirely: once Generate
+     lands the sheet, the hat just returns to its plain default state
+     (mode tiles + chips + See all — see exitWizardToDefault(), now
+     unconditional). The session indicator moved onto the Media chip
+     itself (.pt-chip-dot, below) — house rule: indicators live on an
+     existing element, never a floating pill. (Round 2, 8/25: the
+     follow-up actions that first landed as .pt-keepgoing-row were
+     rejected too and replaced with .pt-concept-ghost + .pt-addsizes-
+     slot — see the comment above .pt-concept-ghost further down.) ══ */
+  .pt-hat-wizard { display: none; }
+  .chat-aux-panel.pt-wizard-active .chat-aux-modes,
+  .chat-aux-panel.pt-wizard-active .chat-aux-chips,
+  .chat-aux-panel.pt-wizard-active .pt-seeall-link {
+    display: none !important;
+  }
+  .chat-aux-panel.pt-wizard-active .pt-hat-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: ch-prompt-mount 420ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  /* Wizard-only "stand out" surface treatment (ch-prompt-active uses
+     the same trick) — the card-bg step content pops off the panel's
+     own canvas-bg ground. */
+  .chat-aux-panel.pt-wizard-active {
+    background: var(--card-bg) /* 9/9: the reference hat stays white in every state; only the composer is grey */;
+    border: 0.5px solid rgba(15, 23, 42, 0.16);
+    border-bottom: 0;
+  }
+  body[data-theme="dark"] .chat-aux-panel.pt-wizard-active {
+    background: var(--canvas-bg);
+    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 0;
+  }
+  .chat-aux-panel.pt-wizard-active.is-expanded .chat-aux-body {
+    max-height: 380px;
+    border-top: 0.5px solid var(--line);
+  }
+  /* P8 nit (9/1) — the "I have copy" row-list editor (deck-upload row +
+     up to 5 field rows + add-field row + footer) comfortably clears
+     380px once a few rows are added. Scoped to ONLY the moment the
+     editor is actually mounted (JS adds .pt-copy-editor-open to
+     #chatAuxPanel on open, removes it on Use/Clear-navigate-away/
+     collapse — see renderCopyStep/exitWizardToDefault/renderHatStep).
+     Per the standing rule above ("keep this cap comfortably ABOVE
+     content — snug is wrong"), min(62vh, 620px) sits well past the
+     editor's real content height so the open motion never crawls at
+     the end. Transition is inherited from the base .chat-aux-body
+     rule (380ms cubic-bezier(0.16,1,0.3,1)) — not redeclared here. */
+  .chat-aux-panel.pt-wizard-active.pt-copy-editor-open.is-expanded .chat-aux-body {
+    max-height: min(62vh, 620px);
+  }
+  /* BX follow-up (coordinator) — overflow-y:scroll unconditionally
+     painted an empty track any time a viewer's OS/browser doesn't use
+     overlay scrollbars (macOS "always show scroll bars", any Windows
+     browser), even once BX's actual overflow bug (the phantom
+     .pt-set-tip below) was fixed and the settings step's real content
+     fits comfortably under max-height. overflow-y:auto only shows a
+     track when content genuinely exceeds the box (the copy editor at
+     min(62vh,620px) above, once it has enough rows) — exactly the
+     "only a region that can legitimately exceed the max height scrolls"
+     rule the settings step itself is held to. scrollbar-gutter:stable
+     keeps the space reserved either way, so the panel's own width
+     never shifts the instant a step crosses from fits to scrolls. */
+  .chat-aux-panel.pt-wizard-active.is-fully-open .chat-aux-body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+  .chat-aux-panel.pt-wizard-active .chat-aux-body-inner {
+    padding-top: 18px;
+  }
+
+  /* ═══ NEW MEDIA SETTINGS — the Media step's opening surface (replaces
+     the old Guided-vs-Studio tile fork). Three dropdown pills: size,
+     concept count, template.
+
+     Built to the SAME spec as the composer's own image pills
+     (.image-aspect-btn / .image-count-btn, ~L2728) — 32px tall, 16px
+     radius, 0.5px hairline, 12.5px/500 label, 16px icon in
+     --text-subtle — but deliberately NOT those classes: those carry the
+     composer's slide-in entrance (opacity:0 until .is-active on their
+     wrap), which would leave these permanently invisible here. ═══ */
+
+  /* The accent breath-dot is hidden for wizard steps (L1681). This step
+     is the Media flow's resting surface rather than a step inside it, so
+     the dot comes back — the header reads like the hat's own default. */
+  .chat-aux-panel.pt-wizard-active.pt-settings-step .chat-aux-title::before {
+    display: none; /* 9/9: the dot is gone everywhere */
+  }
+
+  .pt-set-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  /* 9/10 — the pills' tooltips: the Package button's own tip recipe,
+     one line above the pill on hover or focus, never while its menu
+     is open. */
+  .pt-set-tip {
+    /* BX — display:none at rest: an absolutely-positioned descendant
+       still counts toward its nearest scrolling ancestor's scrollable
+       overflow even at opacity:0/pointer-events:none (the pill sits
+       inside the hat's overflow-y:scroll body), so this invisible tip
+       was forcing a vertical scrollbar on the whole settings panel.
+       display:none removes it from the layout tree entirely at rest;
+       .pt-tip-hoisted (below) restores display the instant JS moves
+       it to <body>, before its opacity transition ever starts, so the
+       hover/focus reveal is unchanged. */
+    display: none;
+    position: absolute; top: calc(100% + 8px); left: 50%; /* below the pill — above it the hat's own header clips */
+    transform: translate(-50%, -3px);
+    z-index: 30;
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: var(--text-strong);
+    color: var(--pg-bg);
+    font-family: var(--font-sans);
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0.02em;
+    white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .pt-set-tip::after {
+    content: '';
+    position: absolute; bottom: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: var(--text-strong);
+  }
+  .pt-set-pill:hover .pt-set-tip,
+  .pt-set-pill:focus-visible .pt-set-tip { opacity: 1; transform: translate(-50%, 0); transition-delay: 320ms; }
+  /* the first and last pills sit at the hat's edges: their tips hang
+     from the pill's own corner instead of centring past the edge */
+  .pt-set-pill:first-child .pt-set-tip { left: 0; right: auto; transform: translate(0, -3px); }
+  .pt-set-pill:last-child .pt-set-tip { left: auto; right: 0; transform: translate(0, -3px); }
+  .pt-set-pill:first-child:hover .pt-set-tip, .pt-set-pill:first-child:focus-visible .pt-set-tip,
+  .pt-set-pill:last-child:hover .pt-set-tip, .pt-set-pill:last-child:focus-visible .pt-set-tip { transform: translate(0, 0); }
+  .pt-set-pill:first-child .pt-set-tip::after { left: 14px; right: auto; transform: none; }
+  .pt-set-pill:last-child .pt-set-tip::after { left: auto; right: 14px; transform: none; }
+  .pt-set-pill[aria-expanded="true"] .pt-set-tip { opacity: 0; }
+  /* AL.9 (Bryan: "let's make sure the tips don't get cut off" — the
+     Color pill's tip clipped at the hat's edge) — once the delegated
+     JS below (wireFloatingTips) hoists a .pt-set-tip/.pt-package-tip
+     to <body> on hover/focus, its position is fixed viewport
+     coordinates JS computed (centred under the anchor, clamped 12px
+     inside the viewport, flipped above when there's no room below),
+     not the anchor-relative defaults above — those still apply for
+     the split-second before JS moves it (opacity 0 either way, so
+     nothing flashes in the wrong place). The reveal becomes .is-open
+     (not :hover/:focus-visible — the tip is no longer a descendant of
+     whatever is hovered once it's on <body>); the caret's own left
+     offset follows the anchor via --tip-caret-x, since the tip itself
+     may have shifted off the anchor's centre to stay in bounds. One
+     rule for both recipes — a hoisted tip behaves identically
+     regardless of which one it started life as. */
+  .pt-set-tip.pt-tip-hoisted,
+  .pt-package-tip.pt-tip-hoisted {
+    display: block; /* BX — overrides .pt-set-tip's rest-state display:none the instant it's hoisted */
+    position: fixed; left: var(--tip-x, 0px); top: var(--tip-y, 0px);
+    right: auto; bottom: auto;
+    transform: none;
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+  .pt-set-tip.pt-tip-hoisted.is-open,
+  .pt-package-tip.pt-tip-hoisted.is-open { opacity: 1; }
+  .pt-set-tip.pt-tip-hoisted::after,
+  .pt-package-tip.pt-tip-hoisted::after {
+    left: var(--tip-caret-x, 50%); right: auto; transform: translateX(-50%);
+    top: auto; bottom: auto;
+  }
+  .pt-set-tip.pt-tip-hoisted[data-tip-dir="below"]::after,
+  .pt-package-tip.pt-tip-hoisted[data-tip-dir="below"]::after {
+    bottom: 100%; border-bottom-color: var(--text-strong); border-top-color: transparent;
+  }
+  .pt-set-tip.pt-tip-hoisted[data-tip-dir="above"]::after,
+  .pt-package-tip.pt-tip-hoisted[data-tip-dir="above"]::after {
+    top: 100%; border-top-color: var(--text-strong); border-bottom-color: transparent;
+  }
+  .pt-set-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px 0 12px;
+    border: 0.5px solid var(--line);
+    border-radius: 16px;
+    background: var(--card-bg);
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: -0.05px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+  }
+  .pt-set-pill:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    color: var(--text-strong);
+    background: rgba(15, 23, 42, 0.03);
+  }
+  .pt-set-pill[aria-expanded="true"] {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.20);
+    color: var(--text-strong);
+  }
+  body[data-theme="dark"] .pt-set-pill:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  body[data-theme="dark"] .pt-set-pill[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+  .pt-set-pill:focus, .pt-set-pill:focus-visible { outline: none; }
+  .pt-set-pill-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--text-subtle);
+    transition: color 200ms ease;
+  }
+  .pt-set-pill-icon svg { display: block; width: 16px; height: 16px; }
+  .pt-set-pill:hover .pt-set-pill-icon,
+  .pt-set-pill[aria-expanded="true"] .pt-set-pill-icon { color: var(--text-strong); }
+  .pt-set-caret {
+    color: var(--text-subtle);
+    flex-shrink: 0;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+  }
+  .pt-set-pill[aria-expanded="true"] .pt-set-caret { transform: rotate(180deg); }
+  /* V2 (PLAN.md §V) — Volume's own label is a value ("3 × 3"), not a
+     category word like Template/Color's, so it goes mono — the same
+     house rule Sizes' own pill/chip labels already follow. Scoped to
+     just this pill so Template/Color's plain-word labels are untouched. */
+  .pt-set-pill[data-pt-set="volume"] .pt-set-label {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  }
+
+  /* Quiet line under the pills: how to proceed, plus the two original
+     fork destinations so neither the Guided wizard nor Studio is
+     stranded by this step's redesign. */
+  .pt-set-hint {
+    margin: 12px 0 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-subtle);
+  }
+  .pt-set-alt {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .pt-set-alt:hover { text-decoration: underline; }
+  .pt-set-alt:focus, .pt-set-alt:focus-visible { outline: none; }
+  .pt-set-alt-sep { padding: 0 6px; color: var(--text-subtle); }
+
+  /* Menus are hoisted into <body> and positioned fixed by openSetMenu —
+     .chat-aux-panel itself is overflow:hidden (L1519), so an in-panel
+     absolute menu would be clipped no matter what the body's own
+     overflow is doing. */
+  .pt-set-menu {
+    position: fixed;
+    /* 272px is the measured floor at which every item's sub-label — the
+       longest being the template roster's "Type and image side by side"
+       — still sets on ONE line. Narrower and the rows go ragged as some
+       wrap to two lines and others don't. */
+    width: 272px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 6px;
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    box-shadow:
+      0 1px 1px rgba(15, 18, 24, 0.04),
+      0 6px 14px rgba(15, 18, 24, 0.06),
+      0 24px 48px rgba(15, 18, 24, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+    text-align: left;
+  }
+  .pt-set-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  body[data-theme="dark"] .pt-set-menu {
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.32),
+      0 6px 14px rgba(0, 0, 0, 0.36),
+      0 24px 48px rgba(0, 0, 0, 0.5);
+  }
+  .pt-set-menu::-webkit-scrollbar { width: 6px; }
+  .pt-set-menu::-webkit-scrollbar-thumb { background: var(--line-solid); border-radius: 6px; }
+  .pt-set-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    column-gap: 12px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: transparent;
+    border: 0;
+    color: var(--text-body);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 180ms ease;
+    width: 100%;
+  }
+  /* AA.3 bugfix — same class of bug as .pt-size-row[hidden] just above
+     (this file's own established pattern, see also .pt-sheet-skel-foot/
+     .pt-editor-swap-more): the base rule's bare
+     display:grid is author CSS that silently beats the UA stylesheet's
+     [hidden]{display:none}, so the roster search's row.hidden=true
+     (brandGuideRowHTML rows are .pt-set-item--card, which inherits this
+     base rule) never actually hid non-matching guides. */
+  .pt-set-item[hidden] { display: none; }
+  .pt-set-item:hover { background: var(--hover-soft); }
+  body[data-theme="dark"] .pt-set-item:hover { background: rgba(255, 255, 255, 0.05); }
+  .pt-set-item:focus, .pt-set-item:focus-visible { outline: none; }
+  .pt-set-item-icon {
+    width: 22px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subtle);
+  }
+  .pt-set-item-icon svg { display: block; fill: currentColor; }
+  .pt-set-item.is-active .pt-set-item-icon { color: var(--accent); }
+  .pt-set-item-labels { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .pt-set-item-name { font-size: 12.5px; font-weight: 500; letter-spacing: -0.05px; }
+  .pt-set-item-sub { font-size: 11px; color: var(--text-subtle); }
+  /* V3 (PLAN.md §V) — Layouts' own live usage count, appended after
+     the description rather than a new grid lane (this row anatomy is
+     shared with Sizes/Fit/Legal-style rows that never have anything
+     to append). Quiet mono, hidden at zero — most rows sit unused most
+     of a session, and a wall of "· 0 units" would fight the point of
+     a Legibility pass. */
+  .pt-set-item-usage {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 400; color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .pt-set-item-usage:empty { display: none; }
+
+  /* ── Template menu: two columns, and colour (not a switch) carries
+     the pick. The size and count menus keep their dip switches —
+     those are set-membership and a count, where a switch is the right
+     metaphor; a template is one-of, so the row itself lights up. ── */
+  .pt-set-menu--roster { max-height: min(60vh, 520px); } /* 9/10: the editor's size roster is long; it scrolls inside the menu */
+  /* AI.1 — Layouts and Styles are two one-column panels now (retires
+     .pt-set-menu--cols' two-up grid, which used to hold GENERIC /
+     YOUR TEMPLATES / BRAND APPROVED side by side); each keeps AE.9's
+     own promise (Bryan: "this should not have a scroll bar and be as
+     tall as the panel needs") — no max-height, no overflow:auto,
+     sized by what it holds. width:max-content lets the Styles panel
+     grow into its roster's expanded two-up card grid (.pt-set-roster-
+     all below) instead of being squeezed to a fixed width; openSetMenu
+     still flips below/above the anchor as room requires. Layouts is
+     the one panel that still holds two GROUPS (Generic, then Your
+     Templates, AK.4) — .pt-set-col's own side-by-side divider
+     (+.pt-set-col, below) flips to a stacked hairline here since the
+     two now stack in one column rather than sit side by side in two. */
+  .pt-set-menu--flow {
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    max-height: none;
+    overflow: visible;
+  }
+  .pt-set-menu--flow .pt-set-col + .pt-set-col {
+    border-left: 0; margin-left: 0; padding-left: 0;
+    border-top: 0.5px solid var(--line); margin-top: 6px; padding-top: 8px;
+  }
+  /* §BM.2 (coordinator review) — Styles' own roster + colorway group
+     together can outrun the viewport at 1880×1000 and 1306×824 (the
+     Colorway group is new content --flow's own no-scroll promise,
+     AE.9, never had to plan for); this modifier only applies where
+     openStyleSetMenu opts in, so Layouts keeps AE.9's promise
+     untouched. Same min(vh, px) cap idiom as --roster above. */
+  .pt-set-menu--flow.pt-set-menu--capped {
+    max-height: min(72vh, 620px);
+    overflow-y: auto;
+  }
+  /* The size list runs past the menu's max-height, so its header
+     stays put while the list moves under it. Opaque, or the rows
+     would show through as they pass beneath. */
+  .pt-set-sec-sticky {
+    position: sticky; top: -6px; z-index: 1;
+    background: var(--card-bg);
+    margin: -6px -6px 0;
+    padding-left: 12px; padding-right: 12px;
+  }
+  .pt-set-col { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 0 4px; }
+  .pt-set-col + .pt-set-col {
+    border-left: 0.5px solid var(--line);
+    padding-left: 10px;
+    margin-left: 6px;
+  }
+  .pt-set-sec {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    padding: 8px 8px 6px;
+  }
+  /* Switch-free rows: the selected one takes the accent wash + accent
+     ink, so a glance down the column reads one lit row — plus a real
+     radio ring in the trailing lane (.pt-set-item-radio), the same
+     [role="menuitemradio"] anatomy the canvas-graphics picker rows use,
+     so a single-select row reads like one at a glance, not just a tint. */
+  /* Bryan 9/9: match the canvas-graphics picker rows exactly — value and
+     name on ONE baseline (mono value in text-strong, Inter name in
+     text-subtle), no wash behind the selected row (the accent value,
+     glyph and radio dot carry the selection), 10px rows, 1.1 strokes. */
+  .pt-set-item--pick { grid-template-columns: 24px 1fr 16px; padding: 10px 12px; }
+  .pt-set-item--pick .pt-set-item-labels { flex-direction: row; align-items: baseline; gap: 8px; flex-wrap: nowrap; }
+  /* ══ Volume grid (9/10) — rows are concepts, columns are variants;
+     the selected rectangle is the board the next generate makes. Cells
+     are little landscape frames on the card surface; the committed
+     rectangle fills with the accent's soft tint and its far corner
+     takes the accent; a hovered rectangle previews the same way. ══ */
+  /* Fluid (9/10, Bryan: "doesn't really fit right in the panel"): the
+     five columns share the panel's width, so the grid fills the hat's
+     menu and the sheet's wider popover alike; the axis row above and
+     the body below use one column arithmetic (title gutter · number
+     gutter · five equal cells, one gap) so the numbers sit over their
+     cells at any width. */
+  /* AC.1 — .pt-vol is now a column: the well (100% width) then the
+     read line (100% width, its own text centred) — a flex column with
+     the default stretch is what lets width:100% children still drive
+     the menu's own width:max-content (the browser measures each
+     child's intrinsic width for that, ignoring the % at intrinsic-
+     sizing time), which is how the summary line gets to be the floor
+     width per Bryan's ask below. Side/bottom padding moves to the
+     menu itself (16px all round); only the top 6px stays, so the
+     eyebrow-to-well gap stays the 12px it already was (.pt-set-sec's
+     own 6px bottom padding + this). */
+  .pt-vol { padding: 6px 0 0; display: flex; flex-direction: column; --vol-cw: 20px; --vol-ch: 16px; }
+  #ptGenerateVolume { display: flex; justify-content: center; }
+  .pt-set-menu.pt-set-menu--fit { width: max-content; min-width: 200px; max-height: none; overflow: visible; padding: 16px; } /* the hat's Volume menu hugs its grid — never a scroll (Bryan, 9/10): the box is sized by what it holds */
+  /* ══ AV.2 — Imagery popover: the band's own .pt-editor-swap-thumb
+     recipe (24-editor-studio-a.css), sized up to 64px five across
+     for this grid only — the ring is that recipe's own .is-active
+     outline (untouched); the corner check is new, modelled on the
+     env picker's .pt-env-frame-check (16-shell-f-painter-base.css) —
+     same white disc + fixed-ink hairline + fading checkmark, fixed
+     values rather than page tokens since it sits on the artwork in
+     either theme, same as that recipe's own comment says. ══ */
+  .pt-imagery-set-grid {
+    display: grid; grid-template-columns: repeat(6, 64px); gap: 8px; /* six across (was five): with the search row above and the View gallery footer below, five ran past an 824px window */
+    margin-top: 4px;
+  }
+  .pt-imagery-set-search { padding: 6px 0 10px; }
+  .pt-imagery-set-search .pt-cta-input { width: 100%; }
+  .pt-imagery-gallery-link { margin-top: 12px; padding: 12px 2px 2px; }
+  .pt-imagery-set-grid .pt-editor-swap-thumb { width: 64px; height: 64px; }
+  .pt-imagery-set-grid .pt-editor-swap-thumb.is-video::after {
+    content: '';
+    position: absolute; left: 5px; bottom: 5px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='white'><path d='M231.36,116.19,87.28,28.06a14,14,0,0,0-14.18-.27A13.69,13.69,0,0,0,66,39.87V216.13a13.69,13.69,0,0,0,7.1,12.08,14,14,0,0,0,14.18-.27l144.08-88.13a13.82,13.82,0,0,0,0-23.62Z'/></svg>");
+    background-repeat: no-repeat; background-position: center; background-size: 8px;
+  }
+  .pt-imagery-thumb-check {
+    position: absolute; top: 4px; right: 4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(255,255,255,0.85); border: 1.4px solid rgba(15,23,42,0.2);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .pt-imagery-thumb-check svg { width: 9px; height: 9px; color: var(--accent); opacity: 0; transform: scale(0.6); transition: opacity 120ms, transform 120ms; }
+  .pt-editor-swap-thumb.is-active .pt-imagery-thumb-check { background: var(--accent); border-color: var(--accent); }
+  .pt-editor-swap-thumb.is-active .pt-imagery-thumb-check svg { opacity: 1; transform: scale(1); color: #fff; }
+  /* The Add tile leads the grid — same 64px footprint, a dashed
+     hairline standing in for a picked frame's photo, the plus glyph
+     + "Add image" in the label voice (AU.1's own term: sans, 500)
+     sized down to fit the tile alongside the glyph. */
+  .pt-imagery-add-tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    width: 64px; height: 64px; border-radius: 7px;
+    border: 1px dashed var(--line-solid, rgba(15,23,42,0.18));
+    background: transparent; padding: 2px; cursor: pointer;
+    color: var(--text-subtle);
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+  .pt-imagery-add-tile:hover, .pt-imagery-add-tile:focus-visible {
+    border-color: var(--accent); color: var(--accent); background: var(--hover-soft); outline: none;
+  }
+  .pt-imagery-add-icon { width: 15px; height: 15px; display: flex; flex-shrink: 0; }
+  .pt-imagery-add-icon svg { width: 100%; height: 100%; display: block; }
+  .pt-imagery-add-label { font-size: 8.5px; font-weight: 500; line-height: 1.15; text-align: center; }
+  /* AC.1 — a light well the grid sits in, flush the width of the
+     panel, so a narrow grid (small board sizes → small cells) never
+     reads as a grid stranded in a lot of white space. axis--cols and
+     .pt-vol-body share one column arithmetic (comment above) so
+     they're always the same width — centering each in a column flex
+     reads as centering the whole axes+grid block as one unit. */
+  .pt-vol-well {
+    width: 100%;
+    box-sizing: border-box;
+    background: color-mix(in srgb, var(--panel-bg-3) 60%, var(--card-bg)); /* Bryan, 9/15: "slightly lighter" than the panel's own grey */
+    border-radius: 8px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pt-vol-axis-title {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 8.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-subtle); opacity: 0.8;
+  }
+  .pt-vol-axis--cols .pt-vol-axis-title { text-align: center; padding-left: 34px; line-height: 14px; margin-bottom: 2px; }
+  .pt-vol-axis-title--rows { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; line-height: 12px; }
+  .pt-vol-axis {
+    display: grid; gap: 4px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 9.5px; line-height: 18px;
+    color: var(--text-subtle); font-variant-numeric: tabular-nums;
+  }
+  .pt-vol-axis span { transition: color 120ms ease; }
+  .pt-vol-axis span.is-in { color: var(--text-body); }
+  .pt-vol-axis { line-height: var(--vol-ch); }
+  .pt-vol-axis--cols { grid-template-columns: 12px 14px repeat(5, var(--vol-cw)); text-align: center; margin-bottom: 4px; line-height: 16px; }
+  .pt-vol-body { display: grid; grid-template-columns: 12px 14px auto; gap: 4px; align-items: stretch; }
+  .pt-vol-axis--rows { grid-template-rows: repeat(9, var(--vol-ch)); text-align: right; }
+  .pt-vol-grid { position: relative; display: grid; grid-template-columns: repeat(5, var(--vol-cw)); grid-auto-rows: var(--vol-ch); gap: 4px; }
+  .pt-vol-cell {
+    display: block; width: var(--vol-cw); height: var(--vol-ch); padding: 0; margin: 0;
+    border-radius: 3px; border: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.12));
+    background: var(--card-bg); cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .pt-vol-cell:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid)); }
+  .pt-vol-cell.is-in { background: color-mix(in srgb, var(--accent) 10%, var(--card-bg)); border-color: color-mix(in srgb, var(--accent) 30%, var(--line-solid)); }
+  .pt-vol-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  /* The selection rectangle — one accent frame over the picked extent,
+     gliding as the pointer moves; the preview is the same frame, moved. */
+  .pt-vol-sel {
+    position: absolute; left: 0; top: 0; pointer-events: none;
+    border: 1.5px solid var(--accent); border-radius: 4px;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    transition: width 160ms cubic-bezier(0.22, 1, 0.36, 1), height 160ms cubic-bezier(0.22, 1, 0.36, 1), border-style 120ms ease;
+  }
+  .pt-vol-sel.is-preview { border-style: dashed; }
+  .pt-vol-read-box { display: grid; margin-top: 12px; }
+  .pt-vol-read-box > .pt-vol-read { grid-area: 1 / 1; margin-top: 0; }
+  .pt-vol-read-sizer { visibility: hidden; pointer-events: none; }
+  .pt-vol-read { margin-top: 12px; font-size: 12px; color: var(--text-body); display: flex; align-items: baseline; justify-content: center; gap: 6px; }
+  .pt-vol-read b { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-weight: 500; font-size: 12px; }
+  .pt-vol-units { font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-subtle); }
+  /* V3's live usage tag (`· 4 units`) sits at the labels' right edge on
+     ONE line — in the two-column Layouts popover the labels row is
+     narrow, and without this the tag wrapped under the name; the sub
+     ellipsizes instead. */
+  .pt-set-item-usage {
+    margin-left: auto; flex-shrink: 0; white-space: nowrap;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .pt-set-item--pick .pt-set-item-name {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 12.5px; font-weight: 400; letter-spacing: 0;
+    color: var(--text-strong);
+    white-space: nowrap;
+    transition: color 200ms ease;
+  }
+  .pt-set-item--pick .pt-set-item-sub {
+    font-size: 12px; color: var(--text-subtle); letter-spacing: -0.03px;
+    min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pt-set-item--pick .pt-set-item-icon rect { stroke-width: 1.1; }
+  .pt-set-item--pick.is-active .pt-set-item-name { color: var(--accent); }
+  .pt-set-item--pick.is-active .pt-set-item-icon { color: var(--accent); }
+  .pt-set-item-radio {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line-solid);
+    flex-shrink: 0;
+    transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pt-set-item-radio::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 8px; height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 160ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pt-set-item--pick:hover .pt-set-item-radio { border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid)); }
+  .pt-set-item--pick.is-active .pt-set-item-radio { border-color: var(--accent); }
+  .pt-set-item--pick.is-active .pt-set-item-radio::after { opacity: 1; transform: scale(1); }
+  /* AL.4 — a headline row that runs long for the tightest ship size,
+     in Fixed size mode: the same warning red the old floating
+     .pt-cta-row-count.is-over badge used, now just the row's own sub
+     line (no separate badge element). */
+  .pt-set-item--copyover .pt-set-item-sub { color: var(--omni-primitive-brand-red, #ff2c1e); }
+  /* V3 (PLAN.md §V) — Sizes' Ships at rows are a checkbox set on the
+     same ring Board at's radio uses; squaring only the inner mark
+     (nothing else about the ring changes) is enough to read as a
+     check at a glance instead of a second recipe. */
+  .pt-set-item-radio--check::after { border-radius: 2px; }
+  /* ══ Sizes roster (9/10) — one row per size, two marks: the board
+     radio and the ships check, under their own eyebrows; a search on
+     top; nothing folds. The row is the pick-row recipe with two mark
+     columns instead of one ring. Only the mark that is on lights —
+     the row's own is-active (the board pick) must not light the ships
+     ring beside it, and vice versa. ══ */
+  .pt-sizes-search { padding: 2px 12px 8px; }
+  .pt-sizes-search .pt-cta-input { width: 100%; }
+  .pt-size-head {
+    display: grid; grid-template-columns: 24px 1fr 40px 40px; gap: 12px;
+    padding: 4px 12px 2px;
+  }
+  .pt-size-head-k {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-subtle); text-align: center;
+  }
+  .pt-sizes-list { max-height: calc(100vh - 300px); overflow-y: auto; }
+  .pt-size-row { cursor: pointer; padding-top: 8px; padding-bottom: 8px; }
+  .pt-size-view-head { padding: 4px 12px 6px; }
+  .pt-size-view-strip { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 10px; }
+  .pt-size-view {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+    padding: 4px 9px; border-radius: 6px; cursor: pointer;
+    border: 0.5px solid var(--line-solid, rgba(15, 23, 42, 0.12)); background: var(--card-bg); color: var(--text-body);
+    transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+  .pt-size-view:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid)); }
+  .pt-size-view.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .pt-set-menu.pt-set-menu--roster { width: 320px; } /* 9/10: room for every size's name (Bryan: "wide enough so you don't cut off the text") */
+  .pt-size-row[hidden] { display: none; }
+  .pt-prod-group[hidden] { display: none; }
+  .pt-size-mark {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 20px; padding: 0; margin: 0; border: 0; background: none; cursor: pointer;
+  }
+  .pt-size-row.is-active .pt-size-mark--ship .pt-set-item-radio { border-color: var(--line-solid); }
+  .pt-size-row.is-active .pt-size-mark--ship .pt-set-item-radio::after { opacity: 0; transform: scale(0.4); }
+  .pt-size-row:hover .pt-size-mark--ship .pt-set-item-radio { border-color: var(--line-solid); }
+  .pt-size-mark--ship:hover .pt-set-item-radio { border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid)); }
+  .pt-size-mark--ship.is-active .pt-set-item-radio { border-color: var(--accent); }
+  .pt-size-mark--ship.is-active .pt-set-item-radio::after { opacity: 1; transform: scale(1); }
+  .pt-size-mark--ship:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 6px; }
+  /* The size row's value (300×250) is a real dimension, not a name —
+     mono like the picker reference's .image-aspect-ratio, lighting up
+     accent when picked same as the row. */
+  .pt-set-item--pick[data-set-value-mono] .pt-set-item-name {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    letter-spacing: 0;
+  }
+
+  /* AL.1 — Brand-approved rows carry a COVER now, not a banner
+     miniature: a portrait 3:4 tile (mark · rule · title · eyebrow on
+     the guide's own ground) instead of a photo+bars preview — the
+     photograph was what made these read as ad units instead of book
+     covers. 64px default (roster rows); .pt-set-roster-all's own
+     two-up grid gets the 44px compact size (AL.1: "44×58 where the
+     card is compact"). */
+  .pt-set-item--card { grid-template-columns: 64px 1fr 16px; column-gap: 11px; padding: 8px; align-items: center; }
+  .pt-set-item--card .pt-set-item-labels { flex-direction: column; align-items: flex-start; gap: 1px; }
+  .pt-set-item--card .pt-set-item-sub { white-space: normal; }
+  /* The icon lane is a 22x16 glyph box by default; the cover needs
+     the whole cell, or it overflows its box in both directions and
+     bleeds into the neighbouring column. */
+  .pt-set-item--card .pt-set-item-icon { width: 64px; height: 84px; }
+  .pt-set-roster-all .pt-set-item--card { grid-template-columns: 44px 1fr 16px; column-gap: 9px; padding: 6px; }
+  .pt-set-roster-all .pt-set-item--card .pt-set-item-icon { width: 44px; height: 58px; }
+  .pt-guide-cover {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 64px;
+    height: 84px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 0.5px var(--line-solid, rgba(15, 23, 42, 0.16));
+    padding: 8px 7px 6px 10px;
+    flex: 0 0 auto;
+  }
+  .pt-set-item--card.is-active .pt-guide-cover { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 2px var(--accent-soft); }
+  /* AL.1 — "a 3px spine down the left edge one step darker than the
+     ground" — the book-cover binding cue; colour is set inline per
+     guide (setBrandThumb), one step off that same guide's own ground. */
+  .pt-guide-cover-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  /* Mark top-left, a 2px accent rule beneath it (flex:0 0 auto
+     throughout — without it the column would shrink the mark/rule
+     toward nothing to fit, the same footgun the old bars hit). */
+  .pt-guide-cover-mark { width: 10px; height: auto; display: block; flex: 0 0 auto; }
+  .pt-guide-cover-rule { display: block; width: 16px; height: 2px; border-radius: 1px; margin-top: 4px; flex: 0 0 auto; }
+  /* Title floats toward the lower half (an auto margin on both sides
+     of the title+eyebrow pair splits the leftover space evenly, per
+     a real book cover's own mark-top / title-mid / imprint-bottom
+     rhythm) — the eyebrow's own auto margin then pins it flush to
+     the foot, "at the foot" per AL.1 literally. */
+  .pt-guide-cover-title {
+    margin-top: auto;
+    font-family: 'Montserrat', var(--font-sans);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    font-size: 8.5px;
+    line-height: 1.15;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    flex: 0 1 auto;
+  }
+  /* AA.2's own atelier override (semibold, no tracking) — a cover is
+     still an honest miniature of the guide's real display type. */
+  .pt-guide-cover-title--atelier { font-weight: 600; letter-spacing: 0; }
+  .pt-guide-cover-eyebrow {
+    margin-top: auto;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 6px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+  }
+  .pt-set-roster-all .pt-guide-cover { width: 44px; height: 58px; padding: 6px 5px 4px 7px; }
+  .pt-set-roster-all .pt-guide-cover-mark { width: 8px; }
+  .pt-set-roster-all .pt-guide-cover-rule { width: 12px; }
+  .pt-set-roster-all .pt-guide-cover-title { font-size: 7px; }
+  .pt-set-roster-all .pt-guide-cover-eyebrow { font-size: 5px; }
+
+  /* AA.3 — the Brand Approved column becomes a roster: a search field
+     (the Sizes roster's own .pt-cta-input, same recipe, not a new
+     one) and the roster grouped by brand. (Bryan, 9/15: "no reason
+     for two views" — the RECENT three and the "All style guides"
+     footer that used to expand into this are gone; the grouped
+     roster is the only view. .pt-set-roster-footer below stays: the
+     Package desk's CONTENTS disclosure reuses it.) */
+  .pt-set-roster-search { padding: 2px 8px 6px; }
+  .pt-set-roster-search .pt-cta-input { width: 100%; }
+  /* AL.2 — a group's own header: the line's full name in the sans
+     label voice (13px/600, not mono caps). Bryan, 9/15: the mono sub
+     beneath ("The marque · 3 guides") is gone; the row carries a
+     little "Brand book" text link at its right instead — the hat's
+     own See-all link voice (accent 600, label + the arrow right after
+     it, the arrow nudging on hover), sized down to the row. */
+  .pt-set-roster-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 8px 5px; }
+  .pt-set-roster-group-name { font-size: 13px; font-weight: 600; color: var(--text-strong); letter-spacing: -0.01em; }
+  .pt-set-roster-book-link {
+    display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+    font-family: var(--font-sans); font-size: 11.5px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+    transition: color 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pt-set-roster-book-link .pt-seeall-link-arrow { width: 10px; height: 10px; }
+  .pt-set-roster-book-link:hover { color: var(--text-strong); }
+  .pt-set-roster-book-link:hover .pt-seeall-link-arrow { transform: translateX(2px); }
+  .pt-set-roster-book-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  /* AE.9 — the roster (and its search-flattened set) grows SIDEWAYS
+     instead of scrolling: a two-up card grid, each width min(240px,
+     content) so a narrow single match doesn't stretch across both
+     tracks; a brand's own eyebrow (data-roster-group) spans both so
+     groups still read top-to-bottom, cards two across under each.
+     :not([hidden]) so the attribute (an empty search) can suppress it
+     — the AA.3 bugfix: a bare class rule beats the UA [hidden]. */
+  .pt-set-roster-all:not([hidden]) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+    gap: 2px 16px;
+    align-items: start;
+  }
+  .pt-set-roster-all:not([hidden]) [data-roster-group] { grid-column: 1 / -1; }
+  .pt-set-roster-empty {
+    padding: 14px 8px; text-align: center;
+    font-size: 12px; color: var(--text-subtle);
+  }
+  .pt-set-roster-footer {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; margin-top: 4px; padding: 8px 8px;
+    border: 0; border-top: 0.5px solid var(--line); background: none; cursor: pointer;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+    color: var(--text-subtle); text-align: left;
+    transition: color 160ms ease;
+  }
+  .pt-set-roster-footer:hover { color: var(--text-body); }
+  .pt-set-roster-footer .pt-set-caret { transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1); flex-shrink: 0; }
+  .pt-set-roster-footer[aria-expanded="true"] .pt-set-caret { transform: rotate(180deg); }
+
+  /* Wizard chrome — REWORK 9/1: back affordance + "Step N of 4" no
+     longer get their own row inside the wizard body (that row ate a
+     full line for a 26px button — Bryan: "inefficient use of space").
+     Both now live INSIDE the hat's own .chat-aux-head bar, wrapped in
+     .chat-aux-head-left (back + dot/title) and .chat-aux-head-right
+     (step label + collapse chevron) so .chat-aux-head keeps exactly
+     two space-between flex children the way it always has. Back
+     exists only while .pt-wizard-active is set (display:none the
+     rest of the time — the default hat header is byte-identical to
+     pre-9/1); the step label additionally requires the JS `hidden`
+     property (set by updateHatStepChrome) to actually paint, so
+     collapsing mid-wizard never strands a stale "Step N of 4" once
+     .pt-wizard-active comes back off. */
+  .chat-aux-head-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .chat-aux-head-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .pt-hat-back {
+    display: none;
+    align-items: center; justify-content: center;
+    width: 26px; height: 26px; flex-shrink: 0;
+    /* Negative block margin — the header's own row height is set by
+       its padding (8px) plus its tallest flex-item MARGIN box (the
+       22px chevron toggle). Without this the 26px button would make
+       that margin box 26px and grow the header by 4px, which the
+       "must not shift the header's height" requirement forbids. -2px
+       top/bottom brings this button's margin-box back down to 22px —
+       it still paints at a full 26x26 and stays visually centered,
+       just bleeding 2px into the header's own padding rather than
+       expanding the row. */
+    margin-block: -2px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text-body);
+    cursor: pointer;
+    transition:
+      border-color 140ms cubic-bezier(0.22,1,0.36,1),
+      background 140ms cubic-bezier(0.22,1,0.36,1),
+      transform 140ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .chat-aux-panel.pt-wizard-active .pt-hat-back { display: flex; }
+  .pt-hat-back svg { width: 12px; height: 12px; display: block; }
+  .pt-hat-back:hover { border-color: rgba(15,23,42,0.22); background: var(--hover-soft); }
+  .pt-hat-back:active { transform: scale(0.94); }
+  .pt-hat-back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pt-hat-step-label {
+    display: none;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 500; color: var(--text-subtle);
+  }
+  .chat-aux-panel.pt-wizard-active .pt-hat-step-label:not([hidden]) { display: block; }
+
+  /* Wizard body — the swappable step content. In-place swap mirrors
+     .ch-prompt.is-swapping exactly (opacity+blur down, rebuild, back
+     up) — see initPainterSkill()'s renderHatStep(), 220ms to match. */
+  .pt-hat-wizard-body {
+    transition: opacity 220ms cubic-bezier(0.4,0,0.2,1), filter 240ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .pt-hat-wizard-body.is-swapping { opacity: 0.15; filter: blur(4px); pointer-events: none; }
+
+  /* 9/10 — BACK out of the settings surface (review: "a nice back
+     animation when the user clicks the back button"). Two beats, both
+     the hat's own motion, nothing new: (1) the settings content blurs
+     down on the .is-swapping recipe above while the Back pill withdraws
+     and the title fades; (2) the default surface mounts on
+     ch-prompt-mount — the exact reveal the wizard itself entered with —
+     tiles, then chips, then See all, 60ms apart, under the hat body
+     easing from the settings height to the default height on its own
+     380ms max-height curve (exitWizardToDefault drives max-height
+     between the two measured heights and clears it on transitionend).
+     Both classes are one-shot: JS adds and removes them; nothing is
+     left attached at rest. */
+  .chat-aux-panel.pt-wizard-leaving .pt-hat-back {
+    opacity: 0;
+    transform: translateX(-6px) scale(0.9);
+    transition: opacity 180ms cubic-bezier(0.4, 0, 0.2, 1), transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  .chat-aux-panel.pt-hat-returning .chat-aux-modes { animation: ch-prompt-mount 420ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+  .chat-aux-panel.pt-hat-returning .chat-aux-chips { animation: ch-prompt-mount 420ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both; }
+  .chat-aux-panel.pt-hat-returning .pt-seeall-link { animation: ch-prompt-mount 420ms cubic-bezier(0.4, 0, 0.2, 1) 120ms both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel.pt-wizard-active .pt-hat-wizard { animation: none !important; }
+    .pt-hat-wizard-body.is-swapping { transition: none !important; opacity: 1 !important; filter: none !important; }
+    .pt-hat-back:active { transform: none; }
+    .chat-aux-panel.pt-wizard-leaving .pt-hat-back { transition: none; }
+    .chat-aux-panel.pt-hat-returning .chat-aux-modes,
+    .chat-aux-panel.pt-hat-returning .chat-aux-chips,
+    .chat-aux-panel.pt-hat-returning .pt-seeall-link { animation: none !important; }
+  }
+

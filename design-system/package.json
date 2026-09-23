@@ -1,0 +1,30 @@
+{
+  "name": "omni-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OMNI design system: shared color tokens, components, and per-project version history for the OAI/OMNI internal manifest projects.",
+  "type": "module",
+  "scripts": {
+    "build:tokens": "style-dictionary build --config tokens/sd.config.js",
+    "build:versions": "node scripts/build-versions.mjs",
+    "build:theme-md": "node scripts/build-theme-md.mjs",
+    "build:components": "node scripts/build-components-json.mjs",
+    "build:component-pages": "node scripts/build-component-pages.mjs",
+    "build:starters": "node scripts/build-starters.mjs",
+    "apply:curation": "node scripts/apply-curation.mjs",
+    "build:storybook": "storybook build --output-dir dist-storybook",
+    "build": "npm run build:tokens && npm run build:versions && npm run build:components && npm run build:component-pages && npm run build:storybook && npm run copy:public",
+    "copy:public": "node scripts/copy-public.mjs",
+    "dev": "storybook dev -p 6006",
+    "clean": "rm -rf dist dist-storybook"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/blocks": "^8.4.7",
+    "@storybook/html": "^8.4.7",
+    "@storybook/html-vite": "^8.4.7",
+    "storybook": "^8.4.7",
+    "style-dictionary": "^4.2.0",
+    "vite": "^5.4.11"
+  }
+}

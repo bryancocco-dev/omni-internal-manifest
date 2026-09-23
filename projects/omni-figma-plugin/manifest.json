@@ -1,0 +1,12 @@
+{
+  "name": "Omni AI",
+  "id": "omni-ai-figma-plugin",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["*"],
+    "reasoning": "Fetches the signed-in user's generated assets from the Omni AI API, runs generation requests, and downloads the resulting asset bytes from Omni asset URLs. Restrict to specific domains before publishing."
+  }
+}

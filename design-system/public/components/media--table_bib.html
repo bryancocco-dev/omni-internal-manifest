@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+  OMNI component: table_bib
+  Project: Media
+  Note: .roadmap-table — timeline table with owner avatars + progress bars + status
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — table_bib · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="roadmap-wrap">
+            <table class="roadmap-table" aria-label="Project roadmap">
+              <thead>
+                <tr>
+                  <th><button class="scope-sort-btn" type="button" data-col="0" data-type="text"><span>Phase</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th><button class="scope-sort-btn" type="button" data-col="1" data-type="text"><span>Window</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th><button class="scope-sort-btn" type="button" data-col="2" data-type="text"><span>Owner</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th class="roadmap-progress-th"><button class="scope-sort-btn" type="button" data-col="3" data-type="number"><span>Progress</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th><button class="scope-sort-btn" type="button" data-col="4" data-type="status"><span>Status</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="roadmap-phase">Discovery</td>
+                  <td class="roadmap-dates">Oct 14 → Nov 1</td>
+                  <td><span class="roadmap-owner"><span class="roadmap-avatar avatar-bc">BC</span><span class="roadmap-owner-name">Bryan Cocco</span></span></td>
+                  <td data-sort="100"><div class="roadmap-progress"><div class="roadmap-progress-bar"><span style="--pct: 100%"></span></div><span class="roadmap-progress-pct">100%</span></div></td>
+                  <td><span class="scope-status confirmed">Complete</span></td>
+                </tr>
+                <tr>
+                  <td class="roadmap-phase">Synthesis</td>
+                  <td class="roadmap-dates">Nov 4 → Nov 22</td>
+                  <td><span class="roadmap-owner"><span class="roadmap-avatar avatar-lo">LO</span><span class="roadmap-owner-name">Lena Ortiz</span></span></td>
+                  <td data-sort="78"><div class="roadmap-progress"><div class="roadmap-progress-bar"><span style="--pct: 78%"></span></div><span class="roadmap-progress-pct">78%</span></div></td>
+                  <td><span class="scope-status pending">In progress</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+</body>
+</html>

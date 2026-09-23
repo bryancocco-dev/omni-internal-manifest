@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  OMNI component: dropdown_language
+  Project: Translations
+  Note: .ch-profile-menu.is-lang — profile-chip language picker: type-ahead combo box (search input + role="listbox" below it) over the same 10 endonym-labeled languages, reached via the "me" chip → Language row. Typing filters live against each language's native name AND its English exonym (e.g. "ar" matches Arabic even though its native label "العربية" has no latin letters); Arrow keys + Enter walk and confirm the filtered results, click selects directly, and Esc bubbles up to the existing close-on-Escape handler. The active language keeps the same checkmark affordance as before (now paired with aria-selected). Selecting a row still flips <html dir> + rail/menu mirroring for rtl:true languages, unchanged.
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translations — dropdown_language · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/translations.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ch-profile-menu is-lang" style="position:static;">
+  <div class="ch-profile-stack">
+    <div class="ch-profile-view ch-profile-view-lang is-visible">
+      <div class="ch-profile-themes-head">
+        <span class="ch-profile-themes-title" data-i18n="profileLanguageRow">Language</span>
+        <button class="ch-profile-themes-close" type="button" data-action="close-lang" aria-label="Close" data-i18n-aria-label="labelClose">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"></path></svg>
+        </button>
+      </div>
+      <div class="ch-profile-divider" aria-hidden="true"></div>
+      <div class="ch-lang-combo">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="10.4" y1="10.4" x2="13.5" y2="13.5"></line></svg>
+        <input type="text" class="ch-lang-search-input" id="chLangSearchInput" role="combobox" aria-expanded="true" aria-controls="chLangListbox" aria-autocomplete="list" aria-haspopup="listbox" autocomplete="off" spellcheck="false" placeholder="Search" aria-label="Search languages" data-i18n-placeholder="labelSearch">
+        <button class="ch-lang-combo-clear" type="button" aria-label="Clear search"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"></path></svg></button>
+      </div>
+      <div class="ch-profile-theme-list" id="chLangListbox" role="listbox" aria-label="Languages">
+        <button class="ch-profile-theme-row ch-profile-lang-row is-active" type="button" id="chLangOpt-en" data-lang="en" role="option" aria-selected="true"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>English</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-es" data-lang="es" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>Español</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-fr" data-lang="fr" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>Français</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-de" data-lang="de" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>Deutsch</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-fi" data-lang="fi" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>Suomi</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-ru" data-lang="ru" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>Русский</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-ar" data-lang="ar" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>العربية</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-ja" data-lang="ja" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>日本語</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-th" data-lang="th" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>ไทย</span></button>
+        <button class="ch-profile-theme-row ch-profile-lang-row" type="button" id="chLangOpt-hi" data-lang="hi" role="option" aria-selected="false"><span class="ch-lang-check"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 4.8"></path></svg></span><span>हिन्दी</span></button>
+      </div>
+      <div class="img-picker-empty" hidden></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

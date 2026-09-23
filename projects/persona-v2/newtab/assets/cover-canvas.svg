@@ -1,0 +1,87 @@
+<svg viewBox="0 0 716 716" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    v2.3 REWORK (coordinator strip review, round 2). The uniform 2×3 gray
+    grid read as a loading-skeleton, not a designed mark — rebuilt as an
+    ASYMMETRIC modular bento (one large + two medium + two small panel),
+    echoing the guidelines' color-palette page (p31)'s mixed-size color
+    swatches rather than a literal copy of it. Figure bounding box
+    (143,143)-(573,573), 430×430 = 60% of frame — same box/margins as the
+    workflow and text tiles for identical margin feel across the set.
+
+    Palette: ONE large panel permanently BLACK (ink, static — "no black
+    pulse"); the remaining four panels rest at #D1D1D1 gray. ONE motion:
+    the layout recomposes (v2.4) — an Innovation Blue overlay crossfades in and
+    back out on each of the four gray panels in turn (M1→M2→S1→S2), so
+    exactly one panel reads blue at any instant and the "focus" reads as
+    an eye moving across the canvas. The black panel never participates.
+
+    Flat fills only — no gradients/filters/glows/textures/shadows. Ground
+    WHITE by default (light-first); body[data-theme="dark"] flips
+    ground/ink/gray. Same rekey rationale as the other two tiles' header
+    comments: ready for the §11 inliner to consume as-is (just add the
+    "cover-cv" class to this root <svg>); standalone preview is
+    light-only by design (no <body> ancestor to match the dark rule).
+  -->
+  <style>
+    .cv-ground { fill: #ffffff; }
+    .cv-ink    { fill: #000000; }
+    .cv-gray   { fill: #D1D1D1; }
+    .cv-accent { fill: #4F7FF2; }
+    body[data-theme="dark"] .cv-ground { fill: #000000; }
+    body[data-theme="dark"] .cv-ink    { fill: #ffffff; }
+    body[data-theme="dark"] .cv-gray   { fill: #4A4A4A; }
+
+    /* ONE motion (v2.4, Bryan: "the squares re-size and move around"): the
+       LAYOUT RECOMPOSES ITSELF. The blue panel and its gray neighbor swap
+       slots (glide + height-morph, same width), then the two small squares
+       swap (pure glide), then both pairs return. The big ink panel is the
+       still anchor. 12s cycle, sine token per segment, §18.5 zero-velocity
+       holds at every slot, 0% = 100% (seamless). transform-box: fill-box
+       with top-left origin makes translate+scaleY land exactly on the
+       partner's slot geometry. Blue travels WITH its panel — the accent
+       physically moves. */
+    .cv-move { transform-box: fill-box; transform-origin: 0 0;
+               animation-duration: 12s; animation-iteration-count: infinite;
+               animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    .cv-m1 { animation-name: cvM1; }
+    .cv-m2 { animation-name: cvM2; }
+    .cv-s1 { animation-name: cvS1; }
+    .cv-s2 { animation-name: cvS2; }
+    /* M1 (y143,h170) swaps with M2 (y335,h130): dy 192, scale 130/170 and 170/130 */
+    @keyframes cvM1 {
+      0%, 8%   { transform: translate(0, 0) scaleY(1); }
+      18%, 58% { transform: translate(0, 192px) scaleY(0.7647); }
+      68%, 100% { transform: translate(0, 0) scaleY(1); }
+    }
+    @keyframes cvM2 {
+      0%, 8%   { transform: translate(0, 0) scaleY(1); }
+      18%, 58% { transform: translate(0, -192px) scaleY(1.3077); }
+      68%, 100% { transform: translate(0, 0) scaleY(1); }
+    }
+    /* S1 (x369) swaps with S2 (x482): dx 113, equal sizes, pure glide */
+    @keyframes cvS1 {
+      0%, 33%  { transform: translate(0, 0); }
+      43%, 83% { transform: translate(113px, 0); }
+      93%, 100% { transform: translate(0, 0); }
+    }
+    @keyframes cvS2 {
+      0%, 33%  { transform: translate(0, 0); }
+      43%, 83% { transform: translate(-113px, 0); }
+      93%, 100% { transform: translate(0, 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cv-move { animation: none; }
+    }
+  </style>
+
+  <rect class="cv-ground" width="716" height="716"/>
+
+  <!-- large panel: permanently black, the still anchor -->
+  <rect class="cv-ink" x="143" y="143" width="204" height="430"/>
+
+  <!-- the movers: blue + gray mediums swap slots; small squares trade places -->
+  <rect class="cv-accent cv-move cv-m1" x="369" y="143" width="204" height="170"/>
+  <rect class="cv-gray cv-move cv-m2" x="369" y="335" width="204" height="130"/>
+  <rect class="cv-gray cv-move cv-s1" x="369" y="487" width="91" height="86"/>
+  <rect class="cv-gray cv-move cv-s2" x="482" y="487" width="91" height="86"/>
+</svg>

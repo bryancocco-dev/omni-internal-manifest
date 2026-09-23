@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  OMNI component: callout_ai
+  Project: Media Skills
+  Note: .audoa-card + .ms-ai-attr — sparkle-eyebrow AI-generated Executive Summary/Insight card with model attribution line
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Skills — callout_ai · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="ms.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media-skills.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="ms-app">
+<style>
+body.ms-app{--ms-mono:'Fira Code','JetBrains Mono',ui-monospace,monospace}
+.audoa-card{background:var(--card-bg);border:none;border-radius:8px;padding:22px 24px}
+.audoa-eyebrow{font:500 10px/1.6 var(--ms-mono);text-transform:uppercase;letter-spacing:.14em;color:var(--text-subtle);margin:0 0 12px}
+.audoa-spark{width:11px;height:11px;color:var(--accent);margin-right:6px;display:inline-block;vertical-align:-1px;flex:none}
+.audoa-prose{font-size:13.5px;line-height:1.7;color:var(--text-body);margin:0}
+.ms-ai-attr{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-subtle);border-top:.5px solid var(--line);padding-top:10px;margin-top:14px}
+</style>
+<section class="audoa-card is-visible" data-reveal>
+  <p class="audoa-eyebrow"><svg class="audoa-spark" viewBox="0 0 8.25 8.25" aria-hidden="true"><path d="M4.22326 6.18192L3.23359 5.64419L2.69303 4.66133C2.67215 4.623 2.64125 4.59099 2.60359 4.56869C2.56593 4.54638 2.52292 4.53461 2.47909 4.53461C2.43506 4.53467 2.39185 4.54644 2.35394 4.56873C2.31603 4.59101 2.28481 4.62299 2.26352 4.66133L1.72296 5.64419L0.743092 6.18192C0.704647 6.20317 0.672612 6.23425 0.650309 6.27196C0.628005 6.30967 0.616244 6.35262 0.616244 6.39637C0.616244 6.44012 0.628005 6.48307 0.650309 6.52077C0.672612 6.55848 0.704647 6.58956 0.743092 6.61081L1.72296 7.14854L2.26352 8.12328C2.28481 8.16163 2.31603 8.1936 2.35394 8.21588C2.39185 8.23817 2.43506 8.24995 2.47909 8.25C2.52292 8.25 2.56593 8.23823 2.60359 8.21592C2.64125 8.19362 2.67215 8.16161 2.69303 8.12328L3.23359 7.14854L4.22326 6.61081C4.26171 6.58956 4.29374 6.55848 4.31604 6.52077C4.33835 6.48307 4.35011 6.44012 4.35011 6.39637C4.35011 6.35262 4.33835 6.30967 4.31604 6.27196C4.29374 6.23425 4.26171 6.20317 4.22326 6.18192ZM0.127114 1.59343L0.799958 1.96059L1.16904 2.62991C1.19016 2.6682 1.22124 2.70013 1.25902 2.72238C1.2968 2.74462 1.33989 2.75636 1.3838 2.75636C1.4277 2.75636 1.47079 2.74462 1.50857 2.72238C1.54635 2.70013 1.57743 2.6682 1.59855 2.62991L1.96437 1.95246L2.63721 1.58531C2.6757 1.5643 2.7078 1.53339 2.73017 1.4958C2.75253 1.45822 2.76433 1.41535 2.76433 1.37168C2.76433 1.32801 2.75253 1.28514 2.73017 1.24756C2.7078 1.20997 2.6757 1.17906 2.63721 1.15805L1.96437 0.795771L1.59528 0.126449C1.57416 0.0881627 1.54309 0.0562265 1.50531 0.0339814C1.46753 0.0117364 1.42443 0 1.38053 0C1.33663 0 1.29353 0.0117364 1.25575 0.0339814C1.21797 0.0562265 1.1869 0.0881627 1.16578 0.126449L0.799958 0.795771L0.127114 1.16292C0.0886266 1.18393 0.0565223 1.21485 0.0341603 1.25243C0.0117982 1.29001 0 1.33288 0 1.37655C0 1.42023 0.0117982 1.4631 0.0341603 1.50068C0.0565223 1.53826 0.0886266 1.56917 0.127114 1.59019V1.59343ZM8.11934 3.09535L7.08068 2.53L6.51235 1.4984C6.49147 1.46007 6.46057 1.42806 6.42291 1.40576C6.38525 1.38345 6.34224 1.37168 6.29841 1.37168C6.25494 1.37231 6.2124 1.38436 6.17512 1.40661C6.13783 1.42887 6.10713 1.46053 6.08611 1.4984L5.51452 2.53L4.47749 3.09535C4.43883 3.11639 4.4066 3.14742 4.38418 3.18516C4.36176 3.2229 4.34999 3.26596 4.35011 3.30979C4.35011 3.35339 4.36194 3.39618 4.38436 3.43364C4.40679 3.4711 4.43896 3.50184 4.47749 3.52261L5.51452 4.08796L6.08611 5.12118C6.1074 5.15953 6.13862 5.1915 6.17653 5.21378C6.21443 5.23607 6.25765 5.24785 6.30168 5.2479C6.34551 5.2479 6.38852 5.23613 6.42618 5.21382C6.46383 5.19152 6.49474 5.15951 6.51562 5.12118L7.08394 4.08796L8.12261 3.52261C8.16114 3.50184 8.19331 3.4711 8.21573 3.43364C8.23815 3.39618 8.24999 3.35339 8.24999 3.30979C8.24979 3.26563 8.23753 3.22234 8.21452 3.18457C8.19151 3.1468 8.15861 3.11596 8.11934 3.09535Z" fill="currentColor"/></svg>Executive Summary</p>
+  <p class="audoa-prose">Affluent travelers are a high-value, low-volume segment of 2.1M adults aged 45-64 with household incomes predominantly between $300K-$500K. They are defined by a rare but powerful combination of financial conservatism and luxury-seeking behavior - they spend premium but justify it through quality, not status. Their strongest media affinities lie in streaming audio (Apple Music, 420Ix) and premium news (NY Times, 348Ix), with Instagram leading social at 158Ix. Geographically concentrated in coastal metros, particularly the Northeast and California. Key strategic flag: high index signals across finance and health categories suggest a values-led creative approach will outperform aspirational messaging for this audience.</p>
+  <div class="ms-ai-attr">Generated by claude-opus-4.5 based on: Google, MRI-Simmons 2024, Nielsen Audio</div>
+</section>
+</body>
+</html>

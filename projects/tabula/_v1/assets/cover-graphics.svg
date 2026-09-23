@@ -1,0 +1,310 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* ambient motion: §14 ladder — SLOW (15s) rotate/drift, MID (9s) bob/sway,
+       all staggered on -1.9s steps. All transform-only (rotate lands on 360°,
+       drifts/sways return to their start keyframe) — no dashoffset self-draw,
+       nothing ever hides linework; rest state is always the full scene. */
+    .sun-ticks { transform-origin: 672px 272px; animation: sunTickRotate 15s linear infinite; }
+    @keyframes sunTickRotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    /* CLOUDS TRULY CROSS: full-frame traversal, off-canvas to off-canvas,
+       same convention as the birds' flyover below (center-x sweeps from
+       -80 off the left edge to 1165 off the right edge — the wrap happens
+       fully out of view). SLOW 15s linear (continuous traveler, exempt from
+       the zero-velocity rule). -7.6s stagger between the two keeps the sky
+       from ever going empty (each cloud's off-canvas window is short next
+       to the 15s period; the two windows land on opposite sides of the
+       loop). Delta = target absolute x minus each cloud's authored center-x
+       (280 / 510). */
+    .cloud { animation: cloudSweepA 15s linear infinite; }
+    .cloud.c2 { animation-name: cloudSweepB; animation-delay: -7.6s; }
+    @keyframes cloudSweepA {
+      from { transform: translateX(-360px); }
+      to   { transform: translateX(885px); }
+    }
+    @keyframes cloudSweepB {
+      from { transform: translateX(-590px); }
+      to   { transform: translateX(655px); }
+    }
+    /* §19 DEPTH PAN: background mountain (drawn first, behind) drifts a
+       little; foreground peak + pine trees (drawn on top, closer) drift MORE
+       and OPPOSITE — reads as a slow parallax camera pan. Same SLOW 15s
+       period as the clouds/sun-ticks so the whole scene reads as one
+       coherent move. Independent of the sun's own travel below (.sun-travel)
+       — the sun arcs the sky on its own path, unrelated to this drift. */
+    .bg-mountain-drift {
+      animation: bgMountainDrift 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes bgMountainDrift {
+      0%, 100% { transform: translateX(0px); }
+      50%      { transform: translateX(-8px); }
+    }
+    .fg-peak-drift {
+      animation: fgPeakDrift 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes fgPeakDrift {
+      0%, 100% { transform: translateX(0px); }
+      50%      { transform: translateX(16px); }
+    }
+    /* §17 the FLYOVER: birds actually traverse the frame, SLOW 15s linear
+       (continuous traveler, exempt from the zero-velocity rule) — an outer
+       wrapper carries the horizontal sweep, the inner glyph keeps its own MID
+       9s y-bob, composing via a nested group so the two never fight over one
+       `transform` property. Sweep range from real geometry: each bird travels
+       center-x from -80 to 1165 (an 80px off-canvas margin past both viewBox
+       edges — the svg's default clip hides it), so the loop's wrap
+       (100% -> 0%) happens while fully invisible, no visible snap. Per-bird
+       delay = standard -1.9s-step multiples (-3.8s / -11.4s, a 7.6s relative
+       offset, 4 steps): each bird's off-canvas window is ~1.93s (160px margin
+       / 1245px total travel * 15s), so a 7.6s separation keeps the two
+       windows ~5.6s+ apart on both sides — never both absent — AND lands the
+       paused/rest frame with both birds mid-frame (phase 25.3% / 76%) instead
+       of off-canvas. */
+    .bird-sweep {
+      animation: birdSweepA 15s linear infinite;
+      animation-delay: -3.8s;
+    }
+    .bird-sweep.bs2 {
+      animation-name: birdSweepB;
+      animation-delay: -11.4s;
+    }
+    @keyframes birdSweepA {
+      from { transform: translateX(-465px); }
+      to   { transform: translateX(780px); }
+    }
+    @keyframes birdSweepB {
+      from { transform: translateX(-516px); }
+      to   { transform: translateX(729px); }
+    }
+    .bird-bob {
+      animation: birdBob 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    .bird-bob.bb2 { animation-delay: -1.9s; }
+    @keyframes birdBob {
+      0%, 100% { transform: translateY(0); }
+      25%      { transform: translateY(-3px); }
+      75%      { transform: translateY(3px); }
+    }
+    /* accent pine: sways ±1.5° about its base, MID. §20 composition nudge:
+       pine + both mountain groups shifted -42px (see markup) to clear the
+       frame's right edge; origin moved WITH the pine's new base x. */
+    .pine-sway { transform-origin: 843.5px 553px; animation: pineSway 9s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    @keyframes pineSway {
+      0%, 100% { transform: rotate(0deg); }
+      50%      { transform: rotate(1.5deg); }
+    }
+    /* §15.3: sun glow gains a MID-tier breathe (wake-glow blooms it further on hover) */
+    .sun-glow-breathe { transform-origin: 672px 272px; animation: sunGlowBreathe 9s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    @keyframes sunGlowBreathe {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.03); }
+    }
+    /* THE SUN TRAVELS THE SKY: primary subject motion, replaces the old
+       pinned anchor. The whole sun group (cross, ticks, glow, disc — see
+       the .sun-travel wrapper in the markup) arcs left->right across the
+       sky, SLOW 15s, staying inside the picture frame above the mountains
+       the whole way (absolute x 250 -> 830, y rises from 272 at the edges
+       to 190 at mid-sky zenith — shallow, ~82px of rise over 580px of
+       travel). Delta values below are target-absolute minus the disc's
+       authored center (672, 272). Ticks keep rotating and the glow keeps
+       breathing independently — those transforms are on nested children, so
+       they compose with this wrapper's translate instead of fighting it.
+       Day-cycle seam: fades in from the left (sunrise) through ~20% of the
+       cycle, holds full through mid-sky, fades out approaching the right
+       margin (sunset) over the last ~20%. 0% and 100% keyframes are
+       IDENTICAL (same position, same opacity) so the loop closes with no
+       jump — and that shared state is deliberately mid-fade (0.4, not 0 and
+       not 1) rather than a static extreme, so the seam always reads as
+       mid-transition, never a stutter. linear (continuous single-direction
+       traveler, exempt from the zero-velocity rule; the arc shape itself is
+       already baked into the uneven keyframe spacing below). */
+    .sun-travel { animation: sunTravel 15s linear infinite; }
+    @keyframes sunTravel {
+      0%   { transform: translate(-422px, 0px);   opacity: 0.4;  }
+      10%  { transform: translate(-364px, -25px); opacity: 0.85; }
+      25%  { transform: translate(-277px, -58px); opacity: 1;    }
+      50%  { transform: translate(-132px, -82px); opacity: 1;    }
+      75%  { transform: translate(13px, -58px);   opacity: 1;    }
+      90%  { transform: translate(100px, -25px);  opacity: 0.85; }
+      100% { transform: translate(158px, 0px);    opacity: 0.4;  }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      /* .bird-sweep.bs2 and .cloud.c2 set animation-name at higher
+         specificity than a bare .bird-sweep/.cloud override would — match
+         them explicitly so this rule actually wins the cascade for both
+         birds and both clouds */
+      .sun-ticks, .sun-travel, .cloud, .cloud.c2, .bird-sweep, .bird-sweep.bs2, .bird-bob, .pine-sway,
+      .sun-glow-breathe, .bg-mountain-drift, .fg-peak-drift { animation: none; }
+    }
+
+    /* light ("blueprint on paper") palette — dark above stays default/unmodified */
+    @media (prefers-color-scheme: light) {
+      .lp-bg { fill: url(#bgL); }
+      .lp-ambient { fill: url(#ambientGlowL); }
+      .lp-dot { fill: #64748b; opacity: 0.10; }
+      .lp-nf { fill: url(#nodeFillL); }
+      .lp-node { fill: url(#nodeFillL); stroke: #b9c2cd; }
+      .lp-line1 { stroke: #64748b; }
+      .lp-line2 { stroke: #8b95a3; }
+      .lp-glow-u { opacity: 0.20; }
+      @keyframes sunGlowBreathe {
+        0%, 100% { opacity: 0.2; transform: scale(1); }
+        50%      { opacity: 0.34; transform: scale(1.03); }
+      }
+    }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#1a1c20"/>
+      <stop offset="55%" stop-color="#101114"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </radialGradient>
+    <radialGradient id="bgL" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f5f7fa"/>
+      <stop offset="100%" stop-color="#eef1f5"/>
+    </radialGradient>
+    <radialGradient id="ambientGlow" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#52d769" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#52d769" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#52d769" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientGlowL" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#52d769" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#52d769" stop-opacity="0.035"/>
+      <stop offset="100%" stop-color="#52d769" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#202226"/>
+      <stop offset="100%" stop-color="#121316"/>
+    </linearGradient>
+    <linearGradient id="nodeFillL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f2f4f7"/>
+    </linearGradient>
+    <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle class="lp-dot" cx="2" cy="2" r="1" fill="#8a97a8" opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect class="lp-bg" width="1085" height="716" fill="url(#bg)"/>
+  <rect width="1085" height="716" fill="url(#dots)"/>
+  <rect class="lp-ambient" width="1085" height="716" fill="url(#ambientGlow)"/>
+
+  <!-- corner crop marks (landscape frame at 152,100 → 932,616; 8px gap before the trim) -->
+  <g class="lp-line2" stroke="#7c8794" stroke-width="1.5" opacity="0.5">
+    <line x1="124" y1="100" x2="144" y2="100"/>
+    <line x1="152" y1="72" x2="152" y2="92"/>
+    <line x1="940" y1="100" x2="960" y2="100"/>
+    <line x1="932" y1="72" x2="932" y2="92"/>
+    <line x1="124" y1="616" x2="144" y2="616"/>
+    <line x1="152" y1="624" x2="152" y2="644"/>
+    <line x1="940" y1="616" x2="960" y2="616"/>
+    <line x1="932" y1="624" x2="932" y2="644"/>
+  </g>
+
+  <!-- picture-frame hairline: landscape FPO frame, core ~72% of width, centered -->
+  <rect class="lp-line1" x="152" y="100" width="780" height="516" fill="none" stroke="#4b5563" stroke-width="2"/>
+
+  <!-- rule-of-thirds guides, dashed, subtle -->
+  <g class="lp-line2" stroke="#7c8794" stroke-width="1.25" stroke-dasharray="4 6" opacity="0.35">
+    <line x1="412" y1="100" x2="412" y2="616"/>
+    <line x1="672" y1="100" x2="672" y2="616"/>
+    <line x1="152" y1="272" x2="932" y2="272"/>
+    <line x1="152" y1="444" x2="932" y2="444"/>
+  </g>
+
+  <!-- low ground: subtle baseline tying the mountain bases together -->
+  <line class="lp-line2" x1="152" y1="553" x2="932" y2="553" stroke="#7c8794" stroke-width="1.25" opacity="0.25"/>
+
+  <!-- FPO placeholder scene: two straight-edged, geometric mountain shapes, spread across
+       the wider frame (not just re-centered at the old square width). §20: whole cluster
+       (both mountains + all pines) shifted -42px so the accent pine clears the frame's
+       right edge (was 6px gap at 926 vs frame 932; now ~48px at rest, ~32px at the
+       fg-peak-drift parallax extreme) — frame/ground/guides/sun/clouds/birds untouched. -->
+  <g class="bg-mountain-drift">
+    <path class="lp-node" d="M183,553 L416,321 L663,553 Z" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2.5" stroke-linejoin="round"/>
+  </g>
+  <g class="fg-peak-drift">
+    <path class="lp-node" d="M474,553 L619,398 L794,553 Z" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- clouds cross the full frame, off-canvas to off-canvas (see .cloud/.cloud.c2) -->
+  <g class="cloud lp-line2" fill="none" stroke="#7c8794" stroke-width="1.4" opacity="0.55">
+    <circle cx="258" cy="165" r="12"/>
+    <circle cx="280" cy="158" r="15"/>
+    <circle cx="302" cy="164" r="11"/>
+  </g>
+  <g class="cloud c2 lp-line2" fill="none" stroke="#7c8794" stroke-width="1.4" opacity="0.5">
+    <circle cx="490" cy="133" r="10"/>
+    <circle cx="510" cy="125" r="13"/>
+    <circle cx="530" cy="132" r="9"/>
+  </g>
+
+  <!-- two tiny arc birds: §17 flyover, seamless off-canvas wraparound, offset so
+       both are never absent -->
+  <g class="bird-sweep">
+    <g class="bird-bob" style="transform-origin:385px 114px">
+      <!-- 1.6x static scale, nested so the bob's translateY (a full transform
+           replace each frame) can't clobber it -->
+      <path class="lp-line2" d="M373,114 Q379,109 385,114 Q391,109 397,114" fill="none" stroke="#7c8794" stroke-width="1.5" stroke-linecap="round" opacity="0.55" style="transform:scale(1.6); transform-origin:385px 114px"/>
+    </g>
+  </g>
+  <g class="bird-sweep bs2">
+    <g class="bird-bob bb2" style="transform-origin:436px 139px">
+      <path class="lp-line2" d="M424,139 Q430,133 436,139 Q442,133 447,139" fill="none" stroke="#7c8794" stroke-width="1.5" stroke-linecap="round" opacity="0.55" style="transform:scale(1.6); transform-origin:436px 139px"/>
+    </g>
+  </g>
+
+  <!-- sun: PRIMARY SUBJECT MOTION — the whole group arcs the sky left->right,
+       SLOW 15s day-cycle (see .sun-travel). Cross/ticks/glow/disc travel
+       together; ticks still rotate and the glow still breathes, each on its
+       own nested transform. -->
+  <g class="sun-travel">
+    <g class="lp-line1" stroke="#4b5563" stroke-width="1.5" opacity="0.6">
+      <!-- construction cross (travels with the sun; static relative to it) -->
+      <line x1="660" y1="272" x2="684" y2="272"/>
+      <line x1="672" y1="260" x2="672" y2="284"/>
+    </g>
+    <g class="lp-line2 sun-ticks" stroke="#7c8794" stroke-width="1.5" opacity="0.5">
+      <!-- short radiating ticks: slow full rotation, seamless (rotate lands on 360°) -->
+      <line x1="727" y1="272" x2="741" y2="272"/>
+      <line x1="711" y1="298" x2="721" y2="305"/>
+      <line x1="672" y1="309" x2="672" y2="319"/>
+      <line x1="632" y1="298" x2="622" y2="305"/>
+      <line x1="616" y1="272" x2="602" y2="272"/>
+      <line x1="632" y1="246" x2="622" y2="240"/>
+      <line x1="672" y1="236" x2="672" y2="226"/>
+      <line x1="711" y1="246" x2="721" y2="240"/>
+    </g>
+    <!-- sun disc: soft glow underlay (0.3 dark / 0.2 light) + crisp hairline circle (accent) -->
+    <circle class="lp-glow-u sun-glow-breathe wake-glow" cx="672" cy="272" r="36" fill="none" stroke="#52d769" stroke-width="8" opacity="0.3" filter="url(#glow)"/>
+    <circle cx="672" cy="272" r="36" fill="none" stroke="#8ee69d" stroke-width="2.5"/>
+  </g>
+
+  <!-- simple triangle pines, differing sizes, on the low ground — foreground
+       layer, same fg-peak-drift class as the closer mountain above so both
+       move together in the parallax pan -->
+  <g class="fg-peak-drift">
+    <path class="lp-node" d="M218,553 L241,504 L264,553 Z" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2" stroke-linejoin="round"/>
+    <path class="lp-node" d="M277,553 L307,466 L336,553 Z" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2" stroke-linejoin="round"/>
+    <!-- accent pine: the one pine outlined in green -->
+    <path class="lp-nf pine-sway" d="M803,553 L843,423 L884,553 Z" fill="url(#nodeFill)" stroke="#8ee69d" stroke-width="2.25" stroke-linejoin="round"/>
+  </g>
+</svg>

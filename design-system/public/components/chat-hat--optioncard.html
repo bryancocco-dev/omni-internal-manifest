@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+  OMNI component: optioncard
+  Project: Chat Hat
+  Note: .ch-opt preset card + .ch-opt-custom "Other" card (from JS template, sample text substituted)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat Hat — optioncard · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/chat-hat.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ch-opt-list" id="chOptList">
+        <button type="button" class="ch-opt" data-opt-id="buyer" data-step="persona-type">
+          <span class="ch-opt-num">1</span>
+          <span class="ch-opt-body">
+            <span class="ch-opt-title">Buyer</span>
+            <span class="ch-opt-desc">Someone who is ready to purchase.</span>
+          </span>
+        </button>
+        <button type="button" class="ch-opt" data-opt-id="researcher" data-step="persona-type">
+          <span class="ch-opt-num">2</span>
+          <span class="ch-opt-body">
+            <span class="ch-opt-title">Researcher</span>
+            <span class="ch-opt-desc">Comparing options, not ready to buy.</span>
+          </span>
+        </button>
+        <button type="button" class="ch-opt" data-opt-id="enthusiast" data-step="persona-type">
+          <span class="ch-opt-num">3</span>
+          <span class="ch-opt-body">
+            <span class="ch-opt-title">Enthusiast</span>
+            <span class="ch-opt-desc">Loves the category, follows trends.</span>
+          </span>
+        </button>
+        <div class="ch-opt ch-opt-custom" role="button" tabindex="0" data-opt-id="custom" data-step="persona-type">
+          <span class="ch-opt-num">4</span>
+          <span class="ch-opt-body">
+            <span class="ch-opt-custom-label">
+              <span class="ch-opt-title">Other</span>
+              <span class="ch-opt-desc">Type your own answer.</span>
+            </span>
+            <input type="text" class="ch-opt-custom-input" placeholder="Type your own answer, then press Enter…" aria-label="Custom answer" autocomplete="off" tabindex="-1" />
+          </span>
+          <button class="ch-opt-custom-close" type="button" aria-label="Cancel custom answer" tabindex="-1">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l6 6M8 2l-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+</body>
+</html>

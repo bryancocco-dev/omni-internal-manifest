@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+  OMNI component: venn
+  Project: QA
+  Note: .qa-venn — flat technical-drawing bubble chart, hairline-ringed circles sized ∝ √(users), geo-coded stroke (grey=US / blue=FR), diamond layout
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA — venn · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-qa.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="brief-stack">
+<article class="brief-board"><div class="sec-body">
+            <header class="qa-head">
+              <p class="qa-eyebrow">Audience Insight</p>
+              <h2 class="qa-h2">The Market: Who Buys Transatlantic Travel</h2>
+            </header>
+            <div class="qa-legend">
+              <span class="us">United States Targets</span>
+              <span class="fr">French Targets</span>
+            </div>
+            <div class="qa-venn">
+              <div class="qa-bubble is-us qa-b-carter">
+                <span class="bub-name">US Luxury Commuters<em>Carter</em></span>
+                <span class="bub-num">1.25M</span>
+                <span class="bub-unit">users</span>
+                <span class="bub-meta">HHI $280k+ · +12.4% YoY</span>
+              </div>
+              <div class="qa-bubble is-us qa-b-sophia">
+                <span class="bub-name">US Points-Maximizers<em>Sophia</em></span>
+                <span class="bub-num">850k</span>
+                <span class="bub-unit">users</span>
+                <span class="bub-meta">HHI $165k+ · +14.8% YoY</span>
+              </div>
+              <div class="qa-bubble is-fr qa-b-chloe">
+                <span class="bub-name">FR Eco Boutique Stayers<em>Chloe</em></span>
+                <span class="bub-num">480k</span>
+                <span class="bub-unit">users</span>
+              </div>
+              <div class="qa-bubble is-fr qa-b-louis">
+                <span class="bub-name">FR Urban Professionals<em>Louis</em></span>
+                <span class="bub-num">620k</span>
+                <span class="bub-unit">users</span>
+              </div>
+            </div>
+          </div></article>
+</body>
+</html>

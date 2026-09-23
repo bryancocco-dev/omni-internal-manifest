@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  OMNI component: button_edgehandle
+  Project: Manifest
+  Note: .omni-canvas-sliver-tab — right-edge door-handle pill (opt-in ?switch=edge variant): thin canvas-surface strip + centered pill, destination glyph swaps with mode
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manifest — button_edgehandle · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-manifest.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="omni-canvas-sliver-strip" style="position:relative;height:100px" aria-hidden="true"></div>
+    <div class="omni-canvas-sliver-band" style="position:relative;top:-100px;height:100px">
+      <button type="button" class="omni-canvas-sliver-tab" id="omniCanvasSliver" aria-label="Open Canvas" data-ctl-tip="Open Canvas" data-ctl-tip-side="left">
+        <span class="omni-canvas-sliver-tab-icon" aria-hidden="true">
+          <svg class="omni-sliver-icon-light" width="14" height="14" viewBox="0 0 256 256" fill="none" aria-hidden="true">
+            <rect x="32" y="48" width="192" height="160" rx="8" fill="none" stroke="currentColor" stroke-width="16"/>
+            <rect x="38" y="98" width="180" height="12" fill="currentColor"/>
+            <rect x="98" y="110" width="12" height="92" fill="currentColor"/>
+          </svg>
+          <svg class="omni-sliver-icon-full" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+            <path d="M213.84,118.63a6,6,0,0,0-3.73-4.25L150.88,92.17l15-75a6,6,0,0,0-10.27-5.27l-112,120a6,6,0,0,0,2.28,9.71l59.23,22.21-15,75a6,6,0,0,0,3.14,6.52A6.07,6.07,0,0,0,96,246a6,6,0,0,0,4.39-1.91l112-120A6,6,0,0,0,213.84,118.63ZM106,220.46l11.85-59.28a6,6,0,0,0-3.77-6.8l-55.6-20.85,91.46-98L138.12,94.82a6,6,0,0,0,3.77,6.8l55.6,20.85Z"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,700 @@
+  /* ══════════════════════════════════════════════════════════════════
+     PAINTER SKILL — P1 (see PLAN.md). Chrome stays stock OMNI palette
+     throughout (--accent / --accent-soft); Corvache gold/ink only ever
+     touches banner CONTENT (the .pt-banner-* rules near the bottom).
+     ══════════════════════════════════════════════════════════════════ */
+
+  /* --- shared step-message chrome --- */
+  .pt-msg-lede { margin: 0 0 12px; font-size: 14px; line-height: 22px; color: var(--text-body); }
+  .pt-msg-lede + .pt-msg-lede { margin-top: -4px; }
+
+  /* --- Step 1/2 tiles (Image / Copy) --- */
+  .pt-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .pt-tile {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+    padding: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: var(--text-body);
+    transition: border-color 140ms cubic-bezier(0.22,1,0.36,1), box-shadow 140ms cubic-bezier(0.22,1,0.36,1), transform 140ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-tile:hover { border-color: rgba(15,23,42,0.2); box-shadow: 0 2px 10px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .pt-tile:active { transform: translateY(0) scale(0.98); }
+  .pt-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pt-tile-icon {
+    width: 30px; height: 30px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+    flex-shrink: 0;
+  }
+  .pt-tile-icon svg { width: 15px; height: 15px; }
+  .pt-tile-title { font-size: 13px; font-weight: 700; color: var(--text-body); }
+  .pt-tile-desc { font-size: 11.5px; color: var(--text-subtle); line-height: 1.4; margin-top: -4px; }
+  /* Answered step — the picked tile stays lit, siblings dim + lock. */
+  .pt-tiles.is-answered .pt-tile { pointer-events: none; opacity: 0.5; transform: none !important; }
+  .pt-tiles.is-answered .pt-tile.is-picked {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent) inset;
+  }
+  .pt-tiles.is-answered .pt-tile.is-picked .pt-tile-icon { background: var(--accent); color: #fff; }
+
+  /* --- Step 2b: "I have copy" inline editor (P8) — a hairline-top
+     panel: deck-upload row-tile, a list of text-field rows (each a
+     field-type combo + input/textarea + remove), a dashed "+ Add
+     text" row, then the footer (.share-btn primary + quiet Clear).
+     Reused verbatim as the Studio Text drawer's own body — one
+     component, two homes (mountCopyRowsList in the JS). --- */
+  /* display:none by default — NOT the [hidden] attribute, which an
+     author display rule of equal specificity would silently beat
+     (origin trumps specificity: normal author > normal UA). */
+  .pt-copy-input-row {
+    display: none; flex-direction: column; gap: 12px; margin-top: 16px;
+    padding-top: 16px; border-top: 0.5px solid var(--line);
+  }
+  .pt-copy-input-row.is-open { display: flex; }
+  .pt-copy-input {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--text-body);
+  }
+  .pt-copy-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-copy-input::placeholder { color: var(--text-subtle); }
+  textarea.pt-copy-input.pt-copy-input-body { resize: none; min-height: 60px; line-height: 1.45; font-family: inherit; }
+
+  /* Upload-a-deck row-tile — same 64px anatomy as the Studio Images
+     drawer's "Your Gallery" row (.pt-studio-gallery-row, reused
+     verbatim). The sub-line swaps to a shimmer while "reading", then
+     to a small file/field-count chip once the deck lands. */
+  .pt-copy-deck-row { cursor: pointer; }
+  .pt-copy-deck-sub { display: flex; align-items: center; gap: 6px; }
+  .pt-copy-deck-shimmer {
+    width: 26px; height: 4px; border-radius: 2px; flex-shrink: 0;
+    background: linear-gradient(100deg, var(--panel-bg-3) 30%, rgba(24,88,238,0.14) 50%, var(--panel-bg-3) 70%);
+    background-size: 220% 100%;
+    animation: pt-shimmer-sweep 1.3s ease-in-out infinite;
+  }
+  .pt-copy-deck-file-chip {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--text-subtle);
+  }
+
+  .pt-copy-rows { display: flex; flex-direction: column; gap: 10px; }
+  /* Row enter/leave — accordion-style grid-template-rows animation
+     (transform/opacity alone can't collapse a variable-height row
+     without a jump; P8 spec calls for "height+opacity" explicitly). */
+  .pt-copy-field-row-wrap {
+    display: grid; grid-template-rows: 1fr; opacity: 1;
+    transition: grid-template-rows 180ms cubic-bezier(0.16,1,0.3,1), opacity 180ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-copy-field-row-wrap > .pt-copy-field-row { min-height: 0; overflow: hidden; }
+  .pt-copy-field-row-wrap.pt-row-collapsed { grid-template-rows: 0fr; opacity: 0; }
+  .pt-copy-field-row { display: flex; flex-direction: column; gap: 6px; }
+  .pt-copy-field-row-head { display: flex; align-items: center; gap: 8px; }
+  .pt-copy-field-type { flex: 0 1 140px; min-width: 0; }
+  .pt-copy-field-type .pt-font-combo-btn { height: 28px; padding: 0 8px 0 10px; font-size: 11.5px; }
+  .pt-copy-field-type .pt-font-combo-caret svg { width: 9px; height: 9px; }
+  .pt-copy-type-item.is-disabled { opacity: 0.4; pointer-events: none; }
+  .pt-copy-field-remove {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; flex-shrink: 0;
+    background: transparent; border: 0; border-radius: 7px;
+    color: var(--text-subtle); cursor: pointer;
+    transition: background 140ms ease, color 140ms ease;
+  }
+  .pt-copy-field-remove svg { width: 11px; height: 11px; display: block; }
+  .pt-copy-field-remove:hover { background: var(--hover-soft); color: var(--text-strong); }
+  .pt-copy-field-input-wrap { display: block; }
+
+  /* "+ Add text" — the established quiet-dashed-row anatomy
+     (.pt-addsizes-chip's own dashed/pill treatment, as a full-width
+     block row instead of a pill). */
+  .pt-copy-addfield-row {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 9px;
+    border: 1px dashed var(--line-solid);
+    border-radius: 8px;
+    background: transparent;
+    font: inherit; font-size: 12px; font-weight: 600; color: var(--text-subtle);
+    cursor: pointer;
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+  .pt-copy-addfield-row svg { width: 11px; height: 11px; display: block; }
+  .pt-copy-addfield-row:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); border-style: solid; }
+
+  .pt-copy-editor-footer { display: flex; align-items: center; gap: 14px; margin-top: 2px; }
+  .pt-copy-skip {
+    background: none; border: 0;
+    font: inherit; font-size: 12px; color: var(--text-subtle);
+    text-decoration: underline; text-underline-offset: 2px;
+    cursor: pointer; padding: 0;
+  }
+  .pt-copy-skip:hover { color: var(--text-body); }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-copy-field-row-wrap { transition: none !important; }
+    .pt-copy-deck-shimmer { animation: none; background: var(--panel-bg-3); }
+  }
+
+  /* --- Step 3: layout template cards --- */
+  .pt-layout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+  }
+  .pt-layout-card {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 12px 10px 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    font: inherit;
+    transition: border-color 140ms cubic-bezier(0.22,1,0.36,1), box-shadow 140ms cubic-bezier(0.22,1,0.36,1), transform 140ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-layout-card:hover { border-color: rgba(15,23,42,0.2); box-shadow: 0 2px 10px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .pt-layout-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pt-layout-name { font-size: 11.5px; font-weight: 600; color: var(--text-body); text-align: center; }
+  .pt-layout-thumb {
+    position: relative;
+    width: 64px; height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--panel-bg-3);
+    overflow: hidden;
+  }
+  .pt-lt-block { position: absolute; }
+  .pt-lt-img  { background: rgba(15,23,42,0.16); }
+  .pt-lt-text { background: var(--text-subtle); opacity: 0.55; border-radius: 1px; }
+  .pt-lt-cta  { background: var(--accent); opacity: 0.7; border-radius: 999px; }
+  /* type-forward top: text band top, image band bottom */
+  [data-thumb="type-top"] .pt-lt-img  { left:0; right:0; bottom:0; height:58%; }
+  [data-thumb="type-top"] .pt-lt-text { left:8%; right:34%; top:14%; height:10%; }
+  [data-thumb="type-top"] .pt-lt-cta  { left:8%; width:26%; top:32%; height:9%; }
+  /* type-forward bottom: image band top, text band bottom */
+  [data-thumb="type-bottom"] .pt-lt-img  { left:0; right:0; top:0; height:58%; }
+  [data-thumb="type-bottom"] .pt-lt-text { left:8%; right:34%; bottom:24%; height:10%; }
+  [data-thumb="type-bottom"] .pt-lt-cta  { left:8%; width:26%; bottom:9%; height:9%; }
+  /* split: image right, text left */
+  [data-thumb="split"] .pt-lt-img  { right:0; top:0; bottom:0; width:42%; }
+  [data-thumb="split"] .pt-lt-text { left:8%; width:44%; top:30%; height:11%; }
+  [data-thumb="split"] .pt-lt-cta  { left:8%; width:30%; top:58%; height:10%; }
+  /* full-bleed: image fills, text corner overlay */
+  [data-thumb="full-bleed"] .pt-lt-img  { inset:0; }
+  [data-thumb="full-bleed"] .pt-lt-text { left:8%; width:50%; bottom:24%; height:10%; background:#fff; opacity:0.9; }
+  [data-thumb="full-bleed"] .pt-lt-cta  { left:8%; width:26%; bottom:9%; height:9%; background:#fff; opacity:0.9; }
+  /* diagonal — what "Generate a layout" resolves TO once it lands
+     (swapped in from the abstract dashed state below). An angled cut
+     instead of a hard split line, visibly not one of the four. */
+  [data-thumb="diagonal"] .pt-lt-img  { inset:0; clip-path: polygon(34% 0, 100% 0, 100% 100%, 12% 100%); }
+  [data-thumb="diagonal"] .pt-lt-text { left:8%; width:34%; top:36%; height:10%; }
+  [data-thumb="diagonal"] .pt-lt-cta  { left:8%; width:24%; top:56%; height:9%; }
+
+  /* AA.1 — the 4 new generics, same [data-thumb] recipe (this box is
+     shared by the Guided wizard's own layout step and the Studio
+     drawer's own arrangement grid — both now read ALL_LAYOUT_IDS, so
+     both need art here too, not just the pill menu's own glyphs). */
+  [data-thumb="stacked"] .pt-lt-img  { left:0; right:0; top:32%; height:40%; }
+  [data-thumb="stacked"] .pt-lt-text { left:8%; right:34%; top:8%; height:14%; }
+  [data-thumb="stacked"] .pt-lt-cta  { left:8%; width:26%; bottom:10%; height:9%; }
+
+  [data-thumb="split-reverse"] .pt-lt-img  { left:0; top:0; bottom:0; width:42%; }
+  [data-thumb="split-reverse"] .pt-lt-text { right:8%; width:44%; top:30%; height:11%; }
+  [data-thumb="split-reverse"] .pt-lt-cta  { right:8%; width:30%; top:58%; height:10%; }
+
+  [data-thumb="card"] .pt-lt-img  { inset:0; }
+  [data-thumb="card"] .pt-lt-text { left:8%; width:40%; bottom:24%; height:10%; background:#fff; opacity:0.9; }
+  [data-thumb="card"] .pt-lt-cta  { left:8%; width:26%; bottom:9%; height:9%; background:#fff; opacity:0.9; }
+
+  [data-thumb="type-only"] .pt-lt-img  { display: none; }
+  [data-thumb="type-only"] .pt-lt-text { left:20%; right:20%; top:38%; height:12%; }
+  [data-thumb="type-only"] .pt-lt-cta  { left:32%; width:36%; top:58%; height:10%; }
+  /* generated: deliberately abstract WHILE picking — dashed border +
+     sparkle, no preset preview (it isn't one of the four templates).
+     Swapped to the diagonal thumb above once it resolves. */
+  .pt-layout-card--generate .pt-layout-thumb {
+    border-style: dashed;
+    background: var(--accent-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pt-layout-card--generate .pt-layout-thumb svg { width: 16px; height: 16px; color: var(--accent); }
+  .pt-layout-thumb.is-generating {
+    background: linear-gradient(100deg, var(--panel-bg-3) 30%, rgba(24,88,238,0.16) 50%, var(--panel-bg-3) 70%);
+    background-size: 220% 100%;
+    animation: pt-shimmer-sweep 1.3s ease-in-out infinite;
+  }
+  .pt-layout-card--generate:hover .pt-layout-thumb { border-color: var(--accent); }
+  .pt-layout-grid.is-answered .pt-layout-card { pointer-events: none; opacity: 0.45; transform: none !important; }
+  .pt-layout-grid.is-answered .pt-layout-card.is-picked { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  /* Studio's Layout drawer marks the current pick the same way but
+     WITHOUT the Guided step's "answered" lockout — every card stays
+     live-clickable so switching layouts freely is the whole point. */
+  #ptStudioLayoutGrid .pt-layout-card.is-picked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+  /* --- Step 4: size chips — checkbox is a REUSE-AUDIT port of
+     canvas-graphics' `.image-model-item .dip-switch` (S67): 16px
+     square, 4px radius, hairline border, transparent at rest; checked
+     = solid accent fill + the file's own masked check glyph (painted
+     via mask so the ink is always --text-button, never a flat raster)
+     popping in on the same back-out spring. The .pt-size-chip pill
+     itself (mono label, pill radius, accent-soft fill when checked)
+     is this shell's own composition around that checkbox — never a
+     native <input type=checkbox> so the visual stays ours. --- */
+  .pt-size-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pt-size-chips[hidden] { display: none; } /* AO.2 — the "+N more" disclosure's revealed chip row ([hidden] vs this rule's own display:flex) */
+  .pt-editor-swap-more + .pt-size-chips { margin-top: 8px; }
+  .pt-size-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 12px 8px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px; font-weight: 500;
+    color: var(--text-body);
+    cursor: pointer;
+  }
+  .pt-size-chip:hover { border-color: rgba(15,23,42,0.22); }
+  .pt-size-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pt-chip-check {
+    position: relative;
+    width: 16px; height: 16px; border-radius: 4px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 1.5px solid var(--line-solid);
+    transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms cubic-bezier(0.22, 1, 0.36, 1), transform 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .pt-size-chip:hover .pt-chip-check { border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid)); }
+  .pt-size-chip:active .pt-chip-check { transform: scale(0.92); }
+  .pt-chip-check::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--text-button);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path d='M3 7.5L6 10.5L11 4.5' stroke='%23000' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / 10px;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path d='M3 7.5L6 10.5L11 4.5' stroke='%23000' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / 10px;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 160ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pt-size-chip.is-checked { border-color: var(--accent); background: var(--accent-soft); }
+  .pt-size-chip.is-checked .pt-chip-check { background: var(--accent); border-color: var(--accent); }
+  .pt-size-chip.is-checked .pt-chip-check::after { opacity: 1; transform: scale(1); }
+  /* AO.2 — the Guided size step's chips are single-pick now, so
+     they wear the house radio ring (.pt-set-item-radio — the same
+     mark the non-guided Size roster's rows use, L27645) instead of
+     the checkbox glyph above; .pt-chip-check stays as-is for
+     Studio's own multi-add size chips (L56738). */
+  .pt-size-chip:hover .pt-set-item-radio { border-color: color-mix(in srgb, var(--accent) 50%, var(--line-solid)); }
+  .pt-size-chip.is-checked .pt-set-item-radio { border-color: var(--accent); }
+  .pt-size-chip.is-checked .pt-set-item-radio::after { opacity: 1; transform: scale(1); }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-chip-check, .pt-chip-check::after { transition: none !important; }
+  }
+
+  /* AO.3 — the shell's primary button recipe, verbatim (.share-btn
+     up at L533): accent ground, white label, initial caps, no count
+     suffix (pt-generate-count retires with the suffix). */
+  .pt-generate-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 14px;
+    height: 32px;
+    padding: 0 16px;
+    background: var(--accent);
+    color: #ffffff;
+    border: 0; border-radius: 8px;
+    font: inherit; font-size: 13.5px; font-weight: 500;
+    letter-spacing: -0.05px;
+    cursor: pointer;
+    transition: background 200ms ease, box-shadow 200ms ease, transform 160ms ease;
+  }
+  .pt-generate-btn:hover {
+    box-shadow: 0 2px 8px rgba(24, 88, 238, 0.22),
+                0 6px 18px rgba(24, 88, 238, 0.14);
+  }
+  .pt-generate-btn:active { transform: scale(0.97); }
+  .pt-generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pt-generate-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* --- Generate: staged progress beat --- */
+  .pt-progress { display: flex; flex-direction: column; gap: 10px; }
+  .pt-progress-line { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--text-body); }
+  .pt-progress-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: pt-progress-pulse 1s ease-in-out infinite;
+  }
+  @keyframes pt-progress-pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+  .pt-progress-shimmer { display: flex; gap: 6px; }
+  .pt-progress-shimmer span {
+    flex: 1; height: 44px; border-radius: 8px;
+    background: linear-gradient(100deg, var(--panel-bg-3) 30%, rgba(24,88,238,0.14) 50%, var(--panel-bg-3) 70%);
+    background-size: 220% 100%;
+    animation: pt-shimmer-sweep 1.3s ease-in-out infinite;
+  }
+  .pt-progress-shimmer span:nth-child(2) { animation-delay: 0.12s; }
+  .pt-progress-shimmer span:nth-child(3) { animation-delay: 0.24s; }
+  @keyframes pt-shimmer-sweep { 0% { background-position: 140% 0; } 100% { background-position: -40% 0; } }
+  .pt-progress.is-done .pt-progress-shimmer { display: none; }
+  .pt-progress.is-done .pt-progress-dot { animation: none; background: #2fb463; opacity: 1; }
+
+  /* --- Generate-image FPO (Step 1) — REUSE-AUDIT port of
+     canvas-graphics' .c4-studio-ghost viewfinder language (a plain
+     shimmer-sweep bar was standing in for "an image is about to be
+     generated," but the established idiom for exactly that moment is
+     the empty-viewfinder FPO: thirds hairlines + crop corners + one
+     drifting sparkle + a quiet ambient breathe). Scaled down to this
+     surface's own compact 90px inline placeholder — the source's full
+     dual-layer aurora/breath system is calibrated for a grid of large
+     studio cells; this keeps the same READ (thirds + glyph + breathe)
+     without the disproportionate machinery. --- */
+  .pt-img-shimmer {
+    position: relative;
+    overflow: hidden;
+    width: 100%; height: 90px; border-radius: 10px; margin-top: 10px;
+    background: linear-gradient(180deg, #fbfbfb 0%, #f3f3f4 100%);
+    border: 0.5px solid var(--line);
+  }
+  body[data-theme="dark"] .pt-img-shimmer {
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  }
+  .pt-img-shimmer::before {
+    content: '';
+    position: absolute; inset: -20%;
+    background: radial-gradient(ellipse 70% 80% at 50% 50%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
+    animation: pt-vf-breathe 3.2s ease-in-out infinite;
+  }
+  @keyframes pt-vf-breathe { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+  .pt-vf-third { position: absolute; background: rgba(15,23,42,0.06); }
+  body[data-theme="dark"] .pt-vf-third { background: rgba(255,255,255,0.08); }
+  .pt-vf-third-v1 { left: 33.333%; top: 0; bottom: 0; width: 1px; }
+  .pt-vf-third-v2 { left: 66.666%; top: 0; bottom: 0; width: 1px; }
+  .pt-vf-third-h1 { top: 33.333%; left: 0; right: 0; height: 1px; }
+  .pt-vf-third-h2 { top: 66.666%; left: 0; right: 0; height: 1px; }
+  .pt-vf-corner { position: absolute; width: 10px; height: 10px; border-color: var(--accent); opacity: 0.55; }
+  .pt-vf-corner-tl { top: 6px; left: 6px; border-top: 1.5px solid; border-left: 1.5px solid; }
+  .pt-vf-corner-tr { top: 6px; right: 6px; border-top: 1.5px solid; border-right: 1.5px solid; }
+  .pt-vf-corner-bl { bottom: 6px; left: 6px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+  .pt-vf-corner-br { bottom: 6px; right: 6px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+  .pt-vf-sparkle {
+    position: absolute; top: 50%; left: 50%;
+    width: 16px; height: 16px;
+    color: var(--accent); opacity: 0.6;
+    animation: pt-vf-sparkle-drift 3.2s ease-in-out infinite;
+  }
+  .pt-vf-sparkle svg { width: 100%; height: 100%; display: block; }
+  @keyframes pt-vf-sparkle-drift {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.45; }
+    50%      { transform: translate(-52%, -54%) scale(1.05); opacity: 0.75; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-img-shimmer::before, .pt-vf-sparkle { animation: none; }
+  }
+
+  /* --- Echoed picks (image thumbs / choice pill) — a transient,
+     non-removable "here's what got picked" confirmation flash (480ms,
+     then auto-advances), NOT a persistent chip a user manages — so
+     the full #c4RefChips/.ca-chip anatomy (name label, remove ×,
+     chip-row container) doesn't apply here on purpose. REUSE-AUDIT:
+     what WAS missing is the entrance motion every other "an image
+     just landed" moment in this ecosystem shares (.ca-chip-enter /
+     S68's own .c4-ref-chip.is-entering) — a blur-fade + slight rise,
+     capped per-item stagger for the up-to-3-frame case. Ported that
+     signature verbatim; size/shape stay this surface's own (44px,
+     more prominent than a 22-26px chip — a deliberate emphasis for a
+     one-shot confirmation beat, not an oversight). --- */
+  .pt-echo-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px 3px 3px;
+    background: var(--panel-bg-general);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12.5px; font-weight: 600;
+  }
+  /* --- Environment overlay — REUSE-AUDIT port of canvas-graphics'
+     #c4RefGallery (S68): a PANE-BOUNDS overlay measured off #canvas's
+     live rect — this shell's own applyC4RefPaneBounds-equivalent
+     (the same technique #caDropVeil's placeVeil() already uses for
+     the chat column) — rather than a viewport-wide dimmed modal, so
+     it reads as "the canvas surface itself becomes the picker" while
+     the rail/chat/hat stay live to the left. Quiet Swiss title voice
+     + Fira Code count (S68's own .c4-ref-gallery-title/-count), a
+     Back pill (this shell's OWN .pt-editor-back — order-1 reuse, no
+     round X close), capped per-tile stagger reveal + blur-fade image
+     load-in. Multi-select (checkmarks, 1-3 cap, confirm button) stays
+     bespoke — the source component is single-pick/closes-on-click and
+     has no analog for a confirm step. */
+  /* .pt-skills-overlay (the "See all skills" catalog, 8/25) shares
+     this exact positioning/open-close contract verbatim — same
+     selector list, not a duplicate block — so the two overlays are
+     provably identical pane-bounds citizens. */
+  .pt-env-overlay, .pt-skills-overlay {
+    position: fixed;
+    z-index: 70;
+    display: flex; flex-direction: column;
+    background: var(--canvas-bg);
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 420ms cubic-bezier(0.16,1,0.3,1), transform 420ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-env-overlay.is-leaving, .pt-skills-overlay.is-leaving { transition-duration: 260ms; }
+  .pt-env-overlay.is-open, .pt-skills-overlay.is-open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .pt-env-head { display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 20px 24px 0; flex: 0 0 auto; }
+  .pt-env-head .pt-editor-back { flex-shrink: 0; }
+  .pt-env-title-wrap { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .pt-env-title { margin: 0; font-family: var(--font-sans); font-size: 15px; font-weight: 600; letter-spacing: -0.1px; color: var(--text-strong); }
+  .pt-env-count-tag {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0.04em;
+    color: var(--text-subtle); white-space: nowrap;
+  }
+  /* P7 (9/1) — the ported S80.13 toolbar cluster: collapsible search
+     (the .c4-search-* recipe, renamed pt-env-search-*) + a 3-way view
+     toggle, pinned to the head row's far-right edge now that Back
+     leads the row (source's own S80.11 reorder). */
+  .pt-env-toolbar-right { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+  .pt-env-search-wrap {
+    position: relative; display: inline-flex; align-items: center;
+    width: 200px; height: 32px;
+    border: 0.5px solid var(--line); border-radius: 8px;
+    background: var(--card-bg); overflow: hidden; flex-shrink: 0;
+    transition: width 300ms cubic-bezier(0.22,1,0.36,1), border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .pt-env-search-wrap.collapsed {
+    width: 32px; cursor: pointer; background: transparent;
+    border-color: transparent; box-shadow: none;
+  }
+  .pt-env-search-wrap.collapsed:hover { background: transparent; }
+  .pt-env-search-wrap.collapsed:active { transform: scale(0.97); }
+  .pt-env-search-wrap:not(.collapsed):focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-env-search-icon-btn {
+    position: absolute; left: 0; top: 0; width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; color: var(--text-subtle);
+    cursor: pointer; flex-shrink: 0; transition: color 200ms ease;
+  }
+  .pt-env-search-icon-btn svg { width: 14px; height: 14px; display: block; }
+  .pt-env-search-wrap:hover .pt-env-search-icon-btn,
+  .pt-env-search-wrap:focus-within .pt-env-search-icon-btn { color: var(--text-strong); }
+  .pt-env-search-icon-btn:focus, .pt-env-search-icon-btn:focus-visible { outline: none; }
+  .pt-env-search-wrap.collapsed .pt-env-search-icon-btn { pointer-events: none; }
+  .pt-env-search-wrap input.pt-env-search {
+    width: 100%; height: 100%; padding: 0 30px 0 32px;
+    border: 0; background: transparent; color: var(--text-strong);
+    font-family: inherit; font-size: 12.5px; letter-spacing: -0.05px;
+    outline: none; -webkit-appearance: none; appearance: none; box-shadow: none;
+    transition: opacity 220ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-env-search-wrap input.pt-env-search::placeholder { color: var(--text-subtle); }
+  .pt-env-search-wrap input.pt-env-search::-webkit-search-cancel-button,
+  .pt-env-search-wrap input.pt-env-search::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+  .pt-env-search-wrap.collapsed input.pt-env-search { opacity: 0; pointer-events: none; }
+  .pt-env-search-wrap:not(.collapsed) input.pt-env-search { opacity: 1; transition-delay: 100ms; }
+  .pt-env-search-close {
+    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; border-radius: 50%; border: 0; padding: 0;
+    background: rgba(15,23,42,0.08); color: var(--text-subtle);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; opacity: 1;
+    transition: background 200ms ease, color 200ms ease, opacity 220ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-env-search-close svg { width: 9px; height: 9px; display: block; }
+  .pt-env-search-close:hover { background: rgba(15,23,42,0.14); color: var(--text-strong); }
+  body[data-theme="dark"] .pt-env-search-close { background: rgba(255,255,255,0.10); }
+  body[data-theme="dark"] .pt-env-search-close:hover { background: rgba(255,255,255,0.16); }
+  .pt-env-search-close:focus, .pt-env-search-close:focus-visible { outline: none; }
+  .pt-env-search-wrap.collapsed .pt-env-search-close { opacity: 0; pointer-events: none; }
+  .pt-env-filter-divider { width: 0.5px; height: 18px; background: var(--line); align-self: center; flex-shrink: 0; }
+  .pt-env-view-btn {
+    width: 28px; height: 28px; padding: 0; border: 0; background: transparent;
+    color: var(--text-subtle); border-radius: 8px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 160ms ease, color 160ms ease; flex-shrink: 0;
+  }
+  .pt-env-view-btn:hover { background: rgba(15,23,42,0.05); color: var(--text-strong); }
+  body[data-theme="dark"] .pt-env-view-btn:hover { background: rgba(255,255,255,0.06); }
+  .pt-env-view-btn.active { background: var(--accent-soft, rgba(24,88,238,0.12)); color: var(--accent); }
+  .pt-env-view-btn:focus, .pt-env-view-btn:focus-visible { outline: none; }
+
+  .pt-env-sub { margin: 3px 24px 0; font-size: 12px; color: var(--text-subtle); flex: 0 0 auto; }
+  .pt-env-body { flex: 1; overflow-y: auto; padding: 14px 24px 24px; }
+
+  /* === Mosaic (default) — CSS-columns masonry, S80's own recipe:
+     each tile at its media's REAL aspect (the inline style JS
+     corrects the moment it's known — img naturalWidth/Height, video
+     videoWidth/Height once loadedmetadata fires; 4/3 and 16/9 below
+     are only the pre-load guess), 10px radius, break-inside:avoid so
+     a tile never straddles two columns. === */
+  .pt-env-grid, .pt-env-grid[data-view="mosaic"] { column-count: 4; column-gap: 10px; }
+  @media (max-width: 1200px) { .pt-env-grid, .pt-env-grid[data-view="mosaic"] { column-count: 3; } }
+  .pt-env-frame {
+    position: relative;
+    display: block; width: 100%;
+    aspect-ratio: 4 / 3;
+    margin: 0 0 10px;
+    border-radius: 10px; overflow: hidden;
+    border: 2px solid transparent;
+    break-inside: avoid;
+    /* AS.1 — the card ground, not a bespoke rgba wash: themes itself
+       automatically (light/dark), so no body[data-theme] override
+       needed here the way the old hardcoded tint required. */
+    cursor: pointer; padding: 0; background: var(--card-bg);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 320ms cubic-bezier(0.16,1,0.3,1), transform 320ms cubic-bezier(0.16,1,0.3,1), border-color 200ms ease, box-shadow 220ms ease;
+  }
+  .pt-env-frame.is-in { opacity: 1; transform: translateY(0); }
+  /* display:contents at rest — the img/video underneath still lays
+     out as a direct tile child for mosaic/grid's existing sizing
+     rules; list view (below) turns this into a real 40px thumb box. */
+  .pt-env-frame-thumb { display: contents; }
+  .pt-env-frame img, .pt-env-frame video {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    /* AS.1 — a small resting over-scale (well past the ~2-5% deep
+       baked-in corner rounding a few library stills carry, e.g.
+       "Detail 01") so overflow:hidden crops past that mask instead
+       of the tile's own radius exposing it — a permanent safety
+       crop, not a motion effect, so prefers-reduced-motion (below)
+       rightly leaves it alone and only kills the transition. */
+    transform: scale(1.1);
+    opacity: 0; filter: blur(10px);
+    transition: transform 320ms cubic-bezier(0.22,1,0.36,1), opacity 420ms ease, filter 420ms ease;
+  }
+  .pt-env-frame img.is-loaded, .pt-env-frame video.is-loaded { opacity: 1; filter: blur(0); }
+  /* Quiet play badge for video tiles — the .graphics-play-badge/
+     .play-disc/.play-tri anatomy is this file's OWN video-card recipe
+     (legacy .graphics-card.is-video), grafted here verbatim. */
+  .pt-env-frame.is-video:hover .play-disc { transform: scale(1.07); background: rgba(18,20,26,0.4); }
+  /* Quiet caption — a bottom gradient scrim + small Fira Code label
+     (no pill/background chip, per the S80 gallery's own understated
+     voice), always legible since this picker's items are named
+     shoot/studio/detail frames + 29 distinct clips, not the source's
+     anonymous filler photos. */
+  .pt-env-frame-label {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 18px 8px 6px;
+    background: linear-gradient(180deg, transparent, rgba(10,12,16,0.55) 88%);
+    color: #fff;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; letter-spacing: 0.02em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    pointer-events: none;
+  }
+  .pt-env-frame-name, .pt-env-frame-kind { display: none; }
+  .pt-env-frame-check {
+    position: absolute; top: 6px; right: 6px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(255,255,255,0.85); border: 1.4px solid rgba(15,23,42,0.2);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .pt-env-frame-check svg { width: 10px; height: 10px; color: var(--accent); opacity: 0; transform: scale(0.6); transition: opacity 120ms, transform 120ms; }
+  .pt-env-frame:hover { box-shadow: 0 10px 24px rgba(15,23,42,0.16); }
+  body[data-theme="dark"] .pt-env-frame:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.45); }
+  .pt-env-frame:hover img, .pt-env-frame:hover video { transform: scale(1.16); }
+  /* Picked — accent ring INSIDE the tile edge (the frame already
+     reserves a 2px transparent border at rest, so lighting it up
+     never shifts layout — a structural state, not an overlay). */
+  .pt-env-frame.is-picked { border-color: var(--accent); }
+  .pt-env-frame.is-picked .pt-env-frame-check { background: var(--accent); border-color: var(--accent); }
+  .pt-env-frame.is-picked .pt-env-frame-check svg { opacity: 1; transform: scale(1); color: #fff; }
+  .pt-env-frame.is-disabled { opacity: 0.35; pointer-events: none; }
+  .pt-env-grid .pt-env-frame.search-hidden { display: none !important; }
+  .pt-env-grid .graphics-empty { column-span: all; }
+
+  /* === Grid (dense) — uniform squares, S80's own 9→8→6→4 responsive
+     column-count ladder. Forces the square aspect (overriding each
+     tile's own inline real-aspect style, hence !important) for a
+     deliberately tighter, more uniform read than mosaic's mixed
+     aspects. === */
+  .pt-env-grid[data-view="grid"] { column-count: 9; column-gap: 2px; }
+  @media (max-width: 1500px) { .pt-env-grid[data-view="grid"] { column-count: 8; } }
+  @media (max-width: 1200px) { .pt-env-grid[data-view="grid"] { column-count: 6; } }
+  @media (max-width: 900px)  { .pt-env-grid[data-view="grid"] { column-count: 4; } }
+  .pt-env-grid[data-view="grid"] .pt-env-frame {
+    aspect-ratio: 1 / 1 !important; margin: 0 0 2px; border-radius: 4px;
+  }
+  .pt-env-grid[data-view="grid"] .pt-env-frame-label { display: none; }
+
+  /* === List — 48px thumb + name + Fira Code kind label ("image" /
+     "video · 0:08", the duration read from the clip's own real
+     `duration` once metadata loads — never fabricated). Compact
+     S80-style row (P7 fix, 9/1): thumb sits flush left, the name
+     hugs it (flex:0 1 auto, NOT flex-grow — the P7.0 bug had this
+     eating the whole row width, which combined with the inherited
+     button UA text-align:center left the name floating mid-row and
+     the kind label stranded far right), the kind label sits 10px
+     after the name (a -2px pull against the row's own 12px gap),
+     and the check stays pinned to the row's right edge via its own
+     absolute position — nothing needs to flex-fill the gap between
+     them. Capped to the overlay's own content column (~880px) so
+     rows never stretch across the whole pane. === */
+  .pt-env-grid[data-view="list"] {
+    column-count: 1; column-gap: 0;
+    display: flex; flex-direction: column; gap: 0;
+    max-width: 880px;
+  }
+  .pt-env-grid[data-view="list"] .pt-env-frame {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; height: 56px; margin: 0; padding: 0 36px 0 12px;
+    border-radius: 8px; background: transparent;
+    aspect-ratio: auto !important;
+    box-shadow: inset 0 -0.5px 0 var(--line);
+    text-align: left;
+    transition: background 180ms ease;
+  }
+  .pt-env-grid[data-view="list"] .pt-env-frame:last-child { box-shadow: none; }
+  .pt-env-grid[data-view="list"] .pt-env-frame:hover {
+    background: var(--hover-soft);
+  }
+  .pt-env-grid[data-view="list"] .pt-env-frame.is-picked {
+    background: var(--nav-selected);
+  }
+  /* List view zooms the THUMB wrapper on hover instead (below), so
+     the img/video itself just holds its AS.1 resting over-scale
+     (1.1) rather than the base rule's extra hover bump — matching
+     rest exactly here avoids a shrink-on-hover glitch. */
+  .pt-env-grid[data-view="list"] .pt-env-frame:hover img,
+  .pt-env-grid[data-view="list"] .pt-env-frame:hover video { transform: scale(1.1); }
+  .pt-env-grid[data-view="list"] .pt-env-frame-thumb {
+    display: flex; align-items: center; justify-content: center;
+    width: 48px; height: 48px; flex: 0 0 auto;
+    /* AS.1 — card ground, not a hardcoded near-black; this is what
+       shows behind every tile during its own opacity fade-in. */
+    border-radius: 8px; overflow: hidden; background: var(--card-bg);
+    transition: transform 220ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-env-grid[data-view="list"] .pt-env-frame:hover .pt-env-frame-thumb { transform: scale(1.07); }
+  .pt-env-grid[data-view="list"] .pt-env-frame img,
+  .pt-env-grid[data-view="list"] .pt-env-frame video { width: 100%; height: 100%; object-fit: cover; }
+  .pt-env-grid[data-view="list"] .pt-env-frame-label { display: none; }
+  .pt-env-grid[data-view="list"] .pt-env-frame-name {
+    display: block; flex: 0 1 auto; min-width: 0; max-width: 40%;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+    letter-spacing: -0.1px; color: var(--text-strong); text-align: left;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pt-env-grid[data-view="list"] .pt-env-frame-kind {
+    display: block; flex: 0 0 auto; margin-left: -2px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0.04em;
+    color: var(--text-subtle); white-space: nowrap;
+  }
+  .pt-env-grid[data-view="list"] .graphics-play-badge { display: none; }
+  .pt-env-grid[data-view="list"] .pt-env-frame-check {
+    top: 50%; right: 12px; transform: translateY(-50%);
+    width: 20px; height: 20px;
+  }
+  .pt-env-grid[data-view="list"] .pt-env-frame-check svg { width: 11px; height: 11px; }
+

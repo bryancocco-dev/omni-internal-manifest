@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  OMNI component: table
+  Project: Media
+  Note: .metrics-table — KPI table with sortable headers, sparklines, metric-delta + scope-status
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — table · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="metrics-wrap">
+            <table class="metrics-table" aria-label="Campaign performance metrics">
+              <thead>
+                <tr>
+                  <th><button class="scope-sort-btn" type="button" data-col="0" data-type="text"><span>Metric</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th class="num"><button class="scope-sort-btn" type="button" data-col="1" data-type="number"><span>Current</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th class="num"><button class="scope-sort-btn" type="button" data-col="2" data-type="number"><span>Week</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th>7-day trend</th>
+                  <th class="num"><button class="scope-sort-btn" type="button" data-col="4" data-type="number"><span>Goal</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                  <th><button class="scope-sort-btn" type="button" data-col="5" data-type="status"><span>Status</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"/></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"/></svg></span></button></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="metric-name">Impressions</td>
+                  <td class="num metric-val" data-sort="12400000">12.4M</td>
+                  <td class="num" data-sort="8.2"><span class="metric-delta up">↑ 8.2%</span></td>
+                  <td><svg class="sparkline" viewBox="0 0 100 24" width="120" height="24" preserveAspectRatio="none"><polyline class="sparkline-path up" points="0,18 14,16 28,17 42,12 56,14 70,9 84,10 100,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                  <td class="num metric-goal" data-sort="15000000">15M</td>
+                  <td><span class="scope-status confirmed">On track</span></td>
+                </tr>
+                <tr>
+                  <td class="metric-name">Engagement Rate</td>
+                  <td class="num metric-val" data-sort="4.6">4.6%</td>
+                  <td class="num" data-sort="-0.3"><span class="metric-delta down">↓ 0.3pp</span></td>
+                  <td><svg class="sparkline" viewBox="0 0 100 24" width="120" height="24" preserveAspectRatio="none"><polyline class="sparkline-path down" points="0,8 14,9 28,11 42,10 56,13 70,14 84,16 100,17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                  <td class="num metric-goal" data-sort="5">5.0%</td>
+                  <td><span class="scope-status pending">At risk</span></td>
+                </tr>
+                <tr>
+                  <td class="metric-name">Conversions</td>
+                  <td class="num metric-val" data-sort="1432">1,432</td>
+                  <td class="num" data-sort="22.8"><span class="metric-delta up">↑ 22.8%</span></td>
+                  <td><svg class="sparkline" viewBox="0 0 100 24" width="120" height="24" preserveAspectRatio="none"><polyline class="sparkline-path up" points="0,21 14,19 28,17 42,15 56,12 70,9 84,6 100,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                  <td class="num metric-goal" data-sort="2000">2,000</td>
+                  <td><span class="scope-status confirmed">On track</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+</body>
+</html>

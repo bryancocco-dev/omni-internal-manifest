@@ -1,0 +1,533 @@
+  /* ══ Media mode surface (#ptMediaMode) — ACTIVE BRIEF 9/1c ═══════
+     Canvas-pane takeover entered the moment the Media wizard starts
+     (both entry points — the Media chip and the "Banner Ads" card in
+     the Create screen / See-all overlay — funnel through the same
+     startFlow(), so there's exactly one open door) and exited when
+     the wizard is backed out at step 1 or the hat collapses mid-
+     wizard (the existing exitWizardToDefault() seam), or the instant
+     generation actually lands (finishGenerate() closes it directly,
+     ahead of exitWizardToDefault's own 500ms settle timer — "the mode
+     surface yields when is-painter-resolved lands").
+
+     Condensed from canvas-graphics' #c4Studio / S8 studio-entrance
+     feel (see that project's own CLAUDE.md — applyStudioBounds /
+     computeGhostLayout / studioRecedeCanvasContent), not a port of
+     its 41k-line studio: current #canvas content recedes via INLINE
+     opacity/filter set directly in JS (openMediaMode/closeMediaMode
+     below), never a toggled class — the S8 lesson is that a class-
+     driven opacity/transform can silently lose to a forwards-fill
+     keyframe already governing the same properties (none exists on
+     #canvas today, but staying inline costs nothing and stays robust
+     if one ever does). Shares #canvas's own grid cell exactly like
+     .pt-editor/.pt-motion above (same data-visible contract) but at a
+     LOWER z-index so opening the P2 editor or P4 motion teaser from a
+     resolved sheet still stacks correctly on top of a still-open
+     media mode surface — never underneath it. */
+  .pt-media-mode {
+    grid-column: 4; grid-row: 1;
+    position: relative;
+    /* Y fix (9/10): the bar is now a sibling in this same grid cell, so
+       the takeover starts under it, exactly as it did when the bar was
+       its own first child (the rail's HISTORY head sat behind the bar). */
+    padding-top: var(--pt-topbar-h, 64px);
+    /* 9/10 (Bryan: "a white gap to the right of the hairline that runs
+       into the darker background") — the pane beneath reaches 6px
+       under the splitter (see #canvas) and is faded while this
+       surface is up, so the strip showed the shell's white. This
+       surface reaches the same 6px; padding cancels the margin, so
+       nothing inside moves. Same for the editor and motion overlays. */
+    margin-left: -6px; padding-left: 6px;
+    /* P6 review fix (9/1): same .chapter-nav-occlusion bug/fix as
+       .pt-editor above (was 15) — the bottom-right pager auto-reveals
+       600ms after load regardless of state and would otherwise float
+       on top of the waiting-wall stage's own bottom-right content. */
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    /* min-width:0 on a bare-`1fr` grid item (.main's column 4 is a
+       plain `1fr`, no minmax(0,…)) — without it a wide in-flow child
+       (.pt-mm-lockup, sized in real px by JS) can inflate the grid
+       track's own auto-minimum past the viewport's actual available
+       width on a shrink, so a later resize never measures smaller
+       than whatever the lockup last rendered at (the classic CSS
+       Grid 1fr-won't-shrink gotcha). */
+    min-width: 0;
+    background: var(--canvas-bg);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 340ms cubic-bezier(0.16,1,0.3,1), visibility 0s linear 340ms;
+  }
+  .pt-media-mode[data-visible="1"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 380ms cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0s;
+  }
+  /* ONE accent sweep on entrance — the literal ch-fr-sweep keyframe
+     (defined once, up near the Chat Hat's own first-reveal system)
+     reused verbatim rather than a second copy, per this project's own
+     REUSE-FIRST rule. pt-mm-entering is added for one shot by
+     openMediaMode() and cleared on a plain setTimeout (same
+     convention ch-first-reveal itself already uses), never left
+     attached at rest. */
+  .pt-media-mode.pt-mm-entering::before {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(105deg,
+      transparent 30%,
+      color-mix(in srgb, var(--accent) 8%,  transparent) 44%,
+      color-mix(in srgb, var(--accent) 20%, transparent) 50%,
+      color-mix(in srgb, var(--accent) 8%,  transparent) 56%,
+      transparent 70%);
+    background-size: 240% 100%;
+    background-position: 130% 0;
+    opacity: 0;
+    animation: ch-fr-sweep 800ms cubic-bezier(0.4,0,0.2,1) 120ms both;
+  }
+  /* Y (9/10) — #ptMediaTopbar carries this class but is no longer a
+     child of #ptMediaMode (it shares .canvas-header's own grid cell
+     instead, painted above it — see .canvas-header/.pt-media-mode
+     placement), so it now drives its own data-visible rather than
+     inheriting the takeover's. grid-column/row + align-self mirror
+     .canvas-header exactly; z-index sits above the takeover surfaces
+     (60) so it stays the canvas top through the whole Media flow,
+     stage included, per Y's own rule. */
+  .pt-mm-topbar {
+    grid-column: 4; grid-row: 1; align-self: start;
+    position: relative; z-index: 61;
+    /* AE.6 — Back's own left edge sits 28px past the hairline, same
+       inset as the band's DESIGN group and the Selects label, not
+       just the 6px splitter reach (kept, folded into the calc) that
+       used to leave it hugging the edge. */
+    margin-left: -6px; padding-left: calc(6px + var(--pt-stage-inset, 28px)); /* AL.3 — shared with .pt-sheet-main's own left padding */
+    background: var(--canvas-bg);
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 16px;
+    height: var(--pt-topbar-h, 64px); padding-top: 0; padding-right: 28px; padding-bottom: 0;
+    border-bottom: 0.5px solid var(--line);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: opacity 280ms cubic-bezier(0.16,1,0.3,1), transform 320ms cubic-bezier(0.16,1,0.3,1), visibility 0s linear 320ms;
+  }
+  .pt-mm-topbar[data-visible="1"] {
+    opacity: 1; transform: translateY(0); visibility: visible; pointer-events: auto;
+    transition: opacity 280ms cubic-bezier(0.16,1,0.3,1), transform 320ms cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0s;
+  }
+  /* AE.7 — a two-line lockup, the same voice the History item (AE.5)
+     uses: name over meta, not one baseline squeezing both into a
+     comma-spliced line. setMmTitleText/updateMmTitle/syncMediaTopbar
+     are untouched — they already write into these same two ids, this
+     is layout + type only. */
+  /* AH.1 (9/14 night) — the lockup returns to ONE line: name, a
+     vertical hairline, then the meta as glyph-led pieces (AE.7's
+     two-line stack is retired). setMmTitleText/updateMmTitle/
+     syncMediaTopbar are still the only writers, into the same two
+     ids — this is layout + type only, plus the suffix now carries
+     the meta's own markup (mmMetaPieceHTML) instead of a plain
+     string. */
+  .pt-mm-title-row {
+    display: flex; flex-direction: row; align-items: center; min-width: 0; overflow: hidden;
+    /* the topbar's own 16px flex gap minus 2px here nets the title
+       14px after the Back pill, per spec (AE.6 moved Back itself). */
+    margin-left: -2px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 260ms cubic-bezier(0.16,1,0.3,1) 240ms, transform 300ms cubic-bezier(0.16,1,0.3,1) 240ms;
+  }
+  .pt-mm-topbar[data-visible="1"] .pt-mm-title-row { opacity: 1; transform: translateY(0); }
+  .pt-mm-title-main {
+    flex-shrink: 0;
+    font-size: 15px; font-weight: 600; color: var(--text-strong);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    transition: opacity 180ms ease;
+  }
+  /* AL.6 — the title is the name alone now: no hairline divider, no
+     size/volume glyphs, no campaign name. .pt-mm-title-suffix stays
+     (its own :empty rule already collapses it to nothing, and
+     setMmTitleText always writes '' into it now) so the element and
+     its id survive for free — only the divider and the meta-piece
+     glyph recipe retire (mmMetaPieceHTML/mmVolMetaHTML, above). */
+  .pt-mm-title-suffix {
+    display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; letter-spacing: 0.02em; color: var(--text-subtle);
+    white-space: nowrap;
+    transition: opacity 180ms ease;
+  }
+  .pt-mm-title-suffix:empty { display: none; }
+  .pt-mm-title-main.is-changing, .pt-mm-title-suffix.is-changing { opacity: 0; }
+  .pt-mm-topbar-spacer { flex: 1; }
+  /* §BS (coordinator/Bryan, 9/18: "remove the History rail entirely")
+     — this stage's own second column (the boards rail, same track as
+     .pt-sheet-body's old one) retires with the rail's HTML mount; one
+     track again, so .pt-mm-stage-main (and the ghosts/grid/caption
+     trio inside it) takes the full width and centres in it, no dead
+     gutter where the rail used to sit. */
+  .pt-mm-stage {
+    flex: 1; min-height: 0; min-width: 0;
+    display: flex;
+    padding: 0 24px; /* §BS — both sides now that the rail's own bare right edge is gone; matches the left inset the bar's Back pill already sits at */
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 340ms cubic-bezier(0.16,1,0.3,1) 360ms, transform 380ms cubic-bezier(0.16,1,0.3,1) 360ms;
+  }
+  .pt-media-mode[data-visible="1"] .pt-mm-stage { opacity: 1; transform: scale(1); }
+  .pt-mm-stage-main {
+    position: relative; /* the viewfinder cells (.pt-mm-ghosts) are laid out absolutely inside it */
+    flex: 1;
+    min-width: 0; min-height: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px;
+  }
+
+  /* ══ 9/10 — MEDIA MODE RESTING STATE: the studio's blank VIEWFINDER
+     (Bryan: "we generally have the right side of canvas have a blank
+     space that will warp to look like a template of the outputs based
+     on the selections in the chat hat… same style thing for the media
+     banners"). One cell per unit the brief will make (concepts ×
+     variants), at the board size's aspect, laid out by
+     computeGhostLayout (the studio's best-fit, with the sheet's own
+     columns); a size change MORPHS the cells (left/top/width/height
+     transitions), never rebuilds them. The blueprint board this
+     replaces is archived behind MM_REST_STYLE (_qa/archive/blueprint-
+     board).
+     §BS (amended, coordinator/Bryan 9/18) — the cell's OWN content is
+     no longer a drawn viewfinder (paper + thirds + accent wash + a
+     blue wireframe layout glyph, canvas-graphics' .c4-studio-ghost/
+     .c4-vf-* family, formerly here) — it is a real rendered banner
+     blank (renderTemplateBlankCellContent, 13-editor-studio-a-
+     framing.js), neutral grey with no logo until a Style is picked.
+     .pt-vf-cell below stays exactly what it was: the shared box/
+     reveal/morph chrome the cell sits in, whatever is drawn inside. ══ */
+  /* W.1 — inset 0, not 24: .pt-mm-stage-main carries no padding of its
+     own now (the stage's own 24px padding + 24px column gap already
+     clear it, same total as before the rail existed). */
+  .pt-mm-ghosts { position: absolute; inset: 0; pointer-events: none; }
+  /* AE.2 — the skeleton's own per-row wrapper for .pt-vf-cell units
+     (skelConceptRowsHTML): same absolute+inset host .pt-mm-ghosts
+     gives the resting cells, so left/top/width/height read against
+     the same .pt-bp-sheet origin the row's other blocks use, and each
+     row's cells are a flat run of siblings (nothing else in between)
+     so the breathe/ambient :nth-child rules above stagger correctly. */
+  .pt-vf-cells { position: absolute; inset: 0; pointer-events: none; }
+  /* AE.2 — de-scoped from .pt-mm-ghosts to a bare shared class: the
+     build skeleton's own units (skelConceptRowsHTML) use this same
+     rule set now, not a second copy, so "the skeleton IS the resting
+     template" is one recipe, not two kept in sync by hand. */
+  .pt-vf-cell {
+    position: absolute;
+    background: linear-gradient(180deg, #fbfbfb 0%, #f3f3f4 100%);
+    border: 0.5px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      left 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      top 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      width 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      height 380ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body[data-theme="dark"] .pt-vf-cell {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  }
+  .pt-vf-cell.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 22px 60px rgba(15, 23, 42, 0.16);
+    animation: c4-ghost-breathe 7s ease-in-out infinite;
+  }
+  /* Compositor-only breathe, phase-staggered so the grid ripples. Each
+     cell's own direct-parent wrapper is a flat run of .pt-vf-cell
+     siblings only (.pt-mm-ghosts itself, or the skeleton's own
+     per-row .pt-vf-cells wrapper) so :nth-child keeps meaning "the
+     Nth cell" in both places. */
+  @keyframes c4-ghost-breathe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-2px) scale(1.008); }
+  }
+  .pt-vf-cell.is-visible:nth-child(1) { animation-delay: 900ms; }
+  .pt-vf-cell.is-visible:nth-child(2) { animation-delay: 2300ms; }
+  .pt-vf-cell.is-visible:nth-child(3) { animation-delay: 3700ms; }
+  .pt-vf-cell.is-visible:nth-child(4) { animation-delay: 5100ms; }
+  .pt-vf-cell.is-visible:nth-child(5) { animation-delay: 6500ms; }
+  .pt-vf-cell.is-visible:nth-child(6) { animation-delay: 1600ms; }
+  .pt-vf-cell.is-visible:nth-child(7) { animation-delay: 3000ms; }
+  .pt-vf-cell.is-visible:nth-child(8) { animation-delay: 4400ms; }
+  .pt-vf-cell.is-visible:nth-child(9) { animation-delay: 5800ms; }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-vf-cell.is-visible { animation: none !important; }
+  }
+  .pt-mm-grid {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    align-items: flex-end; justify-content: center;
+    max-width: 880px;
+    min-width: 0; /* same 1fr-grid-track fix as .pt-media-mode/.pt-mm-stage above — this is the actual flex item holding the wide .pt-mm-lockup child */
+  }
+  /* SIZES-step reshape: 3 concept rows (A/B/C) x one matte per checked
+     size — a cheap, deterministic preview of buildConceptSheetDOM's
+     own eventual shape, never randomized, never re-fetched. */
+  .pt-mm-grid.pt-mm-grid-rows { flex-direction: column; align-items: center; gap: 16px; position: relative; }
+  /* D — one hairline rail runs the FULL stack (row A's top to row C's
+     bottom), not three separate rails, so the letters read as index
+     marks along a structural line instead of floating discs. Anchored
+     under the fixed 20px letter lane below — every row is the same
+     intrinsic width, so all three share one left edge and the rail
+     lines up under each without per-row math. */
+  .pt-mm-grid-rows::before {
+    content: '';
+    position: absolute;
+    left: 10px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--line-solid);
+    z-index: 0;
+  }
+  .pt-mm-ghost-row { display: flex; align-items: flex-end; gap: 16px; }
+  /* D — was a 26px filled disc inherited wholesale from .pt-concept-
+     letter (the resolved sheet's own row marker, untouched there); a
+     quiet mono mark sitting ON the rail above reads as structural
+     instead. The canvas-bg knockout is what makes it interrupt the
+     line rather than just float beside it, same as a label breaking a
+     ruled line on a spec drawing. */
+  .pt-mm-ghost-row-letter {
+    align-self: center;
+    position: relative;
+    z-index: 1;
+    width: 20px;
+    height: auto;
+    border-radius: 0;
+    background: var(--canvas-bg);
+    color: var(--text-subtle);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    opacity: 1;
+  }
+  .pt-mm-ghost { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  /* D — dashed 1px frame, square corners (B's icon-redraw family: no
+     rx, no rounded "friendly" corners), no fill — a schematic outline
+     on the canvas, not a loading card. The accent-tinted breathing
+     pulse (::before) was the actual "blue" in "blue-grid squares";
+     this is a resting placeholder, not a generation-in-progress
+     state, so it's off here — .pt-img-shimmer elsewhere (Studio's
+     blank banner, etc.) keeps the pulse untouched. The thirds
+     hairlines stay — a rule grid is exactly what a schematic wants —
+     recapped at the spec's 6% ink in both themes, independent of what
+     that shared class uses everywhere else it appears. */
+  .pt-mm-ghost .pt-img-shimmer {
+    margin-top: 0;
+    border: 1px dashed var(--line-solid);
+    border-radius: 0;
+    background: transparent;
+  }
+  .pt-mm-ghost .pt-img-shimmer::before { content: none; }
+  .pt-mm-ghost .pt-vf-third { background: rgba(15, 23, 42, 0.06); }
+  body[data-theme="dark"] .pt-mm-ghost .pt-vf-third { background: rgba(255, 255, 255, 0.06); }
+  .pt-mm-ghost-size {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; color: var(--text-subtle);
+  }
+  /* Zero-checked state (P6c) — a quiet dashed 300×250 outline per row,
+     same dashed-row language as .pt-concept-ghost/.pt-addsizes-chip
+     elsewhere in this file (var(--line-solid), no fill). D — square
+     corners now, to match the populated box's own frame above. */
+  .pt-mm-ghost-dashed-box {
+    border: 1px dashed var(--line-solid);
+    border-radius: 0;
+    opacity: 0.75;
+  }
+  /* A leaving ghost/dashed-slot, cloned to a position:fixed overlay by
+     mmLeaveClone() so it can fade out in place after the real grid
+     underneath has already reflowed without it — same recipe as
+     .ca-fly-clone above. */
+  .pt-mm-flip-leave {
+    position: fixed;
+    z-index: 9997;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .pt-mm-caption {
+    font-size: 12.5px; color: var(--text-subtle); text-align: center;
+    transition: opacity 220ms ease;
+  }
+  .pt-mm-caption:empty { display: none; }
+  /* ── IDLE resting-state — ambient floating OMNI logo (9/1 fix) ──────
+     Bryan rejected the P6b 14-matte "waiting wall" below outright:
+     "too dramatic — keep the ambient floating omni logo we've had in
+     other projects." Replaced with .pt-mm-empty, a plain centered
+     block that clones the shell's own .ch-empty-state idle mark
+     (.ch-empty-logo-wrap + .ch-empty-logo SVG, verbatim — see
+     renderMmGhostsDefault()) so the Media wizard's idle stage and the
+     bare Chat Hat canvas read as the exact same resting state, driven
+     by the exact same CSS (the .ch-empty-logo-wrap/.ch-empty-logo
+     rules up near L20387/L20489 already target `.pt-mm-empty …` as an
+     alternate ancestor — nothing new needed there). .pt-mm-grid stays
+     its bare base class (flex row, single centered child) — no
+     -wall/-rows modifier. */
+  body[data-app="chat-hat"] .pt-mm-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a0a0a;
+  }
+  body[data-theme="dark"] body[data-app="chat-hat"] .pt-mm-empty,
+  body[data-app="chat-hat"][data-theme="dark"] .pt-mm-empty {
+    color: #ffffff;
+  }
+
+  /* ══ M / M.1 / M.2 — resting canvas BLUEPRINT BOARD ══════════════
+     Replaces the settings row's own use of the A/B/C ghost board (D,
+     above — untouched here, it still drives the Guided SIZES step's
+     preview at wizardStep===3; nothing in this block is shared with
+     it). M composed the nine test sizes as one hairline technical
+     drawing; M.1 reshaped it into a two-band lockup in one ink. M.2
+     (Bryan, 9/10: "fill the right side of the page with these designs
+     so it's sort of like a tetris board of these shapes but with space
+     between — clean", then "make the shapes light grey colors and have
+     little areas of blue animating along the hairlines of the shapes")
+     packs the stage edge to edge with real ad sizes (bpSolveBoard),
+     draws every line in ONE light grey, tags each unit with its size
+     above-left instead of the old dimension rails (a packed board has
+     no room for rails in its gutters), and lays a travelling accent
+     trace over every frame (.pt-bp-trace — see bpTraceHTML). ══ */
+  .pt-mm-grid {
+    transition: opacity 220ms cubic-bezier(0.4,0,0.2,1), filter 240ms cubic-bezier(0.4,0,0.2,1);
+  }
+  /* Same recipe .pt-hat-wizard-body.is-swapping already uses — the
+     house blur-fade, not a bespoke motion, per the plan's own "no new
+     motion beyond the house blur-fade." Only the size/template pills
+     ever trigger it (renderMmBlueprintSheet diffs the two before
+     re-touching the DOM); the colour pill never does, by construction. */
+  .pt-mm-grid.is-swapping { opacity: 0.15; filter: blur(4px); pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-mm-grid.is-swapping { transition: none !important; opacity: 1 !important; filter: none !important; }
+  }
+  /* The board is sized to the stage by JS; the grid's own 880px cap
+     (right for the ghost boards) must not clip it on a wide window. */
+  .pt-mm-grid:has(> .pt-bp-sheet) { max-width: none; }
+  .pt-bp-sheet {
+    position: relative;
+    --bp-ink: #0f172a; /* the one colour the whole board draws in, as a light tint (below) */
+  }
+  body[data-theme="dark"] .pt-bp-sheet { --bp-ink: #ffffff; }
+  .pt-bp-unit {
+    position: absolute;
+    /* ONE light grey, GHOSTED (review 9/10: "make the shapes light grey
+       colors" → "make the default color of the hairlines much lighter"
+       → "really ghost this back, very much almost background aura vs a
+       thing you really look at"): frames, safe areas, zones and rules
+       are the ink at 8%, the tag at 20%, the hatch at 2.5% — a texture
+       the eye reads as the room's wallpaper, not a drawing it studies.
+       No unit is lit; the size pill already says which size is the
+       test size. The accent is reserved for the trace, itself held to
+       half strength (bpTraceHTML) so it drifts rather than shines. */
+    --bp-line:  color-mix(in srgb, var(--bp-ink) 5.5%, transparent); /* 9/10: "even a bit lighter" — was 8 */
+    --bp-text:  color-mix(in srgb, var(--bp-ink) 14%, transparent);
+    --bp-frame: var(--bp-line);
+    --bp-zone:  var(--bp-line);
+    --bp-hatch: color-mix(in srgb, var(--bp-ink) 1.6%, transparent);
+  }
+  /* .is-selected still lands on the test size's first unit (the JS
+     keeps the hook) but draws nothing different by design. */
+  .pt-bp-unit.is-selected { --bp-frame: var(--bp-line); }
+  .pt-bp-frame { position: absolute; inset: 0; border: 1px solid var(--bp-frame); }
+  .pt-bp-safe { position: absolute; border: 1px dashed var(--bp-zone); }
+  .pt-bp-hatch {
+    position: absolute;
+    background-image: repeating-linear-gradient(45deg, var(--bp-hatch) 0 1px, transparent 1px 7px);
+  }
+  /* logo/CTA boxes + the legal slot — one hairline zone recipe. Legal
+     is the dashed variant, same "the slot itself, not nothing" idea
+     e32c863 already used on the real units. Outlines only — M.1's own
+     "no grey fills": there is nothing here to fill. */
+  .pt-bp-zone {
+    position: absolute;
+    border: 1px solid var(--bp-zone);
+  }
+  .pt-bp-zone--legal { border-style: dashed; }
+  /* Headline is two 1px rules (one on STRIP, which has no room for a
+     second) — a true hairline outline, not a filled block, per M.1's
+     own "no grey fills." Doubles as the split/type boundary hairline
+     between copy and image. */
+  .pt-bp-rule { position: absolute; background: var(--bp-zone); }
+  .pt-bp-diagline { position: absolute; inset: 0; overflow: visible; }
+  .pt-bp-diagline line { stroke: var(--bp-zone); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  /* The SPOTLIGHT WAVE (9/10, Bryan: "a subtle wave of color using the
+     gradient you built that affects the line work of multiple banners
+     like a spotlight moving around behind the canvas"). .pt-bp-spot is
+     a disc-masked window that wanders over the board (bpWaveStart
+     drives its transform); inside it .pt-bp-wave is a second copy of
+     every unit drawn in the accent, counter-translated so it stays
+     registered over the grey board beneath — the line work under the
+     disc shows blue, fading back to the grey at the disc's soft edge.
+     ::before is the light itself: a faint accent wash behind the lines.
+     Both moves are transforms on composited layers. */
+  .pt-bp-spot {
+    position: absolute; left: 0; top: 0;
+    pointer-events: none;
+    will-change: transform;
+    -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, rgba(0,0,0,0.92) 22%, rgba(0,0,0,0.42) 58%, transparent 100%);
+            mask-image: radial-gradient(circle closest-side, #000 0%, rgba(0,0,0,0.92) 22%, rgba(0,0,0,0.42) 58%, transparent 100%);
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  .pt-bp-spot::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle closest-side, color-mix(in srgb, var(--accent) 3%, transparent), transparent 72%);
+  }
+  .pt-bp-wave { position: absolute; left: 0; top: 0; will-change: transform; }
+  .pt-bp-wave .pt-bp-unit {
+    /* 9/10: "even a bit lighter including the blue highlight" — the spotlight's blue at two thirds of what it was */
+    --bp-line:  color-mix(in srgb, var(--accent) 34%, transparent);
+    --bp-text:  color-mix(in srgb, var(--accent) 36%, transparent);
+    --bp-hatch: color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-bp-spot { display: none; }
+  }
+  /* The size tag — mono, above-left of each frame, the way a CAD sheet
+     labels every part. Carries the REAL spec size, never the render px. */
+  .pt-bp-tag {
+    position: absolute;
+    left: 0; top: -12px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px; line-height: 1; letter-spacing: 0.02em;
+    color: var(--bp-text);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  /* The trace: a stack of rects over the frame, every one the same
+     accent stroke dashed to a run centred on the same point, each run
+     longer and fainter than the one inside it — together they read as
+     one smooth ramp from the hairline's own grey up to the accent and
+     back (Bryan, 9/10: "a gradient matching the hairline color, into a
+     brighter blue, back into the hairline color"); SVG cannot run a
+     gradient along a path, so the ramp is built from opacity rings
+     instead. All rings share one dash-offset animation so the ramp
+     travels the perimeter as one. Dash patterns, opacities, duration,
+     delay and direction are set inline per unit by bpTraceHTML; only
+     the look lives here. */
+  .pt-bp-trace { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+  .pt-bp-trace rect {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.25;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes pt-bp-trace-cw  { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -3000; } }
+  @keyframes pt-bp-trace-ccw { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 3000; } }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-bp-trace { display: none; }
+  }
+

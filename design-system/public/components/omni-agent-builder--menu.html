@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  OMNI component: menu
+  Project: Agent Builder
+  Note: .workspace-menu — org switcher popover (active + idle item)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — menu · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="workspace-menu" id="workspaceMenu" role="menu" style="position:static;display:block;opacity:1;visibility:visible;transform:none">
+        <button class="workspace-menu-item active" role="menuitem" aria-current="true">
+          <span class="wsm-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M5 16 Q 5 8 9.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19 16 Q 19 8 14.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 16 L 12 8 L 15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="wsm-name">Omnicom Precision Marketing</span>
+        </button>
+        <button class="workspace-menu-item" role="menuitem">
+          <span class="wsm-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M5 16 Q 5 8 9.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19 16 Q 19 8 14.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 16 L 12 8 L 15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="wsm-name">Critical Mass</span>
+        </button>
+      </div>
+</body>
+</html>

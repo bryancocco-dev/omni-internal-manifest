@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+  OMNI component: toggle
+  Project: Brief
+  Note: .dip-switch / .image-model-item — image-model selector rows each paired with a dip-switch toggle (one .is-on)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — toggle · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="image-model-menu" id="imageModelMenu" role="menu" style="position:static;opacity:1;visibility:visible;transform:none;pointer-events:auto">
+                  <button class="image-model-item" role="menuitemcheckbox" data-image-model="Imagen 4" aria-checked="false">
+                    <span class="image-model-item-text">
+                      <span class="image-model-item-title">Imagen 4</span>
+                      <span class="image-model-item-desc">Google's latest Imagen model.</span>
+                    </span>
+                    <span class="dip-switch" data-on="0" aria-hidden="true"></span>
+                  </button>
+                  <button class="image-model-item is-active" role="menuitemcheckbox" data-image-model="Nano Banana 2" aria-checked="true">
+                    <span class="image-model-item-text">
+                      <span class="image-model-item-title">Nano Banana 2</span>
+                      <span class="image-model-item-desc">Google's latest Gemini model. Designed for speed and efficiency.</span>
+                    </span>
+                    <span class="dip-switch is-on" data-on="1" aria-hidden="true"></span>
+                  </button>
+                  <button class="image-model-item" role="menuitemcheckbox" data-image-model="Nano Banana Pro" aria-checked="false">
+                    <span class="image-model-item-text">
+                      <span class="image-model-item-title">Nano Banana Pro</span>
+                      <span class="image-model-item-desc">The highest quality model available for editing images.</span>
+                    </span>
+                    <span class="dip-switch" data-on="0" aria-hidden="true"></span>
+                  </button>
+                </div>
+</body>
+</html>

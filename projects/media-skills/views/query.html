@@ -1,0 +1,1554 @@
+<style>
+  /* ============ qv- : Query vignette (PLAN.md R11 + R11b + R11c) ====
+     Standalone auto-playing vignette — no F39 cover, no tail. The
+     canvas starts empty; the chat timeline drives it into being.
+     Style rules follow R10 (0.5px hairlines, weights 600/400,
+     var(--ms-mono), var(--font-sans), canonical radii/easing).
+
+     R11b reworked two things (canvas modules below are untouched):
+     1. Chat messages now use the shell's OWN native message anatomy
+        (.msg/.bubble/.msg-head/.msg-avatar/.thinking/.ch-thought-text
+        — copied from index.html's _msgUserBubble/_msgThoughtLine/
+        _typeInto/_msgRichResponse, ~line 40282) instead of the
+        ms.css .ms-msg transcript styling, so this reads like every
+        other manifest project's chat.
+     2. The long-wait treatment moved OUT of the chat stream and INTO
+        the Chat Hat (#chatAuxPanel): the hat starts closed on this
+        route, then "fires open" — the shell's own real ch-first-
+        reveal class sequence, see index.html's ChatHatAutoExpand /
+        openChatHat (~line 40904) — at the warning beat, to deliver
+        the clock/title/body copy + the 4-stage progress list. See
+        the "Chat Hat integration" CSS block and the script below.
+
+     R11c added two more:
+     1. The hat header's OWN `.chat-aux-title` (its text-swap reuses the
+        shell's existing .is-changing fade, copied from _setTaskTitle
+        ~line 40082) now carries the wait/ready state directly —
+        "BUILDING AUDIENCES" while the 4 stages run, "3 AUDIENCES
+        READY" once they finish — so the wait panel no longer needs its
+        own title/clock row (deleted; it now leads with the body copy).
+     2. At the 0:20 mark the 3 skeleton cards resolve into real audience
+        cards — same crossfade-over-an-absolute-overlay mechanism as
+        the query builder's own skeleton swap below (.qv-card-skel
+        overlays .qv-card-real, which already sits behind it at
+        opacity 0 so the card's footprint never shifts), staggered
+        240ms apart. Card grammar copies views/aud-list.html's
+        .audl-card post-OUR-WORLD-PASS (mono rank, 20px/600 name,
+        ✦AI chip, 32px/400 stats with mono uppercase labels).
+
+     R11d added the STOP control + settle-to-default:
+     1. schedule() now returns cancellable timer ids (pendingTimers);
+        cancelPendingTimers() clears everything still pending.
+     2. #sendBtn morphs into a stop-square icon for the duration of the
+        live build (runTimeline() start → resolveCards()/stopBuild(),
+        whichever comes first) via ONE capture-phase click listener
+        wired at setup — mirrors ms.js's own #hotkeyUp/Down takeover
+        pattern (capture + stopImmediatePropagation + a flag guard that
+        no-ops instantly on every other route/state).
+     3. stopBuild() cancels the run, freezes the stage list at whatever
+        was in flight (the 'stopped' clock state — hands paused
+        mid-sweep, muted tone), swaps the wait body to the interrupted
+        copy, flips the hat header to GENERATION STOPPED, CLEARS every
+        unfinished canvas module (skeleton audiences always; the query
+        too if it never filled, restoring the fresh-canvas OMNI mark),
+        and appends one plain (non-typed) assistant message.
+     4. Both terminal states (resolved OR stopped) settle back to the
+        hat's closed default — a 4s linger for a completed build, 1.4s
+        for a stop (scheduleClose) — tracked via a `settled` flag so
+        re-entering later
+        always renders the correct instantaneous state (still running /
+        resolved-not-settled / stopped-not-settled / settled).
+     5. Resolved cards get a passive hover-tint wash (no navigation —
+        matches aud-list's own hover-only-no-lift treatment).
+
+     R11e rebuilt the resolved card to match views/aud-list.html's
+     .audl-card EXACTLY: three-zone row (photo | body | stats column).
+     The body now carries the audience's own boolean builder panel
+     (same six qv-chip terms as the page's query module, now with the
+     leading colored status-dot aud-list's own chips have) instead of
+     the stats sitting inline under the blurb — stats move to their own
+     fixed-width right column, vertically centered. All three cards
+     repeat the identical query, exactly like the reference page does.
+     Skeletons were rebuilt to the same three-zone footprint so the
+     resolve crossfade still causes zero layout shift. */
+
+  .qv-canvas { position: relative; display: flex; flex-direction: column; }
+
+  /* ---- eyebrow + title header ---- */
+  .qv-head { display: flex; flex-direction: column; gap: 6px; }
+  .qv-eyebrow {
+    font: 500 10px/1.6 var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-subtle);
+  }
+  .qv-title {
+    margin: 0;
+    font: 600 28px/1.25 var(--font-sans);
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
+  }
+
+  /* The shell's persona-flow rule right-aligns injected user bubbles
+     but pads their interior 176px on the right (tuned to that flow's
+     long copy). Ours shrink-wrap to the text instead, hugging the
+     right edge like every other compact user bubble. */
+  .chat-stream .msg.user.qv-log > .bubble { padding-right: 12px; }
+
+  /* ---- brand-new-session state: bare canvas, centered OMNI mark.
+     Look + position copied EXACTLY from canvas-graphics' fresh-canvas
+     empty state (.c4-empty-state / c4-omni-fade): 40px wordmark, full
+     opacity, centered in the full canvas viewport with 48px padding,
+     1100ms blur-fade entrance. Fades out as the first module arrives;
+     stays if the user stops before anything reached the canvas. ---- */
+  .qv-fresh {
+    min-height: calc(100vh - 190px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 48px;
+    transition: opacity 600ms cubic-bezier(.16,1,.3,1);
+  }
+  .qv-fresh .omni-logo {
+    height: 40px;
+    width: auto;
+    opacity: 0;
+    animation: qv-omni-fade 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes qv-omni-fade {
+    0%   { opacity: 0; filter: blur(14px); }
+    60%  { filter: blur(0); }
+    100% { opacity: 1; filter: blur(0); }
+  }
+  .qv-fresh.qv-fresh-out { opacity: 0; }
+  .qv-fresh.qv-fresh-gone { display: none; }
+  body.ms-motion-off .qv-fresh { transition: none; }
+  body.ms-motion-off .qv-fresh .omni-logo { animation: none; opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .qv-fresh .omni-logo { animation: none; opacity: 1; }
+  }
+
+  /* ---- module shell: hidden until the timeline reveals it — the
+     canvas literally has nothing in it until the chat says so. ---- */
+  .qv-mod { display: none; }
+  /* The runtime's wrapMattes backing must vanish with it — otherwise
+     an empty matte band sits on the canvas until the reveal beat. */
+  .query-view .ms-matte:has(> .qv-mod:not(.qv-shown)) { display: none; }
+  .qv-mod.qv-shown {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(9px);
+    transition:
+      opacity 700ms cubic-bezier(.16,1,.3,1),
+      transform 700ms cubic-bezier(.16,1,.3,1),
+      filter 805ms cubic-bezier(.16,1,.3,1);
+  }
+  .qv-mod.qv-shown.qv-in { opacity: 1; transform: none; filter: none; }
+
+  /* ---- boolean builder: audl-builder visual grammar (views/aud-list.html),
+     qv- prefixed. Chip class is exactly "qv-chip" — the shell's chip-menu
+     system (ms.js CHIP_SELECTOR / ATTR_MAP) is already wired to it. ---- */
+  .qv-builder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 0.5px solid var(--line);
+    border-radius: 8px;
+    background: var(--card-bg);
+  }
+  .qv-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-bottom: 8px; }
+  .qv-source-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 8px 4px 4px; border-radius: 4px;
+    background: var(--accent-soft); color: var(--accent);
+    font: 400 10px/1.6 var(--ms-mono);
+    opacity: 0; transform: scale(0.6);
+    transition: transform 600ms cubic-bezier(.34,1.56,.64,1), opacity 400ms ease;
+  }
+  .qv-source-chip.qv-pop-in { opacity: 1; transform: scale(1); }
+  .qv-source-chip svg { width: 8px; height: 10px; color: currentColor; flex: none; }
+
+  .qv-term-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    opacity: 0; transform: translateX(-10px);
+    transition: opacity 450ms cubic-bezier(.16,1,.3,1), transform 450ms cubic-bezier(.16,1,.3,1);
+  }
+  .qv-term-row.qv-row-in { opacity: 1; transform: none; }
+  .qv-op { font: 400 12px/1.6 var(--ms-mono); color: var(--text-strong); }
+  .qv-chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 4px;
+    border-radius: 4px; background: var(--panel-bg-3); color: var(--text-subtle);
+    font: 400 10px/1.6 var(--ms-mono); cursor: pointer;
+    opacity: 0; transform: scale(0.6);
+    transition: transform 600ms cubic-bezier(.34,1.56,.64,1), opacity 400ms ease;
+  }
+  .qv-chip.qv-pop-in { opacity: 1; transform: scale(1); }
+  .qv-chip .qv-ico-folder { width: 10px; height: 9px; color: var(--text-subtle); flex: none; }
+  .qv-chip .qv-ico-chevron { width: 7px; height: 4px; color: var(--text-subtle); margin: 0 1px; flex: none; }
+  .qv-expand { position: absolute; top: 10px; right: 12px; width: 14px; height: 14px; color: var(--text-body); opacity: 0.85; }
+
+  /* ---- smooth reply typewriter: the full text is laid out up front as
+     hidden per-glyph spans, so the browser fixes every wrap point
+     immediately; glyphs are then revealed one at a time by opacity.
+     The old per-character text-node append reflowed on every keystroke,
+     making a word visibly jump to the next line the instant it stopped
+     fitting the current line. ---- */
+  .qv-glyph { opacity: 0; transition: opacity 240ms ease; }
+  .qv-glyph.qv-glyph-in { opacity: 1; }
+  body.ms-motion-off .qv-glyph { opacity: 1; transition: none; }
+
+  /* ---- query builder skeleton: the module comes in as placeholder
+     bars, then the real content crossfades in ALL AT ONCE (no per-chip
+     stagger). The skeleton overlays the builder absolutely; the real
+     chips sit behind it already at opacity 0, so the card holds its
+     final height from the first frame — the swap causes no layout
+     shift, just a clean crossfade. ---- */
+  .qv-qskel {
+    position: absolute; inset: 12px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: opacity 380ms ease;
+  }
+  .qv-qskel.qv-qskel-out { opacity: 0; pointer-events: none; }
+  .qv-qskel-row { display: flex; align-items: center; gap: 8px; }
+  .qv-qskel-row.qv-qskel-sources { padding-bottom: 8px; }
+  .qv-qskel-pill { height: 20px; border-radius: 4px; background: var(--panel-bg-3); flex: none; }
+  .qv-qskel-src { height: 18px; }
+  .qv-qskel-op { height: 12px; border-radius: 3px; background: var(--panel-bg-3); opacity: 0.5; flex: none; }
+
+  /* ---- generating module: skeleton cards ---- */
+  .qv-skel-row { display: flex; flex-direction: column; gap: 16px; }
+  /* R11c: each card slot now holds TWO layers — the skeleton
+     (.qv-card-skel, absolutely positioned at the same inset as the
+     card's own padding) and the real content (.qv-card-real, normal
+     flow, sitting behind it at opacity 0). The real content is what
+     gives the card its height, so the crossfade at resolve time is a
+     pure opacity swap with zero layout shift — same idea as .qv-qskel
+     over the query builder above. R11e rebuilt both layers to the same
+     three-zone geometry (photo | body-with-builder-placeholder | stats
+     column) so this still holds at the new, taller footprint. */
+  .qv-skel-card { position: relative; padding: 24px; border-radius: 8px; background: var(--card-bg); }
+  /* Cards cascade in behind the module reveal — the build stays
+     legible card by card instead of landing as one block. */
+  .qv-mod.qv-shown .qv-skel-card {
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 500ms cubic-bezier(.16,1,.3,1), transform 500ms cubic-bezier(.16,1,.3,1);
+  }
+  .qv-mod.qv-shown .qv-skel-card:nth-child(2) { transition-delay: 240ms; }
+  .qv-mod.qv-shown .qv-skel-card:nth-child(3) { transition-delay: 480ms; }
+  .qv-mod.qv-shown.qv-in .qv-skel-card { opacity: 1; transform: none; }
+  body.ms-motion-off .qv-mod .qv-skel-card,
+  .qv-mod:not(.qv-shown) .qv-skel-card { transition: none; opacity: 1; transform: none; }
+
+  /* R11e: three-zone skeleton — photo box | name/desc bars + a
+     builder-shaped placeholder block | a right-hand stats column —
+     mirrors the real card's own anatomy below so the resolve
+     crossfade (pure opacity swap) reads as a clean like-for-like swap. */
+  .qv-card-skel { position: absolute; inset: 24px; display: flex; gap: 24px; transition: opacity 380ms ease; }
+  .qv-skel-photo { flex: none; width: 200px; height: 200px; border-radius: 6px; }
+  .qv-skel-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .qv-skel-bar { height: 13px; border-radius: 4px; }
+  .qv-skel-bar--name { width: 42%; height: 18px; }
+  .qv-skel-bar--desc { width: 92%; }
+  .qv-skel-bar--desc2 { width: 68%; }
+  .qv-skel-builder { height: 96px; border-radius: 8px; margin-top: 6px; }
+  /* Row, not stacked — mirrors .qv-card-stats' own side-by-side pair so
+     the resolve crossfade reads as the same two blocks lighting up in
+     place, not a rearrangement. */
+  .qv-skel-stats-col { flex: none; width: 180px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; }
+  .qv-skel-stat { width: 84px; height: 34px; border-radius: 6px; }
+
+  .qv-shimmer { position: relative; overflow: hidden; background: var(--panel-bg-3); }
+  .qv-shimmer::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--text-strong) 10%, transparent), transparent);
+    transform: translateX(-100%);
+    animation: qv-shimmer-sweep 1800ms ease-in-out infinite;
+  }
+  @keyframes qv-shimmer-sweep { 100% { transform: translateX(220%); } }
+  .qv-skel-card:nth-child(2) .qv-shimmer::after { animation-delay: 200ms; }
+  .qv-skel-card:nth-child(3) .qv-shimmer::after { animation-delay: 400ms; }
+  /* R11d: a stopped build abandons its skeletons mid-shimmer — freeze
+     the sweep (flat placeholder bars) so they read as visibly stuck,
+     never resolving. Scoped to genMod only via this class on the
+     module itself. */
+  /* Cancel clears unfinished work: a module fading down before its
+     qv-shown removal (the :has matte rule takes the backing with it). */
+  .qv-mod.qv-mod-clearing {
+    opacity: 0 !important; transform: translateY(8px) !important;
+    filter: none !important;
+    transition: opacity 320ms cubic-bezier(.16,1,.3,1), transform 320ms cubic-bezier(.16,1,.3,1) !important;
+  }
+
+  /* ---- resolved card (R11e): matches views/aud-list.html's
+     .audl-card post-OUR-WORLD-PASS EXACTLY — three-zone row: photo |
+     body (rank + name, blurb, the audience's own boolean builder panel
+     — no ✦AI chip, Bryan removed those deliberately) | a fixed-width
+     stats column, vertically centered. Fades in as the skeleton
+     overlay fades out (one .qv-card-resolved toggle on the card drives
+     both), staggered 240ms/480ms to match the entrance cascade
+     above. ---- */
+  .qv-card-real { display: flex; gap: 24px; opacity: 0; transition: opacity 420ms ease; }
+  .qv-skel-card.qv-card-resolved .qv-card-skel { opacity: 0; pointer-events: none; }
+  .qv-skel-card.qv-card-resolved .qv-card-real { opacity: 1; }
+  .qv-skel-card:nth-child(2) .qv-card-skel,
+  .qv-skel-card:nth-child(2) .qv-card-real { transition-delay: 240ms; }
+  .qv-skel-card:nth-child(3) .qv-card-skel,
+  .qv-skel-card:nth-child(3) .qv-card-real { transition-delay: 480ms; }
+
+  /* R11d §5: passive hover polish only — hover-tint wash, no lift, no
+     border change, genuinely nowhere to navigate. Matches
+     views/aud-list.html's .audl-card:hover (OUR-WORLD-PASS override,
+     ~line 423-424) exactly. Scoped to resolved cards only — never
+     while still shimmering. */
+  .qv-skel-card.qv-card-resolved { transition: background 180ms cubic-bezier(.16,1,.3,1); }
+  .qv-skel-card.qv-card-resolved:hover { background: var(--hover-tint); }
+
+  /* Both dimensions are hardcoded px, not percentages — the shell's own
+     image-swap tool (index.html scanLooseImages(), ~line 42532) wraps
+     any "large" <img> in its own `<span style="display:inline-block;
+     ...">` (no explicit height) to host its hover Edit toolbar, which
+     lands BETWEEN this box and the <img> once the card is on-screen.
+     A percentage width/height on the <img> then resolves against that
+     auto-height span instead of against .qv-card-photo, and silently
+     falls back to an aspect-ratio-derived auto (verified live: a
+     correct 200×200 box ended up holding an img measured ~200×113 for
+     the landscape source here, exposing the placeholder background in
+     the gap). Hardcoded px on both axes doesn't need to resolve
+     against anything, so it's unaffected by whatever the swap tool
+     wraps around it. Kept in sync with the mobile override's height
+     below (mobile's width stays fluid — the container itself is 100%
+     there). */
+  .qv-card-photo { flex: none; width: 200px; height: 200px; border-radius: 6px; overflow: hidden; background: var(--panel-bg-3); }
+  .qv-card-photo img { width: 200px; height: 200px; object-fit: cover; object-position: center; display: block; }
+  /* These are scripted vignette stills, not live editable canvas
+     images — the shell's global hover-Edit affordance (scanLooseImages
+     in index.html) still wraps them since they're plain large <img>
+     tags. Hide it here rather than touching the shared shell file. */
+  .qv-card-photo .img-swap-tools { display: none !important; }
+  /* R11e: body no longer vertically centers as a single block — it now
+     stacks the headline group and the builder panel with a fixed
+     16px rhythm (matches views/aud-list.html's .audl-body gap
+     exactly), top-aligned within the row. */
+  .qv-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .qv-card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .qv-card-rank { flex: none; font: 500 13px/1 var(--ms-mono); color: var(--text-subtle); }
+  .qv-card-name { margin: 0; font-size: 20px; font-weight: 600; line-height: 1.3; color: var(--text-strong); }
+  .qv-card-desc { margin: 10px 0 0; font-size: 14px; font-weight: 400; line-height: 1.6; color: var(--text-subtle); max-width: 66ch; }
+
+  /* R11e: the audience's own boolean builder — reuses the top query
+     module's .qv-builder/.qv-sources/.qv-source-chip/.qv-term-row/
+     .qv-chip grammar verbatim (identical hairline card), so no new box
+     styling is needed here. The pop-in/row-in modifier classes are
+     baked into the static markup from the start (not toggled by JS):
+     the whole card fades in as ONE unit via .qv-card-real above, so
+     there's no per-chip stagger inside a card the way the top module
+     has. New here: a leading colored status-dot on each term chip,
+     copied from views/aud-list.html's .audl-dot — the top module's own
+     chips are untouched and stay dot-less. */
+  .qv-dot { flex: none; width: 4px; height: 4px; border-radius: 50%; }
+  .qv-dot[data-src="comscore"] { background: var(--ms-chart-6); }
+  .qv-dot[data-src="acxiom"]   { background: var(--ms-chart-2); }
+  .qv-dot[data-src="corvache"] { background: var(--ms-chart-3); }
+
+  /* R11e: stats move OUT of the body's vertical flow into their own
+     fixed-width right-hand column (~180px, per the reference),
+     vertically centered against the row's full height — no longer
+     inline under the blurb. */
+  .qv-card-stats { flex: none; width: 180px; display: flex; align-items: center; justify-content: flex-start; gap: 24px; }
+  .qv-card-stat { display: flex; flex-direction: column; align-items: flex-start; }
+  .qv-card-stat-num { font-size: 32px; font-weight: 400; line-height: 1.3; color: var(--text-strong); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .qv-card-stat-label { font: 500 10px/1.6 var(--ms-mono); text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-subtle); }
+
+  /* ---- Chat Hat integration (PLAN.md R11b): the wait/progress
+     treatment now lives INSIDE .chat-aux-panel ("the Chat Hat"), not
+     the chat stream. On this route the hat starts CLOSED — while
+     .qv-hat-gate is present these rules force the body back to 0
+     height and mute the shell's own first-reveal glow/sweep/trace,
+     regardless of when its auto-expand timer fires in the background
+     (index.html's ChatHatAutoExpand runs on a boot timer independent
+     of which tab is active — see ~line 40904) — so there's never a
+     flash of the default tile row. Firing open means removing
+     .qv-hat-gate and replaying the shell's REAL open sequence
+     (ch-first-reveal → is-expanded → is-fully-open, same classes +
+     keyframes openChatHat() itself uses — not a lookalike). ---- */
+  #chatAuxPanel.qv-hat-gate .chat-aux-body {
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+  #chatAuxPanel.qv-hat-gate.ch-first-reveal,
+  #chatAuxPanel.qv-hat-gate.ch-first-reveal .chat-aux-body {
+    animation: none !important;
+  }
+  #chatAuxPanel.qv-hat-gate.ch-first-reveal::before,
+  #chatAuxPanel.qv-hat-gate.ch-first-reveal::after {
+    content: none !important;
+    opacity: 0 !important;
+    animation: none !important;
+  }
+  #chatAuxPanel.qv-hat-gate .chat-aux-toggle svg {
+    transform: translateY(0) rotate(0deg) !important;
+  }
+
+  /* Content swap — the original tile row (mode tiles + quick-start
+     chips) is display:none'd, never removed, so leave() hands it
+     straight back for every other route. */
+  #chatAuxPanel.qv-wait-mode .chat-aux-modes,
+  #chatAuxPanel.qv-wait-mode .chat-aux-chips {
+    display: none !important;
+  }
+  .qv-wait {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 12px 10px;
+    /* Amber field removed (Bryan) — the wait block sits directly on
+       the hat surface; the clock language below carries the state. */
+  }
+  #chatAuxPanel.qv-wait-mode .qv-wait { display: flex; }
+
+  /* The wait content (title + body copy + 4-stage list) runs taller
+     than the panel's normal 220px chip-row cap. The shell already
+     handles this exact situation for its own prompt-card variant
+     (.chat-aux-panel.ch-prompt-active.is-expanded .chat-aux-body →
+     300px + a scrolling body once fully open) — same idea, scoped to
+     our own state. The first burst-open still plays the native
+     0→220px ch-fr-body keyframe (that arc is baked into the shell's
+     keyframe, not something a fragment can resize); once
+     ch-first-reveal lifts at +1250ms this rule is the only thing
+     left governing max-height, and the body's own base 380ms
+     transition (never disabled outside ch-first-reveal) carries it
+     the rest of the way to 300px — reads as one settle, not a glitch. */
+  #chatAuxPanel.qv-wait-mode.is-expanded .chat-aux-body { max-height: 300px; }
+  #chatAuxPanel.qv-wait-mode.is-fully-open .chat-aux-body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* R11c: no interior title row (deleted — the hat header's own
+     .chat-aux-title carries that job now, see setHatLabel in the
+     script below). The amber panel leads straight with the body
+     copy. */
+  .qv-wait-body { margin: 0; font: 400 12px/1.55 var(--font-sans); color: var(--text-body); }
+  .qv-wait-body b { font-weight: 600; color: var(--text-strong); }
+
+  .qv-wait-stages { display: flex; flex-direction: column; }
+  .qv-stage { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+  .qv-stage + .qv-stage { border-top: 0.5px solid var(--line); }
+  .qv-stage-icon { flex: none; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; color: var(--text-subtle); }
+  .qv-stage-label { flex: 1; font: 400 11px/1.4 var(--ms-mono); color: var(--text-body); }
+  .qv-stage-time { min-width: 40px; text-align: right; font: 400 11px/1.4 var(--ms-mono); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+  .qv-stage[data-state="pending"] { opacity: 0.5; }
+  .qv-stage[data-state="active"] .qv-stage-label { color: var(--text-strong); font-weight: 600; }
+  .qv-stage[data-state="active"] .qv-stage-icon { color: var(--accent); }
+  .qv-stage[data-state="done"] .qv-stage-icon { color: var(--accent); }
+
+  /* ---- the wait language: one 16px clock face per stage; its state
+     is what the clock is DOING.
+       pending — a face with ticks and NO hands (time hasn't begun)
+       active  — hands sweep; the minute hand completes exactly one
+                 revolution per 5s stage, so the clock IS the meter
+       done    — the hands give way to a check settling into the
+                 same circle (geometry never changes, only the story)
+       stopped — the hands FREEZE mid-sweep, muted. Time stopped.
+     One persistent SVG per row (setStage flips data-state only) —
+     required for the freeze: pausing preserves the hand angle only
+     if the animated element survives the state change. ---- */
+  .qv-clock { display: block; width: 16px; height: 16px; }
+  .qv-clock circle, .qv-clock line, .qv-clock path {
+    stroke: currentColor; fill: none;
+    transform-box: view-box; transform-origin: center;
+  }
+  .qv-clock-face { opacity: 0.55; }
+  .qv-clock-ticks line { opacity: 0.4; }
+  .qv-clock-hour, .qv-clock-min { opacity: 0; transition: opacity 200ms ease; }
+  .qv-clock-check { opacity: 0; }
+  .qv-stage[data-state="active"] .qv-clock-hour,
+  .qv-stage[data-state="active"] .qv-clock-min,
+  .qv-stage[data-state="stopped"] .qv-clock-hour,
+  .qv-stage[data-state="stopped"] .qv-clock-min { opacity: 1; }
+  .qv-stage[data-state="active"] .qv-clock-min  { animation: qv-clock-sweep 5s  linear infinite; }
+  .qv-stage[data-state="active"] .qv-clock-hour { animation: qv-clock-sweep 60s linear infinite; }
+  /* stopped: SAME animation identity (name/duration/timing) so the
+     browser keeps the instance and pausing freezes the current angle */
+  .qv-stage[data-state="stopped"] .qv-clock-min  { animation: qv-clock-sweep 5s  linear infinite; animation-play-state: paused; }
+  .qv-stage[data-state="stopped"] .qv-clock-hour { animation: qv-clock-sweep 60s linear infinite; animation-play-state: paused; }
+  @keyframes qv-clock-sweep { to { transform: rotate(360deg); } }
+  .qv-stage[data-state="done"] .qv-clock-ticks line { opacity: 0; }
+  .qv-stage[data-state="done"] .qv-clock-face { opacity: 0.45; }
+  .qv-stage[data-state="done"] .qv-clock-hour,
+  .qv-stage[data-state="done"] .qv-clock-min { opacity: 0; }
+  .qv-stage[data-state="done"] .qv-clock-check {
+    opacity: 1;
+    animation: qv-check-settle 340ms cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes qv-check-settle {
+    0%   { transform: scale(0.4); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  /* ---- &motion=off / prefers-reduced-motion: full rest state, no
+     animation at all (static timer, no shimmer). The hat's own open
+     state is set directly via classList in JS with no transition to
+     suppress, so this only needs to cover the canvas reveal, the
+     stage-2 spinner and the skeleton shimmer. ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .qv-mod.qv-shown, .qv-source-chip, .qv-chip, .qv-term-row {
+      opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important;
+    }
+    .qv-clock line, .qv-clock path { animation: none !important; }
+    .qv-stage[data-state="done"] .qv-clock-check { opacity: 1 !important; }
+    .qv-shimmer::after { animation: none !important; display: none !important; }
+    /* R11c: reduced-motion always renders the RESOLVED state on
+       first paint (see enter() below) — force it at the CSS level
+       too so there's never a flash of skeleton. */
+    .qv-card-skel { opacity: 0 !important; transition: none !important; }
+    .qv-card-real { opacity: 1 !important; transition: none !important; }
+  }
+  body.ms-motion-off .qv-mod.qv-shown,
+  body.ms-motion-off .qv-source-chip,
+  body.ms-motion-off .qv-chip,
+  body.ms-motion-off .qv-term-row {
+    opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important;
+  }
+  body.ms-motion-off .qv-clock line,
+  body.ms-motion-off .qv-clock path { animation: none !important; }
+  body.ms-motion-off .qv-stage[data-state="done"] .qv-clock-check { opacity: 1 !important; }
+  body.ms-motion-off .qv-shimmer::after { animation: none !important; display: none !important; }
+  body.ms-motion-off .qv-card-skel { opacity: 0 !important; transition: none !important; }
+  body.ms-motion-off .qv-card-real { opacity: 1 !important; transition: none !important; }
+
+  @media (max-width: 720px) {
+    .qv-card-skel, .qv-card-real { flex-direction: column; }
+    .qv-skel-photo, .qv-card-photo { width: 100%; height: 160px; }
+    .qv-card-photo img { width: 100%; height: 160px; }
+    /* The shell's image-swap wiring nests each photo in an inline-block
+       span (.img-swap-target) that shrink-wraps, which makes the img's
+       width:100% resolve to auto. Give the wrapper the full row so the
+       percentage has something real to resolve against. */
+    .qv-card-photo .img-swap-target { width: 100%; }
+    .qv-title { font-size: 22px; }
+    /* R11e: the stats column's fixed ~180px width is a wide-row
+       affordance — stacked mobile layout gives it the full card width
+       back instead, same as the skeleton placeholder's own column. */
+    .qv-card-stats, .qv-skel-stats-col { width: auto; }
+  }
+</style>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="qv-sym-data" viewBox="0 0 8 10"><path d="M4 10C5.988 10 8 9.313 8 8V2C8 0.687 5.988 0 4 0C2.012 0 0 0.687 0 2V8C0 9.313 2.012 10 4 10ZM4 9C2.139 9 1 8.3525 1 8V7.366C1.7705 7.785 2.8885 8 4 8C5.1115 8 6.2295 7.785 7 7.366V8C7 8.3525 5.861 9 4 9ZM4 1C5.861 1 7 1.6475 7 2C7 2.3525 5.861 3 4 3C2.139 3 1 2.3525 1 2C1 1.6475 2.139 1 4 1ZM1 3.366C1.7705 3.785 2.8885 4 4 4C5.1115 4 6.2295 3.785 7 3.366V4C7 4.3525 5.861 5 4 5C2.139 5 1 4.3525 1 4V3.366ZM1 5.366C1.7705 5.785 2.8885 6 4 6C5.1115 6 6.2295 5.785 7 5.366V6C7 6.3525 5.861 7 4 7C2.139 7 1 6.3525 1 6V5.366Z" fill="currentColor"/></symbol>
+  <symbol id="qv-sym-folder" viewBox="0 0 10 9"><path d="M9 1H4.707L3.8535 0.1465C3.80713 0.100001 3.75203 0.0631219 3.69137 0.0379808C3.6307 0.0128398 3.56567 -6.75704e-05 3.5 2.66008e-07H1C0.4485 2.66008e-07 0 0.4485 0 1V8C0 8.5515 0.4485 9 1 9H9C9.5515 9 10 8.5515 10 8V2C10 1.4485 9.5515 1 9 1ZM1 8V2H9L9.001 8H1Z" fill="currentColor"/></symbol>
+  <symbol id="qv-sym-chevron" viewBox="0 0 7 4"><path d="M0.5 0.5L3.5 3.5L6.5 0.5" stroke="currentColor" stroke-width="0.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="qv-sym-external" viewBox="0 0 12 12"><path d="M6.66669 0L8.86202 2.19533L4.19535 6.862L5.13802 7.80467L9.80469 3.138L12 5.33333V0H6.66669Z" fill="currentColor"/><path d="M10.6667 10.6667H1.33333V1.33333H6L4.66667 0H1.33333C0.598 0 0 0.598 0 1.33333V10.6667C0 11.402 0.598 12 1.33333 12H10.6667C11.402 12 12 11.402 12 10.6667V7.33333L10.6667 6V10.6667Z" fill="currentColor"/></symbol>
+</svg>
+
+<div class="qv-canvas">
+
+  <!-- Brand-new-session empty state: the bare canvas holds only the
+       OMNI mark (real chrome asset — .omni-logo gets the shell's own
+       dark-theme invert for free) until the first module arrives. A
+       div, not a section, so wrapMattes never gives it a matte. -->
+  <div class="qv-fresh" id="qvFresh" aria-hidden="true">
+    <div class="qv-fresh-logo-wrap">
+      <img class="omni-logo omni-logo--lg" src="omni-logo.png" alt="OMNI+" />
+    </div>
+  </div>
+
+  <section class="qv-mod qv-query-mod" id="qvQueryMod">
+    <div class="qv-head">
+      <span class="qv-eyebrow">Audience Query</span>
+      <h2 class="qv-title">First-Time EV Buyers</h2>
+    </div>
+    <div class="qv-builder">
+      <div class="qv-qskel" aria-hidden="true">
+        <div class="qv-qskel-row qv-qskel-sources">
+          <span class="qv-qskel-pill qv-qskel-src qv-shimmer" style="width:78px"></span>
+          <span class="qv-qskel-pill qv-qskel-src qv-shimmer" style="width:62px"></span>
+          <span class="qv-qskel-pill qv-qskel-src qv-shimmer" style="width:98px"></span>
+        </div>
+        <div class="qv-qskel-row">
+          <span class="qv-qskel-pill qv-shimmer" style="width:132px"></span>
+          <span class="qv-qskel-op qv-shimmer" style="width:34px"></span>
+          <span class="qv-qskel-pill qv-shimmer" style="width:180px"></span>
+          <span class="qv-qskel-op qv-shimmer" style="width:34px"></span>
+        </div>
+        <div class="qv-qskel-row">
+          <span class="qv-qskel-pill qv-shimmer" style="width:118px"></span>
+          <span class="qv-qskel-op qv-shimmer" style="width:26px"></span>
+          <span class="qv-qskel-pill qv-shimmer" style="width:214px"></span>
+        </div>
+        <div class="qv-qskel-row">
+          <span class="qv-qskel-op qv-shimmer" style="width:62px"></span>
+          <span class="qv-qskel-pill qv-shimmer" style="width:196px"></span>
+          <span class="qv-qskel-op qv-shimmer" style="width:34px"></span>
+          <span class="qv-qskel-pill qv-shimmer" style="width:236px"></span>
+        </div>
+      </div>
+      <div class="qv-sources">
+        <span class="qv-source-chip"><svg><use href="#qv-sym-data"></use></svg>Comscore</span>
+        <span class="qv-source-chip"><svg><use href="#qv-sym-data"></use></svg>Acxiom</span>
+        <span class="qv-source-chip"><svg><use href="#qv-sym-data"></use></svg>Corvache Data</span>
+      </div>
+      <div class="qv-term-row">
+        <span class="qv-chip"><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>EV Purchase Intent<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+        <span class="qv-op">AND</span>
+        <span class="qv-chip"><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>No Prior EV in Household<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+        <span class="qv-op">AND</span>
+      </div>
+      <div class="qv-term-row">
+        <span class="qv-chip"><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Mid-High Income<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+        <span class="qv-op">OR</span>
+        <span class="qv-chip"><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Existing US Corvache Customers<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+      </div>
+      <div class="qv-term-row">
+        <span class="qv-op">INCLUDE</span>
+        <span class="qv-chip"><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Read 2026 EV Safety Reports<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+        <span class="qv-op">AND</span>
+        <span class="qv-chip"><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Home or Workplace Charging Access<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+      </div>
+      <svg class="qv-expand" aria-hidden="true"><use href="#qv-sym-external"></use></svg>
+    </div>
+  </section>
+
+  <section class="qv-mod qv-gen-mod" id="qvGenMod">
+    <div class="qv-skel-row">
+      <div class="qv-skel-card">
+        <div class="qv-card-skel" aria-hidden="true">
+          <div class="qv-skel-photo qv-shimmer"></div>
+          <div class="qv-skel-body">
+            <div class="qv-skel-bar qv-skel-bar--name qv-shimmer"></div>
+            <div class="qv-skel-bar qv-skel-bar--desc qv-shimmer"></div>
+            <div class="qv-skel-bar qv-skel-bar--desc2 qv-shimmer"></div>
+            <div class="qv-skel-builder qv-shimmer"></div>
+          </div>
+          <div class="qv-skel-stats-col">
+            <div class="qv-skel-stat qv-shimmer"></div>
+            <div class="qv-skel-stat qv-shimmer"></div>
+          </div>
+        </div>
+        <div class="qv-card-real">
+          <div class="qv-card-photo"><img src="assets/img/audl-eco-millennials.jpg" alt="First-Time EV Intenders audience"></div>
+          <div class="qv-card-body">
+            <div>
+              <div class="qv-card-head">
+                <span class="qv-card-rank">1</span>
+                <h3 class="qv-card-name">First-Time EV Intenders</h3>
+              </div>
+              <p class="qv-card-desc">In-market for their first electric vehicle within 12 months. Research-heavy, safety-motivated, comparing 2&ndash;3 brands.</p>
+            </div>
+            <div class="qv-builder">
+              <div class="qv-sources">
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Comscore</span>
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Acxiom</span>
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Corvache Data</span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="comscore"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>EV Purchase Intent<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="acxiom"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>No Prior EV in Household<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Mid-High Income<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">OR</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Existing US Corvache Customers<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-op">INCLUDE</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="acxiom"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Read 2026 EV Safety Reports<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Home or Workplace Charging Access<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+              </div>
+              <svg class="qv-expand" aria-hidden="true"><use href="#qv-sym-external"></use></svg>
+            </div>
+          </div>
+          <div class="qv-card-stats">
+            <div class="qv-card-stat"><span class="qv-card-stat-num">3.4M</span><span class="qv-card-stat-label">People</span></div>
+            <div class="qv-card-stat"><span class="qv-card-stat-num">1.2M</span><span class="qv-card-stat-label">Households</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="qv-skel-card">
+        <div class="qv-card-skel" aria-hidden="true">
+          <div class="qv-skel-photo qv-shimmer"></div>
+          <div class="qv-skel-body">
+            <div class="qv-skel-bar qv-skel-bar--name qv-shimmer"></div>
+            <div class="qv-skel-bar qv-skel-bar--desc qv-shimmer"></div>
+            <div class="qv-skel-bar qv-skel-bar--desc2 qv-shimmer"></div>
+            <div class="qv-skel-builder qv-shimmer"></div>
+          </div>
+          <div class="qv-skel-stats-col">
+            <div class="qv-skel-stat qv-shimmer"></div>
+            <div class="qv-skel-stat qv-shimmer"></div>
+          </div>
+        </div>
+        <div class="qv-card-real">
+          <div class="qv-card-photo"><img src="assets/img/audl-affluent.png" alt="Home-Charging Ready Suburbans audience"></div>
+          <div class="qv-card-body">
+            <div>
+              <div class="qv-card-head">
+                <span class="qv-card-rank">2</span>
+                <h3 class="qv-card-name">Home-Charging Ready Suburbans</h3>
+              </div>
+              <p class="qv-card-desc">Single-family homeowners with garage or workplace charging access. Practical adopters who move once infrastructure is certain.</p>
+            </div>
+            <div class="qv-builder">
+              <div class="qv-sources">
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Comscore</span>
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Acxiom</span>
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Corvache Data</span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="comscore"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>EV Purchase Intent<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="acxiom"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>No Prior EV in Household<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Mid-High Income<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">OR</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Existing US Corvache Customers<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-op">INCLUDE</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="acxiom"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Read 2026 EV Safety Reports<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Home or Workplace Charging Access<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+              </div>
+              <svg class="qv-expand" aria-hidden="true"><use href="#qv-sym-external"></use></svg>
+            </div>
+          </div>
+          <div class="qv-card-stats">
+            <div class="qv-card-stat"><span class="qv-card-stat-num">2.6M</span><span class="qv-card-stat-label">People</span></div>
+            <div class="qv-card-stat"><span class="qv-card-stat-num">940K</span><span class="qv-card-stat-label">Households</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="qv-skel-card">
+        <div class="qv-card-skel" aria-hidden="true">
+          <div class="qv-skel-photo qv-shimmer"></div>
+          <div class="qv-skel-body">
+            <div class="qv-skel-bar qv-skel-bar--name qv-shimmer"></div>
+            <div class="qv-skel-bar qv-skel-bar--desc qv-shimmer"></div>
+            <div class="qv-skel-bar qv-skel-bar--desc2 qv-shimmer"></div>
+            <div class="qv-skel-builder qv-shimmer"></div>
+          </div>
+          <div class="qv-skel-stats-col">
+            <div class="qv-skel-stat qv-shimmer"></div>
+            <div class="qv-skel-stat qv-shimmer"></div>
+          </div>
+        </div>
+        <div class="qv-card-real">
+          <div class="qv-card-photo"><img src="assets/img/audl-luxury-budget.jpg" alt="Safety-First Switchers audience"></div>
+          <div class="qv-card-body">
+            <div>
+              <div class="qv-card-head">
+                <span class="qv-card-rank">3</span>
+                <h3 class="qv-card-name">Safety-First Switchers</h3>
+              </div>
+              <p class="qv-card-desc">Current combustion loyalists reading EV safety coverage. They move when third-party validation and total cost align.</p>
+            </div>
+            <div class="qv-builder">
+              <div class="qv-sources">
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Comscore</span>
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Acxiom</span>
+                <span class="qv-source-chip qv-pop-in"><svg><use href="#qv-sym-data"></use></svg>Corvache Data</span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="comscore"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>EV Purchase Intent<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="acxiom"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>No Prior EV in Household<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Mid-High Income<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">OR</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Existing US Corvache Customers<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+              </div>
+              <div class="qv-term-row qv-row-in">
+                <span class="qv-op">INCLUDE</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="acxiom"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Read 2026 EV Safety Reports<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+                <span class="qv-op">AND</span>
+                <span class="qv-chip qv-pop-in"><span class="qv-dot" data-src="corvache"></span><svg class="qv-ico-folder"><use href="#qv-sym-folder"></use></svg>Home or Workplace Charging Access<svg class="qv-ico-chevron"><use href="#qv-sym-chevron"></use></svg></span>
+              </div>
+              <svg class="qv-expand" aria-hidden="true"><use href="#qv-sym-external"></use></svg>
+            </div>
+          </div>
+          <div class="qv-card-stats">
+            <div class="qv-card-stat"><span class="qv-card-stat-num">1.9M</span><span class="qv-card-stat-label">People</span></div>
+            <div class="qv-card-stat"><span class="qv-card-stat-num">720K</span><span class="qv-card-stat-label">Households</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var root = document.currentScript.closest('.ms-frag');
+  if (!root) return;
+
+  var mainEl = document.getElementById('main');
+  var stream = document.getElementById('chatStream');
+  var panel = document.getElementById('chatAuxPanel');
+  var bodyInner = document.getElementById('chatAuxBodyInner');
+  var queryMod = root.querySelector('#qvQueryMod');
+  var genMod = root.querySelector('#qvGenMod');
+  if (!stream || !queryMod || !genMod || !panel || !bodyInner) return;
+
+  /* R11c: the hat header's own label IS the wait/ready title now — no
+     second headline inside the panel body. Capture the shell's default
+     text once so leave() can hand it back unchanged. */
+  var hatTitleEl = panel.querySelector('.chat-aux-title');
+  var HAT_LABEL_DEFAULT = hatTitleEl ? hatTitleEl.textContent : 'What would you like to create?';
+
+  var started = false;
+  var elapsedSeconds = 0;
+  var timerInterval = null;
+  var waitEl = null, waitBodyEl = null, stageEls = [], stagesComplete = false;
+  var queryFilled = false;
+  var cardsResolved = false;
+  /* R11d: stop-button + settle-to-default state. buildRunning spans
+     runTimeline() start → resolveCards()/stopBuild(), whichever comes
+     first — it's the guard the #sendBtn takeover checks. stopped and
+     settled are mutually-exclusive-with-cardsResolved terminal flags:
+     settled flips true ~4s after WHICHEVER terminal beat fired
+     (resolved or stopped), at which point the hat is back to its true
+     default and stays there for every later enter(). */
+  var buildRunning = false, stopped = false, settled = false;
+  var sendBtn = document.getElementById('sendBtn');
+  var sendBtnSvg = sendBtn && sendBtn.querySelector('svg');
+  var sendIconOriginal = null;
+
+  function reducedMotion() {
+    return document.body.classList.contains('ms-motion-off') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function timeNow() {
+    var d = new Date(), h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
+    var ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if (h === 0) h = 12;
+    return 'Today, ' + h + ':' + m + ' ' + ap;
+  }
+  function fmtTime(totalSec) {
+    var m = Math.floor(totalSec / 60), s = totalSec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function scrollBottom() { stream.scrollTop = stream.scrollHeight; }
+  /* Keep the stream pinned to its end while the vignette rests — the
+     chat hat's grow-open (t+8.0s) shrinks the stream's own box (they
+     share the same column, hat above the composer, stream above the
+     hat), which can otherwise read as the stream "scrolling up" on
+     its own. Wheel up to read history disarms the pin; wheeling back
+     to the end re-arms it. (Unchanged from the original build —
+     PLAN.md R11b keeps this mechanism as-is.) */
+  var follow = true;
+  stream.addEventListener('wheel', function (e) {
+    if (e.deltaY < 0) follow = false;
+    else if (stream.scrollTop + stream.clientHeight >= stream.scrollHeight - 40) follow = true;
+  }, { passive: true });
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () { if (follow) scrollBottom(); }).observe(stream);
+  }
+  function nextPaint(fn) { requestAnimationFrame(function () { requestAnimationFrame(fn); }); }
+  /* R11d: schedule() now returns a cancellable timer — every id lands
+     in pendingTimers so a stop mid-build can wipe out whatever timeline
+     beats haven't fired yet. cancelPendingTimers() is safe to call on
+     already-fired ids (clearTimeout no-ops on them). */
+  var pendingTimers = [];
+  function schedule(fn, ms) {
+    var id = setTimeout(fn, ms);
+    pendingTimers.push(id);
+    return id;
+  }
+  function cancelPendingTimers() {
+    pendingTimers.forEach(clearTimeout);
+    pendingTimers.length = 0;
+  }
+
+  var USER_TEXT = 'Make me target audiences of first time electric car buyers.';
+  var THOUGHT_TEXT = 'PARSING BRIEF · DRAFTING AUDIENCE QUERY';
+  var REPLY_TEXT = 'On it. I’ll draft the audience query first — you’ll see it take shape on the canvas.';
+  var DONE_TEXT = 'Done — three audiences are built and on the canvas.';
+  var STOPPED_TEXT = 'Stopped — the build was cancelled before finishing.';
+  var LABEL_BUILDING = 'BUILDING AUDIENCES';
+  var LABEL_READY = '3 AUDIENCES READY';
+  var LABEL_STOPPED = 'GENERATION STOPPED';
+  /* Same 24x24 viewBox / 16px box as the sparkle it replaces — only the
+     button's inner <svg> markup swaps, never its outer chrome. */
+  var STOP_ICON_SVG = '<rect x="6" y="6" width="12" height="12" rx="2.5" fill="currentColor"/>';
+
+  /* ---------- Native chat anatomy — copied from index.html's own
+     _msgUserBubble / _msgThoughtLine / _typeInto / _msgRichResponse
+     (~line 40282-40398) so the human<->LLM exchange matches every
+     other manifest project: same markup, same classes, same entrance
+     CSS (~line 22594). The one generalization: native _typeInto only
+     ever types into .ch-thought-text — typeIntoEl below also drives
+     the rich reply's .body, at the shell's own default charDelay
+     (18) instead of the thought line's 14. ---------- */
+  function appendUserBubble(text) {
+    var node = document.createElement('div');
+    node.className = 'msg user ch-injected qv-log';
+    node.innerHTML =
+      '<div class="bubble">' +
+        '<div class="msg-head">' +
+          '<div class="msg-avatar av-nick">BC</div>' +
+          '<div class="msg-meta">' +
+            '<span class="msg-name">Bryan Cocco</span>' +
+            '<span class="msg-dot"></span>' +
+            '<span class="msg-time">' + timeNow() + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    /* Text node (not innerHTML) so we never inadvertently render markup. */
+    node.querySelector('.bubble').appendChild(document.createTextNode(text));
+    stream.appendChild(node);
+    if (follow) scrollBottom();
+    return node;
+  }
+  function appendThoughtLine() {
+    var node = document.createElement('div');
+    node.className = 'msg ch-thought ch-injected qv-log';
+    node.innerHTML =
+      '<div class="thinking">' +
+        '<div class="thinking-mark" aria-hidden="true">' +
+          '<div class="orb-track orb-track-1"><div class="orb-sat">' +
+            '<svg viewBox="0 0 12 12"><path d="M6 0 L6.9 5.1 L12 6 L6.9 6.9 L6 12 L5.1 6.9 L0 6 L5.1 5.1 Z" fill="currentColor"/></svg>' +
+          '</div></div>' +
+          '<div class="orb-track orb-track-2"><div class="orb-sat">' +
+            '<svg viewBox="0 0 12 12"><path d="M6 0 L6.9 5.1 L12 6 L6.9 6.9 L6 12 L5.1 6.9 L0 6 L5.1 5.1 Z" fill="currentColor"/></svg>' +
+          '</div></div>' +
+          '<div class="orb-core">' +
+            '<svg viewBox="0 0 24 24"><path d="M12 0 L13.6 10.4 L24 12 L13.6 13.6 L12 24 L10.4 13.6 L0 12 L10.4 10.4 Z" fill="currentColor"/></svg>' +
+          '</div>' +
+        '</div>' +
+        '<span class="ch-thought-text"></span>' +
+      '</div>';
+    stream.appendChild(node);
+    if (follow) scrollBottom();
+    return node;
+  }
+  function appendAssistantReply() {
+    var node = document.createElement('div');
+    node.className = 'msg bot ch-injected ch-richmsg qv-log';
+    node.innerHTML =
+      '<div class="msg-head">' +
+        '<div class="msg-avatar av-canvas-assistant" aria-hidden="true">' +
+          '<svg width="14" height="14" viewBox="0 0 16 16" fill="none">' +
+            '<circle cx="8" cy="5.5" r="2.6" fill="currentColor"/>' +
+            '<path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" fill="currentColor"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="msg-meta">' +
+          '<span class="msg-name">Canvas Assistant</span>' +
+          '<span class="msg-dot"></span>' +
+          '<span class="msg-time">' + timeNow() + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="body"></div>';
+    stream.appendChild(node);
+    if (follow) scrollBottom();
+    return node;
+  }
+  /* Character-by-character typewriter — mirrors _typeInto exactly
+     (is-typed on start collapses the thought's orb via the shell's
+     own CSS; is-done on finish is a harmless no-op for the reply). */
+  function typeIntoEl(node, textEl, text, charDelay, onDone) {
+    node.classList.add('is-typed');
+    if (reducedMotion()) {
+      textEl.textContent = text;
+      node.classList.add('is-done');
+      if (onDone) onDone();
+      return;
+    }
+    /* Lay the WHOLE line out first as hidden glyphs so the browser
+       fixes every wrap point up front — revealing by opacity then
+       never reflows (no word jumping down a line mid-type). Height is
+       final immediately, so one settle-scroll is enough. */
+    textEl.textContent = '';
+    var frag = document.createDocumentFragment();
+    var glyphs = [];
+    for (var k = 0; k < text.length; k++) {
+      var g = document.createElement('span');
+      g.className = 'qv-glyph';
+      g.textContent = text[k];
+      frag.appendChild(g);
+      glyphs.push(g);
+    }
+    textEl.appendChild(frag);
+    if (follow) scrollBottom();
+    var i = 0;
+    (function step() {
+      if (i >= glyphs.length) {
+        node.classList.add('is-done');
+        if (onDone) onDone();
+        return;
+      }
+      glyphs[i].classList.add('qv-glyph-in');
+      i++;
+      setTimeout(step, charDelay);
+    })();
+  }
+  /* Matches _fadeAndRemove exactly — locks the current pixel height
+     before adding .is-fading so the max-height transition has a
+     starting value to ease from. */
+  function fadeAndRemove(node) {
+    if (!node || !node.parentNode) return;
+    node.style.maxHeight = node.offsetHeight + 'px';
+    void node.offsetHeight;
+    node.classList.add('is-fading');
+    setTimeout(function () { if (node.parentNode) node.remove(); }, 420);
+  }
+  function clearLog() {
+    Array.prototype.forEach.call(stream.querySelectorAll('.qv-log'), function (n) { n.remove(); });
+  }
+
+  /* instant (no-typing) chat rest state — first run under reduced
+     motion, and every later enter() once the real timeline has
+     already played once. No thought line here: it's a transient
+     beat that fades before the reply in the real timeline, so the
+     settled state never shows it either. R11c: once the build has
+     resolved, the closing "Done" message belongs in the rest state
+     too — appended as plain text like the rest of this instant path
+     (cardsResolved is checked fresh each call, so this stays correct
+     whichever order enter() calls this in). R11d: a stopped run gets
+     its own closing line instead — cardsResolved and stopped are
+     mutually exclusive (stopBuild() refuses to fire once cardsResolved
+     is true), so this is an unambiguous either/or. */
+  function renderChatInstant() {
+    clearLog();
+    appendUserBubble(USER_TEXT);
+    var reply = appendAssistantReply();
+    reply.querySelector('.body').appendChild(document.createTextNode(REPLY_TEXT));
+    if (cardsResolved) {
+      var done = appendAssistantReply();
+      done.querySelector('.body').appendChild(document.createTextNode(DONE_TEXT));
+    } else if (stopped) {
+      var stoppedMsg = appendAssistantReply();
+      stoppedMsg.querySelector('.body').appendChild(document.createTextNode(STOPPED_TEXT));
+    }
+    scrollBottom();
+  }
+
+  function showModule(mod) {
+    mod.classList.add('qv-shown');
+    void mod.offsetWidth;
+    nextPaint(function () {
+      mod.classList.add('qv-in');
+      if (window.MS_rebuildNav) window.MS_rebuildNav();
+    });
+  }
+  function showModuleInstant(mod) { mod.classList.add('qv-shown', 'qv-in'); }
+  /* Swap the query builder from its skeleton to the real content — all
+     chips + rows reveal in the SAME frame (no stagger); the skeleton
+     overlay crossfades out. */
+  function fillQuery() {
+    queryFilled = true;
+    var skel = queryMod.querySelector('.qv-qskel');
+    if (skel) skel.classList.add('qv-qskel-out');
+    Array.prototype.forEach.call(queryMod.querySelectorAll('.qv-source-chip, .qv-chip'), function (el) { el.classList.add('qv-pop-in'); });
+    Array.prototype.forEach.call(queryMod.querySelectorAll('.qv-term-row'), function (el) { el.classList.add('qv-row-in'); });
+  }
+  var freshEl = root.querySelector('#qvFresh');
+  function dismissFresh(instant) {
+    if (!freshEl) return;
+    freshEl.classList.add('qv-fresh-out');
+    if (instant) { freshEl.classList.add('qv-fresh-gone'); return; }
+    setTimeout(function () { freshEl.classList.add('qv-fresh-gone'); }, 620);
+  }
+  function revealCanvasInstant() {
+    dismissFresh(true);
+    showModuleInstant(queryMod);
+    fillQuery();
+    showModuleInstant(genMod);
+    if (window.MS_rebuildNav) window.MS_rebuildNav();
+  }
+
+  /* ---------- Chat Hat wait panel ---------- */
+  /* One clock per row, rendered once; every state is a data-state CSS
+     story on the SAME svg (see the clock-language CSS block). The
+     hands' base pose reads ~10:08 — the classic watch-photography
+     pose — so a frozen/static clock still looks deliberate. */
+  var CLOCK_SVG =
+    '<svg class="qv-clock" viewBox="0 0 16 16" aria-hidden="true">' +
+      '<circle class="qv-clock-face" cx="8" cy="8" r="6.4" stroke-width="1.1"/>' +
+      '<g class="qv-clock-ticks" stroke-width="1" stroke-linecap="round">' +
+        '<line x1="8" y1="3" x2="8" y2="4.1"/>' +
+        '<line x1="13" y1="8" x2="11.9" y2="8"/>' +
+        '<line x1="8" y1="13" x2="8" y2="11.9"/>' +
+        '<line x1="3" y1="8" x2="4.1" y2="8"/>' +
+      '</g>' +
+      '<line class="qv-clock-hour" x1="8" y1="8" x2="6.2" y2="6.6" stroke-width="1.3" stroke-linecap="round"/>' +
+      '<line class="qv-clock-min" x1="8" y1="8" x2="9.4" y2="4.9" stroke-width="1.1" stroke-linecap="round"/>' +
+      '<path class="qv-clock-check" d="M5.4 8.3l1.9 1.9 3.4-4.1" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+  function stageRow(label) {
+    var row = document.createElement('div');
+    row.className = 'qv-stage';
+    row.setAttribute('data-state', 'pending');
+    row.innerHTML =
+      '<span class="qv-stage-icon">' + CLOCK_SVG + '</span>' +
+      '<span class="qv-stage-label">' + esc(label) + '</span>' +
+      '<span class="qv-stage-time">—</span>';
+    return row;
+  }
+  function setStage(stageEl, state, timeText) {
+    /* data-state flip only — the clock svg persists, which is what
+       lets the stopped state freeze the hands at their live angle. */
+    if (stageEl.getAttribute('data-state') !== state) {
+      stageEl.setAttribute('data-state', state);
+    }
+    if (timeText !== undefined) stageEl.querySelector('.qv-stage-time').textContent = timeText;
+  }
+  /* R11c: the hat header IS the wait/ready title — swap `.chat-aux-
+     title` itself instead of a second headline inside the panel body.
+     Reuses the shell's OWN text-swap idiom (index.html's _setTaskTitle,
+     ~line 40082): add .is-changing (its CSS lives in the shell, ~line
+     21692 — a quiet opacity+translateY fade), swap the text once it's
+     faded out, remove .is-changing to fade the new text back in.
+     animate=false (instant paths, and leave()'s restore) sets it
+     directly with no fade. */
+  function setHatLabel(text, animate) {
+    if (!hatTitleEl) return;
+    if (!animate || reducedMotion()) {
+      hatTitleEl.textContent = text;
+      return;
+    }
+    hatTitleEl.classList.add('is-changing');
+    setTimeout(function () {
+      hatTitleEl.textContent = text;
+      hatTitleEl.classList.remove('is-changing');
+    }, 180);
+  }
+
+  /* Builds the wait panel's DOM once and leaves it in place for the
+     life of the page — only its container's qv-wait-mode class (and,
+     before the first fire-open, qv-hat-gate) decides whether it's
+     the hat's visible content. R11c: no interior title/clock row —
+     the hat header's own label (setHatLabel above) carries that job,
+     so this leads straight with the body copy. */
+  function buildWaitPanel() {
+    if (waitEl) return;
+    waitEl = document.createElement('div');
+    waitEl.className = 'qv-wait';
+    waitEl.innerHTML =
+      '<p class="qv-wait-body">Audience generation queries multiple live data providers — <b>a typical build takes 4–6 minutes.</b> Progress will update here as each stage completes.</p>' +
+      '<div class="qv-wait-stages"></div>';
+    bodyInner.appendChild(waitEl);
+    waitBodyEl = waitEl.querySelector('.qv-wait-body');
+    var stagesWrap = waitEl.querySelector('.qv-wait-stages');
+    ['Parsing brief', 'Querying data sources', 'Building segments', 'Sizing & validation'].forEach(function (label) {
+      stagesWrap.appendChild(stageRow(label));
+    });
+    stageEls = Array.prototype.slice.call(stagesWrap.querySelectorAll('.qv-stage'));
+  }
+  /* Each stage runs ~5s so all four are watchable in ~20s instead of
+     the real 4–6 min. STAGE_DONE_AT holds the cumulative second each
+     stage completes at; the active stage shows the live running clock. */
+  var STAGE_DONE_AT = [5, 10, 15, 20];
+  /* Paint all four rows to match a cumulative elapsed time: everything
+     before the cursor is done (frozen at its completion time), the row
+     at the cursor is active with the live clock, the rest are pending. */
+  function paintStages(sec) {
+    var done = 0;
+    for (var i = 0; i < 4; i++) if (sec >= STAGE_DONE_AT[i]) done++;
+    for (var j = 0; j < 4; j++) {
+      if (j < done) setStage(stageEls[j], 'done', fmtTime(STAGE_DONE_AT[j]));
+      else if (j === done) setStage(stageEls[j], 'active', fmtTime(sec));
+      else setStage(stageEls[j], 'pending', '—');
+    }
+    stagesComplete = done >= 4;
+  }
+
+  /* ---------- R11c: the build resolves ----------
+     Fires once (guarded by cardsResolved) the moment paintStages sees
+     all four stages done. Crossfades every skeleton card into its real
+     content — CSS handles the stagger via nth-child transition-delay,
+     the same 240ms rhythm as the cards' own entrance — swaps the
+     header label to the READY state, and settles the gen-status line
+     + its pulsing dot. animate=true (the live 0:20 completion tick)
+     also streams the closing assistant message via the native
+     typewriter; animate=false (instant/reduced-motion paths) leaves
+     that message for renderChatInstant() to append as plain text,
+     since those paths always rebuild the whole log from scratch.
+     R11d: "resolveCards() firing naturally" is the OTHER terminal beat
+     (alongside stopBuild()) that ends the live build — buildRunning
+     drops + the send icon restores unconditionally here (harmless
+     no-op on the instant/safety-net paths, where it was never
+     swapped), and the animate=true path additionally schedules the
+     settle-to-default beat ~4s out. */
+  function resolveCards(animate) {
+    if (cardsResolved) return;
+    cardsResolved = true;
+    buildRunning = false;
+    restoreSendIcon();
+    Array.prototype.forEach.call(genMod.querySelectorAll('.qv-skel-card'), function (card) {
+      card.classList.add('qv-card-resolved');
+    });
+    setHatLabel(LABEL_READY, animate);
+    if (animate) {
+      var reply = appendAssistantReply();
+      typeIntoEl(reply, reply.querySelector('.body'), DONE_TEXT, 18);
+      scheduleClose(4000);
+    }
+  }
+
+  /* Live progression — one real second per tick; stops once all four
+     have completed (~20s) rather than resting on "Querying" forever.
+     Keeps ticking across tab switches so a return shows the true state. */
+  function startStages() {
+    paintStages(elapsedSeconds);
+    if (timerInterval || stagesComplete) return;
+    timerInterval = setInterval(function () {
+      elapsedSeconds++;
+      paintStages(elapsedSeconds);
+      if (stagesComplete) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        resolveCards(true);
+      }
+    }, 1000);
+  }
+
+  /* ---------- R11d: settle-to-default ----------
+     Both terminal states (resolved OR stopped) recede back to the
+     hat's TRUE default ~4s after their own terminal beat — same
+     restoreHatNormal() leave() already uses, plus a direct (unanimated
+     — "the whole panel is changing shape at once") header reset.
+     Scheduled via schedule()/pendingTimers, not a bare setTimeout, so
+     a later stop can't ever collide with an already-ticking settle. */
+  /* Both terminal states end the same way (Bryan): linger on the end
+     frame for a moment — 4s for a completed build's READY frame, a
+     shorter 1.4s beat for a stop's freeze — then the hat CLOSES to
+     its default collapsed state (the shell's own 380ms max-height
+     collapse; just the class removals, no custom motion) and the
+     title hands back to the default closed-hat text. qv-wait-mode
+     stays on through the shrink so the tile row never flashes
+     mid-collapse, then lifts. */
+  function scheduleClose(lingerMs) {
+    schedule(function () {
+      setHatLabel(HAT_LABEL_DEFAULT, true);
+      panel.classList.remove('is-fully-open', 'is-expanded');
+      var toggle = panel.querySelector('.chat-aux-toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      schedule(function () {
+        panel.classList.remove('qv-wait-mode', 'qv-hat-gate');
+        settled = true;
+      }, 420);
+    }, lingerMs);
+  }
+  /* Finds the stage a stop should freeze: the currently-active row, or
+     row 0 if the stop landed before any stage ever went active (e.g.
+     mid query-assembly, before the hat has even opened). Returns the
+     done-count for the wait body's "N of 4 stages" copy — every row
+     strictly before the frozen one is already 'done' by construction
+     of paintStages(); rows after it are already correctly 'pending'
+     and need no touching. */
+  function freezeStoppedStage() {
+    var idx = -1;
+    for (var i = 0; i < stageEls.length; i++) {
+      if (stageEls[i].getAttribute('data-state') === 'active') { idx = i; break; }
+    }
+    if (idx === -1) idx = 0;
+    var doneCount = 0;
+    for (var j = 0; j < idx; j++) {
+      if (stageEls[j].getAttribute('data-state') === 'done') doneCount++;
+    }
+    setStage(stageEls[idx], 'stopped', fmtTime(elapsedSeconds));
+    return doneCount;
+  }
+  /* Cancel + freeze + show the interrupted state. Fireable exactly
+     once, only mid-build (guards out once resolved — the two terminal
+     states are mutually exclusive — or once already stopped). */
+  function stopBuild() {
+    if (!buildRunning || cardsResolved || stopped) return;
+    cancelPendingTimers();
+    clearInterval(timerInterval);
+    timerInterval = null;
+    buildRunning = false;
+    stopped = true;
+    restoreSendIcon();
+
+    /* Defensive: covers stopping before the hat has ever opened (e.g.
+       mid query-assembly). Reuses openHatInstant()'s exact class list
+       to force it visibly open rather than hand-rolling a second copy. */
+    buildWaitPanel();
+    openHatInstant();
+
+    var doneCount = freezeStoppedStage();
+    if (waitBodyEl) {
+      waitBodyEl.textContent = 'Generation stopped — ' + doneCount + ' of 4 stages completed before it was cancelled.';
+    }
+    setHatLabel(LABEL_STOPPED, true);
+
+    /* Whatever wasn't finished building CLEARS on cancel (Bryan):
+       the skeleton audiences always (they never completed), and the
+       query module too if the stop landed before its content filled —
+       in which case the fresh-canvas OMNI mark returns, since the
+       session genuinely produced nothing. Completed work survives. */
+    clearUnfinished();
+
+    /* One abrupt, non-typed message — a stop isn't a considered reply. */
+    var stoppedMsg = appendAssistantReply();
+    stoppedMsg.querySelector('.body').textContent = STOPPED_TEXT;
+
+    /* No restart/resume affordance — this is a one-time demo of the
+       interrupted state, not a real cancel-and-retry flow. */
+    scheduleClose(1400);
+  }
+  function clearModule(mod) {
+    if (!mod.classList.contains('qv-shown')) return;
+    if (reducedMotion()) { mod.classList.remove('qv-shown', 'qv-in'); return; }
+    mod.classList.add('qv-mod-clearing');
+    setTimeout(function () {
+      mod.classList.remove('qv-shown', 'qv-in', 'qv-mod-clearing');
+      if (window.MS_rebuildNav) window.MS_rebuildNav();
+    }, 340);
+  }
+  function clearUnfinished() {
+    clearModule(genMod);
+    if (!queryFilled) {
+      clearModule(queryMod);
+      /* Nothing ever reached the canvas — the brand-new-session mark
+         returns to the bare field. */
+      if (freshEl) freshEl.classList.remove('qv-fresh-out', 'qv-fresh-gone');
+    }
+  }
+
+  /* Hat open/close — reuses the shell's REAL first-reveal class
+     sequence (index.html's ChatHatAutoExpand / openChatHat, ~line
+     40904): add ch-first-reveal, rAF-add is-expanded (grows the body
+     via the ch-fr-body keyframe + halo/sweep/trace glow), then
+     is-fully-open once the grow settles. Not a lookalike — literally
+     the same classes the shell's own auto-open uses. */
+  function fireHatOpen() {
+    buildWaitPanel();
+    panel.classList.remove('qv-hat-gate');
+    panel.classList.add('qv-wait-mode', 'ch-first-reveal');
+    requestAnimationFrame(function () {
+      panel.classList.add('is-expanded');
+      setTimeout(function () { panel.classList.add('is-fully-open'); }, 800);
+    });
+    var toggle = panel.querySelector('.chat-aux-toggle');
+    if (toggle) toggle.setAttribute('aria-expanded', 'true');
+    setTimeout(function () { panel.classList.remove('ch-first-reveal'); }, 1250);
+    setHatLabel(LABEL_BUILDING, true);
+  }
+  function openHatInstant() {
+    panel.classList.remove('qv-hat-gate', 'ch-first-reveal');
+    panel.classList.add('qv-wait-mode', 'is-expanded', 'is-fully-open');
+    var toggle = panel.querySelector('.chat-aux-toggle');
+    if (toggle) toggle.setAttribute('aria-expanded', 'true');
+    setHatLabel(stopped ? LABEL_STOPPED : (cardsResolved ? LABEL_READY : LABEL_BUILDING), false);
+  }
+  /* leave(): hand the hat back to its normal cross-route behavior —
+     original tile row back, our wait content hidden. Whatever
+     is-expanded/is-fully-open the shell's own auto-open already set
+     in the background (silently, while gated) is left alone — that
+     IS the normal open state every other route shows. */
+  function restoreHatNormal() {
+    panel.classList.remove('qv-hat-gate', 'qv-wait-mode');
+  }
+
+  /* ---------- R11d: #sendBtn stop-button takeover ----------
+     "While the build runs" = from runTimeline() start through
+     resolveCards()/stopBuild(), whichever comes first — the instant/
+     reduced-motion paths (already-finished on load) never touch this,
+     nothing is "running" there. captureSendIcon() snapshots the
+     button's ORIGINAL svg markup exactly once, ever, so restore is
+     always the true original regardless of how many times swap/
+     restore cycles run. */
+  function captureSendIcon() {
+    if (!sendBtnSvg || sendIconOriginal !== null) return;
+    sendIconOriginal = sendBtnSvg.innerHTML;
+  }
+  function swapToStopIcon() {
+    if (!sendBtn || !sendBtnSvg) return;
+    captureSendIcon();
+    sendBtnSvg.innerHTML = STOP_ICON_SVG;
+    sendBtn.setAttribute('title', 'Stop generating');
+  }
+  function restoreSendIcon() {
+    if (!sendBtn || !sendBtnSvg || sendIconOriginal === null) return;
+    sendBtnSvg.innerHTML = sendIconOriginal;
+    sendBtn.setAttribute('title', 'Send');
+  }
+  /* ONE capture-phase listener, wired once at setup, survives the life
+     of the page — mirrors ms.js's own #hotkeyUp/Down chapter-nav
+     takeover (~line 572-578): guard flag returns immediately (doing
+     nothing) whenever the build isn't running, so every other route's
+     and state's normal send behavior passes through completely
+     untouched; only when buildRunning is true does this take over the
+     click, via the same preventDefault + stopImmediatePropagation the
+     shell's own is-submit takeover (index.html ~40541-40554) uses. */
+  if (sendBtn) {
+    sendBtn.addEventListener('click', function (e) {
+      if (!buildRunning) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      stopBuild();
+    }, true);
+  }
+
+  /* ---------- full animated timeline (first real run only) ----------
+     See the S1–S6 map below. Key beats: query loads in at once (~8.6s),
+     the hat fires open the instant it lands (~9.6s), the four wait
+     stages then advance ~5s each so the whole build is watchable in
+     ~20s instead of the real 4–6 min, and the build resolves right
+     after (R11c) at ~29.6s. R11d: the run is stoppable the entire time
+     — buildRunning flips true here, at the very top, alongside the
+     send-icon swap. */
+  function runTimeline() {
+    var thoughtNode;
+    buildRunning = true;
+    swapToStopIcon();
+
+    /* Bryan: sequential SECTIONS, each owning its own window (≤5s),
+       so every phase of the build is legible on its own:
+       S1 0–3s     user bubble + thinking beat
+       S2 3–6s     thought fades, assistant reply streams in
+       S3 6–9s     query module: skeleton, then content loads in at once
+       S4 ~9.6s    hat fires open the moment the query lands
+       S5 10–30s   four stages progress ~5s each
+       S6 ~29.6s   build resolves — cards crossfade in, header flips to
+                   READY, gen-status line swaps, closing message streams
+                   in (resolveCards, called from startStages' interval
+                   the instant paintStages reports all 4 stages done). */
+
+    /* S1 — the ask */
+    schedule(function () { appendUserBubble(USER_TEXT); }, 600);
+    schedule(function () {
+      thoughtNode = appendThoughtLine();
+      typeIntoEl(thoughtNode, thoughtNode.querySelector('.ch-thought-text'), THOUGHT_TEXT, 14);
+    }, 1500);
+
+    /* S2 — the reply. Matches the shell's own native persona-flow
+       choreography exactly (index.html ~39954-39962): the reply is
+       NOT appended until the thought line's fade-and-remove has fully
+       finished (420ms). Firing both in the same tick — the original
+       bug here — let the reply's entrance play while the thought was
+       still collapsing beneath it, visibly shoving the reply upward
+       mid-animation once the collapse caught up. */
+    schedule(function () { fadeAndRemove(thoughtNode); }, 3200);
+    schedule(function () {
+      var reply = appendAssistantReply();
+      typeIntoEl(reply, reply.querySelector('.body'), REPLY_TEXT, 18);
+    }, 3200 + 420);
+
+    /* S3 — the query takes shape: the fresh-session OMNI mark fades
+       off the bare canvas, then the module arrives as a skeleton and
+       the whole builder loads in at once (no per-chip stagger) */
+    schedule(function () { dismissFresh(false); }, 5500);
+    schedule(function () { showModule(queryMod); }, 6200);
+    schedule(function () { fillQuery(); }, 8600);
+
+    /* S4 — the hat delivers the wait the moment the query lands, then
+       the four stages progress ~5s each (startStages) so the whole
+       build is watchable without the real 4–6 min. */
+    schedule(function () {
+      fireHatOpen();
+      startStages();
+    }, 9600);
+
+    /* S5 — the audiences module (skeletons) joins while stages run */
+    schedule(function () { showModule(genMod); }, 11000);
+  }
+
+  /* ---------- contract: window.MS_QUERY_VIGNETTE ----------
+     enter(): first call (router hand-off, or the DOM-ready fallback
+     below when the page loads directly on ?skill=query and boot's
+     own apply() ran before this script existed) plays the full arc.
+     Every later call — the router clears .msg.qv-log nodes on every
+     tab switch — rebuilds the FINISHED chat instantly and reopens
+     the hat instantly (no replay of the closed->open beat). The
+     stage progression, once started, keeps advancing in the
+     background regardless of which tab is showing, so a return paints
+     the true current state (mid-progress or complete) — including the
+     R11c resolve beat: if the build finished while this tab was away,
+     resolveCards(false) fires as a no-animation safety net (it's a
+     no-op if the live timeline already resolved it) and the rebuilt
+     chat/header immediately reflect the READY state. Reduced-motion's
+     first run skips straight past that — R11d makes the true resting
+     state of a completed run the SETTLED one (default hat, no wait
+     panel at all), so the instant path renders that directly rather
+     than the READY wait-panel state.
+     R11d also adds two more terminal branches to the "already started"
+     path: settled (either terminal beat's ~4s settle timer has already
+     fired — show the plain default hat, same as any other route's
+     rest state) and stopped-not-yet-settled (repaint the frozen wait
+     panel via openHatInstant(), which is already stopped-aware — never
+     re-run paintStages() here, that would overwrite the frozen stage
+     with a fresh elapsedSeconds-derived state). Returning BEFORE a
+     scheduled settle beat fires just re-renders the true current state
+     and leaves that timer alone — it's already scheduled, cancellable,
+     and will land whenever it lands.
+     leave(): restores the hat to its normal state + content for
+     every other route (required — router already calls it) — now
+     including its header label (R11c), snapped back to the shell's
+     own default text. Unchanged by R11d: the #sendBtn takeover is keyed
+     purely off buildRunning, not the active route, since the build
+     keeps progressing in the background across tab switches. */
+  function enter() {
+    if (!started) {
+      started = true;
+      buildWaitPanel();
+      if (reducedMotion()) {
+        revealCanvasInstant();
+        elapsedSeconds = STAGE_DONE_AT[3]; /* no motion → show the build complete */
+        paintStages(elapsedSeconds);
+        resolveCards(false); /* instant resolved state, no shimmer — this
+          also sets the header label to LABEL_READY as a side effect
+          (setHatLabel runs unconditionally inside resolveCards, only
+          the typed message is gated by animate), so it must be reset
+          below along with restoreHatNormal(). */
+        renderChatInstant();
+        /* R11d: the instant path's true resting state is SETTLED — the
+           hat never shows the wait panel at all, consistent with how
+           the cards above already render fully resolved rather than
+           mid-build. */
+        settled = true;
+        restoreHatNormal();
+        panel.classList.remove('is-fully-open', 'is-expanded');
+        var rmToggle = panel.querySelector('.chat-aux-toggle');
+        if (rmToggle) rmToggle.setAttribute('aria-expanded', 'false');
+        if (hatTitleEl) hatTitleEl.textContent = HAT_LABEL_DEFAULT;
+      } else {
+        panel.classList.add('qv-hat-gate');
+        runTimeline();
+      }
+    } else if (settled) {
+      renderChatInstant();
+      restoreHatNormal();
+      /* Every settled run — completed or stopped — rests CLOSED. */
+      panel.classList.remove('is-fully-open', 'is-expanded');
+      var settledToggle = panel.querySelector('.chat-aux-toggle');
+      if (settledToggle) settledToggle.setAttribute('aria-expanded', 'false');
+      if (hatTitleEl) hatTitleEl.textContent = HAT_LABEL_DEFAULT;
+    } else if (stopped) {
+      renderChatInstant();
+      openHatInstant();
+    } else {
+      paintStages(elapsedSeconds);
+      if (stagesComplete) resolveCards(false); /* safety net: finished while away */
+      renderChatInstant();
+      openHatInstant();
+    }
+  }
+  function leave() {
+    restoreHatNormal();
+    if (hatTitleEl) hatTitleEl.textContent = HAT_LABEL_DEFAULT;
+  }
+
+  window.MS_QUERY_VIGNETTE = { enter: enter, leave: leave };
+  if (mainEl && mainEl.dataset.tab === 'query') enter();
+})();
+</script>

@@ -1,0 +1,369 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* Motion language: period ladder FAST 5s / MID 9s / SLOW 15s, stagger via
+       -1.9s negative-delay steps only. Continuous travelers (dash sweep, rim
+       rotation) are linear, exempt from the zero-velocity rule; the dust sway
+       uses the sinusoidal token cubic-bezier(0.45,0,0.55,1) — 0%/100%
+       keyframes identical, approached at zero velocity, so pause/resume
+       mid-loop never jerks. */
+    /* §19 THE LENS SCANS — subject-motion rework: the whole lens assembly
+       (glass, cross, clip, rim, ticks, handle) physically glides in a closed
+       circuit — down one line-height and across, dwell, then back — on the
+       shared sinusoidal sway token (this bezier has zero slope at BOTH ends
+       of every keyframe interval it governs, so the two dwell plateaus and
+       the two travel legs all meet at zero velocity, no explicit extra hold
+       keyframes needed). The magnified content inside runs the exact
+       negative of the same transform (.lens-counter), so it stays optically
+       anchored to the stationary page while the glass moves over it — a real
+       magnifying-glass illusion, not text glued to the lens. Anchor dots +
+       their pings are deliberately left OUTSIDE this group (see markup):
+       since they're already world-fixed like the counter-translated finding
+       line, adding+cancelling a translate on them would be a no-op. */
+    .lens-glide {
+      animation: lensGlide 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes lensGlide {
+      0%   { transform: translate(0px, 0px); }
+      42%  { transform: translate(54px, 32px); }
+      58%  { transform: translate(54px, 32px); }
+      100% { transform: translate(0px, 0px); }
+    }
+    .lens-counter {
+      animation: lensCounter 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes lensCounter {
+      0%   { transform: translate(0px, 0px); }
+      42%  { transform: translate(-54px, -32px); }
+      58%  { transform: translate(-54px, -32px); }
+      100% { transform: translate(0px, 0px); }
+    }
+    /* FAST 5s hero traveler: the finding's highlight sweeps along the magnified
+       line — dashoffset travel, one direction, seamless loop at period 280
+       (== line length, unchanged by the landscape re-layout since the lens
+       assembly was moved as a rigid unit). */
+    .finding-sweep {
+      stroke-dasharray: 24 256;
+      animation: findingSweep 5s linear infinite;
+    }
+    @keyframes findingSweep {
+      from { stroke-dashoffset: 280; }
+      to   { stroke-dashoffset: 0; }
+    }
+    /* SLOW 15s: the rim's radial ticks turn slowly, like a focus ring — a full
+       360deg rotation lands exactly back on the 8-tick pattern, so the loop is
+       seamless regardless of the tick symmetry. */
+    .tick-rotate {
+      transform-origin: 580px 350px;
+      animation: tickRotate 15s linear infinite;
+    }
+    @keyframes tickRotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    /* MID 9s: faint dust motes drift a few px and settle back — three direction
+       variants keep it from reading mechanical, staggered via -1.9s steps. */
+    .dust-mote {
+      transform-origin: center;
+      animation: driftA 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    .dust-mote.dv2 { animation-name: driftB; }
+    .dust-mote.dv3 { animation-name: driftC; }
+    .dust-mote.dd1 { animation-delay: -1.9s; }
+    .dust-mote.dd2 { animation-delay: -3.8s; }
+    .dust-mote.dd3 { animation-delay: -5.7s; }
+    .dust-mote.dd4 { animation-delay: -7.6s; }
+    .dust-mote.dd5 { animation-delay: -9.5s; }
+    @keyframes driftA { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(6px, -5px); } }
+    @keyframes driftB { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-5px, 6px); } }
+    @keyframes driftC { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(4px, 6.5px); } }
+    /* §17 the SCAN — two reactions synced to the finding-sweep's own FAST 5s
+       dashoffset math (real geometry, not eyeballed). The "on" dash (24px of the
+       280px stroke-dasharray period) sweeps path positions 0->280 at a constant
+       56px/s (280/5s) as dashoffset runs 280->0 linearly; the finding line spans
+       path position 0 (left anchor, x445) to 270 (right anchor, x715, its measured
+       length). Left anchor: the dash's leading edge starts EXACTLY there at t=0
+       (position(0)=0) — its ping peaks at the loop boundary itself, 0%=100%, a
+       legitimate zero-velocity extremum, not a coincidence. Right anchor: the
+       dash's CENTER (position(t)+12) crosses path position 270 at
+       t=(270-12)/56=4.607s, i.e. 92.14% of the cycle — the ping peaks there. */
+    .anchor-ping {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .anchor-ping.ap-left  { animation: pingLeft 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    .anchor-ping.ap-right { animation: pingRight 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    /* §18.5 rewrite: old envelope was an 8%-wide spike straddling the seam
+       (16% total, under the 18% floor) peaking at scale 1.6 (under the 3x
+       floor). Left anchor's arrival IS the seam (0%=100%, per the
+       finding-sweep math above) so attack/decay live either side of the wrap
+       and must match there; the ring now keeps expanding through decay past
+       3x before it's fully gone — same anticipation->attack->decay shape as
+       cover-workflow's terminal-ping. */
+    @keyframes pingLeft {
+      0%   { opacity: 0.9;  transform: scale(1.3); }  /* seam: matches 100% */
+      6%   { opacity: 0.35; transform: scale(2.5); }  /* decay: still expanding, fading */
+      9%   { opacity: 0.05; transform: scale(3.3); }  /* ring past 3x, nearly gone */
+      10%  { opacity: 0;    transform: scale(1); }    /* reset while invisible */
+      88%  { opacity: 0;    transform: scale(1); }    /* rest, hold */
+      100% { opacity: 0.9;  transform: scale(1.3); }  /* attack complete: matches 0% */
+    }
+    /* Right anchor keeps its computed 92.14% arrival as the peak anchor; its
+       decay wraps past the loop end the same way, matching value at 0%/100%. */
+    @keyframes pingRight {
+      0%     { opacity: 0.15; transform: scale(3.2); }  /* seam: matches 100%, decay tail */
+      4%     { opacity: 0;    transform: scale(1); }     /* decay complete, reset */
+      82%    { opacity: 0;    transform: scale(1); }     /* rest, hold */
+      92.14% { opacity: 0.9;  transform: scale(1.3); }   /* computed arrival, attack peak */
+      98%    { opacity: 0.3;  transform: scale(2.5); }   /* decay: still expanding, fading */
+      100%   { opacity: 0.15; transform: scale(3.2); }   /* seam: matches 0% */
+    }
+    /* the lens "reads": the three plain magnified lines brighten in top->bottom
+       order on the SAME 5s timeline as the finding-sweep — peak % computed from
+       each line's real y within the lens circle (top y200 / bottom y500, span
+       300): y238 -> (238-200)/300 = 12.67%, y382 -> 60.67%, y454 -> 84.67%. */
+    .line-read.lr1 { animation: read238 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    .line-read.lr2 { animation: read382 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    .line-read.lr3 { animation: read454 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    /* §18.5 rewrite: old envelope was a 6%-wide shimmer bump on an 0.8
+       baseline — attack under the 8% floor (strobes), and 0.8-to-1 dim/lit
+       contrast reads as shimmer, not on/off, well over §18's 40% ceiling.
+       Dim floor dropped to 0.3 (30% of lit) so the sequence reads as lines
+       switching on; each keeps its computed peak (12.67% / 60.67% / 84.67%)
+       as the anchor, attack widened to 10%, decay ~2.2x that. */
+    @keyframes read238 {
+      0%      { opacity: 0.3; }
+      2.67%   { opacity: 0.3; }
+      12.67%  { opacity: 1; }
+      34.67%  { opacity: 0.3; }
+      100%    { opacity: 0.3; }
+    }
+    @keyframes read382 {
+      0%      { opacity: 0.3; }
+      50.67%  { opacity: 0.3; }
+      60.67%  { opacity: 1; }
+      82.67%  { opacity: 0.3; }
+      100%    { opacity: 0.3; }
+    }
+    /* lr3's decay wraps past the loop end (84.67% + 22% > 100%) — 0% and
+       100% carry the same mid-decay value (0.51) so the wrap is invisible,
+       per the seam-wrap rule. */
+    @keyframes read454 {
+      0%      { opacity: 0.51; }
+      6.67%   { opacity: 0.3; }
+      74.67%  { opacity: 0.3; }
+      84.67%  { opacity: 1; }
+      100%    { opacity: 0.51; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      /* compound selectors (.anchor-ping.ap-left etc.) carry the actual
+         animation-name at higher specificity than a bare .anchor-ping override
+         would — match them explicitly so this rule actually wins the cascade */
+      .finding-sweep, .tick-rotate, .dust-mote,
+      .anchor-ping.ap-left, .anchor-ping.ap-right,
+      .line-read.lr1, .line-read.lr2, .line-read.lr3,
+      .lens-glide, .lens-counter { animation: none; }
+    }
+
+    /* light ("blueprint on paper") palette — dark above stays default/unmodified */
+    @media (prefers-color-scheme: light) {
+      .lp-bg { fill: url(#bgL); }
+      .lp-ambient { fill: url(#ambientGlowL); }
+      .lp-dot { fill: #64748b; opacity: 0.10; }
+      .lp-nf { fill: url(#nodeFillL); }
+      .lp-node { fill: url(#nodeFillL); stroke: #b9c2cd; }
+      .lp-line1 { stroke: #64748b; }
+      .lp-bar[stroke] { stroke: #c3ccd6; }
+      .lp-glow-u { opacity: 0.20; }
+      .lp-dust { fill: #8b95a3; }
+      /* pale soft variant washes out on paper — swap the traveling highlight to the crisp hex */
+      .finding-sweep { stroke: #e9a23b; }
+      @keyframes pingLeft {
+        0%   { opacity: 0.6;  transform: scale(1.3); }
+        6%   { opacity: 0.23; transform: scale(2.5); }
+        9%   { opacity: 0.03; transform: scale(3.3); }
+        10%  { opacity: 0;    transform: scale(1); }
+        88%  { opacity: 0;    transform: scale(1); }
+        100% { opacity: 0.6;  transform: scale(1.3); }
+      }
+      @keyframes pingRight {
+        0%     { opacity: 0.1;  transform: scale(3.2); }
+        4%     { opacity: 0;    transform: scale(1); }
+        82%    { opacity: 0;    transform: scale(1); }
+        92.14% { opacity: 0.6;  transform: scale(1.3); }
+        98%    { opacity: 0.2;  transform: scale(2.5); }
+        100%   { opacity: 0.1;  transform: scale(3.2); }
+      }
+    }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#1a1c20"/>
+      <stop offset="55%" stop-color="#101114"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </radialGradient>
+    <radialGradient id="bgL" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f5f7fa"/>
+      <stop offset="100%" stop-color="#eef1f5"/>
+    </radialGradient>
+    <radialGradient id="ambientGlow" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#e9a23b" stop-opacity="0.14"/>
+      <stop offset="60%" stop-color="#e9a23b" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#e9a23b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientGlowL" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#e9a23b" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#e9a23b" stop-opacity="0.035"/>
+      <stop offset="100%" stop-color="#e9a23b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#202226"/>
+      <stop offset="100%" stop-color="#121316"/>
+    </linearGradient>
+    <linearGradient id="nodeFillL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f2f4f7"/>
+    </linearGradient>
+    <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle class="lp-dot" cx="2" cy="2" r="1" fill="#8a97a8" opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="lensClip">
+      <circle cx="580" cy="350" r="144"/>
+    </clipPath>
+  </defs>
+
+  <rect class="lp-bg" width="1085" height="716" fill="url(#bg)"/>
+  <rect width="1085" height="716" fill="url(#dots)"/>
+  <rect class="lp-ambient" width="1085" height="716" fill="url(#ambientGlow)"/>
+
+  <!-- ONE merged lockup: document + lens overlap (lens intrudes ~70px into the page's
+       right portion), 4 of the page's 14 text lines run unbroken to the page edge and
+       continue under the glass, reappearing magnified inside the lens (same y, thicker
+       stroke, clip-trimmed) — the amber finding is one of those four. Handle trails off
+       down-right, past both the page and the lens. Whole assembly centered per §13
+       margins (bbox ~x160–818, y150–550, well inside x 8–92% / y 10–90%). -->
+
+  <!-- page: ragged text-line ticks; 4 lines (238/310/382/454) run full-width to the edge
+       instead of stopping short — they are the ones that continue into the lens -->
+  <rect class="lp-node" x="160" y="150" width="340" height="400" rx="16"
+        fill="url(#nodeFill)" stroke="#48525f" stroke-width="2" opacity="0.6"/>
+  <g class="lp-bar" stroke="#3a4350" stroke-width="3" stroke-linecap="round" opacity="0.55">
+    <line x1="186" y1="190" x2="424" y2="190"/>
+    <line x1="186" y1="214" x2="384" y2="214"/>
+    <line x1="186" y1="238" x2="500" y2="238"/>
+    <line x1="186" y1="262" x2="404" y2="262"/>
+    <line x1="186" y1="286" x2="364" y2="286"/>
+    <line x1="186" y1="310" x2="500" y2="310"/>
+    <line x1="186" y1="334" x2="394" y2="334"/>
+    <line x1="186" y1="358" x2="454" y2="358"/>
+    <line x1="186" y1="382" x2="500" y2="382"/>
+    <line x1="186" y1="406" x2="419" y2="406"/>
+    <line x1="186" y1="430" x2="434" y2="430"/>
+    <line x1="186" y1="454" x2="500" y2="454"/>
+    <line x1="186" y1="478" x2="409" y2="478"/>
+    <line x1="186" y1="502" x2="444" y2="502"/>
+  </g>
+
+  <!-- §19: the whole lens assembly glides as one rigid unit; the magnified
+       content inside runs the counter-transform so it stays page-anchored -->
+  <g class="lens-glide">
+
+    <!-- lens: overlaps the document's right portion (left rim at x430, page right edge at
+         x500 -> 70px overlap). Glass fill sits over the page, covering the four continuing
+         lines' tail ends; they reappear thicker just inside the clip. -->
+    <circle class="lp-nf" cx="580" cy="350" r="150" fill="url(#nodeFill)"/>
+
+    <!-- construction cross, subdued, sits behind the magnified lines -->
+    <g class="lp-line1" stroke="#48525f" stroke-width="1.5" opacity="0.35">
+      <line x1="430" y1="350" x2="730" y2="350"/>
+      <line x1="580" y1="200" x2="580" y2="500"/>
+    </g>
+
+    <!-- magnified text: clip travels with the lens (userSpaceOnUse resolves
+         in the referencing element's current coordinate system, ancestor
+         transforms included); content counter-translates to stay optically
+         anchored to the stationary page beneath the moving glass -->
+    <g clip-path="url(#lensClip)">
+      <g class="lens-counter">
+        <g class="lp-line1" stroke="#4b5563" stroke-width="5.5" stroke-linecap="round">
+          <line class="line-read lr1" x1="494" y1="238" x2="666" y2="238"/>
+          <line class="line-read lr2" x1="445" y1="382" x2="715" y2="382"/>
+          <line class="line-read lr3" x1="485" y1="454" x2="675" y2="454"/>
+        </g>
+
+        <!-- the amber finding: the page's y=310 line, among the magnified set — soft glow
+             underlay + crisp line + traveling highlight -->
+        <line class="lp-glow-u wake-glow" x1="445" y1="310" x2="715" y2="310"
+              stroke="#e9a23b" stroke-width="10" stroke-linecap="round" opacity="0.3" filter="url(#glow)"/>
+        <line x1="445" y1="310" x2="715" y2="310"
+              stroke="#e9a23b" stroke-width="5" stroke-linecap="round"/>
+        <line class="finding-sweep" x1="445" y1="310" x2="715" y2="310"
+              stroke="#f5c677" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+      </g>
+    </g>
+
+    <!-- lens rim: crisp hairline circle on top -->
+    <circle class="lp-line1" cx="580" cy="350" r="150" fill="none" stroke="#4b5563" stroke-width="2.5"/>
+
+    <!-- radial ticks around the rim, cardinal + intercardinal — rotates slowly (ambient) -->
+    <g class="lp-line1 tick-rotate" stroke="#4b5563" stroke-width="2" opacity="0.55">
+      <line x1="721" y1="350" x2="739" y2="350"/>
+      <line x1="679.7" y1="449.7" x2="692.4" y2="462.4"/>
+      <line x1="580" y1="491" x2="580" y2="509"/>
+      <line x1="480.3" y1="449.7" x2="467.6" y2="462.4"/>
+      <line x1="439" y1="350" x2="421" y2="350"/>
+      <line x1="480.3" y1="250.3" x2="467.6" y2="237.6"/>
+      <line x1="580" y1="209" x2="580" y2="191"/>
+      <line x1="679.7" y1="250.3" x2="692.4" y2="237.6"/>
+    </g>
+
+    <!-- angled handle: double hairline + a small dimension tick, extending down-right
+         past both the lens rim and the page's edge, kept inside the comfort margin -->
+    <g class="lp-line1" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round">
+      <line x1="696.0" y1="445.2" x2="814.2" y2="537.5"/>
+      <line x1="700.4" y1="439.6" x2="818.6" y2="532.0"/>
+      <line x1="758.3" y1="486.9" x2="768.1" y2="499.5"/>
+    </g>
+  </g>
+
+  <!-- anchor dots at each end of the finding — deliberately OUTSIDE .lens-glide:
+       they mark the (counter-translated, page-anchored) finding's endpoints,
+       so they stay put exactly like the finding line itself -->
+  <g>
+    <circle class="lp-nf" cx="445" cy="310" r="5" fill="#121316" stroke="#e9a23b" stroke-width="2"/>
+    <circle class="lp-nf" cx="715" cy="310" r="5" fill="#121316" stroke="#e9a23b" stroke-width="2"/>
+  </g>
+  <!-- §17: ring-ripple ping on each anchor, timed to the sweep's arrival there —
+       and per §19, this is also "the finding ping on the amber crossing":
+       the lens's closed circuit carries it back over the finding right as
+       the loop seams (see .lens-glide 100%=0%), the same instant pingLeft
+       already peaks at -->
+  <g filter="url(#dotGlow)">
+    <circle class="anchor-ping ap-left" cx="445" cy="310" r="7" fill="none" stroke="#e9a23b" stroke-width="3"/>
+    <circle class="anchor-ping ap-right" cx="715" cy="310" r="7" fill="none" stroke="#e9a23b" stroke-width="3"/>
+  </g>
+
+  <!-- faint dust motes, drifting — spread across the wider frame, atmosphere over the scene -->
+  <g class="lp-dust" fill="#7c8794">
+    <circle class="dust-mote dd0" cx="227" cy="220" r="1.6" opacity="0.28"/>
+    <circle class="dust-mote dv2 dd1" cx="818" cy="150" r="1.3" opacity="0.22"/>
+    <circle class="dust-mote dv3 dd2" cx="606" cy="520" r="1.4" opacity="0.25"/>
+    <circle class="dust-mote dd3" cx="909" cy="460" r="1.2" opacity="0.2"/>
+    <circle class="dust-mote dv2 dd4" cx="348" cy="470" r="1.5" opacity="0.24"/>
+    <circle class="dust-mote dv3 dd5" cx="758" cy="350" r="1.1" opacity="0.3"/>
+  </g>
+</svg>

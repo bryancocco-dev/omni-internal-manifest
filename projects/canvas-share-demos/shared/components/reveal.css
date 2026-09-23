@@ -1,0 +1,30 @@
+/* Base/active states for the [data-reveal] entrance effect (see reveal.js).
+   Subtle by design: a short fade + gentle upward drift that PULLS INTO FOCUS —
+   the blur resolve is the signature of every entrance on this page (intro,
+   gate dissolve, and here the per-board reveals). */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--doc-reveal-distance, 22px));
+  filter: blur(var(--doc-reveal-blur, 9px));
+  transition:
+    opacity var(--doc-reveal-duration, 640ms) var(--doc-reveal-easing, ease) var(--reveal-delay, 0ms),
+    transform var(--doc-reveal-duration, 640ms) var(--doc-reveal-easing, ease) var(--reveal-delay, 0ms),
+    filter calc(var(--doc-reveal-duration, 640ms) * 1.15) var(--doc-reveal-easing, ease) var(--reveal-delay, 0ms);
+  will-change: opacity, transform, filter;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}

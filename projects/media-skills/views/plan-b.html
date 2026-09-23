@@ -1,0 +1,1063 @@
+<style>
+  /* ============ planb- : Plan page, MIDDLE (Figma 4771:78604) ============
+     Modules: Projected Outcome Model (4771:79058) · Flighting (4771:79239) */
+
+  .planb-mod {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* Social's board hue (olive #858345) has no near var — mix orange +
+       green (theme-reactive, PLAN.md token rule: local var, never a bare
+       hex in a rule). */
+    --planb-olive: color-mix(in srgb, var(--ms-chart-6) 78%, var(--ms-chart-3) 22%);
+  }
+  .planb-mod + .planb-mod { margin-top: 32px; }
+
+  .planb-eyebrow-row { display: flex; align-items: center; gap: 8px; }
+  .planb-eyebrow {
+    margin: 0;
+    font: 400 10px/1.6 var(--font-sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .planb-help {
+    width: 16px; height: 16px; flex: none;
+    color: var(--text-subtle);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .planb-help svg { width: 14px; height: 14px; }
+
+  .planb-card {
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ---- shared top control row: "Optimizing for" + toggle groups ---- */
+  .planb-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .planb-optfor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+  .planb-optpill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 36px;
+    border: 2px solid transparent;
+    font: 500 12px/1 var(--ms-mono);
+    color: var(--text-body);
+    background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+    opacity: 0.45;
+  }
+  .planb-toggles { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .planb-tag-row { display: flex; align-items: center; gap: 8px; }
+  /* R10 #8 — ALL .planb-tag chart-state switchers (Outcome Model groups
+     + flighting buckets) take the ONE canonical segmented-control spec. */
+  .planb-tag {
+    display: inline-flex;
+    align-items: center;
+    font: 500 12px/1 var(--ms-mono);
+    color: var(--text-body);
+    background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+    border: 2px solid transparent;
+    border-radius: 36px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 180ms cubic-bezier(.16,1,.3,1),
+                border-color 180ms cubic-bezier(.16,1,.3,1),
+                color 180ms cubic-bezier(.16,1,.3,1);
+  }
+  .planb-tag:hover {
+    background: color-mix(in srgb, var(--text-subtle) 22%, transparent);
+  }
+  .planb-tag.is-active {
+    color: var(--text-strong);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-color: var(--accent);
+  }
+  .planb-tag.is-decorative { cursor: default; }
+  .planb-tag.is-decorative:hover {
+    background: color-mix(in srgb, var(--text-subtle) 16%, transparent);
+  }
+
+  /* pressed pill: quick scale-settle so a click reads as a physical press */
+  @keyframes planb-pill-settle {
+    0%   { transform: scale(0.94); }
+    55%  { transform: scale(1.035); }
+    100% { transform: scale(1); }
+  }
+  .planb-tag.is-pressed { animation: planb-pill-settle 260ms cubic-bezier(.16,1,.3,1); }
+
+  /* toggle groups lock (pointer-events off, inactive pills dim) while a
+     transition is in flight, so rapid clicks can't desync the render */
+  .planb-tag-row.is-locked .planb-tag,
+  .planb-toggles.is-locked .planb-tag { pointer-events: none; }
+  .planb-tag-row.is-locked .planb-tag:not(.is-active),
+  .planb-toggles.is-locked .planb-tag:not(.is-active) { opacity: 0.45; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .planb-tag { transition: none; }
+    .planb-tag.is-pressed { animation: none; }
+  }
+  body.ms-motion-off .planb-tag { transition: none !important; }
+  body.ms-motion-off .planb-tag.is-pressed { animation: none !important; }
+
+  /* ---- Outcome model: chart + reading rail ---- */
+  .planb-om-body { display: flex; gap: 24px; align-items: stretch; }
+  .planb-om-chartcol { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .planb-om-row { display: flex; gap: 8px; }
+  .planb-yaxis {
+    flex: none;
+    width: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .planb-ylabel {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font: 600 11px/1 var(--font-sans);
+    color: var(--text-subtle);
+    margin-bottom: 4px;
+  }
+  .planb-yticks {
+    flex: 1;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    font: 400 11px/1 var(--font-sans);
+    color: var(--text-subtle);
+    text-align: right;
+    width: 100%;
+    padding: 4px 0;
+  }
+  .planb-plot { position: relative; flex: 1; min-width: 0; }
+  .planb-svg { display: block; width: 100%; height: 240px; overflow: visible; }
+  .planb-gridline { stroke: var(--line); stroke-width: 1; }
+  .planb-guide { stroke: var(--text-subtle); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.7; }
+  .planb-curve { fill: none; stroke-width: 2.25; }
+  .planb-dot { stroke: var(--card-bg); stroke-width: 2; }
+  /* dots-layer opacity is toggled from JS (fade out while a curve morph is
+     in flight, fade back in once it resolves) — never mid-morph stale points */
+  .planb-dots-layer { transition: opacity 150ms ease; }
+  .planb-xticks {
+    display: flex;
+    justify-content: space-between;
+    font: 400 11px/1 var(--font-sans);
+    color: var(--text-subtle);
+    padding-left: 2px;
+  }
+  .planb-xlabel {
+    text-align: center;
+    font: 600 12px/1 var(--font-sans);
+    color: var(--text-subtle);
+    margin-top: 2px;
+  }
+
+  .planb-rail {
+    flex: none;
+    width: 260px;
+    background: var(--panel-bg-3);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .planb-rail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .planb-rail-label { font-size: 14px; color: var(--text-subtle); margin: 0 0 2px; }
+  .planb-rail-value { font: 400 20px/1.4 var(--font-sans); color: var(--text-strong); margin: 0; }
+  .planb-rail-icon { width: 16px; height: 16px; flex: none; color: var(--text-subtle); }
+  .planb-rail-list { display: flex; flex-direction: column; gap: 12px; }
+  .planb-rail-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .planb-swatch { width: 14px; height: 14px; border-radius: 4px; flex: none; }
+  .planb-rail-name { display: flex; align-items: center; gap: 8px; font: 400 14px/1.6 var(--font-sans); color: var(--text-body); }
+  .planb-rail-name-text, .planb-legend-name { display: inline-block; }
+  .planb-rail-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font: 400 12px/1.4 var(--ms-mono);
+  }
+  .planb-rail-note { font-size: 12px; color: var(--text-subtle); line-height: 1.5; }
+
+  .planb-legend {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .planb-legend-item { display: flex; align-items: center; gap: 8px; font: 400 14px/1.6 var(--font-sans); color: var(--text-body); }
+
+  .planb-hr { border: none; border-top: 0.5px solid var(--line); margin: 0; }
+
+  /* ---- Flighting: gantt ---- */
+  .planb-gantt { display: flex; flex-direction: column; gap: 0; overflow-x: auto; }
+  .planb-gantt-inner { min-width: 760px; }
+  .planb-gantt-months, .planb-gantt-weeks-row {
+    display: grid;
+    padding-left: 220px;
+  }
+  .planb-gantt-months { padding-top: 4px; }
+  .planb-gantt-month {
+    text-align: center;
+    font: 600 13px/1.6 var(--font-sans);
+    color: var(--text-body);
+    padding-bottom: 8px;
+  }
+  .planb-gantt-week {
+    text-align: left;
+    font: 400 12px/1.4 var(--font-sans);
+    color: var(--text-subtle);
+    padding-bottom: 8px;
+  }
+  .planb-gantt-weeks-row { border-bottom: 0.5px solid var(--line); padding-bottom: 4px; }
+  .planb-gantt-rows { display: flex; flex-direction: column; }
+  .planb-gantt-row { display: flex; align-items: center; min-height: 40px; }
+  .planb-gantt-row.is-group { background: var(--panel-bg-3); border-radius: 8px; margin: 6px 0 2px; }
+  .planb-gantt-label {
+    flex: none;
+    width: 220px;
+    padding: 0 12px;
+    font: 400 14px/1.6 var(--font-sans);
+    color: var(--text-body);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .planb-gantt-row.is-group .planb-gantt-label { font-weight: 600; }
+  .planb-gantt-track { position: relative; flex: 1; height: 40px; }
+  .planb-gantt-track-grid {
+    position: absolute; inset: 0;
+    display: grid;
+    opacity: 1;
+    transition: opacity 160ms cubic-bezier(.16,1,.3,1) var(--planb-grid-delay, 0ms);
+  }
+  .planb-gantt-rows.is-grid-fade .planb-gantt-track-grid {
+    opacity: 0;
+    transition-delay: 0ms; /* uniform quick exit; staggered re-entry is set from JS */
+  }
+  .planb-gantt-track-grid > span { border-left: 1px solid var(--line); opacity: 0.5; }
+  .planb-bar {
+    position: absolute;
+    top: calc(50% - 3.5px);
+    height: 7px;
+    border-radius: 4px;
+    background: var(--ms-pos);
+  }
+  .planb-gantt-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font: 400 14px/1.6 var(--font-sans);
+    color: var(--text-body);
+  }
+  .planb-gantt-legend-swatch { width: 42px; height: 4px; border-radius: 4px; background: var(--ms-pos); }
+
+  @media (max-width: 900px) {
+    .planb-om-body { flex-direction: column; }
+    .planb-rail { width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .planb-gantt-track-grid { transition: none; }
+    .planb-dots-layer { transition: none; }
+  }
+  body.ms-motion-off .planb-gantt-track-grid { transition: none !important; }
+  body.ms-motion-off .planb-dots-layer { transition: none !important; }
+
+  /* ═══ Toggle + chart motion (Bryan's ask, round 9) ═══
+     Flighting bucketing fix + all three toggle groups animate instead of
+     snapping. The JS gates every animated path behind reducedMotion()
+     (checks body.ms-motion-off + prefers-reduced-motion) and falls back to
+     an instant, synchronous re-render — no CSS-only motion lives outside
+     that gate, so headless QA with &motion=off sees zero tweening. ═══ */
+
+  /* ═══ OUR-WORLD PASS (Bryan, 2026-08-05) — Swiss integration over
+     the original layout, mirroring aud-list's pass. Structure/copy
+     retained; typography, hairlines, and restraint are ours. Delete
+     this block to restore the original treatment. ═══ */
+
+  /* module eyebrow: mono uppercase label, hairline under the real
+     header row (matches aud-list's data-dictionary heading) */
+  .planb-eyebrow {
+    font: 500 10px/1.6 var(--ms-mono);
+  }
+  .planb-eyebrow-row {
+    padding-bottom: 10px;
+  }
+
+  /* module-root card sits directly on the matte — its own border
+     duplicates the matte edge */
+  .planb-card { border: none; border-radius: 8px; }
+  /* inner box (reading rail) keeps its hairline, calmer radius */
+  .planb-rail { border-radius: 8px; }
+
+  /* stat block: mono uppercase label (board sets it above the value,
+     not under — same treatment) + tabular numeral */
+  .planb-rail-label {
+    font: 500 10px/1.6 var(--ms-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .planb-rail-value { font-variant-numeric: tabular-nums; }
+</style>
+
+<section class="planb-mod" data-reveal>
+  <div class="planb-eyebrow-row">
+    <p class="planb-eyebrow">Projected Outcome Model</p>
+    <span class="planb-help" title="How this model is calculated">
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.1"/>
+        <path d="M6.1 6.3c0-1.05.85-1.9 1.9-1.9s1.9.75 1.9 1.7c0 1.35-1.7 1.4-1.7 2.7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        <circle cx="8" cy="11.4" r="0.65" fill="currentColor"/>
+      </svg>
+    </span>
+  </div>
+
+  <div class="planb-card">
+    <div class="planb-controls">
+      <div class="planb-optfor">
+        Optimizing for:
+        <span class="planb-optpill">Awareness</span>
+      </div>
+      <div class="planb-toggles" data-planb-om-toggles>
+        <div class="planb-tag-row" data-planb-group="segment">
+          <button type="button" class="planb-tag is-active" data-planb-toggle="channel">Channel</button>
+          <button type="button" class="planb-tag" data-planb-toggle="partner">Partner</button>
+        </div>
+        <div class="planb-tag-row" data-planb-group="span">
+          <button type="button" class="planb-tag is-active" data-planb-toggle="quarter">Quarter</button>
+          <button type="button" class="planb-tag" data-planb-toggle="year">Year</button>
+          <span class="planb-tag is-decorative">Date Range</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="planb-om-body">
+      <div class="planb-om-chartcol">
+        <div class="planb-om-row">
+          <div class="planb-yaxis">
+            <span class="planb-ylabel">Leads</span>
+            <div class="planb-yticks">
+              <span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>250</span>
+            </div>
+          </div>
+          <div class="planb-plot" data-planb-plot>
+            <svg class="planb-svg" viewBox="0 0 760 240" preserveAspectRatio="none" aria-hidden="true">
+              <line class="planb-gridline" x1="0" y1="10" x2="760" y2="10"></line>
+              <line class="planb-gridline" x1="0" y1="54" x2="760" y2="54"></line>
+              <line class="planb-gridline" x1="0" y1="98" x2="760" y2="98"></line>
+              <line class="planb-gridline" x1="0" y1="142" x2="760" y2="142"></line>
+              <line class="planb-gridline" x1="0" y1="186" x2="760" y2="186"></line>
+              <line class="planb-gridline" x1="0" y1="230" x2="760" y2="230"></line>
+              <g data-planb-curves></g>
+              <line class="planb-guide" data-planb-guideline x1="427" y1="10" x2="427" y2="230"></line>
+              <g class="planb-dots-layer" data-planb-dots></g>
+            </svg>
+          </div>
+        </div>
+        <div class="planb-xticks" data-planb-xticks></div>
+        <p class="planb-xlabel">Spend</p>
+      </div>
+
+      <div class="planb-rail">
+        <div class="planb-rail-head">
+          <div>
+            <p class="planb-rail-label">Reading at</p>
+            <p class="planb-rail-value" data-planb-reading>$28,099</p>
+          </div>
+          <span class="planb-rail-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none">
+              <path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H6l-2.6 2.3a.4.4 0 0 1-.66-.3V11h-.2A1.5 1.5 0 0 1 1 9.5v-6Z" stroke="currentColor" stroke-width="1.05" stroke-linejoin="round"/>
+              <circle cx="8" cy="6.6" r="0.6" fill="currentColor"/>
+            </svg>
+          </span>
+        </div>
+        <div class="planb-rail-list" data-planb-rail-list></div>
+        <p class="planb-rail-note">Hover the chart to read values at any spend level</p>
+      </div>
+    </div>
+
+    <div class="planb-legend" data-planb-legend></div>
+
+    <hr class="planb-hr">
+    <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+  </div>
+</section>
+
+<section class="planb-mod" data-reveal>
+  <div class="planb-eyebrow-row">
+    <p class="planb-eyebrow">Flighting</p>
+    <span class="planb-help" title="How flights are scheduled">
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.1"/>
+        <path d="M6.1 6.3c0-1.05.85-1.9 1.9-1.9s1.9.75 1.9 1.7c0 1.35-1.7 1.4-1.7 2.7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        <circle cx="8" cy="11.4" r="0.65" fill="currentColor"/>
+      </svg>
+    </span>
+  </div>
+
+  <div class="planb-card">
+    <div class="planb-controls">
+      <div class="planb-optfor">
+        Optimizing for:
+        <span class="planb-optpill">Awareness</span>
+      </div>
+      <div class="planb-toggles">
+        <div class="planb-tag-row" data-planb-group="bucket">
+          <button type="button" class="planb-tag is-active" data-planb-bucket="weekly">Weekly</button>
+          <button type="button" class="planb-tag" data-planb-bucket="monthly">Monthly</button>
+          <button type="button" class="planb-tag" data-planb-bucket="quarterly">Quarterly</button>
+          <span class="planb-tag is-decorative">Custom Dates</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="planb-gantt">
+      <div class="planb-gantt-inner">
+        <div class="planb-gantt-header" data-planb-gantt-header>
+          <div class="planb-gantt-months" data-planb-gantt-months></div>
+          <div class="planb-gantt-weeks-row" data-planb-gantt-weeks></div>
+        </div>
+        <div class="planb-gantt-rows" data-planb-gantt-rows></div>
+      </div>
+    </div>
+
+    <div class="planb-gantt-legend">
+      <span class="planb-gantt-legend-swatch"></span>
+      A - Effectiveness-First
+    </div>
+
+    <hr class="planb-hr">
+    <p class="ms-source">Source: MRI-Simmons 2024, GWI Core Q3 2024, IHS Markit Automotive Q3 2024</p>
+  </div>
+</section>
+
+<script>
+(function () {
+  var root = document.currentScript.closest('.ms-frag');
+  if (!root) return;
+
+  /* ============================================================
+     Shared motion helpers (Outcome Model + Flighting both use these)
+     ============================================================ */
+  function reducedMotion() {
+    return document.body.classList.contains('ms-motion-off') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  /* House easing cubic-bezier(.16,1,.3,1) as a JS sampler, for RAF-driven
+     tweens (curve morph, number counts) that can't be plain CSS transitions. */
+  function makeBezierEase(p1x, p1y, p2x, p2y) {
+    function A(a1, a2) { return 1 - 3 * a2 + 3 * a1; }
+    function B(a1, a2) { return 3 * a2 - 6 * a1; }
+    function C(a1) { return 3 * a1; }
+    function calc(t, a1, a2) { return ((A(a1, a2) * t + B(a1, a2)) * t + C(a1)) * t; }
+    function slope(t, a1, a2) { return 3 * A(a1, a2) * t * t + 2 * B(a1, a2) * t + C(a1); }
+    return function (x) {
+      var t = x;
+      for (var i = 0; i < 6; i++) {
+        var s = slope(t, p1x, p2x);
+        if (s === 0) break;
+        t -= (calc(t, p1x, p2x) - x) / s;
+      }
+      return calc(t, p1y, p2y);
+    };
+  }
+  var EASE = makeBezierEase(0.16, 1, 0.3, 1);
+
+  function tweenNumber(el, from, to, duration, fmt) {
+    if (from === to) { el.textContent = fmt(to); return; }
+    var t0 = null;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var raw = Math.min(1, (ts - t0) / duration);
+      el.textContent = fmt(from + (to - from) * EASE(raw));
+      if (raw < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function pressSettle(btn) {
+    if (reducedMotion()) return;
+    btn.classList.remove('is-pressed');
+    void btn.offsetWidth; /* restart the keyframe on repeat clicks */
+    btn.classList.add('is-pressed');
+  }
+
+  /* Crossfades an entire block (header labels, axis ticks) whose internal
+     structure changes shape between states: snapshot the current visual as
+     an absolutely-positioned ghost, swap the live node's content while it's
+     invisible, then fade the ghost out / live node in together. */
+  function crossfadeBlock(container, updateFn, duration) {
+    if (reducedMotion()) { updateFn(); return; }
+    var parent = container.parentNode;
+    if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+    var ghost = container.cloneNode(true);
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.style.position = 'absolute';
+    ghost.style.top = container.offsetTop + 'px';
+    ghost.style.left = container.offsetLeft + 'px';
+    ghost.style.width = container.offsetWidth + 'px';
+    ghost.style.margin = '0';
+    ghost.style.pointerEvents = 'none';
+    ghost.style.opacity = '1';
+    ghost.style.transition = 'opacity ' + duration + 'ms ease';
+    parent.appendChild(ghost);
+
+    container.style.opacity = '0';
+    updateFn();
+    /* Forcing a synchronous reflow here (rather than deferring the opacity
+       flip to a requestAnimationFrame) commits the "before" state so the
+       very next write below is treated as a real change and still
+       transitions. rAF was tried first but is unreliable: browsers pause it
+       entirely while a tab/pane is occluded or backgrounded, which can
+       leave this element (and the ghost) stuck invisible indefinitely —
+       the guaranteed setTimeout cleanup below, and the hard resync at the
+       end of each toggle handler, are the real safety net either way. */
+    void container.offsetWidth;
+    container.style.transition = 'opacity ' + duration + 'ms ease';
+    container.style.opacity = '1';
+    ghost.style.opacity = '0';
+    setTimeout(function () {
+      ghost.remove();
+      container.style.transition = '';
+      container.style.opacity = '';
+    }, duration + 60);
+  }
+
+  /* Crossfades one inline text label in place: fade+drop out, swap text,
+     fade+draw in — staggered per-series via `delay`. */
+  function crossfadeText(el, newText, delay, dur) {
+    if (!el) return;
+    if (reducedMotion()) { el.textContent = newText; return; }
+    var half = dur / 2;
+    el.style.transition = 'opacity ' + half + 'ms ease ' + delay + 'ms, transform ' + half + 'ms ease ' + delay + 'ms';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-3px)';
+    setTimeout(function () {
+      el.textContent = newText;
+      el.style.transition = 'opacity ' + half + 'ms ease, transform ' + half + 'ms ease';
+      el.style.transform = 'translateY(3px)';
+      void el.offsetWidth;
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, delay + half);
+    setTimeout(function () { el.style.transition = ''; }, delay + dur + 40);
+  }
+
+  /* ============================================================
+     Projected Outcome Model
+     ============================================================ */
+  var CHANNEL_SERIES = [
+    { name: 'Connected TV',    color: 'var(--ms-chart-8)', max: 205, k: 6.0, target: 117 },
+    { name: 'Paid Search',     color: 'var(--ms-chart-2)', max: 200, k: 4.5, target: 108 },
+    { name: 'Social',          color: 'var(--planb-olive)', max: 180, k: 2.5, target: 86 },
+    { name: 'Streaming Audio', color: 'var(--ms-chart-7)', max: 110, k: 2.2, target: 76 },
+    { name: 'DOOH',            color: 'var(--ms-chart-6)', max: 65,  k: 1.0, target: 64 }
+  ];
+  /* Partner view: same curve "slots" (shape + color), relabeled + rescaled
+     by each partner's budget share vs. YouTube's 19% (plan-a Budget
+     allocation figures) — mechanical derivation, PLAN.md exception #2. */
+  var PARTNER_SERIES = [
+    { name: 'YouTube',   color: 'var(--ms-chart-8)', max: 205,               k: 6.0, target: 117 },
+    { name: 'Bloomberg', color: 'var(--ms-chart-2)', max: Math.round(200 * 16 / 19), k: 4.5, target: Math.round(108 * 16 / 19) },
+    { name: 'Spotify',   color: 'var(--planb-olive)', max: Math.round(180 * 12 / 19), k: 2.5, target: Math.round(86 * 12 / 19) },
+    { name: 'WSJ',       color: 'var(--ms-chart-7)', max: Math.round(110 * 11 / 19), k: 2.2, target: Math.round(76 * 11 / 19) },
+    { name: 'LinkedIn',  color: 'var(--ms-chart-6)', max: Math.round(65 * 11 / 19),  k: 1.0, target: Math.round(64 * 11 / 19) }
+  ];
+
+  var state = { segment: 'channel', span: 'quarter', hoverFrac: null };
+  var DEFAULT_FRAC = 28099 / 50000; /* board's literal "Reading at $28,099" */
+  var VB_W = 760, VB_H = 240, PAD_TOP = 10, PAD_BOTTOM = 10;
+  var plotH = VB_H - PAD_TOP - PAD_BOTTOM;
+  var CURVE_STEPS = 48;
+
+  var plot = root.querySelector('[data-planb-plot]');
+  var curvesG = root.querySelector('[data-planb-curves]');
+  var dotsG = root.querySelector('[data-planb-dots]');
+  var guideLine = root.querySelector('[data-planb-guideline]');
+  var xticksEl = root.querySelector('[data-planb-xticks]');
+  var railList = root.querySelector('[data-planb-rail-list]');
+  var legendEl = root.querySelector('[data-planb-legend]');
+  var readingEl = root.querySelector('[data-planb-reading]');
+  var omToggles = root.querySelector('[data-planb-om-toggles]');
+  var omBusy = false;
+
+  var OM_MORPH_MS = 500;   /* curve y-value tween */
+  var OM_LABEL_MS = 260;   /* per-label fade/drop crossfade */
+  var OM_STAGGER_MS = 50;  /* per-series stagger for label crossfade */
+  var OM_TICK_MS = 260;    /* x-axis tick block crossfade */
+
+  function series() { return state.segment === 'partner' ? PARTNER_SERIES : CHANNEL_SERIES; }
+  function domainMax() { return state.span === 'year' ? 90000 : 50000; }
+  function valueAt(s, frac) { return s.max * (1 - Math.exp(-s.k * frac)); }
+  function yFor(val) { return PAD_TOP + plotH - (val / 250) * plotH; }
+
+  function fmtMoney(n) {
+    return '$' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function fmtInt(n) { return String(Math.round(n)); }
+
+  function sampleYs(s) {
+    var ys = [];
+    for (var i = 0; i <= CURVE_STEPS; i++) ys.push(yFor(valueAt(s, i / CURVE_STEPS)));
+    return ys;
+  }
+  function pathFromYs(ys) {
+    var d = '';
+    for (var i = 0; i < ys.length; i++) {
+      var x = (i / CURVE_STEPS) * VB_W;
+      d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + ys[i].toFixed(1) + ' ';
+    }
+    return d;
+  }
+
+  function renderXTicks() {
+    var max = domainMax();
+    var count = state.span === 'year' ? 9 : 5;
+    var html = '';
+    for (var i = 0; i <= count; i++) {
+      var v = Math.round((max / count) * i);
+      html += '<span>' + (v === 0 ? '0' : Math.round(v / 1000) + 'K') + '</span>';
+    }
+    xticksEl.innerHTML = html;
+  }
+
+  function buildLegend() {
+    var html = '';
+    series().forEach(function (s, i) {
+      html += '<span class="planb-legend-item" data-idx="' + i + '"><span class="planb-swatch" style="background:' + s.color + '"></span><span class="planb-legend-name">' + s.name + '</span></span>';
+    });
+    legendEl.innerHTML = html;
+  }
+
+  function buildCurves() {
+    var html = '';
+    series().forEach(function (s, i) {
+      html += '<path class="planb-curve" data-idx="' + i + '" data-build="draw" pathLength="1" style="stroke:' + s.color + '" d="' + pathFromYs(sampleYs(s)) + '"></path>';
+    });
+    curvesG.innerHTML = html;
+  }
+
+  function buildRailRows() {
+    var html = '';
+    series().forEach(function (s, i) {
+      html +=
+        '<div class="planb-rail-row" data-idx="' + i + '">' +
+          '<span class="planb-rail-name"><span class="planb-swatch" style="background:' + s.color + '"></span><span class="planb-rail-name-text">' + s.name + '</span></span>' +
+          '<span class="planb-rail-badge" data-idx="' + i + '" data-build="pop">' + s.target + '</span>' +
+        '</div>';
+    });
+    railList.innerHTML = html;
+  }
+
+  function updateReading(frac) {
+    frac = Math.max(0, Math.min(1, frac));
+    var x = frac * VB_W;
+    guideLine.setAttribute('x1', x); guideLine.setAttribute('x2', x);
+    readingEl.textContent = fmtMoney(frac * domainMax());
+
+    var dots = '';
+    series().forEach(function (s, i) {
+      var val = valueAt(s, frac);
+      var valAtDefault = valueAt(s, DEFAULT_FRAC);
+      var idx = valAtDefault > 0 ? Math.round(s.target * (val / valAtDefault)) : 0;
+      dots += '<circle class="planb-dot" data-idx="' + i + '" data-build="pop" cx="' + x.toFixed(1) + '" cy="' + yFor(val).toFixed(1) + '" r="4" fill="' + s.color + '"></circle>';
+      var badge = railList.querySelector('.planb-rail-badge[data-idx="' + i + '"]');
+      if (badge) badge.textContent = idx;
+    });
+    dotsG.innerHTML = dots;
+  }
+
+  /* RAF-morph every curve's y-values from oldSeries -> newSeries. Paths
+     stay the same DOM nodes throughout (never rebuilt mid-toggle), so this
+     is a straight per-frame `d` mutation, not a fade/blink. */
+  function morphCurves(oldList, newList, duration) {
+    var paths = curvesG.querySelectorAll('path.planb-curve');
+    var fromYs = oldList.map(sampleYs);
+    var toYs = newList.map(sampleYs);
+    var t0 = null;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var raw = Math.min(1, (ts - t0) / duration);
+      var e = EASE(raw);
+      for (var i = 0; i < paths.length; i++) {
+        var fy = fromYs[i], ty = toYs[i], ys = new Array(fy.length);
+        for (var j = 0; j < fy.length; j++) ys[j] = fy[j] + (ty[j] - fy[j]) * e;
+        paths[i].setAttribute('d', pathFromYs(ys));
+      }
+      if (raw < 1) requestAnimationFrame(frame);
+      else for (var k = 0; k < paths.length; k++) paths[k].setAttribute('d', pathFromYs(toYs[k]));
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function tweenGuide(fromX, toX, duration) {
+    if (fromX === toX) return;
+    var t0 = null;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var raw = Math.min(1, (ts - t0) / duration);
+      var x = fromX + (toX - fromX) * EASE(raw);
+      guideLine.setAttribute('x1', x); guideLine.setAttribute('x2', x);
+      if (raw < 1) requestAnimationFrame(frame);
+      else { guideLine.setAttribute('x1', toX); guideLine.setAttribute('x2', toX); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function crossfadeLegendRail(oldList, newList) {
+    newList.forEach(function (s, i) {
+      var delay = i * OM_STAGGER_MS;
+      var legendName = legendEl.querySelector('.planb-legend-item[data-idx="' + i + '"] .planb-legend-name');
+      var railName = railList.querySelector('.planb-rail-row[data-idx="' + i + '"] .planb-rail-name-text');
+      crossfadeText(legendName, s.name, delay, OM_LABEL_MS);
+      crossfadeText(railName, s.name, delay, OM_LABEL_MS);
+    });
+  }
+
+  function tweenReadingAndBadges(oldList, newList, fromFrac, oldDomainMax, newDomainMax, duration) {
+    tweenNumber(readingEl, fromFrac * oldDomainMax, DEFAULT_FRAC * newDomainMax, duration, fmtMoney);
+    newList.forEach(function (s, i) {
+      var oldS = oldList[i];
+      var oldDef = valueAt(oldS, DEFAULT_FRAC);
+      var oldIdx = oldDef > 0 ? oldS.target * (valueAt(oldS, fromFrac) / oldDef) : 0;
+      var newIdx = s.target; /* resolves to s.target exactly at DEFAULT_FRAC */
+      var badge = railList.querySelector('.planb-rail-badge[data-idx="' + i + '"]');
+      if (badge) tweenNumber(badge, oldIdx, newIdx, duration, fmtInt);
+    });
+  }
+
+  function setActiveOmPill(btn) {
+    var group = btn.closest('[data-planb-group]');
+    Array.prototype.forEach.call(group.querySelectorAll('.planb-tag'), function (b) { b.classList.remove('is-active'); });
+    btn.classList.add('is-active');
+    pressSettle(btn);
+  }
+
+  function applyOmToggle(kind) {
+    var isSegment = (kind === 'channel' || kind === 'partner');
+    var isSpan = (kind === 'quarter' || kind === 'year');
+
+    var oldSeries = series();
+    var oldDomainMax = domainMax();
+    var fromFrac = state.hoverFrac !== null ? state.hoverFrac : DEFAULT_FRAC;
+
+    if (isSegment) state.segment = kind;
+    if (isSpan) state.span = kind;
+    state.hoverFrac = null;
+
+    var newSeries = series();
+    var newDomainMax = domainMax();
+
+    if (reducedMotion()) {
+      buildLegend();
+      buildRailRows();
+      buildCurves();
+      renderXTicks();
+      updateReading(DEFAULT_FRAC);
+      return;
+    }
+
+    omBusy = true;
+    omToggles.classList.add('is-locked');
+
+    var durations = [OM_TICK_MS];
+    if (isSegment) {
+      morphCurves(oldSeries, newSeries, OM_MORPH_MS);
+      crossfadeLegendRail(oldSeries, newSeries);
+      durations.push(OM_MORPH_MS, OM_LABEL_MS + (newSeries.length - 1) * OM_STAGGER_MS);
+    }
+    if (isSpan) {
+      crossfadeBlock(xticksEl, renderXTicks, OM_TICK_MS);
+    }
+    var total = Math.max.apply(null, durations);
+
+    dotsG.style.opacity = '0';
+    tweenGuide(fromFrac * VB_W, DEFAULT_FRAC * VB_W, total);
+    tweenReadingAndBadges(oldSeries, newSeries, fromFrac, oldDomainMax, newDomainMax, total);
+
+    setTimeout(function () {
+      /* Guaranteed resync to the exact resting state, independent of
+         whether every rAF-driven tween above actually got to run (e.g. the
+         pane was backgrounded mid-toggle and requestAnimationFrame paused). */
+      var paths = curvesG.querySelectorAll('path.planb-curve');
+      Array.prototype.forEach.call(paths, function (p, i) {
+        if (newSeries[i]) p.setAttribute('d', pathFromYs(sampleYs(newSeries[i])));
+      });
+      Array.prototype.forEach.call(legendEl.querySelectorAll('.planb-legend-name'), function (el, i) {
+        if (newSeries[i]) el.textContent = newSeries[i].name;
+        el.style.opacity = ''; el.style.transform = ''; el.style.transition = '';
+      });
+      Array.prototype.forEach.call(railList.querySelectorAll('.planb-rail-name-text'), function (el, i) {
+        if (newSeries[i]) el.textContent = newSeries[i].name;
+        el.style.opacity = ''; el.style.transform = ''; el.style.transition = '';
+      });
+      xticksEl.style.opacity = '';
+      xticksEl.style.transition = '';
+      var strayGhost = xticksEl.parentNode.querySelector('[aria-hidden="true"].planb-xticks');
+      if (strayGhost) strayGhost.remove();
+      updateReading(DEFAULT_FRAC);
+      dotsG.style.opacity = '1';
+      omBusy = false;
+      omToggles.classList.remove('is-locked');
+    }, total + 80);
+  }
+
+  if (plot) {
+    plot.addEventListener('mousemove', function (e) {
+      if (omBusy) return;
+      var rect = plot.getBoundingClientRect();
+      state.hoverFrac = (e.clientX - rect.left) / rect.width;
+      updateReading(state.hoverFrac);
+    });
+    plot.addEventListener('mouseleave', function () {
+      if (omBusy) return;
+      state.hoverFrac = null;
+      updateReading(DEFAULT_FRAC);
+    });
+  }
+
+  Array.prototype.forEach.call(root.querySelectorAll('[data-planb-toggle]'), function (btn) {
+    btn.addEventListener('click', function () {
+      if (omBusy) return;
+      var kind = btn.getAttribute('data-planb-toggle');
+      if ((kind === 'channel' || kind === 'partner') && kind === state.segment) return;
+      if ((kind === 'quarter' || kind === 'year') && kind === state.span) return;
+      setActiveOmPill(btn);
+      applyOmToggle(kind);
+    });
+  });
+
+  buildLegend();
+  buildRailRows();
+  buildCurves();
+  renderXTicks();
+  updateReading(DEFAULT_FRAC);
+
+  /* ============================================================
+     Flighting — gantt
+     ============================================================ */
+  var WEEKS = [
+    { label: '06 Jan', month: 0 }, { label: '13 Jan', month: 0 }, { label: '20 Jan', month: 0 }, { label: '27 Jan', month: 0 },
+    { label: '03 Feb', month: 1 }, { label: '10 Feb', month: 1 }, { label: '17 Feb', month: 1 }, { label: '24 Feb', month: 1 },
+    { label: '03 Mar', month: 2 }, { label: '10 Mar', month: 2 }
+  ];
+  var MONTHS = [
+    { label: 'January 2026', span: 4 },
+    { label: 'February 2026', span: 4 },
+    { label: 'March 2026', span: 2 }
+  ];
+  /* Bar spans in week units (0–10), read from the board pixel-for-pixel
+     (Figma flight-bar pixel positions sampled against the header's 10
+     visible week columns). */
+  var GROUPS = [
+    { name: 'Online Video', rows: [
+      { name: 'Car & Driver (YouTube)', bars: [[0.39, 2.41], [3.64, 5.93], [7.16, 9.18]] },
+      { name: 'Motor Trend+',           bars: [[0.70, 1.26], [4.18, 5.01], [7.93, 8.49]] }
+    ] },
+    { name: 'Audio', rows: [
+      { name: 'The Smoking Tire (Spotify)', bars: [[0.44, 1.18], [2.92, 3.93], [5.67, 6.41], [8.15, 8.89]] },
+      { name: 'Bloomberg Radio',            bars: [[0.44, 1.18], [2.92, 3.93], [5.67, 6.41], [8.15, 8.89]] }
+    ] },
+    { name: 'News & Display', rows: [
+      { name: 'Bloomberg Media', bars: [[0.12, 0.85], [1.31, 3.59], [4.05, 4.77], [5.23, 7.51], [7.97, 8.69], [9.15, 9.55]] },
+      { name: 'WSJ Motors',      bars: [[0.70, 1.26], [4.18, 5.01], [7.93, 8.49]] }
+    ] },
+    { name: 'Social', rows: [
+      { name: 'LinkedIn',           bars: [[0.44, 1.18], [2.92, 3.93], [5.67, 6.41], [8.15, 8.89]] },
+      { name: 'Instagram (Meta)',   bars: [[0.44, 1.18], [2.92, 3.93], [5.67, 6.41], [8.15, 8.89]] }
+    ] }
+  ];
+
+  var bucket = 'weekly';
+  var gtBusy = false;
+  var headerWrapEl = root.querySelector('[data-planb-gantt-header]');
+  var monthsEl = root.querySelector('[data-planb-gantt-months]');
+  var weeksEl = root.querySelector('[data-planb-gantt-weeks]');
+  var rowsEl = root.querySelector('[data-planb-gantt-rows]');
+  var bucketGroupEl = root.querySelector('[data-planb-group="bucket"]');
+
+  var GT_HEADER_MS = 240;   /* header label-block crossfade */
+  var GT_GRID_OUT_MS = 140; /* track-grid divider uniform fade-out */
+  var GT_GRID_IN_MS = 160;  /* track-grid divider fade-in (per row) */
+  var GT_ROW_STAGGER_MS = 25;
+
+  function colCount() { return bucket === 'weekly' ? 10 : (bucket === 'monthly' ? 3 : 1); }
+  function gridTemplateForBucket() {
+    if (bucket === 'weekly') return 'repeat(10, 1fr)';
+    if (bucket === 'monthly') return MONTHS.map(function (m) { return m.span + 'fr'; }).join(' ');
+    return '1fr';
+  }
+
+  /* Flight windows are stored in week-units (0–10, spanning the full plan)
+     and mapped to a fraction of the track's width. This mapping is
+     intentionally bucket-invariant: Weekly / Monthly / Quarterly only
+     change the header + gridline granularity drawn BEHIND the bars, never
+     a bar's own position or width. That's the fix for the reported bug —
+     Quarterly used to collapse every row into one 94%-wide bar (and
+     Monthly silently merged same-month flights into one block per active
+     month), both losing the actual on/off pattern. Keeping bars pinned to
+     their true week-unit position means Quarterly always reads identically
+     to Weekly's pattern, just under a wider column. It also means a bucket
+     toggle never needs to reposition a bar — see the CSS note above
+     `.planb-gantt-track-grid` for where the toggle's motion actually lives. */
+  function weekPos(bars) {
+    return bars.map(function (b) { return { left: b[0] / 10 * 100, width: (b[1] - b[0]) / 10 * 100 }; });
+  }
+
+  function renderHeader() {
+    if (bucket === 'weekly') {
+      monthsEl.style.display = '';
+      monthsEl.style.gridTemplateColumns = MONTHS.map(function (m) { return m.span + 'fr'; }).join(' ');
+      monthsEl.innerHTML = MONTHS.map(function (m) { return '<span class="planb-gantt-month">' + m.label + '</span>'; }).join('');
+      weeksEl.style.gridTemplateColumns = 'repeat(10, 1fr)';
+      weeksEl.innerHTML = WEEKS.map(function (w) { return '<span class="planb-gantt-week">' + w.label + '</span>'; }).join('');
+    } else if (bucket === 'monthly') {
+      monthsEl.style.display = 'none';
+      weeksEl.style.gridTemplateColumns = gridTemplateForBucket();
+      weeksEl.innerHTML = MONTHS.map(function (m) { return '<span class="planb-gantt-week" style="text-align:center">' + m.label.split(' ')[0] + '</span>'; }).join('');
+    } else {
+      monthsEl.style.display = 'none';
+      weeksEl.style.gridTemplateColumns = '1fr';
+      weeksEl.innerHTML = '<span class="planb-gantt-week" style="text-align:center">Q1 2026</span>';
+    }
+  }
+
+  function buildGanttDom() {
+    var html = '';
+    GROUPS.forEach(function (g) {
+      html += '<div class="planb-gantt-row is-group"><span class="planb-gantt-label">' + g.name + '</span><div class="planb-gantt-track"></div></div>';
+      g.rows.forEach(function (row) {
+        var barsHtml = weekPos(row.bars).map(function (b) {
+          return '<span class="planb-bar" data-build="bar-h" style="left:' + b.left.toFixed(2) + '%;width:' + b.width.toFixed(2) + '%"></span>';
+        }).join('');
+        html +=
+          '<div class="planb-gantt-row">' +
+            '<span class="planb-gantt-label">' + row.name + '</span>' +
+            '<div class="planb-gantt-track">' +
+              '<div class="planb-gantt-track-grid" data-track-grid></div>' +
+              barsHtml +
+            '</div>' +
+          '</div>';
+      });
+    });
+    rowsEl.innerHTML = html;
+  }
+
+  function rebuildTrackGrids() {
+    var tmpl = gridTemplateForBucket();
+    var n = colCount();
+    var spans = '';
+    for (var i = 1; i < n; i++) spans += '<span></span>';
+    Array.prototype.forEach.call(rowsEl.querySelectorAll('[data-track-grid]'), function (grid) {
+      grid.style.gridTemplateColumns = tmpl;
+      grid.innerHTML = spans;
+    });
+  }
+
+  function updateTrackGrids() {
+    var grids = rowsEl.querySelectorAll('[data-track-grid]');
+    Array.prototype.forEach.call(grids, function (g) { g.style.setProperty('--planb-grid-delay', '0ms'); });
+    rowsEl.classList.add('is-grid-fade');
+    setTimeout(function () {
+      rebuildTrackGrids();
+      Array.prototype.forEach.call(rowsEl.querySelectorAll('[data-track-grid]'), function (g, i) {
+        g.style.transitionDuration = GT_GRID_IN_MS + 'ms';
+        g.style.setProperty('--planb-grid-delay', (i * GT_ROW_STAGGER_MS) + 'ms');
+      });
+      /* The class has already been rendered opaque-0 for GT_GRID_OUT_MS, so
+         the "before" state is already committed — removing it here, on the
+         same tick, still transitions. (No rAF: see the crossfadeBlock note.) */
+      rowsEl.classList.remove('is-grid-fade');
+      setTimeout(function () {
+        Array.prototype.forEach.call(rowsEl.querySelectorAll('[data-track-grid]'), function (g) {
+          g.style.transitionDuration = '';
+          g.style.setProperty('--planb-grid-delay', '0ms');
+        });
+      }, GT_GRID_IN_MS + (grids.length - 1) * GT_ROW_STAGGER_MS + 40);
+    }, GT_GRID_OUT_MS);
+  }
+
+  function setActiveBucketPill(btn) {
+    var group = btn.closest('[data-planb-group]');
+    Array.prototype.forEach.call(group.querySelectorAll('.planb-tag'), function (b) { b.classList.remove('is-active'); });
+    btn.classList.add('is-active');
+    pressSettle(btn);
+  }
+
+  function applyBucket(newBucket) {
+    if (gtBusy || bucket === newBucket) return;
+    bucket = newBucket;
+
+    if (reducedMotion()) {
+      renderHeader();
+      rebuildTrackGrids();
+      return;
+    }
+
+    gtBusy = true;
+    bucketGroupEl.classList.add('is-locked');
+    crossfadeBlock(headerWrapEl, renderHeader, GT_HEADER_MS);
+    updateTrackGrids();
+
+    var grids = rowsEl.querySelectorAll('[data-track-grid]').length;
+    var total = Math.max(GT_HEADER_MS, GT_GRID_OUT_MS + GT_GRID_IN_MS + (grids - 1) * GT_ROW_STAGGER_MS);
+    setTimeout(function () {
+      /* Guaranteed resync to the exact resting state, independent of
+         whether every transition above actually got to play (setTimeout
+         still fires even if the pane was backgrounded mid-toggle). */
+      headerWrapEl.style.opacity = '';
+      headerWrapEl.style.transition = '';
+      var strayGhost = headerWrapEl.parentNode.querySelector('[aria-hidden="true"].planb-gantt-header');
+      if (strayGhost) strayGhost.remove();
+      rowsEl.classList.remove('is-grid-fade');
+      Array.prototype.forEach.call(rowsEl.querySelectorAll('[data-track-grid]'), function (g) {
+        g.style.transitionDuration = '';
+        g.style.setProperty('--planb-grid-delay', '0ms');
+      });
+      gtBusy = false;
+      bucketGroupEl.classList.remove('is-locked');
+    }, total + 60);
+  }
+
+  Array.prototype.forEach.call(root.querySelectorAll('[data-planb-bucket]'), function (btn) {
+    btn.addEventListener('click', function () {
+      if (gtBusy) return;
+      var kind = btn.getAttribute('data-planb-bucket');
+      if (kind === bucket) return;
+      setActiveBucketPill(btn);
+      applyBucket(kind);
+    });
+  });
+
+  buildGanttDom();
+  renderHeader();
+  rebuildTrackGrids();
+})();
+</script>

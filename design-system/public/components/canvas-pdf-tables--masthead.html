@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  OMNI component: masthead
+  Project: PDF Tables
+  Note: .masthead — Swiss spec-doc header: mono kicker, big h1, dek paragraph, 4-col meta-stats row (top of an OMNI+ Canvas findings/spec page)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — masthead · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="lab"><header class="masthead">
+    <p class="masthead-kicker">OMNI+ Canvas · Export spec · For Sofia Brandt</p>
+    <h1>Wide data tables, on paper</h1>
+    <p class="masthead-dek">
+      The canvas gives a wide table an escape valve that paper does not have: horizontal scroll.
+      Today's PDF export keeps the screen's column grid and squeezes it onto a fixed page, so the
+      columns collide. The fix is not a smaller font — it is a <strong>fit ladder</strong> that changes
+      the table's shape until it fits, in a fixed order, with four things it is never allowed to do.
+    </p>
+    <div class="masthead-meta">
+      <div class="meta-cell"><span class="meta-k">Raised by</span><span class="meta-v">Sofia Brandt — Thu 1:02 PM</span></div>
+      <div class="meta-cell"><span class="meta-k">Source</span><span class="meta-v">Create 8 Exportable Canvas Data Tables</span></div>
+      <div class="meta-cell"><span class="meta-k">Sample table</span><span class="meta-v">Research Source Inventory — 11 cols</span></div>
+      <div class="meta-cell"><span class="meta-k">Status</span><span class="meta-v">Recommendation + working proof</span></div>
+    </div>
+  </header></div>
+</body>
+</html>

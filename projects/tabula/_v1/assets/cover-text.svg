@@ -1,0 +1,295 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* pulse family: §14 ladder — MID 9s, sine token, -1.9s stagger steps */
+    .pulse { animation: pulse 9s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    .pulse.d1 { animation-delay: -1.9s; }
+    .pulse.d2 { animation-delay: -3.8s; }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 0.9; }
+    }
+    /* bespoke: the metric guides' dash pattern drifts, seamless (period 12,
+       shift 24) — §14 SLOW tier, linear (continuous traveler) */
+    .guide-drift {
+      stroke-dasharray: 5 7;
+      animation: driftDash 15s linear infinite;
+    }
+    @keyframes driftDash {
+      from { stroke-dashoffset: 0; }
+      to   { stroke-dashoffset: -24; }
+    }
+    /* ambient layer: a tick shimmer travels the dimension line — dash
+       period 38 (8 on + 30 off), one full offset shift per loop = seamless;
+       §14 MID tier, linear (continuous traveler) */
+    .tick-shimmer {
+      stroke-dasharray: 8 30;
+      animation: tickShimmer 9s linear infinite;
+    }
+    @keyframes tickShimmer {
+      from { stroke-dashoffset: 0; }
+      to   { stroke-dashoffset: -38; }
+    }
+    /* the caret cue is retired — the dimension line itself now carries the
+       blink. Its crisp stroke (alone) and the tick-shimmer overlay (combined
+       with its own dash travel) flip cursor-style, hard steps not an ease;
+       the glow underlay stays out of it (it's the §15 wake-glow hook, driven
+       page-side on hover — layering a second opacity animation on it would
+       fight that), and so does the measurement gesture below (arrowheads +
+       shimmer-glow bloom) so that beat keeps reading undisturbed. */
+    .dim-blink {
+      animation: dimBlink 1s steps(1, end) infinite;
+    }
+    .tick-shimmer.dim-blink {
+      animation: tickShimmer 9s linear infinite, dimBlink 1s steps(1, end) infinite;
+    }
+    @keyframes dimBlink {
+      50% { opacity: 0.1; }
+    }
+    /* §17 the MEASURE: the dimension line "takes a measurement" once per
+       5s — both arrowheads nudge 3px further outward and back while a dedicated
+       glow blooms behind the shimmer, sharing the SAME keyframe window
+       (35%/50%/65%) across all three animations so the arrow-extend and the
+       "brightening as it passes" read as one gesture on one driver period,
+       rather than two independently-eyeballed loops. */
+    .measure-arrow.ma-top    { transform-origin: 744px 180px; animation: measureArrowUp 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    .measure-arrow.ma-bottom { transform-origin: 744px 530px; animation: measureArrowDown 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    /* §18.5 rewrite: old envelope was a symmetric 15%/15% ease (no real
+       anticipation/decay asymmetry) at 3px — under §18's 6px amplitude
+       floor. Peak stays at 50% (the anchor); attack narrowed to 10% so the
+       rise gathers closer to the gesture, decay widened to 20% so it settles
+       back out — the anticipation -> attack -> decay shape. */
+    @keyframes measureArrowUp {
+      0%, 40%, 70%, 100% { transform: translateY(0); }
+      50%                { transform: translateY(-6px); }
+    }
+    @keyframes measureArrowDown {
+      0%, 40%, 70%, 100% { transform: translateY(0); }
+      50%                { transform: translateY(6px); }
+    }
+    .shimmer-glow {
+      animation: shimmerGlow 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    /* glow underlay now swings 0.15->0.9 (§18's arrival-bloom floor) instead
+       of 0->0.4 so the "measurement" reads as an obvious bloom, not a tint. */
+    @keyframes shimmerGlow {
+      0%, 40%, 70%, 100% { opacity: 0.15; }
+      50%                { opacity: 0.9; }
+    }
+    /* §19 THE CALIPER MEASURES: a dedicated jaw-pair + arrows physically
+       SLIDE between the cap-height guide (y180) and the x-height guide
+       (y348) and back — position motion tracking what's being measured. The
+       three anatomy guides themselves (cap-height/x-height/baseline) stay
+       fixed, since they define the glyph's own structure; this is a
+       separate measuring tool traveling between them. One shared group
+       transform, so the jaws + stem + arrowheads track together. MID 9s
+       sine token, 0%/100% identical (zero-velocity seamless). */
+    .caliper {
+      animation: caliperSlide 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes caliperSlide {
+      0%, 100% { transform: translate(250px, 180px); }
+      50%      { transform: translate(250px, 348px); }
+    }
+
+    /* THE T MORPHS TYPE STYLES — the tile's subject motion. One canonical
+       16-vertex capital-T outline (M + 15 L + Z: crossbar top corners, both
+       beak-serif clusters at the crossbar tips, stem sides, bracketed
+       foot-serif cluster) expressed as four coordinate sets on that IDENTICAL
+       command skeleton — Regular / Bold / Italic (Regular's numbers, -12deg
+       skew about the baseline baked directly into each vertex — a wrapper
+       transform can't survive a `d` interpolation) / Sans (serif clusters
+       collapsed to co-linear points on straight edges, uniform 40px
+       crossbar+stem). Chrome interpolates `d` vertex-by-vertex since every
+       keyframe shares the same command skeleton, so the glyph fluidly
+       RESHAPES rather than crossfades. One shared 9s MID sine token, each
+       style owns a 25% slot: ~18% (1.6s) flat hold + ~7% (0.6s) morph into
+       the next style. Regular's path is the value at both 0% and 100%
+       (§18.5.3 seam-wrap): the morph into it lands, at zero velocity via the
+       shared easing, exactly as the flat hold begins, so rest state /
+       reduced-motion freezes on Regular — the tile's original, untouched
+       complete still (the live path element's own `d` attribute IS the
+       Regular outline, so `animation: none` alone restores it). */
+    .t-cycle {
+      animation: tCycle 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes tCycle {
+      0%   { d: path("M381,180 L703,180 L703,210 L695,245 L687,210 L561,210 L561,506 L595,523 L595,530 L489,530 L489,523 L523,506 L523,210 L397,210 L389,245 L381,210 Z"); }
+      18%  { d: path("M381,180 L703,180 L703,210 L695,245 L687,210 L561,210 L561,506 L595,523 L595,530 L489,530 L489,523 L523,506 L523,210 L397,210 L389,245 L381,210 Z"); }
+      25%  { d: path("M381,180 L703,180 L703,234 L689,280 L674,234 L576,234 L576,496 L620,523 L620,530 L464,530 L464,523 L508,496 L508,234 L410,234 L395,280 L381,234 Z"); }
+      43%  { d: path("M381,180 L703,180 L703,234 L689,280 L674,234 L576,234 L576,496 L620,523 L620,530 L464,530 L464,523 L508,496 L508,234 L410,234 L395,280 L381,234 Z"); }
+      50%  { d: path("M455.39,180 L777.39,180 L771.02,210 L755.58,245 L755.02,210 L629.02,210 L566.10,506 L596.49,523 L595,530 L489,530 L490.49,523 L528.10,506 L591.02,210 L465.02,210 L449.58,245 L449.02,210 Z"); }
+      68%  { d: path("M455.39,180 L777.39,180 L771.02,210 L755.58,245 L755.02,210 L629.02,210 L566.10,506 L596.49,523 L595,530 L489,530 L490.49,523 L528.10,506 L591.02,210 L465.02,210 L449.58,245 L449.02,210 Z"); }
+      75%  { d: path("M381,180 L703,180 L703,220 L695,220 L687,220 L562,220 L562,506 L562,523 L562,530 L522,530 L522,523 L522,506 L522,220 L397,220 L389,220 L381,220 Z"); }
+      93%  { d: path("M381,180 L703,180 L703,220 L695,220 L687,220 L562,220 L562,506 L562,523 L562,530 L522,530 L522,523 L522,506 L522,220 L397,220 L389,220 L381,220 Z"); }
+      100% { d: path("M381,180 L703,180 L703,210 L695,245 L687,210 L561,210 L561,506 L595,523 L595,530 L489,530 L489,523 L523,506 L523,210 L397,210 L389,245 L381,210 Z"); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      /* .measure-arrow.ma-top/.ma-bottom and .tick-shimmer.dim-blink carry
+         the actual animation-name at higher specificity than a bare
+         .measure-arrow/.dim-blink override would — match them explicitly so
+         this rule actually wins the cascade */
+      .pulse, .guide-drift, .tick-shimmer, .dim-blink, .tick-shimmer.dim-blink,
+      .measure-arrow.ma-top, .measure-arrow.ma-bottom, .shimmer-glow, .caliper,
+      .t-cycle { animation: none; }
+    }
+
+    /* light ("blueprint on paper") palette — dark above stays default/unmodified */
+    @media (prefers-color-scheme: light) {
+      .lp-bg { fill: url(#bgL); }
+      .lp-ambient { fill: url(#ambientGlowL); }
+      .lp-dot { fill: #64748b; opacity: 0.10; }
+      .lp-nf { fill: url(#nodeFillL); }
+      .lp-node { fill: url(#nodeFillL); stroke: #b9c2cd; }
+      .lp-line1 { stroke: #64748b; }
+      .lp-line2 { stroke: #8b95a3; }
+      .guide-drift { stroke: #64748b; }
+      .tick-shimmer { stroke: #2fc4e0; opacity: 0.9; }
+      .shimmer-glow { stroke: #2fc4e0; }
+      .lp-glow-u { opacity: 0.20; }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.37; }
+        50%      { opacity: 0.68; }
+      }
+      @keyframes shimmerGlow {
+        0%, 40%, 70%, 100% { opacity: 0.08; }
+        50%                { opacity: 0.5; }
+      }
+    }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#1a1c20"/>
+      <stop offset="55%" stop-color="#101114"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </radialGradient>
+    <radialGradient id="bgL" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f5f7fa"/>
+      <stop offset="100%" stop-color="#eef1f5"/>
+    </radialGradient>
+    <radialGradient id="ambientGlow" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#2fc4e0" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#2fc4e0" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#2fc4e0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientGlowL" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#2fc4e0" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#2fc4e0" stop-opacity="0.035"/>
+      <stop offset="100%" stop-color="#2fc4e0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#202226"/>
+      <stop offset="100%" stop-color="#121316"/>
+    </linearGradient>
+    <linearGradient id="nodeFillL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f2f4f7"/>
+    </linearGradient>
+    <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle class="lp-dot" cx="2" cy="2" r="1" fill="#8a97a8" opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect class="lp-bg" width="1085" height="716" fill="url(#bg)"/>
+  <rect width="1085" height="716" fill="url(#dots)"/>
+  <rect class="lp-ambient" width="1085" height="716" fill="url(#ambientGlow)"/>
+
+  <!-- metric guide hairlines: cap-height / x-height / baseline, spanning the comfort
+       width (152–933, ~72% of frame) — the guide system is what "uses the width" in
+       this landscape layout while the glyph itself stays undistorted -->
+  <g fill="none" stroke="#48525f" stroke-width="1.5" opacity="0.55">
+    <line class="guide-drift" x1="152" y1="180" x2="933" y2="180"/>
+    <line class="guide-drift" x1="152" y1="348" x2="933" y2="348"/>
+    <line class="guide-drift" x1="152" y1="530" x2="933" y2="530"/>
+  </g>
+
+  <!-- left-side measurement ticks on each guide -->
+  <g class="lp-line2" stroke="#7c8794" stroke-width="1.5" opacity="0.5">
+    <line x1="374" y1="173" x2="374" y2="187"/>
+    <line x1="374" y1="341" x2="374" y2="355"/>
+    <line x1="374" y1="523" x2="374" y2="537"/>
+  </g>
+  <!-- small chevron arrow pointing at the glyph from the x-height guide -->
+  <path class="lp-line2" d="M352,340 L362,348 L352,356" fill="none" stroke="#7c8794" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+
+  <!-- §19: the sliding caliper — jaws + stem + arrowheads, local origin at
+       (0,0), positioned entirely by the group's own transform (see .caliper
+       keyframes: translate(250,180) <-> translate(250,348)) -->
+  <g class="caliper">
+    <line x1="0" y1="0" x2="0" y2="40" stroke="#2fc4e0" stroke-width="5" opacity="0.35" filter="url(#glow)"/>
+    <line x1="0" y1="0" x2="0" y2="40" stroke="#79dcee" stroke-width="2"/>
+    <line x1="-22" y1="0" x2="22" y2="0" stroke="#79dcee" stroke-width="2"/>
+    <line x1="-22" y1="40" x2="22" y2="40" stroke="#79dcee" stroke-width="2"/>
+    <path d="M-6,0 L6,0 L0,-10 Z" fill="#2fc4e0"/>
+    <path d="M-6,40 L6,40 L0,50 Z" fill="#2fc4e0"/>
+  </g>
+
+  <!-- THE T MORPHS TYPE STYLES: one capital T on a canonical 16-vertex outline
+       skeleton (M + 15 L + Z — crossbar top corners, both beak-serif clusters,
+       stem sides, bracketed foot-serif cluster), animating `d` through
+       Regular -> Bold -> Italic -> Sans -> Regular. Identical metrics on every
+       style — symmetric about x=542, cap height H=350 (y180 top -> y530
+       baseline) — so the guides + caliper stay aligned through the whole
+       morph. Outline stroke matches cover-graphics' picture-frame (lp-line1/
+       lp-nf). This element's own `d` attribute is the Regular outline (crossbar
+       322 wide x 30 thick, downward-tapered beak serifs, 38-wide stem,
+       bracketed foot serifs spreading to 106) — the rest state and the
+       reduced-motion fallback. Bold's keyframe redraws it heavier (54-thick
+       crossbar, 68-wide stem, same 381-703 x 180-530 bounding box). Italic's
+       keyframe is Regular's vertices skewed -12deg about the baseline, baked
+       into the numbers (a wrapper transform can't survive interpolating `d`).
+       Sans's keyframe collapses every serif/bracket cluster to co-linear
+       points on straight edges, uniform 40px crossbar+stem. Morph timing: see
+       .t-cycle / @keyframes tCycle above. -->
+  <path class="lp-nf lp-line1 t-cycle"
+        d="M381,180 L703,180 L703,210 L695,245 L687,210 L561,210
+           L561,506 L595,523 L595,530 L489,530 L489,523 L523,506 L523,210 L397,210
+           L389,245 L381,210 Z"
+        fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- right-side dimension line measuring cap-height to baseline: glow underlay + crisp line -->
+  <line class="lp-glow-u wake-glow" x1="744" y1="192" x2="744" y2="518" stroke="#2fc4e0" stroke-width="6" opacity="0.28" filter="url(#glow)"/>
+  <!-- §17: dedicated glow that blooms once per 5s, synced to the arrows extending -->
+  <line class="shimmer-glow" x1="744" y1="192" x2="744" y2="518" stroke="#79dcee" stroke-width="5" stroke-linecap="round" opacity="0" filter="url(#glow)"/>
+  <!-- the dimension line's blinking cursor: crisp stroke -->
+  <line class="dim-blink" x1="744" y1="192" x2="744" y2="518" stroke="#79dcee" stroke-width="2" stroke-linecap="round"/>
+  <!-- ambient layer: tick shimmer traveling the dimension line, blinking in sync with the crisp stroke above -->
+  <line class="tick-shimmer dim-blink" x1="744" y1="192" x2="744" y2="518" stroke="#c9f3fa" stroke-width="2.5" stroke-linecap="round" opacity="1"/>
+  <!-- arrowheads: §17 nudge 3px outward and back each 5s ("takes a measurement") -->
+  <g class="measure-arrow ma-top">
+    <path d="M738,192 L750,192 L744,180 Z" fill="#2fc4e0"/>
+  </g>
+  <g class="measure-arrow ma-bottom">
+    <path d="M738,518 L750,518 L744,530 Z" fill="#2fc4e0"/>
+  </g>
+  <!-- x-height cross tick on the dimension line -->
+  <line x1="736" y1="348" x2="752" y2="348" stroke="#2fc4e0" stroke-width="2"/>
+
+  <!-- pulsing accent dots at each measured intersection -->
+  <g filter="url(#dotGlow)">
+    <circle class="pulse" cx="744" cy="180" r="5" fill="#2fc4e0" opacity="0.4"/>
+    <circle class="pulse d1" cx="744" cy="348" r="5" fill="#2fc4e0" opacity="0.4"/>
+    <circle class="pulse d2" cx="744" cy="530" r="5" fill="#2fc4e0" opacity="0.4"/>
+  </g>
+  <g class="lp-nf" fill="#121316" stroke="#2fc4e0" stroke-width="2">
+    <circle cx="744" cy="180" r="4"/>
+    <circle cx="744" cy="348" r="4"/>
+    <circle cx="744" cy="530" r="4"/>
+  </g>
+</svg>

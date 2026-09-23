@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OMNI — Email Template · Option 2 · Gazette</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f6f7fa;
+  }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- page shell ---------- */
+  .page {
+    padding: 64px 0 96px;
+  }
+
+  /* ---------- meta strip ---------- */
+  .meta-strip {
+    width: 600px;
+    margin: 0 auto 16px;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9b9dac;
+  }
+  .meta-line { display: flex; }
+  .meta-line + .meta-line { margin-top: 4px; }
+  .meta-label { flex: 0 0 auto; width: 62px; }
+
+  /* ---------- email column ---------- */
+  .email-column {
+    width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid rgba(15,23,42,0.14);
+    overflow: hidden;
+  }
+
+  .content {
+    padding: 56px 56px 72px;
+    text-align: center;
+  }
+
+  /* ---------- eyebrow + lead ---------- */
+  .eyebrow {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #9b9dac;
+  }
+  .eyebrow-rule {
+    width: 24px;
+    height: 0.5px;
+    background: rgba(15,23,42,0.14);
+    margin: 16px auto 0;
+  }
+  .lead {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 44px;
+    line-height: 1.15;
+    color: #1b1d21;
+    margin: 24px 0 0;
+  }
+  .lead .merge {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+    letter-spacing: 0;
+    font-style: italic;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .lead .merge.merge-plain {
+    font-family: inherit;
+    font-weight: inherit;
+    font-style: normal;
+    letter-spacing: inherit;
+  }
+  body.data-view .lead .merge {
+    font-style: normal;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 0.5em;
+    letter-spacing: 0;
+    background: rgba(24,88,238,0.08);
+    color: #1858ee;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    margin-top: 40px;
+  }
+  .hero-none, .hero-image, .hero-video {
+    display: none;
+  }
+  .hero[data-state="none"] .hero-none { display: flex; }
+  .hero[data-state="image"] .hero-image { display: block; }
+  .hero[data-state="video"] .hero-video { display: block; }
+
+  .hero-none {
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+  }
+  .hero-none-rule {
+    width: 24px;
+    height: 0.5px;
+    background: rgba(15,23,42,0.14);
+  }
+  .hero-image, .hero-video {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---------- paragraph + CTA ---------- */
+  .paragraph {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #394457;
+    max-width: 52ch;
+    margin: 40px auto 0;
+    text-align: center;
+  }
+  .paragraph .lead-in {
+    font-size: inherit;
+    color: inherit;
+  }
+  .cta-wrap {
+    margin-top: 28px;
+  }
+  .cta {
+    display: inline-block;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    background: #1858ee;
+    padding: 16px 34px;
+    text-decoration: none;
+    text-decoration-thickness: 1px;
+  }
+  .cta .arrow { text-decoration: none; }
+  .cta:hover { background: #0b3392; }
+
+  /* ---------- footer (exact — do not deviate) ---------- */
+  .footer { background:#ffffff; border-top:0.5px solid rgba(15,23,42,0.14);
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center; gap:6px;
+    padding:16px 24px; color:#6b6d7a; font-size:10px;
+    letter-spacing:0.01em;
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; }
+  .footer .copy { order:3; font-size:9px; letter-spacing:0.02em; color:#9b9dac; }
+  .footer .omni-logo { display:block; height:11px; width:auto; margin:0 0 4px; order:1; }
+  .footer .links { display:flex; flex-wrap:nowrap; order:2;
+    column-gap:12px; row-gap:4px; justify-content:center; }
+  .footer .links a { color:#6b6d7a; text-decoration:none; white-space:nowrap; }
+  .footer .links a:hover { color:#1b1d21; }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="meta-strip">
+      <div class="meta-line"><span class="meta-label">From</span>OMNI &lt;notifications@omni.com&gt;</div>
+      <div class="meta-line"><span class="meta-label">Subject</span>Your Canvas is ready to review</div>
+    </div>
+
+    <div class="email-column">
+      <div class="content">
+
+        <img src="omni-logo.png" alt="OMNI" width="76" height="16" style="display:block;width:76px;height:16px;margin:0 auto 40px auto;text-align:center;">
+
+        <div class="eyebrow">CANVAS &middot; SHARED WITH YOU</div>
+        <div class="eyebrow-rule"></div>
+
+        <h1 class="lead">
+          <span class="merge merge-plain" data-value="Andrew" data-token="{{first_name}}">Andrew</span>, your
+          <span class="merge" data-value="Q3 Lease Campaign" data-token="{{canvas_title}}">Q3 Lease Campaign</span>
+          Canvas is ready.
+        </h1>
+
+        <div class="hero" id="hero" data-state="none">
+          <div class="hero-none">
+            <div class="hero-none-rule"></div>
+          </div>
+          <img class="hero-image" src="brand-crop-b.png" alt="" />
+          <video class="hero-video" src="hero-sample.mp4" poster="hero-poster.jpg" muted loop autoplay playsinline></video>
+        </div>
+
+        <p class="paragraph">
+          <span class="lead-in">Bryan shared the working Canvas with you a few minutes ago.</span>
+          Everything &mdash; the brief, audience personas, and the first round of creative &mdash; lives in one place, and it stays current as the team edits. Take a look and leave your thoughts inline.
+        </p>
+
+        <div class="cta-wrap">
+          <a class="cta" href="#">Open the Canvas</a>
+        </div>
+
+      </div>
+
+      <div class="footer">
+        <span class="copy">&copy; 2026 Omnicom Group Inc.</span>
+        <img class="omni-logo" src="omni-logo.png" alt="OMNI">
+        <span class="links">
+          <a href="#">FAQs</a>
+          <a href="#">Code of Conduct</a>
+          <a href="#">Acceptable Use Policy</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Data Subject Access Request</a>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+(function () {
+  var STATES = ['none', 'image', 'video'];
+  var hero = document.getElementById('hero');
+
+  function readInitialState() {
+    var params = new URLSearchParams(window.location.search);
+    var requested = params.get('media');
+    return STATES.indexOf(requested) !== -1 ? requested : 'none';
+  }
+
+  var state = readInitialState();
+
+  function applyState(next) {
+    state = next;
+    hero.setAttribute('data-state', state);
+    if (state === 'video') {
+      var vid = hero.querySelector('.hero-video');
+      if (vid) {
+        try { vid.currentTime = 0; vid.play().catch(function () {}); } catch (e) {}
+      }
+    }
+  }
+  applyState(state);
+
+  var dataView = false;
+  var merges = Array.prototype.slice.call(document.querySelectorAll('.merge'));
+
+  function applyDataView(on) {
+    dataView = on;
+    document.body.classList.toggle('data-view', on);
+    merges.forEach(function (el) {
+      el.textContent = on ? el.getAttribute('data-token') : el.getAttribute('data-value');
+    });
+  }
+
+  window.addEventListener('keydown', function (e) {
+    var key = e.key ? e.key.toLowerCase() : '';
+    if (key === 'm') {
+      var idx = STATES.indexOf(state);
+      applyState(STATES[(idx + 1) % STATES.length]);
+    } else if (key === 'd') {
+      applyDataView(!dataView);
+    }
+  });
+})();
+</script>
+</body>
+</html>

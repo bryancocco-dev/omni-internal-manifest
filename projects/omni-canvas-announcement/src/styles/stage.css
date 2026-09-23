@@ -1,0 +1,78 @@
+/* ------------------------------------------------------------------
+   THE STAGE — fixed 938×800 frame that becomes the exported MP4.
+------------------------------------------------------------------ */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 938px;
+  height: 800px;
+  overflow: hidden;
+  isolation: isolate;
+  will-change: transform, filter;
+}
+
+/* Soft lavender wash matching the OMNI logo backdrop attachment.
+   Frame 0 + final frame land here exactly. */
+.stage-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 60% at 50% 45%, #ffffff 0%, #f3f3fb 45%, #e8ecfa 100%);
+  z-index: 0;
+}
+
+.stage-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#layer-bookend  { z-index: 30; }
+#layer-vignette { z-index: 10; }
+
+/* Subtle edge vignette over the whole stage — keeps the stage reading
+   as its own window even where a white app edge meets the card's
+   white panel (the two otherwise bleed into each other). Sits above
+   every world layer but below the cursor; baked into the MP4. */
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 110px rgba(24, 31, 64, 0.075),
+    inset 0 0 26px rgba(24, 31, 64, 0.035);
+}
+
+/* ---- Faux cursor used during vignettes ---------------------- */
+.stage-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  transform: translate3d(420px, 380px, 0);
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.25));
+}
+.cursor-ring {
+  /* Centered on the arrow TIP (~5,3 within the 22px cursor), not the
+     box, so the click pulse lands exactly where the cursor points. */
+  position: absolute;
+  left: 5px;
+  top: 3px;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border-radius: 50%;
+  border: 2px solid var(--omni-brand-500);
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: center;
+  pointer-events: none;
+}

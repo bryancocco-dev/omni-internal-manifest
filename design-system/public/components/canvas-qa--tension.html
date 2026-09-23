@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+  OMNI component: tension
+  Project: QA
+  Note: .qa-tension-grid — strategic tension cards (auto-fit grid), qa-tension-title + severity qa-chip + qa-def rows; 2 of 4 shown
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA — tension · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-qa.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="brief-stack">
+<article class="brief-board"><div class="sec-body">
+            <header class="qa-head">
+              <p class="qa-eyebrow">Brief Analytics</p>
+              <h2 class="qa-h2">Strategic Tensions &amp; Challenges</h2>
+            </header>
+            <div class="qa-tension-grid">
+              <div class="qa-tension">
+                <p class="qa-tension-title">Rewards vs. Regulation</p>
+                <span class="qa-chip qa-chip--sev-hi">High severity</span>
+                <p class="qa-def"><span class="qa-def-k">The Tension:</span> <span class="qa-def-v">US point-hackers expect high-value sign-up points in both regions, but French interchange fee caps (capped at 0.3%) make points-hacking credit models financially unsustainable in France.</span></p>
+                <p class="qa-def"><span class="qa-def-k">Why It Bites:</span> <span class="qa-def-v">The points value proposition either squeezes Meridian's margins in Europe or makes the offer thin and unappealing in the US, where customers are accustomed to 60k–80k point sign-up bonuses.</span></p>
+                <p class="qa-def"><span class="qa-def-k">The Creative Challenge:</span> <span class="qa-def-v">Build an experiential and lifestyle reward story (e.g., "access") that feels just as valuable as high-cost points, bypassing the transactional rewards trap in Europe while maintaining high premium prestige in the US.</span></p>
+              </div>
+              <div class="qa-tension">
+                <p class="qa-tension-title">Global Status vs. Local Compliance</p>
+                <span class="qa-chip qa-chip--sev-md">Medium severity</span>
+                <p class="qa-def"><span class="qa-def-k">The Tension:</span> <span class="qa-def-v">French financial regulations (AMF/ACPR) mandate prominent consumer debt warnings on all card advertising (e.g., "Un crédit vous engage…"), which directly clashes with the luxury, friction-free aesthetic required to attract premium transatlantic travelers.</span></p>
+                <p class="qa-def"><span class="qa-def-k">Why It Bites:</span> <span class="qa-def-v">If regulatory disclosures are treated as legal boilerplate, they can ruin the premium editorial feel of high-end lifestyle ads; if they are hidden, Meridian faces massive fines and reputation damage.</span></p>
+                <p class="qa-def"><span class="qa-def-k">The Creative Challenge:</span> <span class="qa-def-v">Treat mandatory disclosure as a deliberate design system element, weaving compliance copy into the layout so it reads as confident transparency rather than fine-print apology.</span></p>
+              </div>
+            </div>
+          </div></article>
+</body>
+</html>

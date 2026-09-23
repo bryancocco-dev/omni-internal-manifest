@@ -1,0 +1,593 @@
+{
+  "meta": {
+    "docTitle": "Progress 2026",
+    "brand": "Corvache",
+    "clientName": "Corvache",
+    "date": "July 2026",
+    "sentAt": "July 9, 2026 · 9:24 AM"
+  },
+  "cover": {
+    "title": "Progress 2026",
+    "subtitle": "A year of findings for Corvache — and a brief for what we'd propose next.",
+    "template": {
+      "symbol": "a19",
+      "tag": 2
+    },
+    "image": "../../shared/assets/corvache-hero-photo-2x.jpg",
+    "imageSet": [
+      {
+        "src": "../../shared/assets/corvache-hero-photo-2x.jpg",
+        "w": 2816
+      },
+      {
+        "src": "../../shared/assets/corvache-hero-photo-4k.jpg",
+        "w": 4200
+      }
+    ],
+    "meta": [
+      {
+        "label": "Client",
+        "value": "Corvache"
+      },
+      {
+        "label": "Assignment",
+        "value": "Annual Review & Forward Brief"
+      },
+      {
+        "label": "Status",
+        "value": "For client review"
+      }
+    ]
+  },
+  "sender": {
+    "name": "Mara Lindqvist",
+    "role": "Lead Strategist, Palomar",
+    "avatarInitials": "ML",
+    "note": "Hi team — sharing our summary of findings from the year plus a brief for what we'd propose next. Nothing here is final; I'd love your read before we lock the direction.",
+    "signOff": "Talk soon, Mara"
+  },
+  "people": [
+    {
+      "name": "Mara Lindqvist",
+      "email": "mara.lindqvist@palomar.co"
+    },
+    {
+      "name": "Nick Zinner",
+      "email": "nick.zinner@palomar.co"
+    },
+    {
+      "name": "Devon Reyes",
+      "email": "devon.reyes@corvache.com"
+    },
+    {
+      "name": "Priya Anand",
+      "email": "priya.anand@corvache.com"
+    },
+    {
+      "name": "Jessie Harte",
+      "email": "jessie.harte@corvache.com"
+    },
+    {
+      "name": "Ray Okafor",
+      "email": "ray.okafor@palomar.co"
+    }
+  ],
+  "sections": [
+    {
+      "id": "exec-summary",
+      "type": "prose",
+      "eyebrow": "Executive Summary",
+      "heading": "A strong year of quiet compounding",
+      "body": [
+        "2025 was less about a single breakout moment and more about steady, compounding gains across every channel we touch. Demand grew fastest at the top — configurator sessions more than doubled — but the more durable story is the order book: the deposit holders we earned in Q1 are still with us in Q4, and they're speccing richer builds each time they come back.",
+        "The repositioning we ran in spring — away from spec-sheet messaging and toward the silence story, restraint as the brand's real performance claim — is the clearest driver we can point to. It shows up in the numbers below and, just as tellingly, in social listening: people have started describing the car in Corvache's own words."
+      ]
+    },
+    {
+      "id": "data-points",
+      "type": "stats",
+      "eyebrow": "By the Numbers",
+      "heading": "Where the year landed",
+      "stats": [
+        {
+          "value": "2.4",
+          "unit": "×",
+          "label": "Configurator sessions vs. 2024",
+          "tag": "Measured"
+        },
+        {
+          "value": "61",
+          "unit": "%",
+          "label": "12-month deposit-holder retention",
+          "tag": "Measured"
+        },
+        {
+          "value": "18",
+          "unit": "%",
+          "label": "Lift in average option spend per build",
+          "tag": "Benchmark"
+        },
+        {
+          "value": "4.1",
+          "unit": "×",
+          "label": "Return on brand media spend",
+          "tag": "Modeled"
+        }
+      ]
+    },
+    {
+      "id": "engagement-trend",
+      "type": "chart",
+      "eyebrow": "Demand Trend",
+      "heading": "Quarterly drive-experience requests",
+      "chart": {
+        "labels": [
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ],
+        "values": [
+          3.2,
+          4.6,
+          5.1,
+          6.4
+        ],
+        "unit": "k",
+        "caption": "Private drive-experience requests, all markets",
+        "source": "Source: Corvache demand desk, Jan–Dec 2025"
+      }
+    },
+    {
+      "id": "key-findings",
+      "type": "findings",
+      "eyebrow": "Key Findings",
+      "heading": "What actually moved the needle",
+      "items": [
+        {
+          "title": "The engineering story outperformed the spec sheet 3 to 1",
+          "body": "Films built around the silence lab and the marque's motorsport lineage consistently out-engaged range-and-torque posts, especially with first-time EV considerers — the audience most skeptical of claims and most moved by craft."
+        },
+        {
+          "title": "The order book, not the funnel, is now the bigger lever",
+          "body": "Cost per configurator session held roughly flat year over year, but the deposit holders we already have are returning more often — and every return visit specs a richer build."
+        },
+        {
+          "title": "Owner-shot photography earned the highest save rate",
+          "body": "Road photography from early owners and drive-experience guests outperformed studio renders on saves and shares by a wide margin, suggesting an underused content well."
+        },
+        {
+          "title": "Email remains undervalued relative to its return",
+          "body": "Email drove a disproportionate share of configurator returns and option upgrades relative to the media budget allocated to it — the smallest line item with the clearest ROI."
+        }
+      ]
+    },
+    {
+      "id": "recommendation",
+      "type": "brief",
+      "eyebrow": "Looking Ahead",
+      "heading": "A brief for the next project",
+      "body": [
+        "We'd propose leaning further into the engineering story with a dedicated film-and-photography series for early 2026 — working title \"Grand Tours\" — built around the owner imagery that's already outperforming our studio work. Real owners, long roads, no soundtrack: the silence positioning, demonstrated rather than claimed.",
+        "In parallel, we'd like to rebuild the email program around the order-book data above: fewer, better-timed sends, segmented by where someone sits between first configuration and delivery rather than blasted to the full list.",
+        "If this direction feels right, our next step would be a short creative sprint to storyboard the first three Grand Tours pieces for your review."
+      ]
+    },
+    {
+      "id": "scope-confirmation",
+      "type": "table",
+      "eyebrow": "Scope Confirmation",
+      "heading": "What we'd lock before the sprint",
+      "intro": "Nothing below is contractual — it's the working scope behind the brief above, as we understand it today. Confirm or challenge any row before we kick off.",
+      "table": {
+        "ariaLabel": "Scope confirmation",
+        "rows": [
+          {
+            "dimension": "Engagement",
+            "assumption": "2026 brand program: the Grand Tours series, the email program rebuild, and the retained media strategy — one integrated engagement rather than three separate statements of work",
+            "status": "confirmed",
+            "owner": "Palomar"
+          },
+          {
+            "dimension": "Series scope",
+            "assumption": "Three Grand Tours pieces storyboarded in the sprint; a full-season greenlight follows your review of the first three",
+            "status": "confirmed",
+            "owner": "Palomar"
+          },
+          {
+            "dimension": "Owner imagery rights",
+            "assumption": "Submission flow with usage rights baked into the upload; nothing runs uncleared, and legal reviews the consent language before the flow ships",
+            "status": "pending",
+            "owner": "Legal"
+          },
+          {
+            "dimension": "Markets",
+            "assumption": "US, UK, Germany and Switzerland at launch — the four markets carrying 82% of the current order book — with the Nordics as a fast-follow once delivery capacity opens",
+            "status": "pending",
+            "owner": "Corvache"
+          },
+          {
+            "dimension": "Audience",
+            "assumption": "Deposit holders and configurator returners first; conquest audiences only after the retention program ships",
+            "status": "confirmed",
+            "owner": "Palomar"
+          },
+          {
+            "dimension": "Email rebuild",
+            "assumption": "Fewer, better-timed sends segmented by where someone sits between first configuration and delivery; full-list blasts retired entirely",
+            "status": "confirmed",
+            "owner": "Palomar"
+          },
+          {
+            "dimension": "Measurement",
+            "assumption": "Brand-media return reported as a modeled 3–5× range with the method footnoted; the 61% retention and 2.4× configurator figures stay measured and untouched",
+            "status": "confirmed",
+            "owner": "Corvache"
+          },
+          {
+            "dimension": "Media mix",
+            "assumption": "Brand flights hold at 2025 levels; reallocated budget goes to email and CRM rather than new paid channels this cycle",
+            "status": "pending",
+            "owner": "Corvache"
+          },
+          {
+            "dimension": "Budget",
+            "assumption": "$940K program total — production, media, email platform work, and honoraria for owner shoots — pending finance review of the Q1 phasing",
+            "status": "open",
+            "owner": "Finance"
+          },
+          {
+            "dimension": "Timeline",
+            "assumption": "Sprint W1–2, storyboards W3, client review W4; first Grand Tours piece in market by April",
+            "status": "pending",
+            "owner": "Palomar"
+          },
+          {
+            "dimension": "Out of scope",
+            "assumption": "Retail and showroom experience, motor-show presence, dealer co-op media, and product launch reveals — all handled by other partners this cycle",
+            "status": "confirmed",
+            "owner": "Corvache"
+          },
+          {
+            "dimension": "Risks",
+            "assumption": "Owner-photo rights clearance lead times, EV incentive changes shifting Q4 demand reads, and platform API changes limiting social-listening continuity",
+            "status": "open",
+            "owner": "Palomar"
+          }
+        ]
+      }
+    }
+  ],
+  "sources": {
+    "heading": "Source Inventory",
+    "summary": "7 sources gathered across the 2025 review. Primary themes: configurator and order-book performance, social listening, email benchmarking, and deposit-holder sentiment. Sources span internal analytics, listening-platform reports, industry benchmarks, and an owner panel.",
+    "rows": [
+      {
+        "source": "Internal Analytics — Configurator & Order-Book Performance, 2025",
+        "url": "",
+        "type": "Official",
+        "relevance": "critical",
+        "coverage": "Configurator, retention, and option-spend figures cited throughout; source for all \"By the Numbers\" stats"
+      },
+      {
+        "source": "Sprout Social — Corvache Listening Report, Q4 2025",
+        "url": "",
+        "type": "Research",
+        "relevance": "critical",
+        "coverage": "Tone shift toward the silence story; sentiment breakdown by campaign"
+      },
+      {
+        "source": "Instagram & Meta Insights — Content Format Breakdown, Jan–Dec 2025",
+        "url": "",
+        "type": "Official",
+        "relevance": "high",
+        "coverage": "Engineering-story vs. spec-sheet engagement comparison; save-rate by content type"
+      },
+      {
+        "source": "Salesforce — Email Performance Benchmarks, Automotive & Luxury 2025",
+        "url": "",
+        "type": "Research",
+        "relevance": "high",
+        "coverage": "Category-average open/click rates used to contextualize email ROI"
+      },
+      {
+        "source": "Quarterly Demand Export — Drive-Experience Requests, All Markets",
+        "url": "",
+        "type": "Official",
+        "relevance": "high",
+        "coverage": "Underlying data for the Q1–Q4 demand chart"
+      },
+      {
+        "source": "Corvache Deposit-Holder Panel — Ownership-Intent Survey, Fall 2025",
+        "url": "",
+        "type": "Consumer",
+        "relevance": "medium",
+        "coverage": "Qualitative support for the order-book-over-funnel finding"
+      },
+      {
+        "source": "S&P Global Mobility — 2025 Premium EV Loyalty Benchmark",
+        "url": "",
+        "type": "Research",
+        "relevance": "medium",
+        "coverage": "Category context for the 61% 12-month deposit-holder retention figure"
+      }
+    ]
+  },
+  "cta": {
+    "heading": "What do you think?",
+    "body": "This is meant to be a conversation, not a verdict. Comment on any section above, or download the full write-up to share with the rest of your team."
+  },
+  "download": {
+    "label": "Download full report",
+    "filename": "corvache-progress-2026.md",
+    "filesize": "48 KB",
+    "format": "Markdown"
+  },
+  "sharing": {
+    "sharedBy": "Bryan Cocco",
+    "owner": {
+      "name": "Bryan Cocco",
+      "email": "bryan.cocco@omc.com"
+    },
+    "collaborators": [],
+    "directory": [
+      {
+        "name": "Mara Lindqvist",
+        "email": "mara.lindqvist@palomar.co"
+      },
+      {
+        "name": "Devon Reyes",
+        "email": "devon.reyes@corvache.com"
+      },
+      {
+        "name": "Priya Anand",
+        "email": "priya.anand@corvache.com"
+      },
+      {
+        "name": "Jessie Harte",
+        "email": "jessie.harte@corvache.com"
+      },
+      {
+        "name": "Nick Zinner",
+        "email": "nick.zinner@palomar.co"
+      },
+      {
+        "name": "Ray Okafor",
+        "email": "ray.okafor@palomar.co"
+      },
+      {
+        "name": "Marco Narvaez",
+        "email": "marco.narvaez@sparksandhoney.com"
+      },
+      {
+        "name": "Sajeth Perli",
+        "email": "sajeth.perli@credera.com"
+      },
+      {
+        "name": "Ali Alkhafaji",
+        "email": "ali.alkhafaji@omc.com"
+      },
+      {
+        "name": "Aaron Sapollnik",
+        "email": "aaron.sapollnik@credera.com"
+      },
+      {
+        "name": "Amara Boone",
+        "email": "amara.boone@corvache.com"
+      },
+      {
+        "name": "Anika Rao",
+        "email": "anika.rao@palomar.co"
+      },
+      {
+        "name": "Diego Alvarez",
+        "email": "diego.alvarez@corvache.com"
+      },
+      {
+        "name": "Hannah Bergstrom",
+        "email": "hannah.bergstrom@corvache.com"
+      },
+      {
+        "name": "Liam Fitzgerald",
+        "email": "liam.fitzgerald@palomar.co"
+      },
+      {
+        "name": "Nadia Haddad",
+        "email": "nadia.haddad@sparksandhoney.com"
+      },
+      {
+        "name": "Sofia Marchetti",
+        "email": "sofia.marchetti@credera.com"
+      },
+      {
+        "name": "Theo Van Dyk",
+        "email": "theo.vandyk@omc.com"
+      }
+    ]
+  },
+  "credits": [
+    {
+      "name": "Bryan Cocco",
+      "role": "Owner",
+      "org": "OMC",
+      "email": "bryan.cocco@omc.com",
+      "phone": "+1 (212) 415-3487"
+    },
+    {
+      "name": "Lena Ortiz",
+      "role": "Editor",
+      "org": "Palomar",
+      "email": "lena.ortiz@palomar.co",
+      "phone": "+1 (212) 380-2214"
+    },
+    {
+      "name": "Jamal Reed",
+      "role": "Editor",
+      "org": "Palomar",
+      "email": "jamal.reed@palomar.co",
+      "phone": "+1 (212) 380-2218"
+    }
+  ],
+  "footer": {
+    "copyright": "Omnicom Group Inc.",
+    "links": [
+      "FAQs",
+      "Code of Conduct",
+      "Acceptable Use Policy",
+      "Privacy Policy",
+      "Data Subject Access Request"
+    ]
+  },
+  "seedComments": {
+    "exec-summary": [
+      {
+        "name": "Devon Reyes",
+        "text": "Love this framing — the order-book story is exactly what we should be leading with. This is the narrative I've been trying to articulate internally for months.",
+        "at": "2026-07-11T15:20:00.000Z",
+        "replies": [
+          {
+            "name": "Priya Anand",
+            "text": "Agreed it's the right story. One flag on the word 'compounding' though — it implies the gains are building on each other, but a lot of this could just be the spring repositioning finally landing. Are we sure it's compounding and not a one-time step change?",
+            "at": "2026-07-11T16:44:00.000Z"
+          },
+          {
+            "name": "Mara Lindqvist",
+            "text": "Fair distinction. We read it as compounding because the Q1 deposit cohort keeps re-engaging quarter over quarter — that's the same audience getting more valuable over time, not a single lift. But I'll tighten the language so it's a claim we can defend rather than a vibe.",
+            "at": "2026-07-11T17:30:00.000Z"
+          },
+          {
+            "name": "Devon Reyes",
+            "text": "'The same audience getting more valuable over time' — honestly just use that sentence. It's clearer than 'compounding.'",
+            "at": "2026-07-12T09:10:00.000Z"
+          },
+          {
+            "name": "Mara Lindqvist",
+            "text": "Ha — stealing it. Done.",
+            "at": "2026-07-12T09:48:00.000Z"
+          }
+        ]
+      }
+    ],
+    "data-points": [
+      {
+        "name": "Priya Anand",
+        "text": "Before this goes anywhere near the board deck, I want to flag the 4.1× return on brand media spend. It's tagged 'Modeled,' but sitting next to two 'Measured' numbers, everyone in that room is going to read all four as hard fact.",
+        "at": "2026-07-12T09:05:00.000Z",
+        "replies": [
+          {
+            "name": "Devon Reyes",
+            "text": "I hear you, but this is the strongest story we've had since the reveal. If we water it down with caveats nobody's going to feel it — the board responds to conviction, not asterisks.",
+            "at": "2026-07-12T10:12:00.000Z"
+          },
+          {
+            "name": "Priya Anand",
+            "text": "Conviction is great right up until finance asks how we got to 4.1 and we don't have a clean answer. I'm not saying bury it — I'm saying don't dress a model up as a measurement.",
+            "at": "2026-07-12T10:40:00.000Z"
+          },
+          {
+            "name": "Nick Zinner",
+            "text": "@Priya Anand fair challenge. The 4.1× comes out of a media-mix model against the brand-campaign flights — it's directional, not attributable to the dollar. I'd stand behind the direction (roughly 3–5×), less so the decimal. Happy to share the model doc.",
+            "at": "2026-07-12T11:26:00.000Z"
+          },
+          {
+            "name": "Priya Anand",
+            "text": "That's exactly my point though. If the honest version is '3–5×, modeled,' let's present it as a range. A range reads as rigor; a single decimal reads as false precision.",
+            "at": "2026-07-12T11:52:00.000Z"
+          },
+          {
+            "name": "Jessie Harte",
+            "text": "For what it's worth, our board actually likes ranges — they've been burned by point estimates before. I'd rather walk in with '3–5× (modeled)' that survives the follow-up question than 4.1× that doesn't.",
+            "at": "2026-07-12T14:03:00.000Z"
+          },
+          {
+            "name": "Devon Reyes",
+            "text": "Okay — I can live with a range if we frame it as upside. I still don't want the retention number touched, though. 61% is measured and it's the best line in the deck.",
+            "at": "2026-07-12T15:20:00.000Z"
+          },
+          {
+            "name": "Mara Lindqvist",
+            "text": "This is a good disagreement to have now instead of in the room. Proposal: keep 61% and 2.4× exactly as-is (both measured), present the brand-media return as '3–5×, modeled,' and footnote the method. @Nick Zinner can you swap the tile to a range and attach the model doc? If that works for everyone, I'll call it settled.",
+            "at": "2026-07-13T08:15:00.000Z"
+          },
+          {
+            "name": "Priya Anand",
+            "text": "Works for me. Thanks for hearing it out rather than defending the decimal.",
+            "at": "2026-07-13T08:41:00.000Z"
+          },
+          {
+            "name": "Devon Reyes",
+            "text": "Agreed. Good call on the footnote — best of both.",
+            "at": "2026-07-13T09:02:00.000Z"
+          }
+        ]
+      }
+    ],
+    "engagement-trend": [
+      {
+        "name": "Jessie Harte",
+        "text": "Is the Q4 jump partly seasonal? We always get a year-end bump — the show calendar plus December delivery timing — and I don't want to over-read a spike that comes back every winter.",
+        "at": "2026-07-12T13:10:00.000Z",
+        "replies": [
+          {
+            "name": "Nick Zinner",
+            "text": "Good instinct. It's partly seasonal, but Q4 2025 is up ~28% over Q4 2024 on the same seasonal baseline, so there's real underlying growth on top of the year-end effect. I can add the year-over-year overlay if that's useful.",
+            "at": "2026-07-12T13:58:00.000Z"
+          },
+          {
+            "name": "Jessie Harte",
+            "text": "Yes please — the YoY overlay is exactly what'll keep me honest when I present it.",
+            "at": "2026-07-12T14:20:00.000Z"
+          }
+        ]
+      }
+    ],
+    "key-findings": [
+      {
+        "name": "Devon Reyes",
+        "text": "Finding #4 is the one that stings — we've been underfunding email for years and it's quietly outperforming everything. Can we make this louder?",
+        "at": "2026-07-12T16:05:00.000Z",
+        "replies": [
+          {
+            "name": "Priya Anand",
+            "text": "Strong agree. Email is the least glamorous line item and the highest ROI. If we're reallocating budget for 2026, this is where I'd start.",
+            "at": "2026-07-12T16:30:00.000Z"
+          },
+          {
+            "name": "Mara Lindqvist",
+            "text": "Noted — we'll pull email forward in the recommendation and put a real number against it instead of leaving it as a footnote.",
+            "at": "2026-07-12T17:15:00.000Z"
+          }
+        ]
+      }
+    ],
+    "recommendation": [
+      {
+        "name": "Devon Reyes",
+        "text": "'Grand Tours' is a great name. Green-light the creative sprint from our side — I want to see the first three storyboards.",
+        "at": "2026-07-13T18:40:00.000Z",
+        "replies": [
+          {
+            "name": "Priya Anand",
+            "text": "Before we build a whole series on owner photography — do we have the rights locked? We've had two near-misses this year using owner photos without clean usage terms, and I don't want that to become a Q1 fire drill.",
+            "at": "2026-07-13T19:05:00.000Z"
+          },
+          {
+            "name": "Ray Okafor",
+            "text": "@Priya Anand that's on my radar. The plan is a submission flow with explicit usage rights baked into the upload — nothing runs that isn't cleared. I'll add a rights slide to the sprint brief so it's built in, not bolted on.",
+            "at": "2026-07-13T20:12:00.000Z"
+          },
+          {
+            "name": "Jessie Harte",
+            "text": "Appreciate that, Ray. Legal will want to see the consent language before anything ships, but if it's there from the start we're in good shape.",
+            "at": "2026-07-14T08:05:00.000Z"
+          },
+          {
+            "name": "Mara Lindqvist",
+            "text": "Perfect — so we're go on the sprint, rights handled up front, first three storyboards back to you for review. @Devon Reyes I'll send the schedule today. Thanks all — this is exactly the read we were hoping for.",
+            "at": "2026-07-14T08:30:00.000Z"
+          }
+        ]
+      }
+    ]
+  }
+}

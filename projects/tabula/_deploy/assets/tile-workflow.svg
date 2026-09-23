@@ -1,0 +1,138 @@
+<svg viewBox="0 0 716 716" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* Signal traveling the highlighted path — dasharray period 160 so a full
+       offset cycle loops seamlessly */
+    .flow {
+      stroke-dasharray: 14 146;
+      animation: flow 4.6s linear infinite;
+    }
+    @keyframes flow { from { stroke-dashoffset: 160; } to { stroke-dashoffset: 0; } }
+    .pulse { animation: pulse 3.4s ease-in-out infinite; }
+    .pulse.d1 { animation-delay: 0.6s; }
+    .pulse.d2 { animation-delay: 1.2s; }
+    .pulse.d3 { animation-delay: 1.8s; }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.28; }
+      50%      { opacity: 0.6; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .flow, .pulse { animation: none; }
+    }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="35%" r="78%">
+      <stop offset="0%" stop-color="#161d29"/>
+      <stop offset="55%" stop-color="#0b0e14"/>
+      <stop offset="100%" stop-color="#050608"/>
+    </radialGradient>
+    <radialGradient id="ambientGlow" cx="46%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#1858ee" stop-opacity="0.16"/>
+      <stop offset="60%" stop-color="#1858ee" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#1858ee" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b222d"/>
+      <stop offset="100%" stop-color="#0e131a"/>
+    </linearGradient>
+    <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#8a97a8" opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="716" height="716" fill="url(#bg)"/>
+  <rect width="716" height="716" fill="url(#dots)"/>
+  <rect width="716" height="716" fill="url(#ambientGlow)"/>
+
+  <!-- secondary (non-highlighted) branch, graphite hairline -->
+  <g fill="none" stroke="#48525f" stroke-width="2.5" stroke-linecap="round" opacity="0.85">
+    <path d="M170,358 C194,358 194,532 218,532"/>
+    <path d="M342,532 C381,532 381,370 420,370"/>
+  </g>
+
+  <!-- highlighted path: soft cyan glow underlay -->
+  <g fill="none" stroke="#22d3ee" stroke-width="7" stroke-linecap="round" opacity="0.30" filter="url(#glow)">
+    <path d="M170,358 C194,358 194,184 218,184"/>
+    <path d="M342,184 C381,184 381,346 420,346"/>
+    <path d="M544,358 C566,358 566,225 588,225"/>
+  </g>
+  <!-- highlighted path: crisp brand-blue line -->
+  <g fill="none" stroke="#1858ee" stroke-width="2.5" stroke-linecap="round">
+    <path d="M170,358 C194,358 194,184 218,184"/>
+    <path d="M342,184 C381,184 381,346 420,346"/>
+    <path d="M544,358 C566,358 566,225 588,225"/>
+  </g>
+  <!-- traveling signal on top of the crisp line -->
+  <g fill="none" stroke="#9ec5ff" stroke-width="2.5" stroke-linecap="round" opacity="0.9">
+    <path class="flow" d="M170,358 C194,358 194,184 218,184"/>
+    <path class="flow" style="animation-delay: -1.5s" d="M342,184 C381,184 381,346 420,346"/>
+    <path class="flow" style="animation-delay: -3s" d="M544,358 C566,358 566,225 588,225"/>
+  </g>
+
+  <!-- nodes -->
+  <g>
+    <rect x="46" y="330" width="124" height="56" rx="11" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+    <rect x="50" y="334" width="116" height="1" fill="#7c8794" opacity="0.25"/>
+
+    <rect x="218" y="156" width="124" height="56" rx="11" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+    <rect x="222" y="160" width="116" height="1" fill="#7c8794" opacity="0.25"/>
+
+    <rect x="218" y="504" width="124" height="56" rx="11" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+    <rect x="222" y="508" width="116" height="1" fill="#7c8794" opacity="0.25"/>
+
+    <rect x="420" y="330" width="124" height="56" rx="11" fill="url(#nodeFill)" stroke="#4b5563" stroke-width="2"/>
+    <rect x="424" y="334" width="116" height="1" fill="#7c8794" opacity="0.25"/>
+
+    <rect x="588" y="200" width="110" height="50" rx="11" fill="url(#nodeFill)" stroke="#1858ee" stroke-width="2"/>
+    <rect x="592" y="204" width="102" height="1" fill="#7c8794" opacity="0.25"/>
+  </g>
+
+  <!-- node content bars -->
+  <g stroke="#3a4350" stroke-width="2" stroke-linecap="round" opacity="0.8">
+    <line x1="64" y1="368" x2="118" y2="368"/>
+    <line x1="236" y1="194" x2="300" y2="194"/>
+    <line x1="236" y1="542" x2="300" y2="542"/>
+    <line x1="438" y1="368" x2="502" y2="368"/>
+  </g>
+  <g stroke="#1858ee" stroke-width="2" stroke-linecap="round" opacity="0.7">
+    <line x1="606" y1="235" x2="656" y2="235"/>
+  </g>
+
+  <!-- graphite port dots -->
+  <g>
+    <circle cx="218" cy="532" r="5" fill="#0e131a" stroke="#5b6675" stroke-width="2"/>
+    <circle cx="342" cy="532" r="5" fill="#0e131a" stroke="#5b6675" stroke-width="2"/>
+    <circle cx="420" cy="370" r="5" fill="#0e131a" stroke="#5b6675" stroke-width="2"/>
+  </g>
+
+  <!-- highlighted port dots: glow + crisp -->
+  <g filter="url(#dotGlow)">
+    <circle class="pulse" cx="170" cy="358" r="6" fill="#22d3ee" opacity="0.4"/>
+    <circle class="pulse d1" cx="218" cy="184" r="6" fill="#22d3ee" opacity="0.4"/>
+    <circle class="pulse d2" cx="342" cy="184" r="6" fill="#22d3ee" opacity="0.4"/>
+    <circle class="pulse d3" cx="420" cy="346" r="6" fill="#22d3ee" opacity="0.4"/>
+    <circle class="pulse d1" cx="544" cy="358" r="6" fill="#22d3ee" opacity="0.4"/>
+    <circle class="pulse d2" cx="588" cy="225" r="6" fill="#22d3ee" opacity="0.4"/>
+  </g>
+  <g>
+    <circle cx="170" cy="358" r="5" fill="#0e131a" stroke="#1858ee" stroke-width="2.5"/>
+    <circle cx="218" cy="184" r="5" fill="#0e131a" stroke="#1858ee" stroke-width="2.5"/>
+    <circle cx="342" cy="184" r="5" fill="#0e131a" stroke="#1858ee" stroke-width="2.5"/>
+    <circle cx="420" cy="346" r="5" fill="#0e131a" stroke="#1858ee" stroke-width="2.5"/>
+    <circle cx="544" cy="358" r="5" fill="#1858ee" stroke="#1858ee" stroke-width="2"/>
+    <circle cx="588" cy="225" r="5.5" fill="#1858ee" stroke="#e6f0ff" stroke-width="1.5"/>
+  </g>
+</svg>

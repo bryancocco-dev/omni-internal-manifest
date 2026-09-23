@@ -1,0 +1,517 @@
+/* ------------------------------------------------------------------
+   EXCEL-CUT — "Excel in Canvas" (?cut=excel). Two halves:
+     xed- — the quiet Q4 budget-doc content, mounted into the pane
+            exactly like ppt-board's scroller (STACK doc pattern),
+            but a single non-scrolling table screen — chrome-first,
+            no cards, no chart flourish.
+     xxl- — the title-crumb dropdown, forked verbatim from
+            ppt-export.css's xpe- rules to this cut's own prefix.
+   Strict OMNI light theme, existing tokens only.
+------------------------------------------------------------------ */
+
+/* ==================================================================
+   xed- — budget document
+   ================================================================== */
+
+.xed-scroller {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.xed-doc {
+  width: 1000px;
+  margin: 0 auto;
+  /* Full-height document: generous top clearance for the frosted
+     sub-header (house pattern), a bottom margin kept at/under that
+     same amount so air-below never exceeds air-above — the table's
+     own (generously sized) rows carry the rest of the pane's height. */
+  padding: 100px 0 66px;
+}
+
+.xed-doc-head {
+  border-bottom: 0.5px solid var(--omni-line);
+  padding-bottom: 16px;
+}
+.xed-doc-eyebrow {
+  display: block;
+  font-family: var(--omni-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.xed-doc-title {
+  margin: 8px 0 8px;
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--omni-text-strong);
+}
+.xed-doc-meta {
+  display: flex;
+  align-items: center;
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+.xed-doc-meta span + span::before {
+  content: '·';
+  margin: 0 10px;
+}
+
+/* ==================================================================
+   scope-table — ported VERBATIM (class names, structure, visual
+   treatment) from /Users/bryancocco/TINKER/canvas-exports/index.html
+   (the Canvas Exports prototype — the designed source for the
+   Excel feature's table system), since that file is a separate repo.
+   Source rules: .scope-table-controls / .scope-table-search /
+   .scope-table-search-icon / .scope-table-affordances /
+   .scope-table-clear / .scope-table-count (the controls bar),
+   .scope-table-wrap / .scope-table / .scope-select-th / .scope-select
+   / .scope-checkbox / .scope-check-icon (the checkbox column),
+   .scope-sort-btn / .scope-sort-icons (sortable headers). Colors
+   remapped 1:1 to this project's --omni-* tokens (--card-bg→
+   --omni-card-bg, --line→--omni-line, --line-solid→--omni-line-solid,
+   --text-strong/body/subtle→--omni-*, --accent→--omni-brand-500,
+   --accent-soft→rgba(24,88,238,0.08) — no --omni-accent-soft token
+   exists yet, matching the rgba pattern already used throughout this
+   file). Static affordances only: unchecked checkboxes, resting sort
+   icons, a non-interactive filter input showing its placeholder —
+   nothing here is wired up, per the announcement-cut convention.
+   Row height is TUNED (padding only, not px-invented structure) since
+   the component's own compact density left this 8-row table short of
+   the pane at this doc's zoom — channel count and the component's
+   visual language are both fixed; only spacing moved.
+   ================================================================== */
+
+.scope-table-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+.scope-table-search {
+  position: relative;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  max-width: 420px;
+  min-width: 38px;
+  height: 44px;
+  border: 0.5px solid var(--omni-line);
+  border-radius: 8px;
+  background: var(--omni-card-bg);
+  overflow: hidden;
+}
+.scope-table-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--omni-text-subtle);
+  pointer-events: none;
+}
+.scope-table-search input[type="search"] {
+  width: 100%;
+  height: 100%;
+  padding: 0 130px 0 42px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--omni-text-strong);
+  font-family: var(--omni-font-sans);
+  font-size: 14px;
+  letter-spacing: -0.05px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.scope-table-search input[type="search"]::placeholder { color: var(--omni-text-subtle); }
+.scope-table-search input[type="search"]::-webkit-search-decoration,
+.scope-table-search input[type="search"]::-webkit-search-cancel-button,
+.scope-table-search input[type="search"]::-webkit-search-results-button,
+.scope-table-search input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.scope-table-affordances {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.scope-table-clear {
+  pointer-events: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--omni-text-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.scope-table-clear svg { width: 8px; height: 8px; display: block; }
+.scope-table-count {
+  padding-left: 12px;
+  border-left: 0.5px solid var(--omni-line);
+  font-family: var(--omni-font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Two sheets share one footprint and crossfade — the stack carries the
+   spacing/position that used to live on .scope-table-wrap directly;
+   Budget sits in normal flow (defines the stack's height), Flighting
+   overlays it exactly (same anatomy/row-count ⇒ same size) and starts
+   transparent + non-interactive until the sheet-tab click swaps them. */
+.xed-sheet-stack {
+  position: relative;
+  margin-top: 16px;
+}
+.xed-sheet-stack .scope-table-wrap[data-sheet="flighting"] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.scope-table-wrap {
+  width: 100%;
+  border: 0.5px solid var(--omni-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--omni-card-bg);
+}
+.scope-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--omni-font-sans);
+  font-size: 15px;
+}
+.scope-table thead th:nth-child(2) { width: 30%; }   /* Channel */
+.scope-table thead th:nth-child(3),
+.scope-table thead th:nth-child(4),
+.scope-table thead th:nth-child(5) { width: 15%; }   /* Oct / Nov / Dec */
+.scope-table thead th:nth-child(6) { width: auto; }  /* Total — greedy */
+
+.scope-table thead th {
+  text-align: left;
+  font-family: var(--omni-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--omni-text-subtle);
+  background: rgba(15, 23, 42, 0.025);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--omni-line);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.scope-table thead th.xed-total-col { color: var(--omni-brand-500); }
+
+/* Numeric column headers (Oct/Nov/Dec/Total) right-align to the same
+   edge as their money cells below — label + sort-icon group flush
+   right, icon still trailing the label. Channel stays left (no
+   class = default). */
+.scope-table thead th.xed-th-num { text-align: right; }
+/* The sort-btn is inline-flex (shrink-to-fit) so the th's own
+   text-align:right positions it flush right — matching the money
+   cells' text-align:right below to within a fraction of a px.
+   (width:100%+justify-content:flex-end looked equivalent on paper but
+   measured ~11px short of the true content edge in this table-layout:
+   fixed context — text-align is the reliable mechanism here.) */
+
+.scope-table tbody tr { background: transparent; }
+.scope-table tbody tr.row-selected { background: rgba(24, 88, 238, 0.08); }
+.scope-table tbody td {
+  padding: 13px 20px;
+  border-bottom: 0.5px solid rgba(15, 23, 42, 0.08);
+  color: var(--omni-text-body);
+  vertical-align: middle;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.scope-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Channel column — anchor: strong weight, matches the source's
+   "Dimension" column treatment (the cell right after the checkbox). */
+.scope-table tbody td.scope-select + td {
+  font-weight: 600;
+  font-size: 15.5px;
+  color: var(--omni-text-strong);
+  letter-spacing: -0.15px;
+}
+
+/* Money columns — this table's own content addition (the source
+   component has no numeric columns): right-aligned tabular figures;
+   the Total column carries the brand-tint emphasis throughout, and
+   the whole Total ROW below borrows the component's own row-selected
+   tint as its emphasis convention rather than inventing a new one. */
+.xed-money {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.xed-total-col { color: var(--omni-brand-500); font-weight: 600; }
+.xed-row-total td { font-weight: 700; color: var(--omni-text-strong); }
+.xed-row-total td.xed-total-col { color: var(--omni-brand-500); }
+
+/* Selection checkbox column — verbatim .scope-checkbox treatment,
+   rendered resting/unchecked (static affordance only). */
+.scope-select-th { width: 44px; padding: 14px 12px 14px 20px !important; }
+.scope-select { width: 44px; padding: 13px 12px 13px 20px !important; vertical-align: middle !important; }
+.scope-checkbox {
+  width: 13px;
+  height: 13px;
+  border: 1px solid rgba(15, 23, 42, 0.35);
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+}
+.scope-check-icon { width: 7px; height: 7px; }
+
+/* Sortable column header buttons — verbatim, resting state (no
+   sort-asc/sort-desc class applied anywhere in this static render). */
+.scope-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  text-align: left;
+}
+.scope-sort-icons {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--omni-text-subtle);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+.scope-sort-icons svg { display: block; }
+
+/* ==================================================================
+   planb-gantt — the Flighting sheet, ported from media-skills'
+   plan-b.html (Corvache media plan "Flighting" module — the real
+   designed gantt, Figma-sampled bars) rather than an invented table.
+   Classes kept verbatim (.planb-gantt / -inner / -header / -months /
+   -month / -weeks-row / -week / -rows / -row / -label / -track /
+   -track-grid / -bar / -legend / -legend-swatch); colors remapped to
+   this project's --omni-* tokens (--line→--omni-line, --text-body/
+   -subtle→--omni-*, --font-sans→--omni-font-sans, --ms-pos [bar
+   color] → --omni-brand-500, the only OMNI accent this project uses).
+   No bucket switcher, no interactivity — a single static render (the
+   source's JS toggle/animation machinery was not ported). Sized up
+   from the source's 40px rows / 7px bars (220px label column) for
+   legibility at this pane's ~0.885 zoom: 56px rows, 12px bars, 200px
+   labels, +1px on every font.
+   ================================================================== */
+.scope-table-wrap[data-sheet="flighting"] {
+  padding: 16px 22px 12px;
+  display: flex;
+  flex-direction: column;
+}
+.planb-gantt { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.planb-gantt-inner { min-width: 100%; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.planb-gantt-months, .planb-gantt-weeks-row {
+  display: grid;
+  padding-left: 190px;
+}
+.planb-gantt-months { padding-top: 0; }
+.planb-gantt-month {
+  text-align: center;
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--omni-text-body);
+  padding-bottom: 6px;
+}
+.planb-gantt-week {
+  text-align: left;
+  font-family: var(--omni-font-sans);
+  font-size: 11.5px;
+  color: var(--omni-text-subtle);
+  padding-bottom: 6px;
+}
+.planb-gantt-weeks-row { border-bottom: 0.5px solid var(--omni-line); padding-bottom: 4px; }
+.planb-gantt-rows { display: flex; flex-direction: column; flex: 1; min-height: 0; justify-content: space-evenly; }
+.planb-gantt-row { display: flex; align-items: center; min-height: 40px; }
+.planb-gantt-label {
+  flex: none;
+  width: 190px;
+  padding: 0 12px;
+  font-family: var(--omni-font-sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--omni-text-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.planb-gantt-track { position: relative; flex: 1; height: 40px; }
+.planb-gantt-track-grid { position: absolute; inset: 0; display: grid; }
+.planb-gantt-track-grid > span { border-left: 1px solid var(--omni-line); opacity: 0.6; }
+.planb-bar {
+  position: absolute;
+  top: calc(50% - 5.5px);
+  height: 11px;
+  border-radius: 5.5px;
+  background: var(--omni-brand-500);
+}
+.planb-gantt-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 0.5px solid var(--omni-line);
+  font-family: var(--omni-font-sans);
+  font-size: 12px;
+  color: var(--omni-text-subtle);
+  flex-shrink: 0;
+}
+.planb-gantt-legend-swatch { width: 28px; height: 5px; border-radius: 3px; background: var(--omni-brand-500); flex-shrink: 0; }
+
+/* ==================================================================
+   NAVIGATES MULTIPLE SHEETS — a STRUCTURAL sheet-tab strip that is now
+   the workbook's own bottom edge (the formula nod and the shown-work
+   footnote were both tried and pulled per Bryan's calls — this is the
+   one product-point nod left, and it's a real click, not static
+   chrome: see the sheet-click beat in excel-cut.js).
+   Standing rule: indicators read as part of an existing border, never
+   a floating pill/underline. Register: the shell's .cs-tab active
+   convention (canvas-ui.css) — a shared baseline the active tab
+   visually interrupts. Mechanic: the row's own border-top IS the
+   baseline running the full workbook width; each tab is pulled up
+   0.5px (position: relative) to sit astride it. The active tab's
+   opaque card-bg paints over that sliver of the baseline for its own
+   width — the line reads as routing INTO the tab's top corners instead
+   of running underneath it, with hairlines on its three exposed sides
+   and an open (borderless) bottom edge that merges into the tab's own
+   surface. No separate underline bar. Inactive tabs are plain quiet
+   labels on the line — transparent, no box. Small radius only on the
+   active tab's top corners (8px — matches this file's
+   .scope-table-wrap/.cs-tab-dot small-radius register).
+   The active/inactive look is applied via inline style (GSAP tweens
+   background/border/text color directly, see TAB_ACTIVE/TAB_INACTIVE
+   in excel-cut.js) rather than a CSS class, since the state transfers
+   between two different tab elements at click time — this base rule
+   is only the shared resting geometry both tabs sit on.
+   ================================================================== */
+.xed-sheet-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-top: 14px;
+  border-top: 0.5px solid var(--omni-line);
+}
+.xed-sheet-tab {
+  position: relative;
+  top: -0.5px;
+  font-family: var(--omni-font-sans);
+  font-size: 12px;
+  padding: 9px 16px 8px;
+  border: 0.5px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+}
+
+/* ==================================================================
+   xxl- — title-crumb dropdown, forked verbatim from ppt-export.css's
+   xpe- rules (same shapes/spacing/shadow) to this cut's own prefix.
+   ================================================================== */
+
+.xxl-title-menu {
+  position: absolute;
+  width: 248px;
+  background: var(--omni-card-bg);
+  border: 0.5px solid var(--omni-line);
+  border-radius: 12px;
+  box-shadow:
+    0 12px 32px rgba(24, 31, 64, 0.14),
+    0 4px 12px rgba(24, 31, 64, 0.08);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  transform-origin: top left;
+  z-index: 60;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.xxl-tmi {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.05px;
+  text-align: left;
+}
+
+.xxl-tmi-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--omni-hover-soft);
+  color: var(--omni-text-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.xxl-tmi-icon svg { width: 14px; height: 14px; display: block; }
+.xxl-tmi-glyph { display: inline-flex; }
+
+.xxl-tmi-label { flex: 1; }
+
+.xxl-title-menu-divider {
+  height: 1px;
+  background: var(--omni-line-solid);
+  margin: 4px 6px;
+}

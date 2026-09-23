@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+  OMNI component: gate
+  Project: Share Demos
+  Note: .doc-gate — email-only access gate for a shared read-only canvas ("this link is your key," no password)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share Demos — gate · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-share-demos.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="doc-gate">
+    <div class="doc-gate__card">
+      <img class="doc-gate__logo" src="omni-logo.svg" alt="OMNI+">
+      <p class="doc-gate__lede"><strong>Bryan Cocco</strong> has shared a document with you</p>
+      <div class="doc-gate__file">
+        <span class="doc-gate__file-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"></rect><path d="M3.5 9h17M9 9v11.5"></path></svg></span>
+        <span class="doc-gate__file-meta">
+          <span class="doc-gate__file-title">Progress 2026</span>
+          <span class="doc-gate__file-sub">Shared canvas · Read-only</span>
+        </span>
+      </div>
+      <form class="doc-gate__form" novalidate="">
+        <input class="doc-gate__input" type="email" autocomplete="email" placeholder="Enter your email" aria-label="Your email">
+        <button class="doc-gate__btn" type="submit">Continue</button>
+      </form>
+      <p class="doc-gate__foot">No password needed — this link is your key.</p>
+      <div class="doc-gate__progress" aria-hidden="true"></div>
+    </div></div>
+</body>
+</html>

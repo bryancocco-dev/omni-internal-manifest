@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome to Canvas — OMNI+</title>
+  <link rel="icon" href="data:,">
+  <!-- No first-paint flash: nothing shows until CSS + fonts are fully
+       loaded (main.js flips .app-ready in the same gate that builds
+       the timeline). visibility (not display) so font loads and
+       layout measurement still happen while hidden. -->
+  <style>html:not(.app-ready) body { visibility: hidden; }</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+  <link rel="stylesheet" href="/src/styles/announcement.css">
+  <link rel="stylesheet" href="/src/styles/stage.css">
+  <link rel="stylesheet" href="/src/styles/canvas-ui.css">
+  <link rel="stylesheet" href="/src/styles/graphics-gen.css">
+  <link rel="stylesheet" href="/src/styles/video-gen.css">
+  <link rel="stylesheet" href="/src/styles/text-graphs.css">
+  <link rel="stylesheet" href="/src/styles/ab-panels.css">
+  <link rel="stylesheet" href="/src/styles/ppt-board.css">
+  <link rel="stylesheet" href="/src/styles/ppt-export.css">
+  <link rel="stylesheet" href="/src/styles/ppt-deck.css">
+  <link rel="stylesheet" href="/src/styles/persona-cut.css">
+  <link rel="stylesheet" href="/src/styles/excel-cut.css">
+</head>
+<body>
+  <!-- Blurred page background that the announcement card floats over -->
+  <div class="page-bg" id="page-bg" aria-hidden="true"></div>
+
+  <!-- The announcement card -->
+  <main class="card" id="card" role="dialog" aria-labelledby="card-title">
+    <!-- LEFT: copy + close (FPO) -->
+    <section class="card-left">
+      <button class="card-close" aria-label="Close announcement">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="card-copy">
+        <p class="card-eyebrow" id="card-eyebrow">Welcome to</p>
+        <h1 class="card-title" id="card-title">
+          <em>Canvas</em><span class="card-title-dot">.</span>
+        </h1>
+        <p class="card-body" id="card-body">
+          Use canvas to generate text, images and video all in one place.
+        </p>
+
+        <div class="card-actions">
+          <button class="btn btn-primary">Try Canvas</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT: the 938×800 stage (the asset to be exported) -->
+    <section class="card-right">
+      <div class="stage" id="stage" data-w="938" data-h="800">
+        <!-- vignette layers are injected here by main.js -->
+        <div class="stage-bg" id="stage-bg"></div>
+        <div class="stage-layer" id="layer-bookend"></div>
+        <div class="stage-layer" id="layer-vignette"></div>
+        <div class="stage-cursor" id="stage-cursor" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path d="M5 3 L19 11 L12 12 L9 19 Z" fill="#0a0a0a" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+          <span class="cursor-ring"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- HUD: tiny timeline scrubber + flags, hidden in capture mode -->
+  <div class="hud" id="hud">
+    <div class="hud-row">
+      <span class="hud-tag">stage 938×800</span>
+      <span class="hud-tag" id="hud-cue">cue: —</span>
+      <span class="hud-tag hud-time" id="hud-time">0.00s</span>
+      <button class="hud-btn" id="hud-toggle">pause</button>
+      <button class="hud-btn" id="hud-restart">restart</button>
+      <span class="hud-hint">space · ←/→ 0.1s · ⇧←/→ 1s</span>
+    </div>
+    <div class="hud-scrub" id="hud-scrub">
+      <div class="hud-track" id="hud-track">
+        <div class="hud-segs" id="hud-segs"></div>
+        <div class="hud-fill" id="hud-fill"></div>
+        <div class="hud-head" id="hud-head"></div>
+      </div>
+      <div class="hud-ticks" id="hud-ticks"></div>
+      <div class="hud-tip" id="hud-tip">0.00s</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

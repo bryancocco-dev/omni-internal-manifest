@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+  OMNI component: statusring
+  Project: Agent Builder
+  Note: .fidelity — Agent Fidelity meter (label + bar + status), rail footer
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — statusring · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="fidelity" aria-live="polite">
+        <div class="fidelity-top">
+          <span class="fidelity-label">Agent Fidelity</span>
+          <span class="fidelity-num"><span id="fidelityPct">62</span>%</span>
+        </div>
+        <div class="fidelity-bar"><div class="fidelity-fill" id="fidelityFill" style="width:62%"></div></div>
+        <span class="fidelity-status" id="fidelityStatus">Draft</span>
+      </div>
+</body>
+</html>

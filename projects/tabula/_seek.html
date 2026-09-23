@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; background: #101114; display: grid; grid-template-columns: repeat(3, 320px); gap: 8px; padding: 8px; }
+  .cell { position: relative; width: 320px; height: 211px; overflow: hidden; }
+  .cell object, .cell img { width: 320px; height: 211px; }
+  .cell.sq { height: 320px; }
+  .cell.sq object, .cell.sq img { height: 320px; }
+  .t { position: absolute; left: 6px; top: 4px; font: 12px monospace; color: #9aa; z-index: 2; }
+</style>
+<body>
+<script>
+  // ?file=assets/cover-X.svg & ?times=500,1600,… & ?sq=1 for square tiles
+  const q = new URLSearchParams(location.search);
+  const file = q.get('file');
+  const times = (q.get('times') || '400,1200,2100,2900,3700,4600').split(',').map(Number);
+  const sq = q.get('sq') === '1';
+  const scheme = q.get('scheme');
+  if (scheme === 'light' || scheme === 'dark') {
+    document.documentElement.style.colorScheme = scheme;
+    document.body.style.background = scheme === 'light' ? '#f2f4f7' : '#101114';
+  }
+  let ready = 0;
+  for (const t of times) {
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (sq ? ' sq' : '');
+    const tag = document.createElement('div');
+    tag.className = 't';
+    tag.textContent = t + 'ms';
+    const obj = document.createElement('object');
+    obj.type = 'image/svg+xml';
+    obj.data = file + '?cachebust=' + t;
+    obj.addEventListener('load', () => {
+      const doc = obj.contentDocument;
+      const anims = doc.getAnimations ? doc.getAnimations() : [];
+      for (const a of anims) { a.currentTime = t; a.pause(); }
+      ready++;
+      if (ready === times.length) document.title = 'SEEK-READY';
+    });
+    cell.appendChild(tag);
+    cell.appendChild(obj);
+    document.body.appendChild(cell);
+  }
+</script>
+</body>

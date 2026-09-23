@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  OMNI component: button
+  Project: Media
+  Note: .c4-filter-pill + .c4-view-btn — filter pill group and view-mode icon button group
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — button · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;gap:16px">
+      <div class="c4-filter-group">
+        <span class="c4-filter-label">Platform</span>
+        <button class="c4-filter-pill active" type="button" data-c4platform="all">All</button>
+        <button class="c4-filter-pill" type="button" data-c4platform="meta">Meta</button>
+        <button class="c4-filter-pill" type="button" data-c4platform="instagram">Instagram</button>
+        <button class="c4-filter-pill" type="button" data-c4platform="linkedin">LinkedIn</button>
+        <button class="c4-filter-pill" type="button" data-c4platform="reddit">Reddit</button>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="c4-view-btn active" type="button" data-c4view="mosaic" aria-label="Mosaic view">
+          <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+            <rect x="2" y="2" width="5" height="5" rx="0.6" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="9" y="2" width="5" height="3" rx="0.6" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="9" y="7" width="5" height="7" rx="0.6" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="2" y="9" width="5" height="5" rx="0.6" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+        </button>
+        <button class="c4-view-btn" type="button" data-c4view="grid" aria-label="Grid view">
+          <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+            <rect x="2"   y="2"   width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="6.5" y="2"   width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="11"  y="2"   width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="2"   y="6.5" width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="6.5" y="6.5" width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="11"  y="6.5" width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="2"   y="11"  width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="6.5" y="11"  width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="11"  y="11"  width="3" height="3" rx="0.4" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+        </button>
+        <button class="c4-view-btn" type="button" data-c4view="list" aria-label="List view">
+          <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+            <line x1="3" y1="4" x2="13" y2="4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <line x1="3" y1="8" x2="13" y2="8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <line x1="3" y1="12" x2="13" y2="12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+</body>
+</html>

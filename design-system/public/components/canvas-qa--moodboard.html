@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+  OMNI component: moodboard
+  Project: QA
+  Note: .qa-mood — hero + 2-tile creative moodboard grid, gradient caption overlay (qa-mood-k label + copy) on each figure
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA — moodboard · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-qa.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="brief-stack">
+<article class="brief-board"><div class="sec-body">
+            <section class="qa-adblock">
+              <p class="qa-adlabel" data-no="03">Moodboard</p>
+              <div class="qa-mood">
+                <figure class="qa-mood-hero">
+                  <img src="assets/art-a.jpg" alt="Architectural lounge">
+                  <figcaption class="qa-mood-cap">
+                    <span class="qa-mood-k">Environment</span>
+                    <p>Quiet, architectural lounges designed for the disconnected pause.</p>
+                  </figcaption>
+                </figure>
+                <div class="qa-mood-row">
+                  <figure class="qa-mood-tile">
+                    <img src="assets/art-b.jpg" alt="Navy and wood tones">
+                    <figcaption class="qa-mood-cap">
+                      <span class="qa-mood-k">Colour</span>
+                      <p>Deep navy and rustic wood under warm afternoon light.</p>
+                    </figcaption>
+                  </figure>
+                  <figure class="qa-mood-tile">
+                    <img src="assets/art-c.jpg" alt="Golden light on travel-tunnel geometry">
+                    <figcaption class="qa-mood-cap">
+                      <span class="qa-mood-k">Detail</span>
+                      <p>Golden light on raw travel-tunnel geometry.</p>
+                    </figcaption>
+                  </figure>
+                </div>
+              </div>
+              <p class="qa-treat"><b>Treatment</b>35mm · natural light only · 2.39:1 anamorphic · fine film grain · no synthetic colour</p>
+            </section>
+          </div></article>
+</body>
+</html>

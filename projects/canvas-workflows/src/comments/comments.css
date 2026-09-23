@@ -1,0 +1,474 @@
+/* =============================================================================
+   COMMENTS PHASE — Figma-style canvas comments (PLAN.md "## COMMENTS PHASE").
+
+   Visual language ported (not imported — different codebase, vanilla JS)
+   from canvas-share-demos/shared/components/comment-affordance.js +
+   comments-panel.css: the avatar palette, card/typography feel, resolve
+   affordance. Re-cut here entirely in --cw-* tokens per the plan's
+   non-negotiables — the only other hardcoded colour in this file is the
+   comment-mode cursor below, which is a separate, unavoidable exception
+   (see its own comment).
+
+   Imported from main.jsx after app.css (per PLAN.md's Files section).
+   ========================================================================== */
+
+/* ---- comment-mode cursor ---------------------------------------------------
+   Data-URI cursors are rasterized outside any live stylesheet, so they can't
+   read CSS custom properties — there is no `var(--cw-accent)` inside a
+   `cursor: url(...)` SVG. The accent dot below uses the project's own
+   documented light-mode fallback for --cw-accent (#1858EE, see
+   cw-tokens.css) rather than an invented colour, and the pin body is a
+   neutral white-fill/dark-stroke so it stays legible on both light and dark
+   canvases. `crosshair` is the documented fallback if the data URI ever
+   fails to parse. */
+#workflow-root .cw-flow-stage.cw-comment-mode .react-flow__pane {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 256 256'><path d='M132 24a92 92 0 0 0-92 92v92a8 8 0 0 0 8 8h84a92 92 0 0 0 0-184z' fill='%231858EE' stroke='white' stroke-width='14'/><circle cx='92' cy='116' r='11' fill='white'/><circle cx='132' cy='116' r='11' fill='white'/><circle cx='172' cy='116' r='11' fill='white'/></svg>")
+    3 21,
+    crosshair;
+}
+
+/* ---- anchor -----------------------------------------------------------------
+   Flow-space wrapper: zero-size (matches motion.css's .cw-ripple convention)
+   so it never affects layout, translated to the comment's flow (x, y) then
+   counter-scaled by 1/zoom (inline style, CommentsLayer.jsx) so the pin — and
+   the card nested inside the SAME wrapper — hold constant screen size and
+   never grow or shrink with zoom (Figma's behaviour, PLAN.md "Model"). */
+#workflow-root .cw-comment-anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 8;
+  /* React Flow's .react-flow__viewport-portal is pointer-events:none by
+     design, so anything rendered through <ViewportPortal> can't be clicked
+     until it opts back in — without this the pins were purely decorative
+     (what LOOKED like a pin toggling its card shut was actually the
+     click-outside handler firing). The anchor itself stays transparent to
+     the pointer so it never steals a drag from the canvas; only the pin
+     button below takes hits. */
+  pointer-events: none;
+}
+
+#workflow-root .cw-comment-pin-btn {
+  pointer-events: auto;
+}
+
+/* ---- pin ---------------------------------------------------------------- */
+#workflow-root .cw-comment-pin-btn {
+  position: absolute;
+  /* The chip's SQUARED corner is its bottom-left — that corner sits exactly
+     on the clicked point (same anchor contract every marker here has had;
+     new geometry, same promise). */
+  left: 0;
+  top: -28px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 2px rgba(16, 24, 40, 0.18)) drop-shadow(0 4px 10px rgba(16, 24, 40, 0.16));
+  animation: cw-comment-pin-in var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+  transition: transform var(--cw-d-1, 140ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+#workflow-root .cw-comment-pin-btn:hover,
+#workflow-root .cw-comment-pin-btn.is-active {
+  transform: translateY(-2px) scale(1.08);
+}
+
+#workflow-root .cw-comment-pin-btn:active {
+  transform: translateY(0) scale(0.92);
+}
+
+@keyframes cw-comment-pin-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.5);
+  }
+}
+
+/* Draft: the rail's comment glyph, tail at the bottom-left — offsets and a
+   strokeless paint of its own, since it isn't the teardrop. */
+#workflow-root .cw-comment-pin-btn.is-draft {
+  left: -3px;
+  top: -21px;
+  width: 24px;
+  height: 24px;
+}
+
+#workflow-root .cw-comment-pin-btn.is-draft .cw-comment-pin-mark {
+  stroke: none;
+}
+
+
+/* ---- card portal + card: thread + composer share one shell ----------------
+   The card is portaled to #workflow-root (CommentsLayer.jsx's CardPortal),
+   not nested in the pin's ViewportPortal anchor — verified live that content
+   inside <ViewportPortal> sits inside .react-flow__renderer (z-index 4,
+   React Flow's own base stylesheet), which is BELOW .react-flow__panel
+   (Controls/MiniMap, z-index 5) regardless of any z-index set here, so an
+   open card near either panel rendered partially underneath it. The portal
+   wrapper is `position:fixed` at the pin's SCREEN position (computed by
+   `flowToScreenPosition`, already zoom/pan-correct — no counter-scale is
+   needed here since screen coordinates ARE constant-size coordinates); the
+   card itself is offset from that exact point by a fixed pixel nudge so it
+   floats clear of the pin's own badge instead of covering it. z-index is
+   comfortably below the run-preview modal (50) and header dropdown (20) —
+   see App.jsx/RunPreview.jsx — and above everything else in the shell. */
+#workflow-root .cw-comment-card-portal {
+  position: fixed;
+  z-index: 30;
+}
+
+#workflow-root .cw-comment-card {
+  transform: translate(18px, -32px);
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06), 0 24px 60px -20px rgba(16, 24, 40, 0.3);
+  animation: cw-comment-card-in var(--cw-d-3, 420ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+
+@keyframes cw-comment-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}
+
+#workflow-root .cw-comment-card--thread.is-resolved {
+  opacity: 0.78;
+}
+
+#workflow-root .cw-comment-thread-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 14px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#workflow-root .cw-comment-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+#workflow-root .cw-comment-avatar {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--cw-avatar, var(--cw-accent));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cw-font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+#workflow-root .cw-comment-avatar--sm {
+  width: 22px;
+  height: 22px;
+  font-size: 8.5px;
+}
+
+#workflow-root .cw-comment-msg-main {
+  flex: 1;
+  min-width: 0;
+}
+
+#workflow-root .cw-comment-msg-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+#workflow-root .cw-comment-name {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--cw-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#workflow-root .cw-comment-time {
+  flex: none;
+  font-size: 10.5px;
+  color: var(--cw-text-3);
+}
+
+#workflow-root .cw-comment-text {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--cw-text-2);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+#workflow-root .cw-comment-text.is-resolved {
+  text-decoration: line-through;
+  text-decoration-color: var(--cw-text-3);
+}
+
+/* Replies stack under the root, linked by a hairline rail centred on the
+   root avatar — same construction as the reference's thread rail. */
+#workflow-root .cw-comment-replies {
+  margin: 2px 0 0 13px;
+  padding: 8px 0 0 14px;
+  border-left: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---- draft composer close (Bryan: "add an x in here that removes the
+   comment box and exits the user from comment mode") ------------------------
+   Composer-only — ComposerRow itself stays untouched (CommentsLayer.jsx), so
+   a reply box inside an open thread never grows one of these; only the
+   not-yet-posted draft card (`--composer`) does. `position:relative` on that
+   variant makes the containing block explicit (the base `.cw-comment-card`
+   already carries a static `transform`, which technically qualifies too, but
+   spelling it out here means this button's anchor doesn't depend on staying
+   aware of that unrelated rule). 18px — well under the card's own 28px send
+   button, since this is a quiet corner dismissal, not a peer action — inset
+   into the card's own top-right corner the same way `.cw-instructions-close`
+   sits in its card (InstructionsCard.jsx convention). At this card width
+   (280px) and inset (8px) it lands inside the ComposerRow's send-button
+   *column* but above the button itself (that button is bottom-aligned via
+   `.cw-comment-composer`'s `align-items:flex-end`), so it never overlaps the
+   textarea box or its 3px focus-ring box-shadow (`.cw-comment-composer-input
+   :focus` below) — verified live, see the build report; no padding nudge
+   needed. */
+#workflow-root .cw-comment-card--composer {
+  position: relative;
+}
+
+#workflow-root .cw-comment-card-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  /* ISSUES POPOVER V2 item 1 — same optical droop as the issues pill's
+     dismiss ×, same fix: CommentsLayer.jsx now renders a drawn 8x8 SVG cross
+     instead of a text "×" glyph, so color still feeds stroke="currentColor"
+     but font-size/line-height are gone — nothing left in here that's text. */
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-comment-card-close:hover {
+  background: var(--cw-field);
+  color: var(--cw-text);
+}
+
+/* ---- composer (new-pin draft + reply share this) --------------------------*/
+#workflow-root .cw-comment-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+#workflow-root .cw-comment-card--thread .cw-comment-composer--reply {
+  padding: 10px 14px;
+  border-top: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+}
+
+#workflow-root .cw-comment-composer-input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border-soft);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--cw-text);
+  background: var(--cw-field);
+  transition:
+    border-color var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-comment-composer-input::placeholder {
+  color: var(--cw-label);
+}
+
+#workflow-root .cw-comment-composer-input:hover {
+  border-color: var(--cw-border-soft);
+}
+
+#workflow-root .cw-comment-composer-input:focus {
+  outline: none;
+  border-color: var(--cw-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cw-accent) 22%, transparent);
+}
+
+#workflow-root .cw-comment-send {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--cw-accent);
+  color: var(--cw-on-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform var(--cw-d-1, 140ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-comment-send:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+#workflow-root .cw-comment-send:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+#workflow-root .cw-comment-send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---- toolbar: resolve + delete -------------------------------------------- */
+#workflow-root .cw-comment-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 10px;
+}
+
+#workflow-root .cw-comment-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 999px;
+  background: var(--cw-surface);
+  color: var(--cw-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-comment-tool-btn:hover {
+  color: var(--cw-text);
+  background: var(--cw-surface-2);
+}
+
+#workflow-root .cw-comment-tool-btn.is-on {
+  border-color: color-mix(in srgb, var(--cw-accent) 45%, transparent);
+  color: var(--cw-accent);
+  background: color-mix(in srgb, var(--cw-accent) 10%, transparent);
+}
+
+#workflow-root .cw-comment-tool-btn--danger:hover {
+  border-color: color-mix(in srgb, var(--cw-danger) 45%, transparent);
+  color: var(--cw-danger);
+  background: color-mix(in srgb, var(--cw-danger) 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-comment-pin-btn {
+    animation: none;
+  }
+  #workflow-root .cw-comment-card {
+    animation: none;
+  }
+  #workflow-root .cw-comment-pin-btn:hover,
+  #workflow-root .cw-comment-pin-btn.is-active,
+  #workflow-root .cw-comment-pin-btn:active {
+    transform: none;
+  }
+}
+
+
+/* ---- The pin chip (redesign — Bryan: "make these look nicer") -----------
+   Paper chip, three round corners, squared bottom-left tail on the anchor;
+   the author's avatar dot inside in their deterministic panel color. Same
+   paper-chrome / colored-identity split as the card heads. */
+#workflow-root .cw-comment-pin-chip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 14px 14px 14px 4px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.07),
+    0 6px 16px -8px rgba(16, 24, 40, 0.28);
+  transition:
+    scale var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    box-shadow var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+#workflow-root .cw-comment-pin-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cw-font);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff; /* documented exception: text on the fixed avatar palette */
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, ease),
+    box-shadow var(--cw-d-1, 140ms) var(--cw-e-out, ease);
+}
+
+#workflow-root .cw-comment-pin-btn:hover .cw-comment-pin-chip,
+#workflow-root .cw-comment-pin-btn.is-active .cw-comment-pin-chip {
+  scale: 1.12;
+  box-shadow:
+    0 2px 4px rgba(16, 24, 40, 0.08),
+    0 10px 24px -10px rgba(16, 24, 40, 0.35);
+}
+
+/* Resolved = past tense: the avatar empties to a hairline ring with muted
+   initials; the chip stays paper so the thread remains findable. */
+#workflow-root .cw-comment-pin-btn.is-resolved .cw-comment-pin-avatar {
+  background: transparent !important;
+  box-shadow: inset 0 0 0 1px var(--cw-border);
+  color: var(--cw-text-3);
+}

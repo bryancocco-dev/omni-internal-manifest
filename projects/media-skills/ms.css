@@ -1,0 +1,711 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MEDIA SKILLS runtime styles — chrome grafts, view plumbing, chart
+   palette, reveal motion. Executors: do NOT edit; your fragment owns
+   its own <style>. See PLAN.md.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* --- Rail: sparkle Skills icon (newest omni-manifest treatment) --- */
+.rail-tool-styles .rail-tool-sp-sat {
+  opacity: 0.45;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.rail-tool-styles:hover .rail-tool-sp-sat-1 {
+  animation: rail-sp-twinkle 1100ms ease-in-out infinite;
+}
+.rail-tool-styles:hover .rail-tool-sp-sat-2 {
+  animation: rail-sp-twinkle 1100ms ease-in-out 550ms infinite;
+}
+@keyframes rail-sp-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+
+/* --- Top nav: retire the two remaining legacy session tabs --- */
+.topnav .tab[data-tab="canvas"],
+.topnav .tab[data-tab="canvas4"] { display: none !important; }
+
+/* --- View plumbing: our two skills swap in like any other canvas tab.
+   Legacy views are force-hidden under our tabs (mirrors the existing
+   #main[data-tab=…] pattern; !important beats per-view base rules). --- */
+.aud-view, .plan-view, .query-view {
+  display: none;
+  flex-direction: column;
+  position: relative;
+  width: var(--stack-w, min(100%, 1280px));
+  margin: 0 auto;
+  /* no bottom padding — the poster back cover connects to the end of
+     the scroll (its matte is .ms-matte--flush with margin-bottom 0) */
+  padding: 20px 40px 0;
+}
+#main[data-tab="audience"] .brief-stack,
+#main[data-tab="audience"] .table-view,
+#main[data-tab="audience"] .persona-view,
+#main[data-tab="audience"] .graphics-view,
+#main[data-tab="audience"] .canvas4-view,
+#main[data-tab="audience"] .rail-nav-canvas,
+#main[data-tab="audience"] .rail-nav-table,
+#main[data-tab="audience"] .rail-nav-canvas3,
+#main[data-tab="audience"] .rail-nav-canvas4,
+#main[data-tab="plan"] .brief-stack,
+#main[data-tab="plan"] .table-view,
+#main[data-tab="plan"] .persona-view,
+#main[data-tab="plan"] .graphics-view,
+#main[data-tab="plan"] .canvas4-view,
+#main[data-tab="plan"] .rail-nav-canvas,
+#main[data-tab="plan"] .rail-nav-table,
+#main[data-tab="plan"] .rail-nav-canvas3,
+#main[data-tab="plan"] .rail-nav-canvas4 { display: none !important; }
+#main[data-tab="query"] .brief-stack,
+#main[data-tab="query"] .table-view,
+#main[data-tab="query"] .persona-view,
+#main[data-tab="query"] .graphics-view,
+#main[data-tab="query"] .canvas4-view,
+#main[data-tab="query"] .rail-nav-canvas,
+#main[data-tab="query"] .rail-nav-table,
+#main[data-tab="query"] .rail-nav-canvas3,
+#main[data-tab="query"] .rail-nav-canvas4 { display: none !important; }
+#main[data-tab="audience"] .aud-view { display: flex; }
+#main[data-tab="plan"] .plan-view { display: flex; }
+#main[data-tab="query"] .query-view { display: flex; }
+
+/* Audience sub-views (list / overview / compare) — one visible at a time.
+   .ms-frag--global (sources + poster tail) shows on every sub-view. */
+.aud-view[data-view="list"]     .ms-frag:not([data-pane="list"]):not(.ms-frag--global),
+.aud-view[data-view="overview"] .ms-frag:not([data-pane="overview"]):not(.ms-frag--global),
+.aud-view[data-view="compare"]  .ms-frag:not([data-pane="compare"]):not(.ms-frag--global) { display: none; }
+
+.ms-frag { display: block; }
+.ms-frag.ms-frag-missing { display: none; }
+
+/* --- Chart palette — theme-aware. Dark values are the board hexes;
+   light values are their OMNI-light equivalents. Multi-series charts
+   use these; single-accent moments ride var(--accent) directly. --- */
+body.ms-app {
+  --ms-mono: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  --ms-chart-1: #1858ee;
+  --ms-chart-2: #7289ef;
+  --ms-chart-3: #22b573;
+  --ms-chart-4: #e0556b;
+  --ms-chart-5: #8a5cf6;
+  --ms-chart-6: #f59e0b;
+  --ms-chart-7: #0aa4a5;
+  --ms-chart-8: #94a3b8;
+  --ms-pos: #22b573;
+  --ms-neg: #e0556b;
+}
+body.ms-app[data-theme="dark"] {
+  --ms-chart-1: #0de0e1;
+  --ms-chart-2: #5b7cfa;
+  --ms-chart-3: #4ade9f;
+  --ms-chart-4: #ff6b7a;
+  --ms-chart-5: #a78bfa;
+  --ms-chart-6: #f5a623;
+  --ms-chart-7: #38bdf8;
+  --ms-chart-8: #8b90a0;
+  --ms-pos: #4ade9f;
+  --ms-neg: #ff6b7a;
+}
+
+/* --- Blur fade-in reveal (tuned fork: 700ms, expo-out) --- */
+body.ms-app [data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--doc-reveal-distance, 22px));
+  filter: blur(var(--doc-reveal-blur, 9px));
+  transition:
+    opacity   700ms cubic-bezier(.16, 1, .3, 1) var(--reveal-delay, 0ms),
+    transform 700ms cubic-bezier(.16, 1, .3, 1) var(--reveal-delay, 0ms),
+    filter    805ms cubic-bezier(.16, 1, .3, 1) var(--reveal-delay, 0ms);
+}
+body.ms-app [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  body.ms-app [data-reveal] {
+    opacity: 1; transform: none; filter: none; transition: none;
+  }
+}
+
+/* --- Chat: the shell's standard intro (AI notice + "What can I help
+   with?") is kept as-is; only the chat below is ours --- */
+
+/* Injected transcript messages (self-contained — no shell .msg deps) */
+.ms-msg { margin: 18px 16px 0; }
+.ms-msg-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+}
+.ms-msg-avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.02em;
+  background: var(--panel-bg-3); color: var(--text-body);
+}
+.ms-msg.bot .ms-msg-avatar { background: var(--accent-soft); color: var(--accent); }
+.ms-msg-name { font-weight: 600; font-size: 12.5px; color: var(--text-strong); }
+.ms-msg-dot {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--text-subtle); opacity: 0.7;
+}
+.ms-msg-time { font-size: 11.5px; color: var(--text-subtle); }
+.ms-msg-body { font-size: 13px; line-height: 1.55; color: var(--text-body); }
+.ms-msg.user .ms-msg-body {
+  background: var(--hover-soft);
+  border: 0.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.ms-msg.user { padding-left: 24px; }
+.ms-filechip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--panel-bg-3);
+  border: 0.5px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12.5px; font-weight: 500; color: var(--text-strong);
+}
+.ms-filechip svg { flex: none; color: var(--text-subtle); }
+.ms-status {
+  display: flex; align-items: center; gap: 10px;
+  margin: 18px 16px 0;
+  font-size: 12.5px; color: var(--text-subtle);
+}
+.ms-status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex: none;
+  background: var(--accent);
+  animation: ms-status-pulse 1.6s ease-in-out infinite;
+}
+@keyframes ms-status-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1); }
+}
+
+/* --- Shared content utilities (fragments may use, never redefine) --- */
+.ms-source {
+  font-size: 10.5px;
+  color: var(--text-subtle);
+  opacity: 0.85;
+  margin-top: 10px;
+}
+.ms-ai-attr {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-subtle);
+  border-top: 0.5px solid var(--line);
+  padding-top: 10px; margin-top: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Chart build-in animations — generic primitives, triggered by the
+   module's own reveal (.is-visible). Fragments opt elements in via
+   data-build; ms.js auto-assigns --build-d stagger among siblings.
+   Hidden state lives under :not(.is-visible) so first paint is
+   correct; the destination state is whatever the fragment's own CSS
+   says (we only add the transition + delay).
+   ═══════════════════════════════════════════════════════════════════ */
+.ms-app [data-reveal] [data-build] {
+  will-change: transform, opacity;
+}
+/* bar-h: horizontal fills grow from the left */
+.ms-app [data-reveal]:not(.is-visible) [data-build="bar-h"] {
+  transform: scaleX(0); transition: none;
+}
+.ms-app [data-reveal] [data-build="bar-h"] {
+  transform-origin: left center;
+  transition: transform 800ms cubic-bezier(.16, 1, .3, 1)
+    calc(var(--reveal-delay, 0ms) + 160ms + var(--build-d, 0ms));
+}
+/* bar-v: vertical bars grow from the baseline */
+.ms-app [data-reveal]:not(.is-visible) [data-build="bar-v"] {
+  transform: scaleY(0); transition: none;
+}
+.ms-app [data-reveal] [data-build="bar-v"] {
+  transform-origin: center bottom;
+  transition: transform 800ms cubic-bezier(.16, 1, .3, 1)
+    calc(var(--reveal-delay, 0ms) + 160ms + var(--build-d, 0ms));
+}
+/* draw: SVG strokes draw in — REQUIRES pathLength="1" on the element */
+.ms-app [data-reveal]:not(.is-visible) [data-build="draw"] {
+  stroke-dasharray: 1; stroke-dashoffset: 1; transition: none;
+}
+.ms-app [data-reveal] [data-build="draw"] {
+  stroke-dasharray: 1; stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1000ms cubic-bezier(.4, 0, .2, 1)
+    calc(var(--reveal-delay, 0ms) + 200ms + var(--build-d, 0ms));
+}
+/* pop: dots, chips, venn circles scale-pop into place */
+.ms-app [data-reveal]:not(.is-visible) [data-build="pop"] {
+  transform: scale(0.6); opacity: 0; transition: none;
+}
+.ms-app [data-reveal] [data-build="pop"] {
+  transform-origin: center;
+  transform-box: fill-box;
+  transition:
+    transform 600ms cubic-bezier(.34, 1.56, .64, 1)
+      calc(var(--reveal-delay, 0ms) + 180ms + var(--build-d, 0ms)),
+    opacity 400ms ease
+      calc(var(--reveal-delay, 0ms) + 180ms + var(--build-d, 0ms));
+}
+/* fade: filled shapes (ribbons, map states, areas) fade to their own
+   designed opacity */
+.ms-app [data-reveal]:not(.is-visible) [data-build="fade"] {
+  opacity: 0; transition: none;
+}
+.ms-app [data-reveal] [data-build="fade"] {
+  transition: opacity 700ms ease
+    calc(var(--reveal-delay, 0ms) + 200ms + var(--build-d, 0ms));
+}
+@media (prefers-reduced-motion: reduce) {
+  .ms-app [data-reveal]:not(.is-visible) [data-build] {
+    transform: none; opacity: initial;
+    stroke-dasharray: initial; stroke-dashoffset: initial;
+  }
+  .ms-app [data-reveal] [data-build] { transition: none; }
+}
+
+/* ═══ Chat Hat first-open treatment (ported from omni-manifest):
+   Graphics/Video/Audio mode tiles + icon chips ═══ */
+
+  /* Mode tiles — premium tier of the Chat Hat, sits above the
+     quick-start chips as the FIRST child of chatAuxBodyInner. Graphics
+     / Video / Audio, each carrying the EXACT topnav app-tab icon block
+     (.tab-icon.graphics/video/audio, reused verbatim below) so the
+     color coding matches the top bar. Deliberately larger + more
+     finished than the chips underneath — the size/weight contrast IS
+     the hierarchy; no label or divider needed between the two tiers.
+     Hidden together with the chips whenever create/edit mode takes
+     over the aux panel. */
+  .chat-aux-modes {
+    display: grid;
+    /* minmax(0, 1fr), not a bare 1fr — a bare 1fr's automatic minimum
+       is content-based, so at narrower panel widths (e.g. 1280px) the
+       longer "Graphics" label forces that track wider than "Video"/
+       "Audio" and the three tiles visibly stop being equal width.
+       minmax(0, ...) lets all three share space purely proportionally;
+       the label's own text-overflow:ellipsis (already set below)
+       covers the (currently never-reached) case where a tile gets
+       narrower than its label needs. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .chat-aux-panel.is-edit-active .chat-aux-modes {
+    display: none;
+  }
+  .chat-aux-mode-tile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    /* Containing block for the one-shot .c4-tile-pulse ring below
+       (inset:0 sizes to this box) and no-op otherwise — the tile had
+       no position of its own. */
+    position: relative;
+    /* Tighter horizontal padding than a first pass used — at the
+       panel's narrower widths (e.g. a 1280px-wide window, not just a
+       hunted-for edge case) equal-width columns leave "Graphics" the
+       longest label with the least room of the three, and every pixel
+       of padding/gap here comes directly out of that budget. See the
+       chevron removal below for the same reason. */
+    padding: 7px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    /* Entrance state matches the chips below (translateX slide +
+       fade) — tiles just resolve on a faster stagger since they lead. */
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      border-color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      box-shadow 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      opacity 220ms ease 0s;
+  }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile:nth-child(1) { transition-delay: 0s, 0s, 40ms, 40ms; }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile:nth-child(2) { transition-delay: 0s, 0s, 80ms, 80ms; }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile:nth-child(3) { transition-delay: 0s, 0s, 120ms, 120ms; }
+  .chat-aux-mode-tile:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+  }
+  body[data-theme="dark"] .chat-aux-mode-tile:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    /* Light mode's near-invisible-on-dark 5%-black shadow needs its
+       own dark-mode value to actually read as lift, matching the
+       existing .c4-audio-tile:hover convention (stronger, still black,
+       shadow on dark cards rather than the var(--shadow-card) token). */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+  .chat-aux-mode-tile:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  .chat-aux-mode-tile:focus,
+  .chat-aux-mode-tile:focus-visible { outline: none; }
+
+  /* --- Press feel (all three tiles) ---
+     pointerdown/up/leave (see the mode-tiles wiring near
+     _c4EnterCreateMode) toggle .is-pressed / .is-releasing. Scoped
+     under .chat-aux-panel.is-expanded so specificity (4 classes) beats
+     the entrance rule above (.chat-aux-panel.is-expanded
+     .chat-aux-mode-tile, 3 classes) — otherwise the entrance rule's
+     own transform:translateX(0) would win and the press scale would
+     never actually show once the panel is open (which is always, by
+     the time a tile is clickable). Press-in and settle-back use
+     different curves/durations, so each phase gets its own class
+     rather than sharing one transition list. */
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-pressed {
+    transition: transform 90ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 90ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.97);
+    box-shadow: none;
+  }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-releasing {
+    /* No transform/box-shadow value here on purpose — removing
+       .is-pressed already lets the tile fall back to its normal
+       resting value (translateX(0) / no shadow); this class exists
+       only to swap in the slower settle-back timing for that
+       transition. */
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-pressed .tab-icon {
+    transition: transform 90ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.94);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-releasing .tab-icon {
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-pressed,
+    .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-releasing,
+    .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-pressed .tab-icon,
+    .chat-aux-panel.is-expanded .chat-aux-mode-tile.is-releasing .tab-icon {
+      transition: none !important;
+    }
+  }
+  .chat-aux-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chat-aux-panel.is-edit-active .chat-aux-chips {
+    display: none;
+  }
+  .chat-aux-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 12px 0 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--text-body);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    /* Entrance state matches .rail-subnav > li — hidden + slid 6px
+       left, then reveals when the panel flips .is-expanded. */
+    opacity: 0;
+    transform: translateX(-6px);
+    /* Hover props (bg/border/color) get snappy 140ms transitions
+       with NO delay. Entry props (opacity/transform) carry the
+       per-chip stagger delay below. Setting per-property delays
+       prevents the stagger from leaking into hover response time. */
+    transition:
+      background 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      border-color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s,
+      opacity 220ms ease 0s,
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1) 0s;
+  }
+  .chat-aux-panel.is-expanded .chat-aux-chip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  /* Per-chip stagger — only the opacity + transform delays scale;
+     bg/border/color stay at 0s so hover never inherits the entry
+     cascade. Property order in transition-delay must match the
+     transition shorthand list above (bg, border, color, opacity,
+     transform). */
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(1) { transition-delay: 0s, 0s, 0s, 200ms, 200ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(2) { transition-delay: 0s, 0s, 0s, 240ms, 240ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(3) { transition-delay: 0s, 0s, 0s, 280ms, 280ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(4) { transition-delay: 0s, 0s, 0s, 320ms, 320ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(5) { transition-delay: 0s, 0s, 0s, 360ms, 360ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(6) { transition-delay: 0s, 0s, 0s, 400ms, 400ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(7) { transition-delay: 0s, 0s, 0s, 440ms, 440ms; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:nth-child(8) { transition-delay: 0s, 0s, 0s, 480ms, 480ms; }
+  /* Hover/active scoped under .chat-aux-panel.is-expanded (4-class
+     specificity, same trick as the mode-tile press-feel block
+     above) so it reliably beats the entrance rule's own
+     transform:translateX(0) (3-class, .chat-aux-panel.is-expanded
+     .chat-aux-chip) — without the extra scoping the settled entrance
+     value wins the tie and the hover lift never actually shows. */
+  .chat-aux-panel.is-expanded .chat-aux-chip:hover {
+    background: var(--hover-soft);
+    border-color: rgba(15, 23, 42, 0.18);
+    color: var(--text-strong);
+    transform: translateY(-1px);
+  }
+  body[data-theme="dark"] .chat-aux-panel.is-expanded .chat-aux-chip:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .chat-aux-panel.is-expanded .chat-aux-chip:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .chat-aux-chip:focus,
+  .chat-aux-chip:focus-visible { outline: none; }
+
+  /* Leading glyph — one bespoke icon per chip, drawn in the same
+     24x24 viewBox / stroke="currentColor" / round caps+joins family
+     as the composer add-menu icons (search #addMenu), shrunk to
+     14px and held at --text-subtle so it reads as quiet metadata
+     rather than another CTA competing with the mode tiles' own
+     icon blocks above. */
+  .chat-aux-chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--text-subtle);
+    transition: color 140ms cubic-bezier(0.22, 1, 0.36, 1) 0s;
+  }
+  .chat-aux-chip-icon svg { width: 100%; height: 100%; display: block; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:hover .chat-aux-chip-icon {
+    color: var(--text-strong);
+  }
+  .chat-aux-chip-label {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+  }
+
+  /* Chevron — the one affordance the old caret badge carried, now
+     living only in hover. Zero width/opacity at rest (reserves no
+     space in the row), grows in on hover so the chip itself widens
+     ~14px rather than the row keeping permanent dead space for it —
+     width+margin-left animate together on the same 200ms curve as
+     the opacity, so the reveal reads as one motion, not two. */
+  .chat-aux-chip-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: var(--accent);
+    transition:
+      width 200ms cubic-bezier(0.16, 1, 0.3, 1) 0s,
+      margin-left 200ms cubic-bezier(0.16, 1, 0.3, 1) 0s,
+      opacity 200ms cubic-bezier(0.16, 1, 0.3, 1) 0s;
+  }
+  .chat-aux-chip-chevron svg { width: 10px; height: 10px; display: block; }
+  .chat-aux-panel.is-expanded .chat-aux-chip:hover .chat-aux-chip-chevron {
+    width: 10px;
+    margin-left: 4px;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-aux-panel.is-expanded .chat-aux-chip:hover,
+    .chat-aux-panel.is-expanded .chat-aux-chip:active {
+      transform: none !important;
+    }
+    .chat-aux-chip-chevron {
+      transition: opacity 120ms ease 0s !important;
+    }
+  }
+
+/* ═══ Matte backing — every module mounts on its own surface (white in
+   light, lifted charcoal in dark). ms.js wraps each module-level
+   section in .ms-matte at fragment load and moves data-reveal onto the
+   wrapper so matte + content blur-fade in together. ═══ */
+body.ms-app { --ms-matte: #ffffff; }
+body.ms-app[data-theme="dark"] { --ms-matte: #1b1d21; }
+.ms-matte {
+  background: var(--ms-matte);
+  border: none;
+  border-radius: 0;
+  padding: 30px 34px;
+  margin: 0 0 16px; /* == card-stack gap: one rhythm everywhere */
+}
+.ms-matte > section { margin: 0; }
+/* flush variant — declared by a section via data-matte="flush": the
+   content fills the matte edge-to-edge (the poster back cover) and the
+   matte itself meets the end of the scroll. */
+.ms-matte.ms-matte--flush { padding: 0; margin-bottom: 0; }
+/* split variant — per-card mattes carry the same 16px rhythm
+   (container gaps are zeroed globally below) */
+.ms-matte.ms-matte--split { margin: 0 0 16px; }
+
+/* ═══ Fix: the shell's scanLooseImages wraps canvas <img>s in an
+   inline-block .img-swap-target span (legacy image-swap edit
+   affordance), which breaks height:100% chains in fragment photo
+   boxes. Make the wrapper transparent to sizing inside our views. ═══ */
+.aud-view .img-swap-target,
+.plan-view .img-swap-target {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.aud-view .img-swap-target > img,
+.plan-view .img-swap-target > img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+}
+
+/* ═══ &motion=off — QA/screenshot kill-switch: reveal + builds land
+   in final state instantly. ═══ */
+body.ms-motion-off [data-reveal] {
+  opacity: 1 !important; transform: none !important;
+  filter: none !important; transition: none !important;
+}
+body.ms-motion-off [data-build] {
+  transform: none !important; opacity: initial !important;
+  stroke-dasharray: initial !important; stroke-dashoffset: initial !important;
+  transition: none !important;
+}
+
+/* ═══ Definition-chip attribute dropdown (board dark-state panel) ═══ */
+.ms-chip-open { outline: 1px solid var(--accent); outline-offset: 1px; }
+.audl-term-chip, .audoa-chip-def, .plana-chip--def { cursor: pointer; }
+.ms-chipmenu {
+  position: fixed;
+  z-index: 3000;
+  min-width: 260px;
+  max-width: 330px;
+  background: var(--panel-bg-3);
+  border: 0.5px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 12px 32px var(--shadow-card);
+  transform-origin: top left;
+  animation: ms-chipmenu-in 200ms cubic-bezier(.16, 1, .3, 1);
+}
+@keyframes ms-chipmenu-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+}
+.ms-chipmenu.is-closing {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  transition: opacity 140ms ease, transform 140ms ease;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ms-chipmenu { animation: none; }
+  .ms-chipmenu.is-closing { transition: none; }
+}
+.ms-chipmenu-title {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'Fira Code', ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+}
+.ms-chipmenu-body {
+  border-left: 1px solid var(--line);
+  margin-left: 5px;
+  padding-left: 14px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.ms-chipmenu.is-all .ms-chipmenu-body {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.ms-chipmenu-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 22px;
+  padding: 7px 0;
+}
+.ms-chipmenu-attr {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+.ms-chipmenu-check {
+  width: 20px; height: 20px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ms-chipmenu-check.is-checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-button);
+}
+.ms-chipmenu-all {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 0;
+  border: none; background: none;
+  font-size: 12px; font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+.ms-chipmenu-all:hover { text-decoration: underline; }
+
+/* ONE spacing source everywhere: matte margin-bottom (16px). Any
+   container that directly holds mattes gets its own flex/grid gap
+   zeroed so fragment-root gaps can't stack on top. */
+.ms-app :is(.ms-frag, .ms-frag > *, .ms-frag section):has(> .ms-matte) {
+  gap: 0 !important;
+}
+
+/* both views: cover card connects flush to the canvas-header hairline */
+.aud-view, .plan-view, .query-view { padding-top: 0; }
+
+/* ═══ Chapter nav (rail panel) + pager count ═══ */
+.rail-nav-ms { gap: 2px; padding: 0; margin: 0; }
+.rail-nav-ms > li > .nav-row {
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 6px;
+}
+.rail-hotkeys-count {
+  font: 500 10px/1 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  color: var(--text-subtle);
+  text-align: center;
+  padding-bottom: 6px;
+}
+
+/* Accordion controls (Plan Parameters / Competitive Landscape) read as
+   dropdowns, not cards: their split-matte contributes no padding or
+   surface — the control's own border/background is the visual unit. */
+.plan-view .ms-matte--split:has(> .plana-acc) {
+  padding: 0;
+  background: none;
+}
+
+/* IKEA cover field — scoped to the active workspace theme via the shell's
+   own body marker. (It previously lived in the theme's palette object,
+   which applyWorkspacePalette writes as an inline body style; that key is
+   not in WORKSPACE_PALETTE_KEYS, so clearWorkspacePalette never removed
+   it and the yellow leaked into Omni Light.) */
+body[data-workspace-theme="ws:ikea"] { --ms-cover-field: #FFDB00; }

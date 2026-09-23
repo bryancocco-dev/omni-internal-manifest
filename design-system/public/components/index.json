@@ -1,0 +1,1070 @@
+[
+  {
+    "project": "admin",
+    "key": "table_users",
+    "note": ".tbl — users list table, checkbox select column + sortable header icons + clickable email cell",
+    "url": "https://omni-system-hazel.vercel.app/components/admin--table_users.html"
+  },
+  {
+    "project": "admin",
+    "key": "editbar_bulk",
+    "note": ".bulkbar — selection toolbar that appears above the users table once rows are checked",
+    "url": "https://omni-system-hazel.vercel.app/components/admin--editbar_bulk.html"
+  },
+  {
+    "project": "admin",
+    "key": "drawer",
+    "note": ".drawer — right-edge bulk-edit panel (radio-line status/super-admin sections + empty workspaces/features list-tbl + footer save), opened state forced static",
+    "url": "https://omni-system-hazel.vercel.app/components/admin--drawer.html"
+  },
+  {
+    "project": "admin",
+    "key": "code_jsoneditor",
+    "note": ".editor-wrap (leadspace variant) — gutter + per-line syntax-highlighted JSON code panel with header title/description/actions and drag-resize grip (rendered output of renderEditorInto()+highlightJSON(), sample layout truncated to 5 images)",
+    "url": "https://omni-system-hazel.vercel.app/components/admin--code_jsoneditor.html"
+  },
+  {
+    "project": "admin",
+    "key": "card_mosaic",
+    "note": ".gw-frame mosaic + .manifest table — live preview linked to the JSON editor (breakpoint toggle, image tiles, image manifest list); rendered output of renderLeadspace() for the same 5-image sample as code_jsoneditor",
+    "url": "https://omni-system-hazel.vercel.app/components/admin--card_mosaic.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "siderail",
+    "note": ".section-nav — store browsing rail (column 1) with back button + nav-list",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--siderail.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "navlist",
+    "note": ".nav-list — the rail tab list (active + divider states)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--navlist.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "button",
+    "note": ".store-card-btn (install + preview/learn-more) plus the .me profile button",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--button.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "sectionheader",
+    "note": ".store-sect-head — numbered editorial heading (.store-sect-num / .store-sect-name / .store-sect-link)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--sectionheader.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "card",
+    "note": ".store-card.store-card--tile — full tile (thumb + author + name + desc + installs + actions; Popular flag)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--card.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "optioncard",
+    "note": ".store-card.store-card--tile.store-card--pop — compact text-only popular variant",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--optioncard.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "chip",
+    "note": ".store-card-flag (Popular ribbon) + a .store-meta-chip-style filter pill group",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--chip.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "input",
+    "note": ".store-search — search field (label-wrapped icon + .store-search-input)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--input.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "segmented",
+    "note": ".store-pills — filter pill bar (.store-pill, active state + +more popover)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--segmented.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "dropdown",
+    "note": ".store-pill-menu — category overflow popover (shown open)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--dropdown.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "menu",
+    "note": ".ch-profile-menu — profile dropdown (from JS template; avatar / name / email / Generator / Themes / Log out)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--menu.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "avatar",
+    "note": ".avatar — initials chip inside the profile button",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--avatar.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "hero",
+    "note": ".store-bleed--hero — full-bleed featured-agent hero (video omitted; scrim + content + rotation dots)",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--hero.html"
+  },
+  {
+    "project": "agents-store",
+    "key": "modal",
+    "note": ".vh-modal — Version History dialog (head + search + body); shown open",
+    "url": "https://omni-system-hazel.vercel.app/components/agents-store--modal.html"
+  },
+  {
+    "project": "canvas-book-ends",
+    "key": "modal_coverlab",
+    "note": ".cbe-modal-card (#bookendsModal) — Book Ends cover-lab: symbol chip-grid + tag chip-grid picker modal, shown open with the real default selections (05 FIELD symbol · V2 SPEC tag)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-book-ends--modal_coverlab.html"
+  },
+  {
+    "project": "canvas-book-ends",
+    "key": "chip_variantgrid",
+    "note": ".cbe-chips / .cbe-chip — bare 6-col numbered variant-picker grid (tag set shown, 8 items wrap to 2 rows; the same component drives the 6-item symbol grid above)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-book-ends--chip_variantgrid.html"
+  },
+  {
+    "project": "canvas-book-ends",
+    "key": "card_fanlight",
+    "note": ".cbe-ff.cbe-f-39 (#cbeFrontBoard) — FANLIGHT concentric-ring cover: TICK symbol, 3 rings (base + outer 1.3x + inner 0.7x) sharing one center, all masked from a single ring SVG",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-book-ends--card_fanlight.html"
+  },
+  {
+    "project": "canvas-collab",
+    "key": "ask_panel",
+    "note": ".ask-side — Ask sidecar (ask-treatments.js): fixed right-hand panel, mid-conversation with one answered turn and its \"Added to Questions from readers\" jump chip; open to any reader, not edit-gated",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-collab--ask_panel.html"
+  },
+  {
+    "project": "canvas-collab",
+    "key": "faq",
+    "note": ".doc-faq-section — auto-FAQ board (ask-affordance.js): every answered question commits here under \"Questions from readers\", numbered, sourced \"From the report\"; materializes the first time anyone asks",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-collab--faq.html"
+  },
+  {
+    "project": "canvas-collab",
+    "key": "editfield",
+    "note": ".doc-edit-controls — inline text-fix affordance (edit-affordance.js): click any [data-edit-key] field to edit it in place, caret at the click point; the attached pill is Reset · Cancel · Confirm. Requires body.can-edit (permission-gated, not a mode toggle)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-collab--editfield.html"
+  },
+  {
+    "project": "canvas-collab",
+    "key": "addsection",
+    "note": ".doc-add-composer — add-a-section control (add-section-affordance.js), open state after clicking the \"+ Add section\" seam between boards: header/body/bullets fields + image-or-video media tabs, Cancel/Add row. Requires body.can-edit",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-collab--addsection.html"
+  },
+  {
+    "project": "canvas-exports",
+    "key": "dropdown_titleexport",
+    "note": ".title-menu — title-bar dropdown next to the brief crumb: PDF/PNG/PPT/Excel export rows plus Save Canvas Agent/Rename, resting state",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-exports--dropdown_titleexport.html"
+  },
+  {
+    "project": "canvas-exports",
+    "key": "dropdown_titleexport_generating",
+    "note": ".title-menu-item.is-generating — export row mid-flight: icon swaps to a spinner, label updates, an accent hairline draws along the bottom edge, and .title-menu.is-busy dims the other rows (PPT row shown)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-exports--dropdown_titleexport_generating.html"
+  },
+  {
+    "project": "canvas-exports",
+    "key": "dropdown_titleexport_done",
+    "note": ".title-menu-item.is-done — export row after the download fires: icon flips to a filled accent check, label reads \"Saved to downloads\" (Excel row shown), .title-menu.is-busy still dims the rest",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-exports--dropdown_titleexport_done.html"
+  },
+  {
+    "project": "canvas-graphics",
+    "key": "dropdown_stylepill",
+    "note": ".image-style-btn — composer pill that opens the lookbook; crossfades from a swatches icon to a 16px cover thumb once a style is picked",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-graphics--dropdown_stylepill.html"
+  },
+  {
+    "project": "canvas-graphics",
+    "key": "lookbook",
+    "note": ".image-style-menu — the lookbook picker: search, New Style action, and a 3-up grid of portrait style cards (cover, name, refs, Style Guide link)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-graphics--lookbook.html"
+  },
+  {
+    "project": "canvas-graphics",
+    "key": "button_magicprompt",
+    "note": "#magicPromptBtn — sparkle \"Enhance Prompt\" composer button that rewrites the prompt in place (word-by-word reveal + a temporary Revert)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-graphics--button_magicprompt.html"
+  },
+  {
+    "project": "canvas-graphics",
+    "key": "card_photoshoot",
+    "note": ".c4-shoot-group — Photo Shoot's resolved 5-frame set: group header (prompt + shot count/model) over a flex row of numbered shot cards",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-graphics--card_photoshoot.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "masthead",
+    "note": ".masthead — Swiss spec-doc header: mono kicker, big h1, dek paragraph, 4-col meta-stats row (top of an OMNI+ Canvas findings/spec page)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--masthead.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "numberedlist_flagged",
+    "note": ".flags — numbered failure legend: red circular index badge + title + description, <code> spans highlight the bad value (pairs with .sheet_broken mockups)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--numberedlist_flagged.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "sheet_broken",
+    "note": ".sheet.zoomed (paired pages) — miniature \"printed page\" mockup of a failed export: overprinted headers, mid-token hyphenation, a torn row spanning the page break, PAGE N OF N mark",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--sheet_broken.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "ladder",
+    "note": ".ladder — the 4-step \"fit ladder\" for wide tables on paper: measure → demote prose → rotate landscape → column-group continuation, each rung stating its rule set and its \"fits when\" threshold",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--ladder.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "rung_controls",
+    "note": ".ctrls + .seg + .readout — segmented rung picker (dark = active) paired with a live measurement readout (columns detected, measured widths in/px, per-rung fit verdict); rendered with real values from the research table",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--rung_controls.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "sheet_fixed",
+    "note": ".sheet.sheet--ls (rung 2 output) — the ladder-fixed export: prose (Notes) demoted to a full-width row under each record, landscape orientation, real measured column widths — no overlaps, no dropped columns",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--sheet_fixed.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "table_continuation",
+    "note": ".gen-row (rung 3 output) — a wide 15-column table split into repeating column groups: tone-coded rung badge (b-0…b-3), first group prints, a mono .cont-tag divider (\"continued (2 of 2)\"), identity columns repeat, second group continues with prose demoted",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--table_continuation.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "exportbar",
+    "note": ".ctrls — export chrome: primary + ghost action pair (\"Export the fixed PDF\" vs. today's broken version, for comparison) with a mono hint line describing what to verify in the output",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--exportbar.html"
+  },
+  {
+    "project": "canvas-pdf-tables",
+    "key": "reply",
+    "note": ".reply — drafted stakeholder-reply card: reply-bar (recipient + Copy button) over a plain-prose reply-body with strong emphasis and an ordered list; \"copy to clipboard\" pattern for send-as-is drafts",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-pdf-tables--reply.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "callout_spine",
+    "note": ".qa-callout--spine — hairline-card \"Strategic Spine\" emphasis callout: pinned eyebrow chip, lede divider, then qa-def/qa-prov provenance rows",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--callout_spine.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "kpi",
+    "note": ".qa-kpi-grid — unified metric card (qa-kpi/qa-stat/qa-frame-card share one treatment): hairline border, big tabular number, 2-line label, chip pinned bottom",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--kpi.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "venn",
+    "note": ".qa-venn — flat technical-drawing bubble chart, hairline-ringed circles sized ∝ √(users), geo-coded stroke (grey=US / blue=FR), diamond layout",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--venn.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "plan",
+    "note": ".qa-plans — stacked scenario comparison cards (recommended/conservative/aggressive), each a qa-plan-title + qa-def rows",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--plan.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "tension",
+    "note": ".qa-tension-grid — strategic tension cards (auto-fit grid), qa-tension-title + severity qa-chip + qa-def rows; 2 of 4 shown",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--tension.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "audiencecard",
+    "note": ".qa-aud — audience list card: stats row + qa-aud-facts dl + capability qa-chips + qa-aud-cta action-row buttons",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--audiencecard.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "moodboard",
+    "note": ".qa-mood — hero + 2-tile creative moodboard grid, gradient caption overlay (qa-mood-k label + copy) on each figure",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--moodboard.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "dodont",
+    "note": ".qa-dodont — mirrored do/don't cards (qa-dd--do / qa-dd--dont), heading + bulleted guardrail list",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--dodont.html"
+  },
+  {
+    "project": "canvas-qa",
+    "key": "radial",
+    "note": ".qa-radial — Chart.js multi-ring doughnut container + custom qa-radial-legend (dot + big number + label); canvas is blank without the Chart.js init script, legend renders standalone",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-qa--radial.html"
+  },
+  {
+    "project": "canvas-share-demos",
+    "key": "header",
+    "note": ".doc-header — sticky viewer header for a published read-only canvas: co-brand lockup, doc title, Read-only status, Download + Share actions",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-share-demos--header.html"
+  },
+  {
+    "project": "canvas-share-demos",
+    "key": "gate",
+    "note": ".doc-gate — email-only access gate for a shared read-only canvas (\"this link is your key,\" no password)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-share-demos--gate.html"
+  },
+  {
+    "project": "canvas-share-demos",
+    "key": "commentpin",
+    "note": ".doc-comment-pin + .doc-comment-popover — per-section comment affordance on a read-only canvas, open with a reply thread + composer (viewers can discuss without editing)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-share-demos--commentpin.html"
+  },
+  {
+    "project": "canvas-share-demos",
+    "key": "commentspanel",
+    "note": ".comments-panel — aggregated right-side comments sidebar for a read-only canvas (search, sort, foldable reply threads, deep-links to each section)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-share-demos--commentspanel.html"
+  },
+  {
+    "project": "canvas-share-demos",
+    "key": "sharemodal",
+    "note": ".share-modal — \"Share this file\" flyout for a published canvas: invite by name/email + role, collaborator avatar summary",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-share-demos--sharemodal.html"
+  },
+  {
+    "project": "canvas-workflows",
+    "key": "siderail_workflowicons",
+    "note": ".rail-tools — 4 new rail-tool buttons this project adds to the base siderail (Skills, Light Canvas, Canvas view, Workflow builder — the 5th/newest icon, shown active/open)",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-workflows--siderail_workflowicons.html"
+  },
+  {
+    "project": "canvas-workflows",
+    "key": "overlay_workflowtakeover",
+    "note": ".workflow-overlay — full-canvas mode-switch overlay (fade-in/eased-fade-out, visibility-not-display so React Flow gets a real first measurement) that the 5th rail icon opens; #workflow-root is the React mount point — its content (toolbar, block palette, node cards, canvas, edges) is 100% runtime and not present in static markup",
+    "url": "https://omni-system-hazel.vercel.app/components/canvas-workflows--overlay_workflowtakeover.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "button",
+    "note": ".round-btn variants (ghost / primary Send) + .share-btn",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--button.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "sectionheader",
+    "note": ".table-board-head — eyebrow + title + lede board header",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--sectionheader.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "chip",
+    "note": ".chat-aux-chip — quick-start chips from the generation aux panel",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--chip.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "chip_scopestatus",
+    "note": ".scope-status pills — confirmed / pending / open / neutral table status variants",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--chip_scopestatus.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "chip_metricdelta",
+    "note": ".metric-delta — up / down KPI delta pills",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--chip_metricdelta.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "dropdown",
+    "note": ".model-selector-wrap — chat model pill + open menu (active item)",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--dropdown.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "avatar",
+    "note": ".presence-stack — facepile of .pa avatars (nick + image) with hover .pa-card",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--avatar.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "banner",
+    "note": ".ch-intro-notice — AI-disclosure note block (heading + paragraph + dismiss)",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--banner.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "emptystate",
+    "note": ".ch-empty-state — right-canvas OMNI mark empty state (aria-hidden cleared so it renders)",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--emptystate.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "chatmessage",
+    "note": ".msg user / .msg bot bubbles — static intro msg + the two JS-template messages (from JS template, sample text substituted)",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--chatmessage.html"
+  },
+  {
+    "project": "chat-hat",
+    "key": "optioncard",
+    "note": ".ch-opt preset card + .ch-opt-custom \"Other\" card (from JS template, sample text substituted)",
+    "url": "https://omni-system-hazel.vercel.app/components/chat-hat--optioncard.html"
+  },
+  {
+    "project": "copy-agent",
+    "key": "modal_copydest",
+    "note": ".cw-panel — Copy Agent to Workspace overlay: cargo manifest (attachments/tools, collapsible) + searchable destination picker (shown open)",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-agent--modal_copydest.html"
+  },
+  {
+    "project": "copy-agent",
+    "key": "receipt",
+    "note": ".cw-success / .cw-done-list — post-copy receipt (stamped avatar + badge, one row per destination with its real mark); the .cw-panel.done success state",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-agent--receipt.html"
+  },
+  {
+    "project": "copy-agent",
+    "key": "headertabs",
+    "note": ".header — app header below the shared topnav: content tabs (Files/Skills/Assets/Agents/Audiences/Data Sets, one .active) + expandable .hdr-search (shown open/filtering) + gallery/list .view-toggle",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-agent--headertabs.html"
+  },
+  {
+    "project": "copy-request-access",
+    "key": "modal_share",
+    "note": ".qa-share-modal — Share flyout (people typeahead, invite-role bar, People-with-access list, General access, footer actions)",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-request-access--modal_share.html"
+  },
+  {
+    "project": "copy-request-access",
+    "key": "modal_gate_need",
+    "note": ".qa-gate-card (need) — full-viewport \"You Need Access\" gate, recipient side of a ?shared= link (optional message + signed-in-as row)",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-request-access--modal_gate_need.html"
+  },
+  {
+    "project": "copy-request-access",
+    "key": "modal_gate_sent",
+    "note": ".qa-gate-card (sent) — \"Request sent\" waiting state with pulsing status dot, between request and auto-approve",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-request-access--modal_gate_sent.html"
+  },
+  {
+    "project": "copy-request-access",
+    "key": "modal_gate_granted",
+    "note": ".qa-gate-card (granted) — auto-approve confirmation the gate advances to after the simulated wait; owner-approved row + Open canvas CTA",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-request-access--modal_gate_granted.html"
+  },
+  {
+    "project": "copy-request-access",
+    "key": "banner_approved",
+    "note": ".qa-announce — top announcement bar the owner sees on reload after approving; affirmative green, auto-dismiss + deep link",
+    "url": "https://omni-system-hazel.vercel.app/components/copy-request-access--banner_approved.html"
+  },
+  {
+    "project": "gateway-v2",
+    "key": "hero",
+    "note": ".gw-hero — full-bleed two-up gateway hero band (image stack + live canvas chart cell); the hero swaps its two cells via ?hero= deep links, no visible switcher",
+    "url": "https://omni-system-hazel.vercel.app/components/gateway-v2--hero.html"
+  },
+  {
+    "project": "gateway-v2",
+    "key": "chart_carousel",
+    "note": ".gw-cell-chart — auto-rotating canvas-linked chart card (nav arrows, big number + delta, area/bar/track plot, KPI row); rotates every 6s hover-paused, and the swap is a data morph tween (gwTweenChart), not a crossfade",
+    "url": "https://omni-system-hazel.vercel.app/components/gateway-v2--chart_carousel.html"
+  },
+  {
+    "project": "gateway-v2",
+    "key": "card_ranked",
+    "note": ".gw-card .pop-split — ranked asset manifest (lead tile + numbered rows: thumbnail, name, usage bar, user count); the closest analog to a \"manifest row\" pattern in this project — the literal manifest integration lives in omni-dashboard's SECTIONS list, outside this file",
+    "url": "https://omni-system-hazel.vercel.app/components/gateway-v2--card_ranked.html"
+  },
+  {
+    "project": "gateway-v2",
+    "key": "table_alloc",
+    "note": ".gw-card .alloc — budget allocation table variant: lead-channel badge, CPM sub-line under the channel name, inline percentage bar in the budget cell, reach column, tfoot total",
+    "url": "https://omni-system-hazel.vercel.app/components/gateway-v2--table_alloc.html"
+  },
+  {
+    "project": "gateway-v2",
+    "key": "card_voice",
+    "note": ".voice-card — verbatim-quote testimonial pager (portrait photo, quote, avatar + name/segment attribution, 3 sentiment metrics, segmented auto-advance progress rail, prev/next)",
+    "url": "https://omni-system-hazel.vercel.app/components/gateway-v2--card_voice.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "topnav",
+    "note": ".topnav — global header bar (menu, OMNI logo, workspace switch, canvas tabs, presence)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--topnav.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "tabs",
+    "note": ".tab strip — canvas-type tabs (Graphics / Video / Audio / Text / canvas), one .active",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--tabs.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "siderail",
+    "note": ".side-rail — vertical rail with back button, CANVAS title, and 4 rail tools (Agents / Knowledge / Tools / Instructions)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--siderail.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "navlist",
+    "note": ".rail-panel / .rail-nav — slide-out chapter navigation with expandable has-children groups",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--navlist.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "sectionheader",
+    "note": ".canvas-header — title breadcrumb (root / crumb + chevron), presence stack, Share",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--sectionheader.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "sectionheader_territory",
+    "note": ".terr-header — creative-territory header with eyebrow + section title",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--sectionheader_territory.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "panelswitch",
+    "note": ".panel-switch — segmented Menu / Chat / Canvas switcher (responsive panel toggle), one .active",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--panelswitch.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "chapternav",
+    "note": ".chapter-nav — floating prev/next chapter pager with current/total meta",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--chapternav.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "menu",
+    "note": ".add-menu — composer \"Add\" menu with icon / label / shortcut rows (shown open)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--menu.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "toggle",
+    "note": ".dip-switch / .image-model-item — image-model selector rows each paired with a dip-switch toggle (one .is-on)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--toggle.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "segmented",
+    "note": ".settings-toggle / .settings-opt — settings-panel segmented control (one .active)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--segmented.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "dropdown",
+    "note": ".image-aspect-btn — aspect-ratio pill trigger (edit-mode generation control)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--dropdown.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "hero",
+    "note": ".brief-board cover — title + cover image with OMNI+ badge (chapter 01)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--hero.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "brandbadge",
+    "note": ".brief-omni-badge — OMNI+ corner badge on the brief cover",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--brandbadge.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "markdown",
+    "note": ".sec-body — rendered markdown section body (h2 + prose + sub-blocks)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--markdown.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "numberedlist",
+    "note": ".observations — numbered observation list (.n index + h3 + p per item)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--numberedlist.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "card",
+    "note": ".aud-quad — audience-quadrant card grid (4 .aud-quad-item cells, h4 + p each)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--card.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "keyvalue",
+    "note": ".aud-facts — definition-list of persona facts (dt / dd pairs)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--keyvalue.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "blockquote",
+    "note": ".aud-quote — \"unspoken desires\" quote cards",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--blockquote.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "blockquote_ci",
+    "note": ".ci-statement — Core Insight feature statement (oversized lead paragraph)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--blockquote_ci.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "callout",
+    "note": ".rca-callout — \"The Real Problem\" emphasis callout (mark + content)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--callout.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "table",
+    "note": ".app-modal-table — Agents/Knowledge/Tools picker grid (thead row + one JS-rendered .app-modal-row; row from JS template)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--table.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "table_bib",
+    "note": ".bib-table — source-inventory bibliography table (relevance pips, tags, links)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--table_bib.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "modal_delete",
+    "note": ".delete-modal — destructive-confirm modal (thumb, title, body, Cancel/Confirm; shown open)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--modal_delete.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "editbar",
+    "note": ".c4-edit-topbar — image-edit toolbar (Back, revision meta, undo/redo/revert/compare/fit/download/fullscreen)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--editbar.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "footer",
+    "note": ".footer — global footer (copyright, OMNI mark, policy links)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--footer.html"
+  },
+  {
+    "project": "lease-campaign-brief-handoff",
+    "key": "endcard",
+    "note": ".bib-finale — brief end card (OMNI+ mark, eyebrow, decorative shape layers, 3-col meta)",
+    "url": "https://omni-system-hazel.vercel.app/components/lease-campaign-brief-handoff--endcard.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "card_audience",
+    "note": ".audl-card — audience list card: photo, rank + AI badge, boolean definition-builder (source chips + AND/OR/INCLUDE term rows), People/Households stat pair",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--card_audience.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "stattile",
+    "note": ".audoa-tile — stat tile row: eyebrow-less label + big value tiles for quick-glance demographic facts",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--stattile.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "chart_bar",
+    "note": ".audoa-panel .audoa-bars — vertical demographic/index bar chart: % labels over bars, category axis row, Source caption",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--chart_bar.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "callout_ai",
+    "note": ".audoa-card + .ms-ai-attr — sparkle-eyebrow AI-generated Executive Summary/Insight card with model attribution line",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--callout_ai.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "accordion",
+    "note": ".plana-acc — collapsible parameter accordion: chevron + mono eyebrow bar, fields grid, nested audience mini-card row",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--accordion.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "table_source",
+    "note": ".audt-bib-table — Swiss \"Source Inventory\" bibliography table: numbered rows, link-styled source name, mono type column, relevance dot + tier",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--table_source.html"
+  },
+  {
+    "project": "media-skills",
+    "key": "chart_venn",
+    "note": ".audc-venn-panel — two-circle audience-overlap Venn with leader-line labels + floating %-overlap callout badge",
+    "url": "https://omni-system-hazel.vercel.app/components/media-skills--chart_venn.html"
+  },
+  {
+    "project": "media",
+    "key": "input",
+    "note": ".composer — message composer with resize handle, textarea, add + send actions",
+    "url": "https://omni-system-hazel.vercel.app/components/media--input.html"
+  },
+  {
+    "project": "media",
+    "key": "dropdown",
+    "note": ".image-model-menu — image-model selector (menu items each pair text + dip-switch)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--dropdown.html"
+  },
+  {
+    "project": "media",
+    "key": "sectionheader",
+    "note": ".c4-sec-head — Swiss section header (eyebrow + title + lede)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--sectionheader.html"
+  },
+  {
+    "project": "media",
+    "key": "button",
+    "note": ".c4-filter-pill + .c4-view-btn — filter pill group and view-mode icon button group",
+    "url": "https://omni-system-hazel.vercel.app/components/media--button.html"
+  },
+  {
+    "project": "media",
+    "key": "card",
+    "note": ".brief-board — table-view cover board (meta cols + title + cover + brand badge)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--card.html"
+  },
+  {
+    "project": "media",
+    "key": "keyvalue",
+    "note": ".pd-card grid — persona Demographics key/value card set",
+    "url": "https://omni-system-hazel.vercel.app/components/media--keyvalue.html"
+  },
+  {
+    "project": "media",
+    "key": "table",
+    "note": ".metrics-table — KPI table with sortable headers, sparklines, metric-delta + scope-status",
+    "url": "https://omni-system-hazel.vercel.app/components/media--table.html"
+  },
+  {
+    "project": "media",
+    "key": "table_scope",
+    "note": ".scope-table — interactive scope table with select checkboxes + status pills",
+    "url": "https://omni-system-hazel.vercel.app/components/media--table_scope.html"
+  },
+  {
+    "project": "media",
+    "key": "table_bib",
+    "note": ".roadmap-table — timeline table with owner avatars + progress bars + status",
+    "url": "https://omni-system-hazel.vercel.app/components/media--table_bib.html"
+  },
+  {
+    "project": "media",
+    "key": "card_persona",
+    "note": ".persona-hero — magazine-spread persona cover (portrait + tags + title + subtitle)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--card_persona.html"
+  },
+  {
+    "project": "media",
+    "key": "blockquote",
+    "note": ".persona-pullquote — large pull-quote with mark + blockquote + attribution",
+    "url": "https://omni-system-hazel.vercel.app/components/media--blockquote.html"
+  },
+  {
+    "project": "media",
+    "key": "numberedlist",
+    "note": ".pf-interests — Roman-numeral observed-behaviors list (num + title + desc)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--numberedlist.html"
+  },
+  {
+    "project": "media",
+    "key": "progress",
+    "note": ".roadmap-progress — labelled progress bar with --pct fill var",
+    "url": "https://omni-system-hazel.vercel.app/components/media--progress.html"
+  },
+  {
+    "project": "media",
+    "key": "modal",
+    "note": ".app-modal — instructions dialog (head + maximize/close + textarea body + resize handles)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--modal.html"
+  },
+  {
+    "project": "media",
+    "key": "lightbox",
+    "note": ".c4-edit-mode — image edit-mode takeover (topbar tools + stage + revision rail)",
+    "url": "https://omni-system-hazel.vercel.app/components/media--lightbox.html"
+  },
+  {
+    "project": "media",
+    "key": "card_graphics",
+    "note": ".graphics-card with .graphics-card-overlay (from JS makeOverlay() template) — masonry image card",
+    "url": "https://omni-system-hazel.vercel.app/components/media--card_graphics.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "siderail",
+    "note": ".section-nav — builder tablist + Version History item + Agent Fidelity meter",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--siderail.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "navlist",
+    "note": ".nav-list — builder section tablist (rail interior)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--navlist.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "navlist_files",
+    "note": ".creative-file-row — uploaded reference-asset card (from JS template)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--navlist_files.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "sectionheader_pane",
+    "note": ".pane-head — per-section title + sub copy with auto-fill wand",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--sectionheader_pane.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "card",
+    "note": ".form-card — Description name + icon row",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--card.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "input",
+    "note": ".text-input — single-line name field with field-meta",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--input.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "textarea",
+    "note": ".text-area — Role / Mission multiline field inside a form-card",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--textarea.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "search",
+    "note": ".search-input — icon + input search used for tags / data sources",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--search.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "code",
+    "note": ".code-editor — gutter + textarea instructions editor",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--code.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "dropzone",
+    "note": ".dropzone — reference-file upload label",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--dropzone.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "slider",
+    "note": ".slider-row — range slider with axis labels + bound value (Expert Settings)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--slider.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "toggle",
+    "note": ".check — standard tool checkbox row (custom .check-box)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--toggle.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "toggle_ds",
+    "note": ".ds-toggle — data-source enable switch (from JS template; data-on state)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--toggle_ds.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "chip",
+    "note": ".tag.tag-active — removable tag chip (from JS template)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--chip.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "table",
+    "note": ".ds-list — data-source table header + rows (from JS template)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--table.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "emptystate",
+    "note": ".ds-empty — no-match line for data-source search (from JS template)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--emptystate.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "statusring",
+    "note": ".fidelity — Agent Fidelity meter (label + bar + status), rail footer",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--statusring.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "button",
+    "note": ".canvas-actions — Cancel (ghost) + Save (.launch-btn, disabled) sticky bar",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--button.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "menu",
+    "note": ".workspace-menu — org switcher popover (active + idle item)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--menu.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "toast",
+    "note": ".toast — launch confirmation toast (shown state)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--toast.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "modal_confirm",
+    "note": ".confirm-modal — Leave Agent Builder confirmation (icon + ghost/leave actions)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--modal_confirm.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "modal_iconpicker",
+    "note": ".icon-picker-modal — BoxIcons search grid (grid populated with sample .icon-picker-item buttons)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--modal_iconpicker.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "progress",
+    "note": ".vh-row — version-history timeline row (avatar + title + date + Restore + kebab menu) (from JS template)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--progress.html"
+  },
+  {
+    "project": "omni-agent-builder",
+    "key": "celebration",
+    "note": ".agent-ready-modal — \"agent ready\" overlay with starfield + fidelity + CTAs",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-agent-builder--celebration.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "modal_compare",
+    "note": ".omni-compare-card — Light-vs-Full comparison overlay: two bordered panels flanking a shared center label spine, equal-weight CTAs",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--modal_compare.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "modal_gateway",
+    "note": ".omni-gateway-card — contextual \"opens the Canvas\" confirm: identity glyph in title + inline info-link to the compare overlay, primary/quiet CTA pair",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--modal_gateway.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "modal_agentpicker",
+    "note": "#agentsModal — Required Agents modal: search + scope sidebar + paginated table; Light single-select shown with real radio inputs (radio-dot CSS inlined here since it is normally gated on body[data-mode=\"light\"])",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--modal_agentpicker.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "optioncard_tile",
+    "note": ".omni-chooser-tile (chat-aux-mode-tile variant) — third-prompt nudge card: icon chip + stopPropagation info button + title/desc, two-tile equal-weight pair",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--optioncard_tile.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "chatmessage_systemnote",
+    "note": ".omni-mode-note — quiet capability-change row appended to the chat stream on every Light/Full flip (destination glyph + sentence-case aside, no avatar/bubble chrome)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--chatmessage_systemnote.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "button_canvasswitch",
+    "note": ".rail-tool-canvas — persistent two-way rail switch: present in both modes, destination glyph + tooltip swap via body[data-mode] (shown here in its default Light \"open\" state)",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--button_canvasswitch.html"
+  },
+  {
+    "project": "omni-manifest",
+    "key": "button_edgehandle",
+    "note": ".omni-canvas-sliver-tab — right-edge door-handle pill (opt-in ?switch=edge variant): thin canvas-surface strip + centered pill, destination glyph swaps with mode",
+    "url": "https://omni-system-hazel.vercel.app/components/omni-manifest--button_edgehandle.html"
+  },
+  {
+    "project": "persona-subnav",
+    "key": "subnav",
+    "note": "Persona sub-nav — single view (Personas label, view-mode toggle, persona tablist with active underline, Chat launch button)",
+    "url": "https://omni-system-hazel.vercel.app/components/persona-subnav--subnav.html"
+  },
+  {
+    "project": "persona-subnav",
+    "key": "subnavCompare",
+    "note": "Persona sub-nav — compare view (toggle pill on Columns icon, multi-select tabs with accent ring + check chip, 2 of 5 selected)",
+    "url": "https://omni-system-hazel.vercel.app/components/persona-subnav--subnavCompare.html"
+  },
+  {
+    "project": "publish-to-workspace",
+    "key": "menu_publish",
+    "note": ".scope-table-menu — board kebab dropdown, open on \"Publish to Workspace\" (the entry point into the publish flow)",
+    "url": "https://omni-system-hazel.vercel.app/components/publish-to-workspace--menu_publish.html"
+  },
+  {
+    "project": "publish-to-workspace",
+    "key": "chip_published",
+    "note": ".qa-pub-flag — inline \"Published ✓\" receipt chip left on the source board's controls row once it lands in Gateway",
+    "url": "https://omni-system-hazel.vercel.app/components/publish-to-workspace--chip_published.html"
+  },
+  {
+    "project": "publish-to-workspace",
+    "key": "card_published",
+    "note": ".gw-card.pub-card — compact Published-from-Canvas gateway tile, stat-preview variant (non-chart boards travel as a curated stat card)",
+    "url": "https://omni-system-hazel.vercel.app/components/publish-to-workspace--card_published.html"
+  },
+  {
+    "project": "publish-to-workspace",
+    "key": "card_published_wide",
+    "note": ".gw-card.pub-card--wide — wide gateway tile carrying the LIVE Chart.js component + a Source/Published/By receipt block",
+    "url": "https://omni-system-hazel.vercel.app/components/publish-to-workspace--card_published_wide.html"
+  },
+  {
+    "project": "publish-to-workspace",
+    "key": "sectionheader_published",
+    "note": ".pub-band .pub-head — \"Published from Canvas\" band header with a live count pill, sits above the published tiles in Gateway",
+    "url": "https://omni-system-hazel.vercel.app/components/publish-to-workspace--sectionheader_published.html"
+  },
+  {
+    "project": "switching-canvas",
+    "key": "modal_workspaceswitch",
+    "note": ".ws-gate (.ws-gate-card) — workspace-boundary confirm dialog: stacked origin→destination crossing indicator (animated rail + charge, reduced-motion aware) above title/body and full-width Continue/Cancel (shown open)",
+    "url": "https://omni-system-hazel.vercel.app/components/switching-canvas--modal_workspaceswitch.html"
+  },
+  {
+    "project": "switching-canvas",
+    "key": "interstitial",
+    "note": ".ws-transit — full-bleed \"switching workspace\" cover with OMNI mark, destination name, and a self-drawing progress rule (shown open; used on the return crossing, not the initial Continue)",
+    "url": "https://omni-system-hazel.vercel.app/components/switching-canvas--interstitial.html"
+  },
+  {
+    "project": "themes",
+    "key": "modal_themeeditor",
+    "note": ".ch-te-overlay / .ch-te-panel — \"Create your own\" theme editor: name, light/dark base, accent swatch grid, custom hex, icon picker trigger",
+    "url": "https://omni-system-hazel.vercel.app/components/themes--modal_themeeditor.html"
+  },
+  {
+    "project": "themes",
+    "key": "card_themeswatch",
+    "note": ".ch-saved-row--ws / .ch-saved-apply — workspace brand-reskin swatch list (accent dot + name; real markup swaps in masked brand logo/wordmark art, omitted here — see caveats)",
+    "url": "https://omni-system-hazel.vercel.app/components/themes--card_themeswatch.html"
+  },
+  {
+    "project": "themes",
+    "key": "menu_thememode",
+    "note": ".ch-profile-theme-row — profile-menu Themes panel: Default Omni Dark/Light rows (light/dark toggle chrome) + Create-your-own action",
+    "url": "https://omni-system-hazel.vercel.app/components/themes--menu_thememode.html"
+  },
+  {
+    "project": "translations",
+    "key": "dropdown_language",
+    "note": ".ch-profile-menu.is-lang — profile-chip language picker: type-ahead combo box (search input + role=\"listbox\" below it) over the same 10 endonym-labeled languages, reached via the \"me\" chip → Language row. Typing filters live against each language's native name AND its English exonym (e.g. \"ar\" matches Arabic even though its native label \"العربية\" has no latin letters); Arrow keys + Enter walk and confirm the filtered results, click selects directly, and Esc bubbles up to the existing close-on-Escape handler. The active language keeps the same checkmark affordance as before (now paired with aria-selected). Selecting a row still flips <html dir> + rail/menu mirroring for rtl:true languages, unchanged.",
+    "url": "https://omni-system-hazel.vercel.app/components/translations--dropdown_language.html"
+  },
+  {
+    "project": "translations",
+    "key": "table_rtl",
+    "note": "[dir=\"rtl\"] .scope-table — funnel-cascade board table under Arabic. Column order + cell text-align mirror via the dir attribute; the sortable-header carets and the row accent strip (default anchored to physical left:0) both flip to the reading edge — hover a row to see the strip land on the right and the wash fade toward it.",
+    "url": "https://omni-system-hazel.vercel.app/components/translations--table_rtl.html"
+  },
+  {
+    "project": "translations",
+    "key": "table_numerals",
+    "note": ".scope-table — same funnel-cascade table under Hindi (LTR script, kept apart from the RTL case above). Every quantity — currency, ranges, percents, the K/M/B scale words — is re-rendered digit-for-digit into Devanagari via Intl.NumberFormat('hi-IN-u-nu-deva'), not just the labels; hex codes and IDs are explicitly skipped so they never get \"translated\" into non-numbers.",
+    "url": "https://omni-system-hazel.vercel.app/components/translations--table_numerals.html"
+  }
+]

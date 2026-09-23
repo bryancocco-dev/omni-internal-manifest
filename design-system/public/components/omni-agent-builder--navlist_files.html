@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  OMNI component: navlist_files
+  Project: Agent Builder
+  Note: .creative-file-row — uploaded reference-asset card (from JS template)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — navlist_files · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="creative-files-list" id="creativeFilesList">
+      <div class="creative-file-row" data-i="0">
+        <div class="creative-file-head">
+          <span class="creative-file-thumb">PDF</span>
+          <button class="creative-file-name" type="button" title="Replace file">Driftline_Motors_Brand_Book_v4.2.pdf</button>
+          <button class="creative-file-x" type="button" aria-label="Remove">×</button>
+        </div>
+        <div class="creative-file-instructions-wrap">
+          <div class="creative-file-instructions-head">
+            <span class="creative-file-instructions-label">Instructions</span>
+            <div class="creative-file-instructions-actions">
+              <button class="creative-file-action creative-file-action--cancel" type="button">Cancel</button>
+              <button class="creative-file-action creative-file-action--save" type="button">Save</button>
+              <button class="creative-file-action creative-file-action--edit" type="button">Edit</button>
+            </div>
+          </div>
+          <textarea class="creative-file-instructions" rows="1" placeholder="Optional — how should the agent use this file?" readonly>Treat this as the canonical Driftline brand book — the ground truth for voice, palette, and visual identity. Defer to the "Voice & Tone" chapter (pp. 18-34) for every long-form draft, and the "Visual Identity" pages (pp. 41-58) when reviewing campaign concepts. Do not introduce any tone descriptor that is not literally listed in this document. The hex codes on p. 47 are the only permitted brand colors; flag any usage outside that palette. If another reference disagrees with this book, this book wins.</textarea>
+          <button class="creative-file-instructions-toggle" type="button">Show more</button>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

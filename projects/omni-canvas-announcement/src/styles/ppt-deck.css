@@ -1,0 +1,207 @@
+/* ------------------------------------------------------------------
+   PPT-DECK — the payoff: a real deck of 16:9 slides assembled from
+   the Coastline board's own content (title, full-bleed image, chart,
+   copy, image-grid). This is the "it actually looks like a
+   presentable deck" money shot — genuine slide proportions, generous
+   margins, real type hierarchy, OMNI palette. Prefix `xpd-`
+   throughout. Strict OMNI light theme, existing tokens only.
+------------------------------------------------------------------ */
+
+.xpd-deck {
+  position: absolute;
+  inset: 0;                 /* fills scroll section S2 (1080×760) */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wraps the eyebrow + the (narrower, near-square) slide stack so both
+   share the same horizontal center — keeps the eyebrow directly above
+   the deck instead of pinned to the full section's left edge, so the
+   wide pull-back camera frames both together cleanly. */
+.xpd-inner {
+  width: 668px;
+  margin: 0 auto;
+}
+
+.xpd-eyebrow {
+  flex-shrink: 0;
+  margin: 0 0 28px;
+  font-family: var(--omni-font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+}
+
+/* Fixed (not flex:1) and sized to the actual grid's own footprint (2
+   slides × 2 rows + 1 centered below — a near-square block, not a
+   wide letterboxed strip) so the wide pull-back camera in ppt-deck.js
+   fills the 938×800 stage instead of framing empty canvas around it.
+   Centered under the eyebrow via flex auto-margins. */
+.xpd-stack {
+  position: relative;
+  width: 668px;
+  height: 604px;
+  flex-shrink: 0;
+}
+
+/* Every slide is a real 16:9 card (320×180), absolutely positioned
+   within the stack — GSAP tweens x/y/rotate/scale from a fanned
+   cascade into the final grid slot. */
+.xpd-slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 320px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 0.5px solid var(--omni-line);
+  border-radius: 9px;
+  box-shadow: 0 16px 40px -16px rgba(24, 31, 64, 0.24), 0 2px 8px -2px rgba(24, 31, 64, 0.10);
+  overflow: hidden;
+  opacity: 0;
+}
+
+.xpd-slide-body { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+
+.xpd-slide-foot {
+  flex-shrink: 0;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-top: 0.5px solid var(--omni-line);
+}
+.xpd-slide-mark {
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 8.5px;
+  letter-spacing: 0.02em;
+  color: var(--omni-text-subtle);
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+.xpd-slide-mark i { font-style: normal; color: var(--omni-brand-500); font-size: 8px; }
+.xpd-slide-num {
+  font-family: var(--omni-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  color: var(--omni-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- cover / title slide ------------------------------------------ */
+.xpd-slide-cover {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+}
+.xpd-slide-eyebrow {
+  font-family: var(--omni-font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  margin-bottom: 10px;
+}
+.xpd-slide-title {
+  margin: 0 0 12px;
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--omni-text-strong);
+}
+.xpd-slide-title em { font-style: normal; color: var(--omni-brand-500); }
+.xpd-slide-sub {
+  font-family: var(--omni-font-sans);
+  font-size: 10.5px;
+  color: var(--omni-text-subtle);
+}
+
+/* ---- full-bleed image slide ---------------------------------------- */
+.xpd-slide-image { position: absolute; inset: 0; }
+.xpd-slide-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.xpd-slide-image-cap {
+  position: absolute;
+  left: 14px; bottom: 12px;
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 11px;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+}
+.xpd-slide-image::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.45) 100%);
+}
+
+/* ---- chart slide ---------------------------------------------------- */
+.xpd-slide-chart { height: 100%; display: flex; flex-direction: column; padding: 18px 22px 12px; }
+.xpd-slide-chart-title {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--omni-text-strong);
+  margin-bottom: 12px;
+}
+.xpd-chart-plot { flex: 1; min-height: 0; display: flex; align-items: flex-end; gap: 10px; }
+.xpd-chart-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
+.xpd-chart-track { flex: 1; min-height: 0; width: 100%; max-width: 20px; display: flex; align-items: flex-end; }
+/* Already-generated content — bars render at full height immediately,
+   no growth animation (matches the "these slides already exist"
+   framing: nothing on the slide itself is mid-generation). */
+.xpd-chart-fill { width: 100%; border-radius: 3px 3px 1px 1px; background: var(--omni-brand-500); transform-origin: 50% 100%; transform: scaleY(1); }
+.xpd-chart-label { font-family: var(--omni-font-mono); font-size: 7.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--omni-text-subtle); }
+
+/* ---- copy slide ------------------------------------------------------ */
+.xpd-slide-copy { height: 100%; display: flex; flex-direction: column; padding: 18px 22px; }
+.xpd-slide-copy-title {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--omni-text-strong);
+  margin-bottom: 12px;
+}
+.xpd-copy-list { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.xpd-copy-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: var(--omni-font-sans);
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--omni-text-body);
+}
+.xpd-copy-dot { flex-shrink: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--omni-brand-500); margin-top: 4px; }
+
+/* ---- image-grid slide -------------------------------------------------- */
+.xpd-slide-grid { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 18px 22px 14px; }
+.xpd-slide-grid-title {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--omni-text-strong);
+  margin-bottom: 10px;
+}
+.xpd-grid-thumbs {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  /* minmax(0,1fr) — plain 1fr keeps grid's auto min-size, which the
+     images' intrinsic height blows past and overflows the slide. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px;
+}
+.xpd-grid-thumbs img { width: 100%; height: 100%; min-width: 0; min-height: 0; object-fit: cover; display: block; border-radius: 4px; }

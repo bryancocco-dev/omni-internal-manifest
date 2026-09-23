@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  OMNI component: chatmessage
+  Project: Chat Hat
+  Note: .msg user / .msg bot bubbles — static intro msg + the two JS-template messages (from JS template, sample text substituted)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat Hat — chatmessage · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/chat-hat.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="msg bot ch-intro-msg">
+          <div class="msg-head">
+            <div class="msg-avatar av-canvas-assistant" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="5.5" r="2.6" fill="currentColor"/>
+                <path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="msg-meta">
+              <span class="msg-name">Canvas Assistant</span>
+              <span class="msg-dot"></span>
+              <span class="msg-time">Today, 10:42 AM</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="ch-intro-prompt">What can I help with?</p>
+          </div>
+        </div>
+      <div class="msg user">
+        <div class="bubble">
+          <div class="msg-head">
+            <div class="msg-avatar av-nick">NZ</div>
+            <div class="msg-meta">
+              <span class="msg-name">Nick Zinner — Media</span>
+              <span class="msg-dot"></span>
+              <span class="msg-time">Today, 10:43 AM</span>
+            </div>
+          </div>
+          Draft a moodboard for the World Cup campaign.
+        </div>
+      </div>
+      <div class="msg bot">
+        <div class="msg-head">
+          <div class="msg-avatar av-corv">⌬</div>
+          <div class="msg-meta">
+            <span class="msg-name">Build Submarines</span>
+            <span class="msg-dot"></span>
+            <span class="msg-time">Today, 10:43 AM</span>
+          </div>
+        </div>
+        <div class="body">Got it. I'll work on that and update the canvas.</div>
+      </div>
+</body>
+</html>

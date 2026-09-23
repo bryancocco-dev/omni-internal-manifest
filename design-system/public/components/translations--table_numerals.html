@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  OMNI component: table_numerals
+  Project: Translations
+  Note: .scope-table — same funnel-cascade table under Hindi (LTR script, kept apart from the RTL case above). Every quantity — currency, ranges, percents, the K/M/B scale words — is re-rendered digit-for-digit into Devanagari via Intl.NumberFormat('hi-IN-u-nu-deva'), not just the labels; hex codes and IDs are explicitly skipped so they never get "translated" into non-numbers.
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translations — table_numerals · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/translations.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div lang="hi">
+  <div class="scope-table-wrap">
+    <table class="scope-table" data-qa-scope="" aria-label="फ़नल शृंखला">
+      <thead><tr>
+        <th><button class="scope-sort-btn" type="button" data-col="0" data-type="text"><span>फ़नल चरण</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+        <th><button class="scope-sort-btn" type="button" data-col="1" data-type="text"><span>अनुमानित मूल्य परास</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+        <th><button class="scope-sort-btn" type="button" data-col="2" data-type="text"><span>रूपांतरण / दक्षता मापक</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+        <th><button class="scope-sort-btn" type="button" data-col="3" data-type="text"><span>डेटा स्तर / आधार</span><span class="scope-sort-icons" aria-hidden="true"><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5L4 1.5L6 3.5"></path></svg><svg viewBox="0 0 8 5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 1.5L4 3.5L6 1.5"></path></svg></span></button></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>१. निवेश व्यय</td><td>$७५.०&nbsp;मिलियन USD समेकित</td><td>US: $५०.०&nbsp;मिलियन / FR: $२५.०&nbsp;मिलियन</td><td>पुष्ट · P4</td></tr>
+        <tr><td>२. इंप्रेशन</td><td>१.२&nbsp;अरब – १.५&nbsp;अरब इंप्रेशन</td><td>मिश्रित CPM: $५०.००–६२.५०</td><td>संकेतात्मक · मानक</td></tr>
+        <tr><td>३. पहुँच (सक्रिय यात्री)</td><td>५.४&nbsp;मिलियन – ६.२&nbsp;मिलियन तक पहुँच</td><td>कुल लक्षित समूह का ७४% – ८४%</td><td>मॉडल आधारित</td></tr>
+        <tr><td>४. आवृत्ति</td><td>आवृत्ति २.२x – २.८x</td><td>ब्रांड निर्माण और विश्वास के लिए उपयुक्त</td><td>मॉडल आधारित</td></tr>
+        <tr><td>५. क्लिक / विज़िट</td><td>१८.०&nbsp;मिलियन – २४.०&nbsp;मिलियन क्लिक</td><td>मिश्रित CTR: १.५% – १.६%</td><td>संकेतात्मक · मानक</td></tr>
+        <tr><td>६. आरंभ किए गए आवेदन</td><td>१.८&nbsp;मिलियन – २.२&nbsp;मिलियन आरंभ</td><td>क्लिक से आरंभ दर: १०.०% – ११.०%</td><td>संकेतात्मक · मानक</td></tr>
+        <tr><td>७. पूर्ण किए गए आवेदन</td><td>१.१&nbsp;मिलियन – १.३&nbsp;मिलियन पूर्ण</td><td>पूर्णता दर: ५८.०% – ६१.०%</td><td>संकेतात्मक · मानक</td></tr>
+        <tr><td>८. स्वीकृत खाते</td><td>८२०&nbsp;हज़ार – ९४०&nbsp;हज़ार स्वीकृत</td><td>ऋण स्वीकृति दर: ५५.०% – ६५.०%</td><td>संकेतात्मक</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Welcome" />
+
+# OMNI System
+
+Everything the OMNI prototypes are made of — the colours, type, spacing, and real components — and the fastest way to design with them in Claude Code.
+
+## Finding your way around
+
+The sidebar is the map:
+
+- **Foundations** — the basics, one page each, in light and dark:
+  - **Color** — every colour in the system, both themes side by side
+  - **Typography** — the fonts, weights, and sizes
+  - **Spacing** — the spacing steps, drawn to scale
+  - **Radius & Borders** — corner rounding and line weights
+  - **Elevation** — the shadows and focus ring
+  - **Motion** — how things move (looping demos)
+  - **Layering** — what stacks on top of what
+  - **Surface Preview** — a real page drawn entirely from the system; flip the **Theme** toolbar to reskin it
+- **Components** — the real pieces from every OMNI prototype, ready to reuse. Every one carries **Copy code** and **Copy for Claude**, and deprecated versions stay browsable in each component's Archive drawer.
+
+
+## Start designing
+
+Two ways to begin. Both are one copy-paste into Claude Code — no terminal, nothing to install.
+
+<div style={{ background: '#eef3fe', border: '1px solid #cdd9f6', borderRadius: '8px', padding: '18px 24px', margin: '20px 0' }}>
+
+**① Canvas base** — start on the working OMNI+ Canvas
+
+**Copy this prompt and paste it into Claude Code.** Claude sets up the canvas, then asks what you want to add:
+
+```text
+Set up the OMNI+ Canvas starter for me automatically — don't ask me any questions first. Make a new folder called "omni-canvas" and put the canvas inside it by running this:
+
+(curl -fsSL -o omni-canvas.zip https://omni-system-hazel.vercel.app/starters/canvas-base.zip || curl -fsSL -o omni-canvas.zip https://raw.githubusercontent.com/bryancocco-dev/omni-canvas-starter/main/canvas-base.zip) && unzip -oq omni-canvas.zip && mv canvas-base omni-canvas && rm -f omni-canvas.zip
+
+That puts the complete working canvas (index.html plus its files) inside a new "omni-canvas" folder, so it stays separate from anything else here. Open omni-canvas/index.html so I can see it, then ask me what I'd like to add — and build everything inside the omni-canvas folder from here on. Don't ask me where to put anything or whether to go ahead — build the full canvas first, then ask.
+```
+
+The first time, Claude Code asks to allow the download — click **Allow**.
+
+You start on a blank canvas. When you ask for something, Claude first reaches for elements that already exist in the **OMNI system** — the real buttons, cards, tables, and patterns from every OMNI project — and only makes something new when nothing fits. Anything new is styled to match, so it all looks like one product.
+
+**If the download is blocked:**
+
+- **Desktop app:** click **Allow** when asked. If you clicked "Don't allow", tell Claude to try again.
+- **claude.ai in the browser:** cloud icon above the message box → environment settings → **Network access** → **Custom** → add `omni-system-hazel.vercel.app` → start a new chat and paste the prompt again.
+- **Still stuck:** download [the zip](https://omni-system-hazel.vercel.app/starters/canvas-base.zip) and drag it into the chat. Claude unpacks it.
+
+{/* Mirror LIVE: https://github.com/bryancocco-dev/omni-canvas-starter — the starter curls fall back
+    to raw.githubusercontent.com/bryancocco-dev/omni-canvas-starter/main automatically; the mirror is
+    synced from the omni-system build, do not edit it directly. */}
+
+</div>
+
+<div style={{ background: '#f4f6fb', border: '1px solid #dfe4ee', borderRadius: '8px', padding: '18px 24px', margin: '20px 0' }}>
+
+**② Blank slate** — start empty, on the OMNI system
+
+Not starting from the canvas? **Paste this instead** — it puts an empty project on the system, then asks what to build. Same rule applies: Claude reuses existing OMNI pieces first.
+
+```text
+Set up a new prototype on the OMNI design system, using these as the source of truth:
+- Tokens / styles: link https://omni-system-hazel.vercel.app/tokens.css and use the var(--omni-*) variables for everything. Support light and dark (set data-theme="dark" on the page for dark).
+- Components: reuse the real patterns from https://omni-system-hazel.vercel.app/components.json.
+Get this wired up, then ask me what I'd like to build.
+```
+
+</div>
+
+## Already have a project?
+
+Paste this into its Claude Code session to put it on the system:
+
+```text
+Style this project with the OMNI design system. Link https://omni-system-hazel.vercel.app/tokens.css and use its var(--omni-*) values for all colours, type, and spacing — no made-up colours. Reuse real component patterns from https://omni-system-hazel.vercel.app/components.json. Support the light and dark themes.
+```
+
+Want dark mode? Say *"switch it to the dark OMNI theme."* Light is the default.
+
+Want just one piece, not the whole system? Open it under **Components** and hit **Copy for Claude** — or grab its standalone page link; every component has one.

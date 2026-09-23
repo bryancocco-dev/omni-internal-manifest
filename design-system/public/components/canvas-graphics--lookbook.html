@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+  OMNI component: lookbook
+  Project: Graphics
+  Note: .image-style-menu — the lookbook picker: search, New Style action, and a 3-up grid of portrait style cards (cover, name, refs, Style Guide link)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphics — lookbook · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-graphics.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="image-style-menu open" id="imageStyleMenu" role="menu" style="position:static;opacity:1;transform:none;pointer-events:auto;">
+      <div class="image-style-menu-head">
+        <span class="image-style-menu-title">Styles</span>
+        <button type="button" class="image-style-new-btn" id="imageStyleNewCardBtn" role="menuitem" title="Build a style from your own photos">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>New style</span>
+        </button>
+        <button class="image-style-close-btn" id="imageStyleCloseBtn" type="button" aria-label="Close styles">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </div>
+      <div class="image-style-menu-body" id="imageStyleMenuBody">
+        <div class="image-style-search-row"><div class="image-style-search-wrap">
+          <svg class="image-style-search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+            <line x1="10.3" y1="10.3" x2="13.5" y2="13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input type="text" class="image-style-search" id="imageStyleSearch" placeholder="Search styles or brands…" autocomplete="off" aria-label="Search styles">
+        </div></div>
+        <div id="imageStyleMenuGroups">
+          <div class="image-style-group"><div class="image-style-grid">
+            <button type="button" class="image-style-card is-selected" data-style-id="corvache-2026-precision" role="menuitemradio" aria-checked="true">
+              <span class="image-style-card-plate"><span class="image-style-card-mosaic">
+                <img class="image-style-cover-img" src="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?w=400&h=300&q=76&auto=format&fit=crop&fm=webp&cs=tinysrgb" alt="" loading="lazy" decoding="async">
+                <span class="image-style-card-activeflag" aria-hidden="true">ACTIVE</span>
+              </span></span>
+              <span class="image-style-card-underrow">
+                <span class="image-style-card-name">2026 Corvache Precision</span>
+                <span class="image-style-card-foot">
+                  <span class="image-style-card-meta"><span class="image-style-card-meta-text">2026 &middot; 54 refs</span></span>
+                  <a class="image-style-card-cta" href="brand-book.html#style-2026-corvache-precision" target="_blank" rel="noopener" title="Style guide" aria-label="Style guide">
+                    <span class="image-style-card-cta-word" aria-hidden="true">View</span>
+                    <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M3 7L7 3M3.5 3H7V6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </span>
+              </span>
+            </button>
+            <button type="button" class="image-style-card" data-style-id="corvache-2024-brand" role="menuitemradio" aria-checked="false">
+              <span class="image-style-card-plate"><span class="image-style-card-mosaic">
+                <img class="image-style-cover-img" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&q=76&auto=format&fit=crop&fm=webp&cs=tinysrgb" alt="" loading="lazy" decoding="async">
+                <span class="image-style-card-activeflag" aria-hidden="true">ACTIVE</span>
+              </span></span>
+              <span class="image-style-card-underrow">
+                <span class="image-style-card-name">2024 Corvache Brand</span>
+                <span class="image-style-card-foot">
+                  <span class="image-style-card-meta"><span class="image-style-card-meta-text">2024 &middot; 38 refs</span></span>
+                  <a class="image-style-card-cta" href="brand-book.html#style-2024-corvache-brand" target="_blank" rel="noopener" title="Style guide" aria-label="Style guide">
+                    <span class="image-style-card-cta-word" aria-hidden="true">View</span>
+                    <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M3 7L7 3M3.5 3H7V6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </span>
+              </span>
+            </button>
+            <button type="button" class="image-style-card" data-style-id="corvache-blackout-editorial" role="menuitemradio" aria-checked="false">
+              <span class="image-style-card-plate"><span class="image-style-card-mosaic">
+                <img class="image-style-cover-img" src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&q=76&auto=format&fit=crop&fm=webp&cs=tinysrgb" alt="" loading="lazy" decoding="async">
+                <span class="image-style-card-activeflag" aria-hidden="true">ACTIVE</span>
+              </span></span>
+              <span class="image-style-card-underrow">
+                <span class="image-style-card-name">Blackout Editorial</span>
+                <span class="image-style-card-foot">
+                  <span class="image-style-card-meta"><span class="image-style-card-meta-text">2025 &middot; 22 refs</span></span>
+                  <a class="image-style-card-cta" href="brand-book.html#style-blackout-editorial" target="_blank" rel="noopener" title="Style guide" aria-label="Style guide">
+                    <span class="image-style-card-cta-word" aria-hidden="true">View</span>
+                    <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M3 7L7 3M3.5 3H7V6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </span>
+              </span>
+            </button>
+          </div></div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

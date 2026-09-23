@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  OMNI component: modal_gateway
+  Project: Manifest
+  Note: .omni-gateway-card — contextual "opens the Canvas" confirm: identity glyph in title + inline info-link to the compare overlay, primary/quiet CTA pair
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manifest — modal_gateway · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-manifest.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="app-modal omni-info-modal open" id="omniGatewayModal" role="dialog" aria-modal="true" aria-labelledby="omniGatewayModalTitle" style="position:static;visibility:visible;pointer-events:auto">
+    <div class="app-modal-card omni-gateway-card" role="document">
+      <header class="app-modal-head omni-gateway-head">
+        <span class="omni-compare-panel-icon" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 256 256" fill="none" aria-hidden="true">
+            <rect class="omni-layout-frame" x="32" y="48" width="192" height="160" rx="8" fill="none" stroke="currentColor" stroke-width="12"/>
+            <rect class="omni-layout-hbar" x="38" y="98" width="180" height="12" fill="currentColor"/>
+            <rect class="omni-layout-vbar" x="98" y="110" width="12" height="92" fill="currentColor"/>
+          </svg>
+        </span>
+        <h2 class="app-modal-title" id="omniGatewayModalTitle">This opens the Canvas<button class="omni-title-info" type="button" id="omniGatewayCompareLink" aria-label="Compare the two ways of working" data-ctl-tip="Compare the two ways of working"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="5.1" r="0.9" fill="currentColor"/><line x1="8" y1="7.4" x2="8" y2="11.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button></h2>
+        <button class="app-modal-close" type="button" aria-label="Close" id="omniGatewayModalClose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </header>
+      <div class="omni-gateway-body">
+        <p class="omni-gateway-text">Making things happens on the canvas — it comes on with files, styles, and tools, and your conversation comes along.</p>
+        <div class="omni-gateway-actions">
+          <button class="omni-compare-cta" type="button" id="omniGatewayContinueBtn">Open the Canvas</button>
+          <button class="omni-gateway-quiet" type="button" id="omniGatewayNotNowBtn">Not now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

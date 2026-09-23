@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  OMNI component: exportbar
+  Project: PDF Tables
+  Note: .ctrls — export chrome: primary + ghost action pair ("Export the fixed PDF" vs. today's broken version, for comparison) with a mono hint line describing what to verify in the output
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — exportbar · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ctrls" style="border-bottom:0;">
+          <button class="btn" type="button" id="printBtn">Export the fixed PDF</button>
+          <button class="btn btn--ghost" type="button" id="printBrokenBtn">Export today's version, for comparison</button>
+        </div>
+        <p class="hint" style="margin-top:4px;">
+          In the print dialog choose <strong>Save as PDF</strong>, and leave "Headers and footers" off.
+          Background graphics can stay off — the design does not depend on them.<br><br>
+          <strong>Verified in the generated PDF:</strong> no collided text · <code>$18K</code>, <code>n/a</code>
+          and <code>1,200</code> intact · Deliverables portrait while Research and Media Plan are landscape,
+          in one file · the column header row reprinted at the top of every continuation page · no row ever
+          separated from its own notes across a page break.<br><br>
+          Direct export URLs, no dialog — <code>?export=fixed</code> · <code>?export=broken</code> ·
+          <code>?export=fixed&amp;stress=6</code> forces the Research table to 24 rows so the multi-page
+          behaviour can be checked on real paper.
+        </p>
+</body>
+</html>

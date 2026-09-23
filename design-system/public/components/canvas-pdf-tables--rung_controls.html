@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+  OMNI component: rung_controls
+  Project: PDF Tables
+  Note: .ctrls + .seg + .readout — segmented rung picker (dark = active) paired with a live measurement readout (columns detected, measured widths in/px, per-rung fit verdict); rendered with real values from the research table
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — rung_controls · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="ctrls">
+          <span class="ctrl-lab">Rung</span>
+          <div class="seg" id="rungSeg">
+            <button type="button" data-rung="0" aria-pressed="false">0 · Measured</button>
+            <button type="button" data-rung="1" aria-pressed="false">1 · Prose demoted</button>
+            <button type="button" data-rung="2" aria-pressed="true">2 · Landscape</button>
+            <button type="button" data-rung="3" aria-pressed="false">3 · Continuation</button>
+          </div>
+          <span style="flex:1"></span>
+          <button class="btn btn--ghost" type="button" id="autoBtn">Use the ladder's own choice</button>
+        </div>
+
+        <div class="readout" id="readout"><div class="r-row"><span class="r-k">columns</span><span class="r-v">11 total — 10 short, 1 prose</span></div><div class="r-row"><span class="r-k">detected as prose</span><span class="r-v">Notes (median 169.5 chars)</span></div><hr><div class="r-row"><span class="r-k">measured short columns</span><span class="r-v">8.17in &nbsp;(784px)</span></div><div class="r-row"><span class="r-k">+ prose at 2.00in minimum</span><span class="r-v">10.17in &nbsp;(976px)</span></div><div class="r-row"><span class="r-k">portrait budget</span><span class="r-v">7.14in</span></div><div class="r-row"><span class="r-k">landscape budget</span><span class="r-v">9.64in</span></div><hr><div class="r-row"><span class="r-k">rung 0 · all in grid</span><span class="r-v no">does not fit — prose would get 0.00in, below the 2.00in floor</span></div><div class="r-row"><span class="r-k">rung 1 · prose demoted</span><span class="r-v no">still 1.03in too wide</span></div><div class="r-row"><span class="r-k">rung 2 · landscape</span><span class="r-v ok">fits landscape</span></div><hr><div class="r-row"><span class="r-k">ladder selects</span><span class="r-v r-verdict">RUNG 2 — prose demoted, landscape</span></div></div>
+</body>
+</html>

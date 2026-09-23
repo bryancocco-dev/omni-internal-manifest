@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+  OMNI component: chart_venn
+  Project: Media Skills
+  Note: .audc-venn-panel — two-circle audience-overlap Venn with leader-line labels + floating %-overlap callout badge
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Skills — chart_venn · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="ms.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media-skills.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body class="ms-app">
+<style>
+body.ms-app{--ms-mono:'Fira Code','JetBrains Mono',ui-monospace,monospace;--ms-chart-2:#7289ef}
+body.ms-app[data-theme="dark"]{--ms-chart-2:#5b7cfa}
+.audc-mod{--audc-a:var(--accent);--audc-b:var(--ms-chart-2);--audc-callout-bg:color-mix(in srgb, white 92%, var(--ms-chart-2) 8%);--audc-callout-ink:#14151a;margin-top:32px}
+.audc-eyebrow{font:500 10px/1.6 var(--ms-mono);text-transform:uppercase;letter-spacing:.14em;color:var(--text-subtle);margin:0 0 16px;padding-bottom:12px}
+.audc-venn-panel{background:var(--card-bg);border:none;border-radius:8px;padding:24px 24px 16px}
+.audc-venn-row{display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+.audc-venn-wrap{display:flex;align-items:center;gap:16px;flex:1 1 460px}
+.audc-venn-labelcol{display:flex;align-items:center;gap:10px;flex:1 1 60px;min-width:0}
+.audc-venn-labelcol.audc-align-end{justify-content:flex-end}
+.audc-venn-leader{flex:1 1 auto;height:1px;min-width:12px}
+.audc-venn-leader.audc-leader-a{background:var(--audc-a)}
+.audc-venn-leader.audc-leader-b{background:var(--audc-b)}
+.audc-venn-label{font-size:14px;font-weight:600;color:var(--text-body);white-space:nowrap;flex:none}
+.audc-venn-svgbox{position:relative;flex:none;width:240px;height:190px}
+.audc-venn-svgbox svg{width:100%;height:100%;display:block;overflow:visible}
+.audc-venn-stroke{stroke-width:2px;stroke-opacity:.9}
+.audc-venn-stroke.audc-venn-a{fill:var(--audc-a);fill-opacity:.32;stroke:var(--audc-a)}
+.audc-venn-stroke.audc-venn-b{fill:var(--audc-b);fill-opacity:.62;stroke:var(--audc-b)}
+.audc-venn-badge{position:absolute;left:150px;top:-16px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--audc-callout-bg);border-radius:8px;padding:8px 14px 7px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.28)}
+.audc-venn-badge::after{content:'';position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:14px;height:8px;background:var(--audc-callout-bg);clip-path:polygon(0 0,100% 0,50% 100%)}
+.audc-venn-badge-label{font-size:12px;font-weight:400;color:var(--audc-callout-ink);opacity:.7;line-height:1.3}
+.audc-venn-badge-pct{font-size:16px;font-weight:400;color:var(--audc-callout-ink);line-height:1.2;font-variant-numeric:tabular-nums}
+</style>
+<section class="audc-mod is-visible" data-reveal>
+  <p class="audc-eyebrow">Overall audience overlap</p>
+  <div class="audc-venn-panel">
+    <div class="audc-venn-row">
+      <div class="audc-venn-wrap">
+        <div class="audc-venn-labelcol">
+          <span class="audc-venn-label">Affluent Travelers</span>
+          <span class="audc-venn-leader audc-leader-a"></span>
+        </div>
+        <div class="audc-venn-svgbox">
+          <svg viewBox="0 0 240 190" aria-hidden="true">
+            <circle class="audc-venn-a audc-venn-stroke" cx="95" cy="95" r="82" data-build="pop"></circle>
+            <circle class="audc-venn-b audc-venn-stroke" cx="142" cy="95" r="44" data-build="pop"></circle>
+          </svg>
+          <div class="audc-venn-badge">
+            <span class="audc-venn-badge-label">Overlap</span>
+            <span class="audc-venn-badge-pct" data-countup>82%</span>
+          </div>
+        </div>
+        <div class="audc-venn-labelcol audc-align-end">
+          <span class="audc-venn-leader audc-leader-b"></span>
+          <span class="audc-venn-label">Eco-Conscious Millennials</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

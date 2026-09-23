@@ -1,0 +1,1650 @@
+  /* ══ P2 — Painter editor overlay ═══════════════════════════════
+     Shares #canvas's own grid cell (grid-column:4/row:1 — the exact
+     trick .canvas-header already uses to sit in that same cell) so
+     it reads as "fixed to the canvas pane": side-rail + chat stay
+     put and interactive to the left, the sheet/canvas-header behind
+     it are fully occluded by its solid background while open —
+     that's the "chrome recedes" half of the brief. Toggled by
+     data-visible, same contract as .c4-edit-mode elsewhere in this
+     shell. Motion is transform/opacity only throughout. */
+  .pt-editor {
+    grid-column: 4; grid-row: 1;
+    position: relative;
+    margin-left: -6px; padding-left: 6px; /* the 6px reach under the splitter — see .pt-media-mode */
+    /* P6 review fix (9/1): was 20 — the leftover pre-.pt-motion value.
+       .chapter-nav (the bottom-right 01/13 scroll pager) is
+       position:fixed z-index:30 and auto-reveals 600ms after every
+       page load regardless of canvas state, so at 20 it floated on
+       top of the Studio editor's own bottom-right zoom chip/Text
+       drawer — the stray "0N / 0N ▲▼" widget from the P6 review.
+       z-index:60 matches .pt-motion/.pt-create-screen's own documented
+       "chrome recedes, pager stays occluded" convention. */
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas-bg);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* P5 fix: #canvas (this grid cell's sibling) already carries
+       min-width:0 + overflow-x:hidden so its own intrinsic content
+       never grows the grid track past the leftover 1fr space. This
+       rule never had either — harmless while its content stayed
+       narrow, but Studio's rail+drawer row can carry a wide
+       min-content (a "Recents" strip, an un-wrapped filmstrip, …)
+       that otherwise forces the WHOLE .main grid wider than the
+       viewport (a real bug, caught headless: the env-picker overlay,
+       measured off #canvas's own now-inflated rect, overflowed past
+       1600px and its tiles became unclickable). Same fix, same place. */
+    min-width: 0;
+    /* P5 design-review fix (round 2): the width-axis fix above wasn't
+       the whole story — the VERTICAL axis has the identical grid-item
+       "automatic minimum size" quirk. #canvas dodges it because
+       overflow-y:auto sits directly ON #canvas itself, which per spec
+       zeroes a grid item's own automatic min-height; .pt-editor's
+       overflow lived only on nested descendants (.pt-editor-body/
+       .pt-editor-drawer), so .pt-editor's OWN content-based min-height
+       still forced the shared 1fr grid row taller whenever a drawer's
+       content grew tall (proved with a 47-thumb Images-drawer
+       simulation: the row grew ~40px and the chat hat visibly
+       shifted even though the nested overflow-y:auto fixes were
+       already in place). min-height:0 here, matching min-width:0's
+       own reasoning, is what actually stops it. */
+    min-height: 0;
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 320ms;
+  }
+  .pt-editor[data-visible="1"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 360ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0s;
+  }
+  .pt-editor-topbar {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 16px;
+    height: var(--pt-topbar-h, 64px); padding: 0 28px;
+    border-bottom: 0.5px solid var(--line);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 280ms cubic-bezier(0.22,1,0.36,1) 100ms, transform 320ms cubic-bezier(0.22,1,0.36,1) 100ms;
+  }
+  .pt-editor[data-visible="1"] .pt-editor-topbar { opacity: 1; transform: translateY(0); }
+  .pt-editor-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px 6px 10px;
+    background: transparent;
+    border: 0.5px solid var(--line-solid);
+    border-radius: 999px;
+    color: var(--text-body);
+    cursor: pointer;
+    font: inherit; font-size: 12px; font-weight: 500;
+    transition: background 180ms cubic-bezier(0.22,1,0.36,1), border-color 180ms cubic-bezier(0.22,1,0.36,1), color 180ms cubic-bezier(0.22,1,0.36,1), transform 150ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .pt-editor-back:hover { background: var(--hover-soft); border-color: var(--text-subtle); color: var(--text-strong); }
+  .pt-editor-back:active { transform: scale(0.96); }
+  .pt-editor-back:focus, .pt-editor-back:focus-visible { outline: none; }
+  .pt-editor-meta { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-left: 0.5px solid var(--line); margin-left: 6px; min-width: 0; } /* 9/10: the variant pill */
+  /* AK.1 — the lockup shrinks before anything to its right does (the
+     actions are the controls; the name is the one thing here safe to
+     truncate) — a long typed name ellipsizes instead of pushing Save/
+     ⋯/Add to canvas out of the bar or off past the viewport edge. */
+  .pt-editor-studio .pt-editor-studio-title { overflow: hidden; text-overflow: ellipsis; max-width: 40vw; }
+  .pt-editor-undoredo, .pt-editor-status-chips,
+  .pt-editor-save-btn, .pt-editor-overflow-btn, .pt-editor-addtocanvas-btn { flex-shrink: 0; }
+  .pt-editor-size { color: var(--text-subtle); }
+  .pt-editor-topbar-spacer { flex: 1; }
+
+  .pt-editor-body {
+    flex: 1; min-height: 0;
+    display: flex; gap: 28px;
+    padding: 28px 28px 24px;
+    overflow: hidden;
+  }
+  /* P5 design-review fix: min-height:0 + overflow-y:auto — same
+     "cap the flex item to the editor's own bounds instead of letting
+     its content grow the grid row" reasoning as .pt-editor-drawer
+     above, applied to the stage column's sibling side of the row. */
+  .pt-editor-stage-col { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+  /* P6 — positioning context for the zoom chip/Fit button, which sit
+     absolute in the stage's own bottom-right corner (Studio only —
+     see .pt-editor-stage-zoom's display:none default). Transparent
+     to layout otherwise: single flex child, no padding of its own. */
+  .pt-editor-stage-wrap { flex: 1; min-width: 0; min-height: 0; display: flex; position: relative; }
+  .pt-editor-stage {
+    flex: 1; min-width: 0; min-height: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel-bg-general);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1) 60ms, transform 360ms cubic-bezier(0.22,1,0.36,1) 60ms;
+  }
+  .pt-editor[data-visible="1"] .pt-editor-stage { opacity: 1; transform: scale(1); }
+  /* The live banner clone gets this on its OWN wrapper (never on
+     .pt-banner-frame equivalents — no entrance animation exists in
+     the editor's stage clone, so a plain transform:scale is safe
+     here, unlike the sheet's fit-scale which has to dodge the
+     pt-card-rise animation via the dedicated .pt-banner-fit level). */
+  .pt-editor-stage-frame { position: relative; transform-origin: center center; flex-shrink: 0; }
+  .pt-editor-stage .pt-banner { border-radius: 0; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.16); } /* P11: stage frame square, always */
+  .pt-editor-stage .pt-banner-headline,
+  .pt-editor-stage .pt-banner-cta {
+    cursor: text;
+    border-radius: 3px;
+    outline: 1px dashed transparent;
+    outline-offset: 3px;
+    transition: outline-color 150ms ease;
+  }
+  .pt-editor-stage .pt-banner-headline:hover,
+  .pt-editor-stage .pt-banner-cta:hover {
+    outline-color: currentColor;
+  }
+  .pt-editor-stage .pt-banner-headline[contenteditable="true"],
+  .pt-editor-stage .pt-banner-cta[contenteditable="true"] {
+    outline: 1.5px dashed var(--accent);
+    outline-offset: 3px;
+  }
+  /* The n/limit counter itself lives in .pt-editor-hint's own text
+     while the headline is being typed (see wireStageEditableFields) —
+     a pseudo-element riding the banner's own contenteditable box was
+     tried first and fought both overflow:hidden (P11 non-negotiable
+     on .pt-banner) and the crossfade rebuild; the hint line already
+     sits in a stable, unclipped spot doing exactly this job for the
+     "click to edit" message. */
+  .pt-editor-hint {
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 12px; color: var(--text-subtle);
+  }
+  .pt-editor-filmstrip {
+    flex-shrink: 0;
+    display: flex; align-items: flex-end; justify-content: center; gap: 10px;
+    padding: 4px 0 2px;
+  }
+  /* Not on the sheet-edit path. A sheet unit is one size — the strip
+     was three thumbnails of the size already on the stage, which is a
+     row of buttons that go where you already are. Studio is the other
+     case: there the strip is how sizes get added and switched before
+     anything lands on the canvas, so it keeps it. */
+  .pt-editor:not(.pt-editor-studio) .pt-editor-filmstrip { display: none; }
+  .pt-editor-film-item {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 0; border: 0; background: none; cursor: pointer;
+    font: inherit;
+  }
+  .pt-editor-film-frame {
+    position: relative;
+    border-radius: 0; /* P11: sizes-bar thumbs are square, always */
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    outline: 1.5px solid transparent;
+    outline-offset: 2px;
+    transition: outline-color 160ms cubic-bezier(0.22,1,0.36,1), transform 160ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-editor-film-item:hover .pt-editor-film-frame { transform: translateY(-1px); }
+  .pt-editor-film-item.is-active .pt-editor-film-frame { outline-color: var(--accent); }
+  .pt-editor-film-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px; color: var(--text-subtle);
+  }
+  .pt-editor-film-item.is-active .pt-editor-film-label { color: var(--text-strong); font-weight: 600; }
+
+  .pt-editor-controls {
+    flex-shrink: 0; width: 240px;
+    display: flex; flex-direction: column; gap: 24px;
+    overflow-y: auto;
+    /* 9/10 (Bryan: "colorways is looking cutoff") — this column scrolls,
+       so it clips at its padding box, and the active swatch's ring
+       (2px outline, 2px out) reached 4px past the content edge. Four
+       pixels of padding, paid back with negative margin, so the ring
+       has room and nothing else moves a pixel. */
+    box-sizing: content-box; padding: 4px 16px 4px 4px; margin: -4px 0 -4px -4px; /* 9/10 (Bryan: "the vertical scroll on the right side is too close to the ui elements"): 16px between the content and the column's own scrollbar */
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1) 140ms, transform 360ms cubic-bezier(0.22,1,0.36,1) 140ms;
+  }
+  .pt-editor[data-visible="1"] .pt-editor-controls { opacity: 1; transform: translateY(0); }
+  .pt-editor-ctrl-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  /* A structural count riding the eyebrow (Swap image's shoot-still
+     tally, its gallery-disclosure tally) — a numeral, not a word, so
+     it costs nothing against "keep every string." Not uppercase/
+     letterspaced like the eyebrow itself: it reads as a value, not a
+     shout. */
+  .pt-editor-ctrl-count {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0; text-transform: none;
+    color: var(--text-subtle);
+    margin-left: 6px;
+  }
+  /* LAYOUT reads as a pick-row now — the same .pt-set-item--pick
+     anatomy (glyph lane + mono value) the New Media Settings menus
+     use, via setTemplatePreview()/data-set-value-mono — not a lone
+     bordered box. It still cycles on click rather than opening a
+     menu, so .pt-set-item's own hover/radio treatment carries over
+     but the trailing lane keeps this control's own cycle glyph
+     instead of a radio ring (below). Flush left/right (padding
+     zeroed) so it aligns with the rail's other full-bleed rows
+     (swatches, slider) rather than sitting inset like a menu item. */
+  .pt-editor-layout-btn { padding-left: 0; padding-right: 0; }
+  .pt-editor-layout-cycle {
+    display: flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; flex-shrink: 0;
+    color: var(--text-subtle);
+  }
+  .pt-editor-layout-cycle svg { display: block; transition: transform 220ms cubic-bezier(0.22,1,0.36,1); }
+  .pt-editor-layout-btn.is-cycling .pt-editor-layout-cycle svg { transform: rotate(180deg); }
+  .pt-editor-swap-strip {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .pt-editor-swap-thumb {
+    position: relative;
+    width: 46px; height: 46px;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 0; padding: 0;
+    cursor: pointer;
+    outline: 1.5px solid transparent;
+    outline-offset: 2px;
+    transition: outline-color 160ms cubic-bezier(0.22,1,0.36,1), transform 150ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .pt-editor-swap-thumb img, .pt-editor-swap-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pt-editor-swap-thumb:hover { transform: translateY(-1px); }
+  /* A quiet "more" disclosure row in the same family as .pt-frame-reset
+     rather than another bordered pill — the Sizes roster's own
+     "N more sizes" disclosure (17-sheet-b-sizes.js / the hat's sizes
+     step) is what renders it now; the bounded Swap-image strip it was
+     born for went with the per-card panel (AM.3). */
+  .pt-editor-swap-more[hidden] { display: none; }
+  .pt-editor-swap-more {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; margin-top: 8px; padding-top: 8px;
+    background: transparent; border: 0; border-top: 0.5px solid var(--line);
+    color: var(--text-subtle); font: inherit; font-size: 11.5px; font-weight: 500;
+    cursor: pointer; text-align: left;
+    transition: color 160ms ease;
+  }
+  .pt-editor-swap-more:hover, .pt-editor-swap-more[aria-expanded="true"] { color: var(--text-strong); }
+  .pt-editor-swap-more-caret { display: flex; flex-shrink: 0; color: var(--text-subtle); transition: transform 220ms cubic-bezier(0.22,1,0.36,1); }
+  .pt-editor-swap-more-caret svg { display: block; }
+  .pt-editor-swap-more[aria-expanded="true"] .pt-editor-swap-more-caret { transform: rotate(180deg); }
+
+  /* ── Framing controls. The slider is the coarse move and the stage
+     is the fine one: you drag the picture itself to set the
+     centrepoint, which is the only way to judge a crop. ── */
+  .pt-frame-row { display: flex; align-items: center; gap: 8px; }
+  /* §BR.3/§BR.4, merged (coordinator review, 9/18) — one centred row
+     under the stage: a short slider (the .pt-frame-range recipe,
+     narrowed via .pt-copy-fit-range below — no new control type), its
+     value, Fit, and ONE reach line covering both text and size, all on
+     one baseline. display:flex beats [hidden] (house gotcha), so this
+     pairs the attribute with its own override, same as every other
+     [hidden] toggle in this file. */
+  .pt-copy-fit-row {
+    display: flex; align-items: baseline; justify-content: center; gap: 8px;
+    flex-wrap: wrap; row-gap: 2px;
+  }
+  .pt-copy-fit-row[hidden] { display: none; }
+  .pt-copy-hint-col { display: block; }
+  .pt-frame-range {
+    flex: 1; min-width: 0; height: 4px; -webkit-appearance: none; appearance: none;
+    background: var(--line-solid); border-radius: 999px; cursor: pointer; margin: 0;
+  }
+  .pt-frame-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--panel-bg-general);
+    box-shadow: 0 1px 4px rgba(15,23,42,0.25); cursor: pointer;
+  }
+  .pt-frame-range::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--panel-bg-general);
+    background: var(--accent); box-shadow: 0 1px 4px rgba(15,23,42,0.25); cursor: pointer;
+  }
+  /* §BR.3/§BR.4, merged — short, not the framing row's full-width
+     flex:1: the row now shares its baseline with the value/Fit/reach
+     text instead of spanning the stage column alone. Declared after
+     .pt-frame-range so its flex/width win the cascade at equal
+     specificity (both are plain classes on the same element). */
+  .pt-copy-fit-range { flex: none; width: 180px; align-self: center; }
+  /* The merged reach line rides inline at the row's end rather than
+     dropping to its own line below (.pt-frame-reach's own block
+     margin, meant for the panel's stacked rows) — :empty still
+     collapses it (.pt-frame-reach:empty, above) when nothing focused
+     yet has a reach to name. */
+  .pt-copy-fit-reach-inline { margin: 0; }
+  /* Marks THIS shape as one the user has answered for — the one thing
+     you cannot see by looking at the stage, since an edited crop and a
+     default crop are both just a picture in a frame. */
+  .pt-frame-edited {
+    font-family: 'Fira Code', ui-monospace, monospace; font-size: 9px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--accent); margin-right: auto;
+  }
+  .pt-frame-val {
+    font-family: 'Fira Code', ui-monospace, monospace; font-size: 10.5px;
+    color: var(--text-subtle); min-width: 38px; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .pt-frame-readout {
+    font-family: 'Fira Code', ui-monospace, monospace; font-size: 9.5px;
+    color: var(--text-subtle); letter-spacing: 0.02em; margin-right: auto;
+  }
+  .pt-frame-readout + .pt-frame-edited { margin-right: 0; }
+  /* x / y — quieter than the numbers they label, same trick a unit
+     suffix would use if this were a single value instead of a pair. */
+  .pt-frame-axis { opacity: 0.68; }
+  .pt-frame-reset {
+    background: transparent; border: 0; padding: 0; cursor: pointer; font: inherit;
+    font-size: 10.5px; color: var(--text-subtle); text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .pt-frame-reset:hover { color: var(--text-strong); }
+  /* §BR.2 — the reach line: a plain sentence, a quiet text link at its
+     end (the .pt-frame-reset recipe, verbatim) — no pill, no icon, no
+     toggle, matching the house's "short text links" rule for this
+     kind of scope decision. Collapses to nothing (no reserved line)
+     when there is nothing to say, unlike .pt-frame-note below, which
+     always holds its height — this one never fights the drag hint for
+     the same line and has no "hidden but true" state to protect. */
+  .pt-frame-reach:empty { display: none; }
+  .pt-frame-reach {
+    margin: 2px 0 0; font-size: 10.5px; line-height: 1.4; color: var(--text-subtle);
+  }
+  .pt-frame-reach-link {
+    background: transparent; border: 0; padding: 0; cursor: pointer; font: inherit;
+    font-size: inherit; color: var(--text-subtle); text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .pt-frame-reach-link:hover { color: var(--text-strong); }
+  /* Reserves its line whether or not it has text, so the hint showing
+     or hiding never jogs the rest of the Images drawer. */
+  .pt-frame-note {
+    font-size: 10.5px; line-height: 1.35; color: var(--text-subtle);
+    min-height: 2.7em; opacity: 0; transition: opacity 200ms ease;
+  }
+  .pt-frame-note.is-shown { opacity: 1; }
+  .pt-frame-note.is-none { color: var(--text-subtle); }
+  /* The drag hint only means anything while there is somewhere to
+     drag TO — at 100% on an image whose cover crop exactly fills the
+     frame, a drag does nothing, so the line said something untrue.
+     A real show/hide (not .pt-frame-note's opacity fade, which still
+     reserves its 2.7em) — draggability is a structural fact of this
+     shape/scale, not a transient confirmation. Set by
+     setFramingHintVisible(), recomputed wherever the stage or the
+     scale can change (see FRAMING JS). */
+  #ptFrameHint { display: none; min-height: 0; opacity: 1; }
+  #ptFrameHint.is-shown { display: block; }
+  /* Grab cursor only where the drag actually lives: the picture, not
+     the copy sitting on top of it. */
+  /* 9/16 — the whole banner is the pan surface (see wireStageFramingDrag), so it carries the grab cursor; the copy parts set their own back. */
+  #ptEditorStage .pt-banner, #ptEditorStage .pt-banner-media { cursor: grab; }
+  #ptEditorStage .pt-banner.is-panning, #ptEditorStage .pt-banner-media.is-panning { cursor: grabbing; }
+  #ptEditorStage .pt-banner :is(.pt-banner-headline, .pt-banner-cta, .pt-banner-subhead, .pt-banner-body, .pt-banner-disclaimer) { cursor: text; }
+  #ptEditorStage .pt-banner-media img, #ptEditorStage .pt-banner-media video { user-select: none; -webkit-user-drag: none; }
+  .pt-editor-swap-thumb.is-active { outline-color: var(--accent); }
+
+  /* ════════════════════════════════════════════════════════════════
+     AY — Studio, one panel (Bryan, 9/15: "a very elevated version of
+     the original where everything is sort of available from one
+     panel vs nested"). The P5 tool rail, the P6/P10 sliding drawers
+     and the AK.2(b) Versions rail are gone: the body is the stage
+     (1fr) + ONE 320px panel, the filmstrip beneath the stage as
+     before (the grid itself is further down, where the P10 grid was).
+     One 0.5px house hairline between stage and panel — the panel's
+     own left edge, the only vertical rule. The panel scrolls on its
+     own (the thin house scrollbar) — the only scroller in Studio; the
+     stage never scrolls. Groups: a mono eyebrow over its control, a
+     hairline between groups, 24px of air. Every control is a house
+     recipe: AU.1's layout tiles, the roster's cover card, the band's
+     colorway specimen, AM.2's framing rows, the swap thumb, the
+     See-all link, the font combo, the dashed tile row, the versions
+     row. ═══════════════════════════════════════════════════════════ */
+  .pt-editor-panel { display: none; }
+  .pt-editor-studio .pt-editor-panel {
+    display: block;
+    grid-column: 2; grid-row: 1 / 4;
+    position: relative; /* the groups' offsetTop reads against the panel itself (studioPanelGoTo) */
+    min-height: 0; min-width: 0;
+    overflow-y: auto; overflow-x: hidden;
+    border-left: 0.5px solid var(--line);
+    padding: 20px 18px 28px;
+    scrollbar-width: thin; scrollbar-color: var(--line-solid) transparent;
+    /* The old right panel's own quiet entrance (P2's .pt-editor-controls), reused. */
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1) 140ms, transform 360ms cubic-bezier(0.22,1,0.36,1) 140ms;
+  }
+  .pt-editor[data-visible="1"] .pt-editor-panel { opacity: 1; transform: translateY(0); }
+  .pt-editor-panel::-webkit-scrollbar { width: 6px; }
+  .pt-editor-panel::-webkit-scrollbar-track { background: transparent; }
+  .pt-editor-panel::-webkit-scrollbar-thumb { background: var(--line-solid); border-radius: 6px; }
+  .pt-editor-panel-group { display: flex; flex-direction: column; gap: 12px; padding-bottom: 24px; }
+  .pt-editor-panel-group + .pt-editor-panel-group { padding-top: 24px; border-top: 0.5px solid var(--line); }
+  .pt-editor-panel-group:last-child { padding-bottom: 8px; }
+  .pt-editor-panel-body { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  /* The eyebrow's flash (AY.3 — "click the part you want to edit"
+     lands you on its group): the house blur-fade (.is-swapping's own
+     opacity .15 / blur 4px) out and back, in the accent while it
+     lands. */
+  /* 9/16 — the eyebrow is the group's disclosure button: the label at
+     the left, a caret at the right that points down when the body is
+     folded away. It keeps the eyebrow's own mono-caps voice (the base
+     .pt-editor-drawer-eyebrow rule) — a button only in behaviour. */
+  .pt-editor-panel-eyebrow {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; margin: 0; padding: 2px 0; border: 0; background: none;
+    text-align: left; cursor: pointer; transition: color 220ms ease;
+  }
+  .pt-editor-panel-eyebrow:hover { color: var(--text-body); }
+  .pt-editor-panel-eyebrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+  .pt-editor-panel-caret { display: inline-flex; flex-shrink: 0; color: var(--text-subtle); transition: transform 200ms cubic-bezier(0.22,1,0.36,1); }
+  .pt-editor-panel-caret svg { width: 12px; height: 12px; display: block; }
+  .pt-editor-panel-eyebrow[aria-expanded="false"] .pt-editor-panel-caret { transform: rotate(-90deg); }
+  .pt-editor-panel-group.is-collapsed { padding-bottom: 14px; }
+  .pt-editor-panel-group.is-collapsed + .pt-editor-panel-group { padding-top: 14px; }
+  .pt-editor-panel-body[hidden] { display: none; } /* the house gotcha — the body's own display rule would beat the bare attribute */
+  .pt-editor-panel-eyebrow.is-flash { color: var(--accent); animation: pt-panel-eyebrow-flash 560ms ease both; }
+  @keyframes pt-panel-eyebrow-flash {
+    0% { opacity: 1; filter: none; }
+    35% { opacity: 0.15; filter: blur(4px); }
+    100% { opacity: 1; filter: none; }
+  }
+  .pt-editor-panel-sub {
+    display: block; margin-top: 2px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .pt-editor-panel-note { margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--text-subtle); }
+
+  /* — SIZE (§BQ — replaces BD.1's proportional-outline tiles with
+     FINISHED renders): a flowing flex-wrap, not a fixed 3-column grid
+     — every tile shares ONE scale (STUDIO_SIZE_TILE_SCALE, the JS
+     constant) so their pixel sizes stay honest about each other's
+     real proportions and simply wrap wherever they fit: box shapes
+     fall in together, a 728×90/970×90/970×250 bar takes its own row,
+     160×600/300×600 towers pair up. The pic is exactly the scaled
+     size (no crop, nothing clips); the current size gets the accent
+     hairline, the same outline-on-the-pic recipe as a Versions row. — */
+  .pt-studio-size-tiles { display: flex; flex-wrap: wrap; gap: 10px 8px; padding: 2px 0; }
+  .pt-studio-size-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 0; border: 0; background: transparent; cursor: pointer;
+    font: inherit; color: inherit;
+  }
+  .pt-studio-size-pic {
+    position: relative; display: block; overflow: hidden;
+    border-radius: 4px;
+    background: var(--panel-bg-general);
+    border: 0.5px solid var(--line);
+    outline: 1.5px solid transparent; outline-offset: -1.5px;
+    transition: outline-color 140ms ease, border-color 140ms ease;
+  }
+  .pt-studio-size-pic .pt-banner { pointer-events: none; }
+  .pt-studio-size-tile:hover .pt-studio-size-pic { border-color: color-mix(in srgb, var(--accent) 40%, var(--line-solid)); }
+  .pt-studio-size-tile.is-active .pt-studio-size-pic { outline-color: var(--accent); }
+  .pt-studio-size-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--text-subtle); white-space: nowrap;
+    transition: color 140ms ease;
+  }
+  .pt-studio-size-tile.is-active .pt-studio-size-label { color: var(--accent); }
+
+  /* — STYLE (§BT — colour comes from the style guide only, the
+     Colorway group retired): AM.6's cover card in the roster's
+     card-row recipe, on a hairline card so it reads as the one thing
+     to click. — */
+  .pt-editor-panel .pt-set-item--card {
+    background: var(--card-bg); border: 0.5px solid var(--line); border-radius: 10px;
+    transition: border-color 160ms ease, background 180ms ease;
+  }
+  .pt-editor-panel .pt-set-item--card:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line-solid)); }
+  .pt-editor-panel .pt-set-item--card .pt-set-item-name { white-space: normal; line-height: 1.25; }
+
+  /* — IMAGE: AM.2's framing rows, then the swap thumbs four across
+     (the current one ringed inside its edge, a play disc on video),
+     then the See-all link. — */
+  .pt-studio-framing { display: flex; flex-direction: column; gap: 8px; }
+  .pt-studio-swap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+  .pt-studio-swap .pt-editor-swap-thumb {
+    width: 100%; aspect-ratio: 1 / 1; height: auto;
+    border-radius: 8px;
+    outline: 2px solid transparent; outline-offset: -2px;
+  }
+  .pt-studio-swap .pt-editor-swap-thumb.is-active { outline-color: var(--accent); }
+  .pt-studio-swap .pt-editor-swap-thumb.is-video::after {
+    content: '';
+    position: absolute; left: 5px; bottom: 5px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='white'><path d='M231.36,116.19,87.28,28.06a14,14,0,0,0-14.18-.27A13.69,13.69,0,0,0,66,39.87V216.13a13.69,13.69,0,0,0,7.1,12.08,14,14,0,0,0,14.18-.27l144.08-88.13a13.82,13.82,0,0,0,0-23.62Z'/></svg>");
+    background-repeat: no-repeat; background-position: center; background-size: 8px;
+  }
+  .pt-editor-panel .pt-seeall-link { margin-top: 2px; padding: 8px 0 0; border-top: 0; font-size: 12px; }
+
+  /* — COPY: the "Upload a copy deck" drop row — the house dashed tile
+     row (the hat's Add-image tile, the Add-a-size row): a dashed
+     hairline, the upload glyph at left, the label voice, one quiet
+     sans 11 sub. Shared with the Guided "I have copy" panel
+     (copyDeckRowHTML). — */
+  .pt-copy-deck-row {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 10px 12px;
+    background: transparent;
+    border: 1px dashed var(--line-solid);
+    border-radius: 9px;
+    color: var(--text-subtle);
+    font: inherit; text-align: left; cursor: pointer;
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+  .pt-copy-deck-row:hover, .pt-copy-deck-row:focus-visible { border-color: var(--accent); background: var(--hover-soft); outline: none; }
+  .pt-copy-deck-row.is-reading { pointer-events: none; }
+  .pt-copy-deck-icon { display: flex; width: 16px; height: 16px; flex-shrink: 0; color: var(--text-subtle); transition: color 160ms ease; }
+  .pt-copy-deck-icon svg { width: 100%; height: 100%; display: block; }
+  .pt-copy-deck-row:hover .pt-copy-deck-icon { color: var(--accent); }
+  .pt-copy-deck-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .pt-copy-deck-title { font-size: 13px; font-weight: 500; color: var(--text-body); transition: color 160ms ease; }
+  .pt-copy-deck-row:hover .pt-copy-deck-title { color: var(--accent); }
+  .pt-copy-deck-sub { font-family: var(--font-sans); font-size: 11px; color: var(--text-subtle); }
+
+  /* — VERSIONS: the saved versions as rows — thumb (clone-and-scale)
+     · "v1" chip · what it came from · when; the current one ringed. — */
+  .pt-studio-versions-list { display: flex; flex-direction: column; gap: 2px; }
+  .pt-studio-versions-empty { margin: 0; font-size: 11.5px; color: var(--text-subtle); line-height: 1.5; }
+  .pt-studio-version-item {
+    display: flex; align-items: center; gap: 10px;
+    width: calc(100% + 12px); margin: 0 -6px; padding: 5px 6px; border-radius: 8px;
+    background: transparent; border: 0; cursor: pointer; text-align: left; font: inherit;
+    transition: background 140ms ease;
+  }
+  .pt-studio-version-item:hover { background: var(--hover-soft); }
+  .pt-studio-version-pic {
+    position: relative; width: 44px; height: 33px; flex-shrink: 0;
+    background: var(--panel-bg-general); border: 0.5px solid var(--line); border-radius: 5px;
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+    outline: 1.5px solid transparent; outline-offset: -1.5px;
+    transition: outline-color 140ms ease;
+  }
+  .pt-studio-version-item.is-active .pt-studio-version-pic { outline-color: var(--accent); }
+  .pt-studio-version-pic .pt-banner { pointer-events: none; }
+  .pt-studio-version-foot { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+  .pt-studio-version-chip {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 600; color: var(--text-strong);
+    background: var(--card-bg); padding: 2px 6px; border-radius: 999px; border: 0.5px solid var(--line);
+    flex-shrink: 0;
+  }
+  .pt-studio-version-item.is-active .pt-studio-version-chip { color: var(--accent); border-color: var(--accent); }
+  .pt-studio-version-line {
+    flex: 1; min-width: 0;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; color: var(--text-body); letter-spacing: 0.01em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pt-studio-version-when {
+    flex-shrink: 0;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; color: var(--text-subtle);
+  }
+
+  /* — The Brand / Legal chips' popover (AK.6's check list — AY: no
+     longer a panel group, the chips open it). — */
+  .pt-studio-checks-pop { width: 240px; padding: 8px; }
+
+  .pt-editor-studio-title {
+    display: none;
+    font-family: 'Inter', var(--font-sans);
+    font-size: 15px; font-weight: 600; color: var(--text-strong);
+    cursor: text; border-radius: 4px; padding: 2px 3px; margin: -2px 0;
+    outline: 1px dashed transparent; outline-offset: 2px;
+    text-decoration: underline; text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 150ms ease, outline-color 150ms ease;
+  }
+  .pt-editor-studio-title:hover { text-decoration-color: var(--line-solid); }
+  .pt-editor-studio-title[contenteditable="true"] { outline: 1.5px dashed var(--accent); text-decoration-color: transparent; }
+  .pt-editor-studio .pt-editor-studio-title { display: inline-block; }
+  /* Scoped to #ptEditor: the Preview Sizes bar reuses .pt-editor-meta
+     for its own title + count, which still has something to say. */
+  /* 9/10 — the cluster paints again outside Studio: it holds the unit's
+     variant pill (Studio hides the pill and shows its own title). */
+  .pt-editor-studio #ptEditorUnit { display: none; }
+  /* AM.1 — unit mode flips that back: the lockup reads the unit's id
+     chip + its board ("A1 · Board 1", written into #ptEditorUnitVar by
+     openPainterEditor) instead of Studio's editable name. Both rules
+     carry an extra class so they outrank the two above regardless of
+     source order. */
+  .pt-editor-studio.pt-editor-unit-mode .pt-editor-studio-title { display: none; }
+  .pt-editor-studio.pt-editor-unit-mode #ptEditorUnit { display: inline-flex; }
+  /* "A1 · Board 1" is longer than the short 2-char variant this pill
+     was built for (AL.7's own — the checkbox/lockup work) — nowrap
+     keeps it one line instead of the pill growing tall to wrap, with
+     the same overflow/ellipsis safety net .pt-editor-studio-title
+     already carries for a long typed name. */
+  .pt-editor-studio.pt-editor-unit-mode #ptEditorUnit .pt-unit-var {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 32vw;
+  }
+
+  /* P5 design-review fix: this is the shell's own primary action —
+     reuse .share-btn's anatomy verbatim (same accent fill, radius,
+     height, type; hover/press lifted from that rule too) rather than
+     a bespoke black pill. No new colors. */
+  .pt-editor-addtocanvas-btn {
+    display: none;
+    background: var(--accent);
+    color: #ffffff;
+    border: 0;
+    border-radius: 8px;
+    height: 32px;
+    padding: 0 16px;
+    align-items: center; gap: 10px;
+    font-weight: 500; cursor: pointer; font-size: 13.5px;
+    letter-spacing: -0.05px;
+    transition: background 200ms ease,
+                color 200ms ease,
+                box-shadow 200ms ease,
+                transform 160ms ease;
+  }
+  .pt-editor-addtocanvas-btn:hover {
+    box-shadow: 0 2px 8px rgba(24, 88, 238, 0.22),
+                0 6px 18px rgba(24, 88, 238, 0.14);
+  }
+  .pt-editor-addtocanvas-btn:active { transform: scale(0.97); }
+  .pt-editor-addtocanvas-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .pt-editor-studio .pt-editor-addtocanvas-btn { display: inline-flex; align-items: center; }
+  body[data-theme="dark"] .pt-editor-addtocanvas-btn {
+    color: #0e0f10;
+  }
+  body[data-theme="dark"] .pt-editor-addtocanvas-btn:hover {
+    box-shadow: 0 2px 8px rgba(13, 224, 225, 0.26),
+                0 6px 18px rgba(13, 224, 225, 0.18);
+  }
+
+  /* Blank-banner placeholders — quiet, in the layout's real slots.
+     buildStageBannerElForSize renders these when editorState carries
+     no image/headline/cta (Studio's blank starting banner only —
+     never a Guided/sheet banner, which always has real content). */
+  .pt-banner-media-shimmer { width: 100%; height: 100%; margin-top: 0; border-radius: 0; }
+  /* P6 review fix (9/1): color:inherit reads .pt-banner-copy's per-
+     colorway ink (above) instead of a colorway-blind var(--text-subtle)
+     — "gold-ish on dark" etc. holds for every colorway, not just the
+     default. box-shadow ring stays for the base/Guided-adjacent use;
+     Studio's own scope (further down) already nulls it to a bare
+     dashed slot. */
+  .pt-banner-headline.is-placeholder { color: inherit !important; opacity: 0.55; }
+  .pt-banner-cta.is-placeholder {
+    /* !important: a non-default colorway's own .pt-banner[data-colorway=…]
+       .pt-banner-cta rule (solid pill fill/ink) outranks this on plain
+       specificity — without it, every colorway but the default painted
+       its real pill color/fill under the placeholder instead of the
+       transparent dashed slot. */
+    background: transparent !important; color: inherit !important; opacity: 0.7;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+
+  /* Colors drawer — named rows (vs. the bare dots in the bottom bar) */
+  .pt-editor-swatch-rows { display: flex; flex-direction: column; gap: 2px; }
+  .pt-editor-swatch-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-radius: 9px;
+    background: transparent; border: 0;
+    font: inherit; font-size: 12.5px; font-weight: 500; color: var(--text-body);
+    cursor: pointer; text-align: left; width: 100%;
+    transition: background 140ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-editor-swatch-row:hover { background: var(--hover-soft); }
+  .pt-editor-swatch-row.is-active { background: var(--nav-selected); color: var(--accent); font-weight: 600; }
+  .pt-editor-swatch-row-dot {
+    width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.14);
+  }
+  .pt-editor-swatch-row-label { flex: 1; }
+  .pt-editor-swatch-row-check { width: 13px; height: 13px; flex-shrink: 0; opacity: 0; color: var(--accent); }
+  .pt-editor-swatch-row-check svg { width: 100%; height: 100%; display: block; }
+  .pt-editor-swatch-row.is-active .pt-editor-swatch-row-check { opacity: 1; }
+
+  /* §BT — the named specimen row recipe (.pt-color-spec-row/
+     .pt-color-spec, the ground+headline+CTA preview used by the hat's
+     Color menu and the sheet's Color drawer) is fully retired with
+     the last of its callers (colorwaySpecimenRowHTML): colour comes
+     from the picked style guide only, with no swatch UI left to draw. */
+
+  /* §BT — the Styles panel's own colorway override grid
+     (.pt-style-colorway-grid / styleColorwaySpecimenCompactHTML)
+     retired: colour comes from the style guide only. */
+
+
+  @media (max-width: 1100px) {
+    .pt-editor-body { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+    .pt-editor-controls { width: auto; flex-direction: row; flex-wrap: wrap; gap: 20px 28px; overflow: visible; }
+    .pt-editor-stage { min-height: 320px; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     P6 — DESIGN BAR pass (9/1). Redesign of the Studio chrome built
+     in P5, no new features. Every rule below is scoped under
+     .pt-editor-studio (or an id that only exists inside it) so the
+     Guided path's own editor-from-sheet — same #ptEditor, no
+     pt-editor-studio class — renders exactly as P2 left it. ════════ */
+
+  /* — Topbar: 48px (down from the shared 64px), Undo/Redo pair. — */
+  .pt-editor-studio .pt-editor-topbar { height: var(--pt-topbar-h, 64px); padding: 0 20px; gap: 14px; }
+  .pt-editor-studio .pt-editor-size { font-size: 11.5px; }
+  .pt-editor-undoredo { display: none; align-items: center; gap: 2px; }
+  .pt-editor-studio .pt-editor-undoredo { display: inline-flex; }
+  .pt-editor-undo-btn, .pt-editor-redo-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    background: transparent; border: 0; border-radius: 8px;
+    color: var(--text-body); cursor: pointer;
+    transition: background 160ms cubic-bezier(0.22,1,0.36,1), color 160ms cubic-bezier(0.22,1,0.36,1), opacity 160ms ease;
+  }
+  .pt-editor-undo-btn svg, .pt-editor-redo-btn svg { width: 16px; height: 16px; display: block; }
+  .pt-editor-undo-btn:hover:not(:disabled), .pt-editor-redo-btn:hover:not(:disabled) { background: var(--hover-soft); color: var(--text-strong); }
+  .pt-editor-undo-btn:focus-visible, .pt-editor-redo-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .pt-editor-undo-btn:disabled, .pt-editor-redo-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+
+  /* — Sections + the mono eyebrow: the drawer's own voice (P6),
+     kept as the house recipe the Package panel, Your Gallery's
+     BANNERS shelf and AY's Studio panel eyebrows all still speak. — */
+  .pt-editor-drawer-section { display: flex; flex-direction: column; gap: 10px; }
+  .pt-editor-drawer-section + .pt-editor-drawer-section {
+    padding-top: 16px;
+    border-top: 0.5px solid var(--line);
+  }
+  .pt-editor-drawer-eyebrow {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  /* — Stage: quiet dot-grid ground (the standard design-tool canvas
+     cue), banner shadow bumped to the shell's own "level 2" card
+     shadow + a 1px hairline, zoom chip + Fit bottom-right. — */
+  .pt-editor-studio .pt-editor-stage {
+    position: relative;
+    /* Bryan, 9/15: "a subtle dot matrix background" — the dots read now:
+       ink at 13% (the hairline at 55% was below the display's floor),
+       1.2px, on a 20px pitch */
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--text-body) 13%, transparent) 1.2px, transparent 1.2px);
+    background-size: 20px 20px;
+    background-position: center;
+  }
+  .pt-editor-studio .pt-editor-stage .pt-banner {
+    box-shadow: 0 12px 32px var(--shadow-card), 0 4px 12px var(--shadow-card);
+    outline: 1px solid var(--line);
+    outline-offset: 0;
+  }
+  .pt-editor-stage-zoom {
+    display: none;
+    position: absolute; right: 14px; bottom: 12px;
+    align-items: center; gap: 4px;
+    z-index: 2;
+  }
+  .pt-editor-studio .pt-editor-stage-zoom { display: flex; }
+  .pt-editor-zoom-chip, .pt-editor-fit-btn {
+    display: inline-flex; align-items: center;
+    height: 26px; padding: 0 9px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 500; color: var(--text-subtle);
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 7px;
+  }
+  .pt-editor-fit-btn {
+    border: 0; background: transparent; cursor: pointer;
+    transition: background 160ms cubic-bezier(0.22,1,0.36,1), color 160ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-editor-fit-btn:hover { background: var(--hover-soft); color: var(--text-strong); }
+
+  /* — Direct manipulation: editable-copy + swap-image affordances
+     live ON the banner (hover outline + a riding tag). AY.3 brings
+     the original's hint line back under the stage too ("Click the headline
+     or CTA to edit copy · drag the image to reframe" — placed by the
+     AY grid below) and makes the legal line editable in place (its
+     own rules after the tag's: the slot is absolute + pointer-events:
+     none by design, so it gets neither position:relative nor the
+     riding tag — an outline is its whole affordance). — */
+  .pt-editor-studio .pt-editor-stage .pt-banner-headline,
+  .pt-editor-studio .pt-editor-stage .pt-banner-cta {
+    position: relative;
+    outline: 1px dashed transparent;
+    outline-offset: 4px;
+  }
+  /* BA.4 — the hover ring and its "Edit" tag moved off the scaled
+     banner onto the stage's UNSCALED move overlay (.pt-stage-move-*,
+     after the media rules below), where they stay a crisp 1px at every
+     zoom; the base editor's own currentColor hover ring (the Guided
+     path's, above) is silenced here so Studio never paints two. */
+  .pt-editor-studio .pt-editor-stage .pt-banner-headline:hover,
+  .pt-editor-studio .pt-editor-stage .pt-banner-cta:hover { outline-color: transparent; }
+  .pt-editor-studio .pt-editor-stage .pt-banner-disclaimer {
+    pointer-events: auto; cursor: text;
+    outline: 1px dashed transparent; outline-offset: 3px;
+    transition: outline-color 150ms ease;
+  }
+  .pt-editor-studio .pt-editor-stage .pt-banner-disclaimer:hover { outline-color: transparent; }
+  .pt-editor-studio .pt-editor-stage .pt-banner-disclaimer[contenteditable="true"] {
+    outline: 1.5px dashed var(--accent); outline-offset: 3px;
+    text-overflow: clip; min-height: 1.2em; opacity: 1;
+  }
+  .pt-editor-studio .pt-editor-stage .pt-banner-media {
+    /* P6 review fix (9/1): do NOT force position — .pt-banner-media is
+       already position:absolute by default (line ~23292) and split
+       layout already sets its own position:relative; overriding it here
+       pulled every non-split layout's media out of its bottom/top-
+       anchored absolute box into normal flow, stacking it at the
+       banner's top and leaving the rest of the banner showing raw
+       .pt-banner-inner ground — the "grey copy / solid-black media"
+       bug. position:absolute already gives the ::after tag below a
+       containing block, so nothing here needs to touch position. */
+    outline: 1px dashed transparent;
+    outline-offset: -1px;
+    cursor: pointer;
+    transition: outline-color 150ms ease;
+  }
+  .pt-editor-studio .pt-editor-stage .pt-banner-media:hover {
+    outline-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .pt-editor-studio .pt-editor-stage .pt-banner-media:hover::after {
+    content: 'Swap image';
+    position: absolute; left: 6px; top: 6px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.02em;
+    color: #fff; background: var(--accent);
+    padding: 2px 6px; border-radius: 4px;
+    white-space: nowrap; pointer-events: none;
+    z-index: 1;
+  }
+
+  /* — Blank-banner placeholders: dashed slots in the layout's real
+     positions, hint text in the banner's own type at 55% of the
+     colorway's ink (.pt-banner-copy's color, inherited above). Media
+     slot is the SAME light plain matte + rule-of-thirds hairline
+     recipe as the Media-mode lockup mattes (.pt-mm-lockup-item
+     .pt-img-shimmer, ~L24113) — a neutral light card, never a dark
+     block and never the stage's own dot-grid repeated locally (that
+     read as a black/grey slab — the P6 review bug). Studio's stage
+     only — the Guided SIZES-step ghost keeps its own full-opacity
+     look untouched. — */
+  .pt-editor-studio .pt-banner-headline.is-placeholder,
+  .pt-editor-studio .pt-banner-cta.is-placeholder {
+    outline: 1px dashed color-mix(in srgb, var(--line-solid) 70%, transparent) !important;
+    outline-offset: 4px;
+    border-radius: 3px;
+    box-shadow: none !important; /* Studio's CTA placeholder is the dashed slot alone, not the pill's solid inset PLUS a dashed box on top */
+  }
+  .pt-editor-studio .pt-editor-stage .pt-banner-media-shimmer {
+    background-image:
+      linear-gradient(90deg, transparent 33.333%, rgba(15,23,42,0.06) 33.333%, rgba(15,23,42,0.06) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+      linear-gradient(90deg, transparent 66.666%, rgba(15,23,42,0.06) 66.666%, rgba(15,23,42,0.06) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
+      linear-gradient(180deg, transparent 33.333%, rgba(15,23,42,0.06) 33.333%, rgba(15,23,42,0.06) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+      linear-gradient(180deg, transparent 66.666%, rgba(15,23,42,0.06) 66.666%, rgba(15,23,42,0.06) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
+      linear-gradient(180deg, #fbfbfb 0%, #f3f3f4 100%);
+  }
+  body[data-theme="dark"] .pt-editor-studio .pt-editor-stage .pt-banner-media-shimmer {
+    background-image:
+      linear-gradient(90deg, transparent 33.333%, rgba(255,255,255,0.08) 33.333%, rgba(255,255,255,0.08) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+      linear-gradient(90deg, transparent 66.666%, rgba(255,255,255,0.08) 66.666%, rgba(255,255,255,0.08) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
+      linear-gradient(180deg, transparent 33.333%, rgba(255,255,255,0.08) 33.333%, rgba(255,255,255,0.08) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+      linear-gradient(180deg, transparent 66.666%, rgba(255,255,255,0.08) 66.666%, rgba(255,255,255,0.08) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
+      linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  }
+
+  /* — Sizes bar: replaces the plain filmstrip. Current card = nav-
+     selected fill + a 2px accent bar on the bar's own bottom edge
+     (structural — sits on the bar's baseline, not around the card).
+     Trailing "+" card adds the next missing size. — */
+  .pt-editor-studio .pt-editor-filmstrip {
+    height: 88px; align-items: center;
+    border-top: 0.5px solid var(--line);
+    gap: 6px;
+    /* 9/1 fix: the base .pt-editor-filmstrip rule's own padding
+       (4px 0 2px, meant for the plain Guided filmstrip) left only
+       ~81px of usable cross-axis space inside this fixed 88px bar —
+       a film-item's real content stack (padding + 56px frame + gap +
+       label) measured 92px, ~11px taller than that budget, so it
+       spilled past the bar's own bounds and forced a visible
+       scrollbar on the ancestor .pt-editor-stage-col (the "scrollbar
+       on the whole editor" bug). Reclaiming all of it here + trimming
+       the item's own vertical rhythm below keeps everything inside
+       the fixed 88px band with room to spare. */
+    padding: 0;
+  }
+  .pt-editor-studio .pt-editor-film-item {
+    padding: 3px 8px 4px; border-radius: 8px;
+    gap: 4px;
+    position: relative;
+    transition: background 160ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-editor-studio .pt-editor-film-item:hover { background: var(--hover-soft); }
+  .pt-editor-studio .pt-editor-film-item.is-active { background: var(--nav-selected); }
+  .pt-editor-studio .pt-editor-film-item.is-active::after {
+    content: '';
+    position: absolute; left: 10px; right: 10px; bottom: 2px;
+    height: 2px; border-radius: 2px 2px 0 0;
+    background: var(--accent);
+  }
+  .pt-editor-studio .pt-editor-film-frame { max-height: 56px; max-width: 96px; } /* AY.4 — each frame wears its own artboard's size: 320×50 wide and thin, 160×600 tall and narrow, 300×250 as before */
+  .pt-editor-film-add {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    width: 56px; height: 56px;
+    background: transparent;
+    border: 1px dashed var(--line-solid);
+    border-radius: 7px;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: border-color 160ms cubic-bezier(0.22,1,0.36,1), color 160ms cubic-bezier(0.22,1,0.36,1);
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .pt-editor-film-add:hover { border-color: var(--accent); color: var(--accent); }
+  .pt-editor-film-add svg { width: 14px; height: 14px; display: block; }
+  .pt-editor-film-add:disabled { opacity: 0.35; pointer-events: none; }
+
+  /* — "+ Add a size" chip — the sheet's own dashed chip (21-sheet-b.css
+     defines the family; this later copy is the one the cascade
+     resolves for the sheet's "+ sizes" chip, so it stays put). — */
+  .pt-addsizes-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    width: 100%; padding: 9px 10px;
+    background: transparent;
+    border: 1px dashed var(--line-solid);
+    border-radius: 9px;
+    color: var(--text-subtle);
+    font: inherit; font-size: 12px; font-weight: 500;
+    cursor: pointer;
+    transition: border-color 160ms cubic-bezier(0.22,1,0.36,1), color 160ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-addsizes-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .pt-addsizes-chip svg { width: 12px; height: 12px; display: block; }
+
+
+
+  /* — Font combo-box (Text drawer): model-selector anatomy — button
+     + popover menu — with a type-ahead search input and two option
+     groups, each option rendered in its OWN face. Never a native
+     <select> (per the standing combo-box rule). — */
+  .pt-font-combo { position: relative; width: 100%; }
+  .pt-font-combo-btn {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; height: 36px; padding: 0 10px 0 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text-body);
+    font: inherit; font-size: 13px;
+    cursor: pointer; text-align: left;
+    transition: border-color 160ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .pt-font-combo-btn:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line-solid)); }
+  .pt-font-combo-btn[aria-expanded="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-font-combo-btn-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pt-font-combo-caret { color: var(--text-subtle); flex-shrink: 0; transition: transform 200ms cubic-bezier(0.22,1,0.36,1); }
+  .pt-font-combo-caret svg { width: 10px; height: 10px; display: block; }
+  .pt-font-combo-btn[aria-expanded="true"] .pt-font-combo-caret { transform: rotate(180deg); }
+  .pt-font-combo-menu {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 1px 1px rgba(15,18,24,0.04), 0 6px 14px rgba(15,18,24,0.06), 0 24px 48px rgba(15,18,24,0.10);
+    padding: 6px;
+    opacity: 0; transform: translateY(-6px) scale(0.98); transform-origin: top;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 220ms cubic-bezier(0.16,1,0.3,1);
+    z-index: 30;
+    max-height: 280px; overflow-y: auto;
+  }
+  body[data-theme="dark"] .pt-font-combo-menu {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.32), 0 6px 14px rgba(0,0,0,0.36), 0 24px 48px rgba(0,0,0,0.5);
+  }
+  .pt-font-combo-menu.open { opacity: 1; transform: none; pointer-events: auto; }
+  .pt-font-combo-menu:not(.open) { overflow: hidden; } /* AY.1 — closed, it is not a scroller; the panel is Studio's only one */
+  .pt-font-combo-search {
+    width: 100%; height: 30px; padding: 0 9px;
+    background: var(--panel-bg-general);
+    border: 0.5px solid var(--line);
+    border-radius: 6px;
+    font: inherit; font-size: 12.5px; color: var(--text-body);
+    margin-bottom: 6px;
+  }
+  .pt-font-combo-search:focus { outline: none; border-color: var(--accent); }
+  .pt-font-combo-group-label {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-subtle);
+    padding: 6px 8px 4px;
+  }
+  .pt-font-combo-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 9px 8px;
+    background: transparent; border: 0; border-radius: 7px;
+    text-align: left; cursor: pointer;
+    transition: background 140ms ease;
+  }
+  .pt-font-combo-item:hover { background: var(--hover-soft); }
+  .pt-font-combo-item.is-active { background: var(--nav-selected); }
+  .pt-font-combo-item-face { font-size: 16px; color: var(--text-strong); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pt-font-combo-item-sub { font-size: 10.5px; color: var(--text-subtle); flex-shrink: 0; }
+  .pt-font-combo-item-check { width: 12px; height: 12px; flex-shrink: 0; color: var(--accent); opacity: 0; }
+  .pt-font-combo-item.is-active .pt-font-combo-item-check { opacity: 1; }
+  .pt-font-combo-item-check svg { width: 100%; height: 100%; display: block; }
+  .pt-font-combo-empty { padding: 12px 8px; font-size: 12px; color: var(--text-subtle); text-align: center; }
+  /* P10 fix: ONE specimen line, never two truncated columns — the
+     headline (or "Corvache GT") at 20px in the chosen face's own
+     heaviest weight, ellipsis, weight name right-aligned in mono. */
+  .pt-font-specimen {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding: 12px 10px;
+    background: var(--panel-bg-general);
+    border: 0.5px solid var(--line);
+    border-radius: 9px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .pt-font-specimen-text {
+    flex: 1; min-width: 0;
+    color: var(--text-strong);
+    font-size: 20px; line-height: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pt-font-specimen-weight {
+    flex-shrink: 0;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; color: var(--text-subtle);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pt-editor-undo-btn, .pt-editor-redo-btn, .pt-editor-fit-btn { transition: none !important; }
+    .pt-editor-studio .pt-editor-film-item { transition: none !important; }
+    .pt-font-combo-btn, .pt-font-combo-caret, .pt-font-combo-menu, .pt-font-combo-item { transition: none !important; }
+    .pt-copy-deck-row, .pt-addsizes-chip { transition: none !important; }
+  }
+
+
+  /* ════════════════════════════════════════════════════════════════
+     AY.1 — the shape. The body is a grid: column 1 the stage column
+     (row 1 the stage, row 2 the hint, row 3 the filmstrip), column 2
+     the 320px panel spanning all three rows (its rules sit with the
+     rest of the panel, above). .pt-editor-stage-col stays
+     display:contents (P10's own trick) so its children are the grid
+     items without touching the DOM. Body padding 0 so the panel's
+     left hairline and the filmstrip's top rule run edge to edge. ═══ */
+  .pt-editor-studio .pt-editor-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    gap: 0;
+    padding: 0;
+    overflow: hidden; /* the panel is the only scroller — never the body (the ≤1100px rule above would otherwise hand it overflow-y:auto) */
+  }
+  .pt-editor-studio .pt-editor-stage-col { display: contents; }
+  .pt-editor-studio .pt-editor-stage-wrap {
+    grid-column: 1; grid-row: 1;
+    min-width: 0; min-height: 0;
+    margin: 24px 24px 10px 24px;
+  }
+  .pt-editor-studio .pt-editor-hint { grid-column: 1; grid-row: 2; display: block; margin: 0 24px 12px; }
+  .pt-editor-studio .pt-editor-filmstrip { grid-column: 1; grid-row: 3; margin: 0; width: auto; }
+
+  /* ═══ AK.1–AK.6 — the Studio pass: topbar lockup (hairline/size/
+     save-status + Brand/Legal/Versions/Save/⋯), a real zoom, the
+     Versions rail (+ its ≥ 1540 fold), the Brand check list, the
+     History list, the Save-as-template popover, and Your Gallery's
+     Banners shelf. House tokens only — no new colors, no new type
+     sizes, every motion the house's own. ═══
+  .pt-editor-meta-hairline { width: 0.5px; height: 16px; background: var(--line); flex-shrink: 0; }
+  #ptEditor:not(.pt-editor-studio) .pt-editor-meta-hairline,
+  #ptEditor:not(.pt-editor-studio) .pt-editor-meta-size,
+  #ptEditor:not(.pt-editor-studio) .pt-editor-save-status { display: none; }
+  .pt-editor-meta-size {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; color: var(--text-subtle); letter-spacing: 0.01em;
+  }
+  .pt-editor-save-status {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; color: var(--text-subtle); letter-spacing: 0.01em;
+    padding-left: 10px; margin-left: 2px; border-left: 0.5px solid var(--line);
+    transition: color 160ms ease;
+  }
+  .pt-editor-save-status.is-dirty { color: var(--accent); }
+
+  /* Brand/Legal/Save/⋯ — Studio only, the shell's own
+     .pt-hdr-chip recipe; a quiet ground until something needs
+     attention (Brand/Legal turn success-green when every check
+     passes; Save's own done-flash is the house .is-copied idiom). */
+  .pt-editor-status-chips { display: none; align-items: center; gap: 6px; }
+  .pt-editor-status-chip, .pt-editor-save-btn { display: none; height: 30px; padding: 0 10px; font-size: 11.5px; }
+  .pt-editor-status-chip .pt-hdr-chip-state { color: var(--text-subtle); }
+  .pt-editor-status-chip.is-ok .pt-hdr-chip-state { color: #1a7f4b; }
+  .pt-editor-overflow-btn {
+    display: none; align-items: center; justify-content: center;
+    width: 30px; height: 30px; padding: 0; flex-shrink: 0;
+    background: transparent; border: 0.5px solid var(--line); border-radius: 999px;
+    color: var(--text-subtle); cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .pt-editor-overflow-btn svg { width: 15px; height: 15px; display: block; }
+  .pt-editor-overflow-btn:hover { background: var(--hover-soft); color: var(--text-strong); }
+  .pt-editor-overflow-btn.is-copied { color: #1a7f4b; border-color: rgba(26,127,75,0.32); }
+  .pt-editor-studio .pt-editor-status-chips { display: flex; }
+  .pt-editor-studio .pt-editor-status-chip,
+  .pt-editor-studio .pt-editor-save-btn,
+  .pt-editor-studio .pt-editor-overflow-btn { display: inline-flex; }
+  .pt-editor-save-btn.is-copied { color: #1a7f4b; border-color: rgba(26,127,75,0.32); background: rgba(26,127,75,0.07); }
+  .pt-editor-save-btn:disabled { opacity: 0.45; cursor: default; }
+
+  /* — Zoom cluster: − / chip / + / Fit / 100% — */
+  .pt-editor-zoom-btn {
+    width: 20px; height: 20px; padding: 0; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; border-radius: 5px;
+    color: var(--text-subtle); font: inherit; font-size: 13px; line-height: 1; cursor: pointer;
+    transition: background 140ms ease, color 140ms ease;
+  }
+  .pt-editor-zoom-btn:hover { background: var(--hover-soft); color: var(--text-strong); }
+  .pt-editor-zoom-sep { width: 0.5px; height: 14px; background: var(--line); margin: 0 2px; }
+  .pt-editor-fit-btn.is-active { color: var(--accent); }
+  /* AY.1 — the panel is the only scroller in Studio: a manual zoom
+     that outgrows the stage is clipped, centred — never scrolled
+     (AK.1's overflow:auto retired). */
+  .pt-editor-studio .pt-editor-stage { overflow: hidden; }
+
+  /* ═══ BA.4 — Move on the stage: the ring, the tag / live readout, the
+     grip handle and the smart guides are ONE unscaled overlay over the
+     stage (never children of the scaled banner), seated from client
+     rects by wireStageMoveParts, so every line is a crisp 1px at 25%
+     and at 400% alike. Studio only — nothing else builds it; a card, a
+     tile, Package, the tray and the shared view never see it. Nothing
+     eases into place: the ring's 120ms colour ease is the most this
+     gets. ═══ */
+  .pt-stage-move-overlay { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; border-radius: inherit; }
+  .pt-stage-move-overlay [hidden] { display: none !important; } /* the handle and tag are display:flex — an author display rule beats [hidden] */
+  .pt-stage-move-ring {
+    position: absolute; box-sizing: border-box;
+    border: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent); /* AY.3's own hover ring */
+    border-radius: 3px;
+    transition: border-color 120ms ease;
+  }
+  .pt-stage-move-ring.is-solid { border-style: solid; border-color: var(--accent); } /* dragging / selected */
+  /* The tag: the Edit tag's own accent chip recipe, unscaled — "Edit"
+     on hover, the "x +24 · y −12" readout while dragging or selected,
+     Reset as a link in it when the part is off home. */
+  .pt-stage-move-tag {
+    position: absolute; height: 16px; box-sizing: border-box;
+    display: flex; align-items: center;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.02em; line-height: 12px;
+    color: #fff; background: var(--accent);
+    padding: 2px 6px; border-radius: 4px;
+    white-space: nowrap; pointer-events: none;
+  }
+  .pt-stage-move-reset {
+    pointer-events: auto; cursor: pointer;
+    margin: 0 0 0 4px; padding: 0; border: 0; background: none;
+    font: inherit; letter-spacing: inherit; color: inherit;
+    text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px;
+  }
+  .pt-stage-move-reset:hover { text-decoration-thickness: 1.5px; }
+  .pt-stage-move-reset:focus-visible { outline: 1px solid #fff; outline-offset: 1px; border-radius: 2px; }
+  /* The grip: a 14px accent chip riding the ring's top-right corner,
+     opposite the tag; grab on it, grabbing while a drag is on. The
+     part's own body keeps its text cursor. */
+  .pt-stage-move-handle {
+    position: absolute; width: 14px; height: 14px; box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; background: var(--accent); border-radius: 4px;
+    pointer-events: auto; cursor: grab;
+  }
+  .pt-stage-move-handle svg { width: 9px; height: 9px; display: block; }
+  .pt-stage-move-overlay.is-dragging .pt-stage-move-handle { cursor: grabbing; }
+  .pt-editor-studio .pt-editor-stage.is-moving,
+  .pt-editor-studio .pt-editor-stage.is-moving * { cursor: grabbing !important; }
+  /* Smart guides: 1px, the ring's own 60% tint, full-width / full-height across the banner. */
+  .pt-stage-move-guide { position: absolute; background: color-mix(in srgb, var(--accent) 60%, transparent); pointer-events: none; }
+  .pt-stage-move-guide--v { width: 1px; }
+  .pt-stage-move-guide--h { height: 1px; }
+  /* The parts themselves: a press-and-move on the body is a drag too,
+     so no touch scrolling under it and no native image drag. */
+  .pt-editor-studio .pt-editor-stage :is(.pt-banner-logo, .pt-banner-headline, .pt-banner-subhead, .pt-banner-body, .pt-banner-cta, .pt-banner-disclaimer) {
+    touch-action: none; -webkit-user-drag: none;
+  }
+  /* BA.4 — the LAYOUT group's quiet "Reset positions" text link (the
+     View gallery link's recipe), only while the active size holds a
+     non-zero offset. Paired with the class: .pt-seeall-link's own
+     display:flex would otherwise beat [hidden]. */
+  .pt-studio-reset-positions[hidden] { display: none; }
+
+  /* ═══ BB.1 — a VERSION tile's hover "×": the Selects strip's own
+     .pt-strip-frame-remove recipe (18px, the card ground, hidden until
+     the tile is hovered or the × has keyboard focus), seated on the
+     frame's top-right corner. The tile is a div[role=button] now so
+     the × can be a real button inside it; it takes the house focus
+     ring in place of the <button>'s UA one. ═══ */
+  .pt-editor-studio .pt-editor-film-item:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 1px; }
+  .pt-editor-film-remove { top: -6px; right: -1px; }
+  .pt-editor-film-remove svg { display: block; width: 10px; height: 10px; }
+  .pt-editor-film-item:hover .pt-editor-film-remove,
+  .pt-editor-film-remove:focus-visible { opacity: 1; pointer-events: auto; }
+
+
+  @media (max-width: 1539.98px) {
+    /* AK.1 density: at the designer's own (short/narrow) window the
+       full lockup + every chip no longer fit one 64px row without
+       wrapping mid-chip, which reads as broken rather than responsive
+       — so the least essential reads drop first: the save-status
+       text (redundant with the Save chip's own disabled state) and
+       the Brand/Legal chips (back, with their check-list popovers,
+       once there is room for them again above 1540px). */
+    .pt-editor-save-status, .pt-editor-status-chips { display: none !important; }
+  }
+  /* Never let a topbar chip's own text wrap to a second line — at
+     any width the chip either fits at its natural size or (above)
+     is dropped outright; a wrapped chip inside the topbar's fixed
+     64px row is what used to clip. */
+  .pt-editor-meta-size, .pt-editor-save-status,
+  .pt-hdr-chip-state, .pt-editor-studio-title { white-space: nowrap; }
+
+  /* — Brand check list (AK.6) — the house .pt-traffic-ok voice plus
+     its pending twin (the ok half already existed, alone, in the old
+     in-flow Trafficking section — §AF's overlay retired the section
+     but the class stayed a live house recipe worth keeping). — */
+  .pt-traffic-pending { color: var(--text-subtle); font-size: 12px; }
+  .pt-brand-check-list { display: flex; flex-direction: column; gap: 2px; }
+  .pt-brand-check-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 9px; font-size: 12.5px; color: var(--text-body); }
+  .pt-brand-check-row .pt-traffic-ok, .pt-brand-check-row .pt-traffic-pending { width: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .pt-brand-check-row .pt-traffic-ok svg { width: 13px; height: 13px; display: block; }
+  .pt-brand-check-label { flex: 1; }
+  .pt-brand-check-state { font-size: 11px; color: var(--text-subtle); }
+
+
+
+  /* — A chat-line link (AK.3's autosave notice) — the house underline-
+     link voice, sized to sit inline in a message body. — */
+  .pt-chat-link {
+    background: none; border: 0; padding: 0; font: inherit; font-size: inherit;
+    color: var(--accent); text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+  }
+  .pt-chat-link:hover { text-decoration-color: transparent; }
+
+  /* — Your Gallery's BANNERS shelf (AK.3) — */
+  .pt-env-banners { padding: 18px 24px 4px; }
+  .pt-env-banners-eyebrow { display: block; padding-bottom: 10px; }
+  .pt-env-banners-strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+  .pt-env-banner-tile {
+    display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; width: 132px;
+    background: transparent; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit;
+  }
+  .pt-env-banner-pic {
+    width: 132px; height: 99px;
+    background: var(--panel-bg-general); border: 0.5px solid var(--line); border-radius: 8px;
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+    transition: border-color 140ms ease;
+  }
+  .pt-env-banner-tile:hover .pt-env-banner-pic { border-color: var(--accent); }
+  .pt-env-banner-pic .pt-banner { pointer-events: none; }
+  .pt-env-banner-name { font-size: 11.5px; font-weight: 600; color: var(--text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pt-env-banner-meta {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9.5px; color: var(--text-subtle);
+  }
+
+
+
+  /* — Rows/combos/chips/swatches: the small motion vocabulary the
+     spec calls out — row add/remove already exists (P8's own
+     grid-template-rows collapse); combos scale in (no translate);
+     swatch-pick ring scales from .9; interactive chips/cards press
+     scale(.97). — */
+  .pt-font-combo-menu, .pt-copy-type-menu {
+    transform: scale(0.98);
+    transition: opacity 140ms cubic-bezier(0.16,1,0.3,1), transform 140ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-font-combo-menu.open, .pt-copy-type-menu.open { transform: scale(1); }
+  .pt-editor-swatch-row-check {
+    transform: scale(0.9);
+    transition: opacity 140ms ease, transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-editor-swatch-row.is-active .pt-editor-swatch-row-check { transform: scale(1); }
+  .pt-size-chip:active, .pt-layout-card:active, .pt-editor-swatch-row:active,
+  .pt-addsizes-chip:active, .pt-copy-deck-row:active,
+  .pt-copy-addfield-row:active { transform: scale(0.97); }
+
+
+
+  /* — Sizes bar: ONE moving bottom-accent (same "one element slides"
+     rule as the rail highlight) instead of a per-card ::after pseudo;
+     stage crossfades on size change (old scales to .98 + fades, new
+     from 1.02) — see crossfadeEditorStage() in the JS. — */
+  .pt-editor-studio .pt-editor-filmstrip { position: relative; }
+  .pt-editor-film-accent {
+    position: absolute; bottom: 2px; left: 0;
+    height: 2px; border-radius: 2px 2px 0 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: transform 220ms cubic-bezier(0.16,1,0.3,1), width 220ms cubic-bezier(0.16,1,0.3,1), opacity 200ms ease;
+    pointer-events: none;
+  }
+  .pt-editor-film-accent.is-visible { opacity: 1; }
+  .pt-editor-studio .pt-editor-film-item.is-active::after { content: none; } /* superseded by the moving accent */
+  .pt-editor-stage-frame { transition: opacity 200ms cubic-bezier(0.16,1,0.3,1), transform 220ms cubic-bezier(0.16,1,0.3,1); }
+  /* A HOLDER around .pt-editor-stage-frame carries the crossfade —
+     .pt-editor-stage-frame itself already owns an inline `transform`
+     (fitEditorStage's own fit-scale, set every render); animating
+     opacity/scale on a wrapper instead of that element avoids the
+     inline style silently winning over (and erasing) this class. */
+  .pt-editor-stage-frame-holder {
+    transition: opacity 200ms cubic-bezier(0.16,1,0.3,1), transform 220ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pt-editor-stage-frame-holder.pt-stage-out {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: scale(0.98);
+    pointer-events: none;
+  }
+  .pt-editor-stage-frame-holder.pt-stage-entering { opacity: 0; transform: scale(1.02); }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .pt-font-combo-menu, .pt-copy-type-menu, .pt-editor-swatch-row-check { transition: none !important; }
+    .pt-size-chip, .pt-layout-card, .pt-editor-swatch-row,
+    .pt-addsizes-chip, .pt-copy-deck-row, .pt-copy-addfield-row { transition: none !important; }
+    .pt-editor-film-accent, .pt-editor-stage-frame, .pt-editor-stage-frame-holder { transition: none !important; }
+    .pt-editor-panel, .pt-editor-panel-eyebrow,
+    .pt-studio-size-tile, .pt-studio-size-pic, .pt-studio-version-item, .pt-studio-version-pic,
+    .pt-editor-panel .pt-set-item--card { transition: none !important; animation: none !important; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     P4 — motion teaser. Video mode tile, in Painter context (a
+     resolved sheet already on the canvas), opens this "video canvas
+     mode, eventually" roadmap beat: concept A's 300×250 cloned live
+     off the sheet — whatever image/copy/colorway it currently
+     carries, including edits made in the P2 editor — onto a dark
+     stage, animated via three independent CSS-keyframe loops (image
+     pan / headline slide-in / CTA pop, all 6s, all `infinite`) plus a
+     designed-but-static timeline strip below. Shares #canvas's own
+     grid cell exactly like .pt-editor above — same "fixed to the
+     canvas pane, chat stays live" contract. Chrome here (stage,
+     timeline, buttons, chips) stays OMNI var(--accent) — only the
+     cloned banner itself carries Corvache gold. ════════════════════ */
+  .pt-motion {
+    grid-column: 4; grid-row: 1;
+    margin-left: -6px; padding-left: 6px; /* the 6px reach under the splitter — see .pt-media-mode */
+    position: relative;
+    /* z-index 60, not 20: matches this shell's own .c4-edit-mode
+       convention (the pre-existing canvas4 edit overlay) for a
+       "chrome recedes" surface — .chapter-nav (the bottom-right
+       01/13 scroll pager) is position:fixed at z-index:30, so at the
+       old z-index:20 it floated on top of and bled into the motion
+       stage's timeline strip. Since .pt-motion is opacity:0/
+       visibility:hidden/pointer-events:none at rest, this static
+       z-index bump only ever matters while data-visible="1" — the
+       pager is naturally covered (and unclickable, since it's
+       genuinely occluded, not just painted over) while open, and
+       needs no separate show/hide wiring to "restore on close". */
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas-bg);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 320ms;
+  }
+  .pt-motion[data-visible="1"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 360ms cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0s;
+  }
+  .pt-motion-topbar {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 16px;
+    height: var(--pt-topbar-h, 64px); padding: 0 28px;
+    border-bottom: 0.5px solid var(--line);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 280ms cubic-bezier(0.22,1,0.36,1) 100ms, transform 320ms cubic-bezier(0.22,1,0.36,1) 100ms;
+  }
+  .pt-motion[data-visible="1"] .pt-motion-topbar { opacity: 1; transform: translateY(0); }
+  .pt-motion-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .pt-motion-roadmap-tag {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--text-subtle);
+    padding-left: 10px;
+    border-left: 0.5px solid var(--line);
+  }
+  .pt-motion-topbar-spacer { flex: 1 1 auto; }
+
+  .pt-motion-body {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; gap: 18px;
+    padding: 28px 28px 24px;
+    overflow: hidden;
+  }
+  .pt-motion-stage {
+    flex: 1; min-height: 0;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(120% 140% at 50% 20%, #1b1c1f 0%, #0a0a0b 62%, #050506 100%);
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1) 60ms, transform 360ms cubic-bezier(0.22,1,0.36,1) 60ms;
+  }
+  .pt-motion[data-visible="1"] .pt-motion-stage { opacity: 1; transform: scale(1); }
+  .pt-motion-stage-frame { position: relative; transform-origin: center center; flex-shrink: 0; }
+  .pt-motion-stage-frame .pt-banner { border-radius: 0; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.5); } /* P11: stage frame square, always */
+  .pt-motion-duration-chip {
+    position: absolute; top: 16px; right: 18px; z-index: 3;
+    display: inline-flex; align-items: center;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(255,255,255,0.1);
+    border: 0.5px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.85);
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    backdrop-filter: blur(6px);
+  }
+  /* Full-cover invisible click target — clicking anywhere on the
+     stage also toggles play/pause, the other half of canvas-graphics'
+     own dual affordance (S76's [data-video-player-frame-btn] +
+     dedicated control). A sibling of .pt-motion-stage-frame, not a
+     child — the frame's own innerHTML is wiped and rebuilt with a
+     fresh banner clone on every open, so anything living inside it
+     wouldn't survive. z-index 1 keeps it below the duration chip/
+     pauseicon/corner control (all z-index 3). */
+  .pt-motion-frame-btn {
+    position: absolute; inset: 0; z-index: 1;
+    background: transparent; border: 0; padding: 0; margin: 0;
+    cursor: pointer;
+  }
+  /* Centered frosted pause disc — REUSE-AUDIT port of canvas-graphics'
+     .c4-video-player-pauseicon (S76): identical 64px / blur(14px)
+     saturate(160%) recipe, a passive "here's how you'd play this"
+     indicator distinct from the dedicated playpause control below —
+     visible ONLY while paused. */
+  .pt-motion-pauseicon {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(18, 20, 26, 0.4);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+  }
+  .pt-motion-pauseicon svg { width: 42%; height: 42%; display: block; color: #fff; }
+  .pt-motion.pt-motion-paused .pt-motion-pauseicon { opacity: 1; }
+  .pt-motion-playpause {
+    position: absolute; left: 18px; bottom: 16px; z-index: 3;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 0.5px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    cursor: pointer;
+    transition: background 160ms cubic-bezier(0.22,1,0.36,1), transform 150ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .pt-motion-playpause:hover { background: rgba(255,255,255,0.22); }
+  .pt-motion-playpause:active { transform: scale(0.94); }
+  .pt-motion-playpause svg { width: 14px; height: 14px; }
+  .pt-motion-playpause .pt-motion-icon-play { display: none; margin-left: 1px; }
+  .pt-motion-playpause .pt-motion-icon-pause { display: block; }
+  .pt-motion.pt-motion-paused .pt-motion-playpause .pt-motion-icon-play { display: block; }
+  .pt-motion.pt-motion-paused .pt-motion-playpause .pt-motion-icon-pause { display: none; }
+
+  /* The three animated beats — each targets the live clone's own
+     content elements (.pt-banner-media/-headline/-cta already exist
+     on every banner), so the ONLY new markup needed is the
+     .pt-motion-banner class on the clone's root. `infinite` so it
+     truly loops; .pt-motion-paused (toggled by the play/pause button)
+     flips animation-play-state on all three at once — a real pause,
+     not a class swap that fakes it. */
+  .pt-motion-banner .pt-banner-media img { animation: pt-motion-img-pan 6s ease-in-out infinite; }
+  @keyframes pt-motion-img-pan {
+    0%   { transform: scale(1.08) translate(0, 0); }
+    50%  { transform: scale(1.15) translate(-2.4%, -1.6%); }
+    100% { transform: scale(1.08) translate(0, 0); }
+  }
+  .pt-motion-banner .pt-banner-headline { animation: pt-motion-headline-in 6s cubic-bezier(0.16,1,0.3,1) infinite; }
+  @keyframes pt-motion-headline-in {
+    0%   { opacity: 0; transform: translateX(-16px); }
+    10%  { opacity: 1; transform: translateX(0); }
+    85%  { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(-16px); }
+  }
+  .pt-motion-banner .pt-banner-cta { animation: pt-motion-cta-pop 6s cubic-bezier(0.16,1,0.3,1) infinite; transform-origin: center; }
+  @keyframes pt-motion-cta-pop {
+    0%   { opacity: 0; transform: scale(0.6); }
+    18%  { opacity: 1; transform: scale(1.08); }
+    26%  { opacity: 1; transform: scale(1); }
+    85%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.6); }
+  }
+  .pt-motion.pt-motion-paused .pt-motion-banner .pt-banner-media img,
+  .pt-motion.pt-motion-paused .pt-motion-banner .pt-banner-headline,
+  .pt-motion.pt-motion-paused .pt-motion-banner .pt-banner-cta {
+    animation-play-state: paused;
+  }
+
+  /* Timeline strip — designed-but-static (no JS-driven sync to the
+     CSS loop above; the playhead sits at one fixed, deliberate
+     position). The track-label gutter is a fixed 46px so ruler ticks
+     + the playhead (positioned via the same calc() against that
+     reduced width) line up with the lane bars below. */
+  .pt-motion-timeline {
+    flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 10px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 320ms cubic-bezier(0.22,1,0.36,1) 140ms, transform 360ms cubic-bezier(0.22,1,0.36,1) 140ms;
+  }
+  .pt-motion[data-visible="1"] .pt-motion-timeline { opacity: 1; transform: translateY(0); }
+  .pt-motion-timeline-head { display: flex; align-items: center; justify-content: space-between; }
+  .pt-motion-timeline-title {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .pt-motion-timeline-time {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; color: var(--text-subtle);
+  }
+  .pt-motion-timeline-body { position: relative; display: flex; flex-direction: column; gap: 6px; }
+  .pt-motion-ruler { position: relative; height: 12px; margin-left: 46px; }
+  .pt-motion-tick { position: absolute; top: 0; width: 1px; height: 6px; background: var(--line-solid); z-index: 1; }
+  /* Scrub fill — REUSE-AUDIT port of canvas-graphics' own
+     .c4-video-player-scrub/-scrub-fill (S76): a live progress bar,
+     one shared clock with the Ken-Burns/headline/CTA loops (all 6s,
+     all gated by .pt-motion-paused). Lives inside the ruler (already
+     offset by the same 46px label gutter every lane below shares) so
+     it reads as "the ruler doubles as the scrub" rather than a
+     redundant second bar. Colors translated to this shell's own OMNI
+     chrome tokens (var(--accent)/var(--line)) since — unlike S76,
+     which is white-on-dark throughout — only the stage itself is
+     dark here; this timeline strip sits on the ordinary canvas bg. */
+  .pt-motion-scrub-track {
+    position: absolute; left: 0; right: 0; top: 50%;
+    transform: translateY(-50%);
+    height: 3px; border-radius: 2px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .pt-motion-scrub-fill {
+    position: absolute; inset: 0;
+    transform-origin: left center;
+    transform: scaleX(0);
+    background: var(--accent);
+    border-radius: 2px;
+    animation: pt-motion-scrub-fill 6s linear infinite;
+    animation-play-state: paused;
+  }
+  .pt-motion[data-visible="1"]:not(.pt-motion-paused) .pt-motion-scrub-fill { animation-play-state: running; }
+  @keyframes pt-motion-scrub-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .pt-motion-track { display: flex; align-items: center; gap: 0; height: 22px; }
+  .pt-motion-track-label {
+    flex: 0 0 46px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px; color: var(--text-subtle);
+  }
+  .pt-motion-lane {
+    flex: 1 1 auto; position: relative; height: 100%;
+    background: var(--panel-bg-general);
+    border: 0.5px solid var(--line);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .pt-motion-clip {
+    position: absolute; top: 3px; bottom: 3px;
+    border-radius: 3px;
+    background: var(--accent-soft);
+    box-shadow: inset 1px 0 0 var(--accent), inset -1px 0 0 var(--accent);
+  }
+  .pt-motion-playhead {
+    position: absolute; top: 0; bottom: 0;
+    left: calc(46px + (100% - 46px) * 0.32);
+    width: 1.5px;
+    background: var(--accent);
+    pointer-events: none;
+  }
+  .pt-motion-playhead::before {
+    content: '';
+    position: absolute; top: -3px; left: 50%;
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 1.5px;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  /* Bryan, 9/15 — the panel's STYLE GUIDE card is a chooser: no radio,
+     the caret at the right, the chip hover; a click opens the roster. */
+  #ptEditorPanel [data-studio-brand-card] .pt-set-item-radio { display: none; }
+  #ptEditorPanel [data-studio-brand-card] .pt-set-caret { margin-left: auto; color: var(--text-subtle); flex-shrink: 0; }
+  #ptEditorPanel [data-studio-brand-card]:hover { border-color: rgba(15, 23, 42, 0.22); background: var(--hover-soft); }
+  #ptEditorPanel [data-studio-brand-card]:hover .pt-set-caret { color: var(--text-body); }
+
+  /* Bryan, 9/15 ("too much space above the 'Describe a change to A1' text")
+     — in unit mode the hat body is the helper line alone, so the air
+     that sat above the pills row goes: the line hugs the header. */
+  .pt-hat-studio-body:not(:has(.pt-set-row)) { margin-top: -8px; }
+  .pt-hat-studio-body:not(:has(.pt-set-row)) .pt-set-hint { margin-top: 0; }
+

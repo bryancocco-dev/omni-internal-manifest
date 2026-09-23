@@ -1,0 +1,487 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Comments panel — fixed right-side aggregator (Figma-style structure, OMNI
+   light palette). When open, the page content shifts left by the panel width
+   so nothing is covered; when hidden, a floating reveal button returns.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root { --comments-w: 340px; }
+
+:root { --comments-motion: 460ms var(--omni-transition-easing-smooth); }
+
+/* Content shift — the whole page frame narrows to make room for the panel.
+   The cap is set inline (max-width) from comments-panel.js: this engine
+   ignores `width` on the width:100% .doc but honors `max-width`. Both open and
+   closed states are calc() lengths (see applyShift) so this transition fires
+   and the column glides — perfectly in sync with the panel's own slide (same
+   --comments-motion duration + easing). */
+.doc { transition: max-width var(--comments-motion); }
+
+.comments-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--comments-w);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  background: var(--doc-paper-bg);
+  border-left: 1px solid var(--doc-rule);
+  /* Closed: slid off to the right + faded out. The opacity fades a touch faster
+     than the slide so the panel materializes/dissolves softly at its edge
+     rather than hard-sliding. */
+  transform: translateX(100%);
+  opacity: 0;
+  box-shadow: -18px 0 40px rgba(15, 23, 42, 0);
+  will-change: transform, opacity;
+  transition: transform var(--comments-motion), opacity 340ms ease,
+    box-shadow var(--comments-motion);
+}
+
+.comments-panel.is-open {
+  transform: translateX(0);
+  opacity: 1;
+  box-shadow: -18px 0 40px rgba(15, 23, 42, 0.06);
+}
+
+/* ── header ──────────────────────────────────────────────────────────────── */
+.comments-panel__head {
+  flex: none;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--doc-rule);
+}
+
+.comments-panel__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.comments-panel__title-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.comments-panel__title {
+  font-family: var(--doc-font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.15px;
+  color: var(--doc-ink-strong);
+}
+
+.comments-panel__count {
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--doc-ink-subtle);
+}
+.comments-panel__count[hidden] { display: none; }
+
+.comments-panel__collapse {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--omni-radius-small);
+  background: transparent;
+  color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition: background var(--omni-transition-duration-fast) ease, color var(--omni-transition-duration-fast) ease;
+}
+.comments-panel__collapse:hover { background: var(--doc-nested-bg); color: var(--doc-ink-strong); }
+
+.comments-panel__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comments-panel__search {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--omni-radius-medium);
+  background: var(--doc-nested-bg);
+  border: 1px solid transparent;
+  transition: border-color var(--omni-transition-duration-fast) ease, background var(--omni-transition-duration-fast) ease;
+}
+.comments-panel__search:focus-within { border-color: var(--doc-accent); background: var(--doc-paper-bg); }
+.comments-panel__search-ico { color: var(--doc-ink-subtle); display: inline-flex; flex: none; }
+.comments-panel__search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--doc-ink);
+  outline: none;
+}
+.comments-panel__search input::placeholder { color: var(--doc-ink-subtle); }
+.comments-panel__search input::-webkit-search-decoration,
+.comments-panel__search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.comments-panel__tool {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--omni-radius-medium);
+  background: transparent;
+  color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition: background var(--omni-transition-duration-fast) ease, color var(--omni-transition-duration-fast) ease, border-color var(--omni-transition-duration-fast) ease;
+}
+.comments-panel__tool:hover { background: var(--doc-nested-bg); color: var(--doc-ink-strong); }
+
+/* ── body: a soft tray holding white comment cards (distinct from Figma's
+   flat list) ─────────────────────────────────────────────────────────────── */
+.comments-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--doc-nested-bg);
+}
+
+.comments-panel__empty {
+  margin: auto 0;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--doc-ink-subtle);
+}
+.comments-panel__empty-ico { color: var(--doc-ink-subtle); opacity: 0.7; }
+.comments-panel__empty p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--doc-ink);
+  max-width: 32ch;
+}
+
+/* Each comment is a white card floating on the tray. */
+.comments-panel__item {
+  position: relative;
+  padding: 14px 15px 13px;
+  border-radius: var(--omni-radius-large);
+  background: var(--doc-paper-bg);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition: box-shadow var(--omni-transition-duration-fast) ease, transform var(--omni-transition-duration-fast) ease;
+}
+.comments-panel__item:hover {
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06), 0 8px 20px rgba(15, 23, 42, 0.10);
+  transform: translateY(-1px);
+}
+.comments-panel__item.is-resolved { opacity: 0.62; }
+.comments-panel__item.is-resolved .comments-panel__msg--root .comments-panel__text { text-decoration: line-through; text-decoration-color: var(--doc-ink-subtle); }
+
+/* ── thread messages (root + replies) ─────────────────────────────────────── */
+.comments-panel__msg { display: flex; align-items: flex-start; gap: 10px; }
+.comments-panel__msg-main { flex: 1; min-width: 0; }
+
+.comments-panel__msg-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 3px;
+}
+
+.comments-panel__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--avatar, var(--doc-accent));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  flex: none;
+}
+.comments-panel__msg--reply .comments-panel__avatar { width: 24px; height: 24px; font-size: 8.5px; }
+
+.comments-panel__name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  color: var(--doc-ink-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.comments-panel__time { flex: none; font-size: 11px; color: var(--doc-ink-subtle); }
+
+.comments-panel__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--doc-ink);
+  overflow-wrap: anywhere;
+}
+.comments-panel__msg--reply .comments-panel__text { font-size: 13px; }
+
+/* Uploaded image attachments inside a comment/reply. */
+.comments-panel__imgs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.comments-panel__img {
+  max-width: 100%;
+  max-height: 240px;
+  border-radius: var(--omni-radius-medium);
+  border: 1px solid var(--doc-rule);
+  object-fit: cover;
+  display: block;
+}
+
+/* Replies stack under the root, linked by a hairline thread rail that runs
+   down the gutter beneath the root avatar. */
+.comments-thread__replies {
+  margin: 12px 0 0 15px;           /* 15px = root avatar radius → rail centres on it */
+  padding: 4px 0 2px 17px;
+  border-left: 1.5px solid var(--doc-rule);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Fold / unfold control for a thread's replies. */
+.comments-thread__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 11px 0 0 40px;           /* 40px = avatar (30) + gap (10) → aligns to text column */
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--doc-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition: color var(--omni-transition-duration-fast) ease;
+}
+.comments-thread__toggle:hover { color: var(--doc-accent); }
+.comments-thread__toggle-ico { display: inline-flex; transition: transform var(--omni-transition-duration-fast) ease; }
+.comments-thread__toggle.is-folded .comments-thread__toggle-ico { transform: rotate(-90deg); }
+
+/* Reply affordance — compact trigger that expands into the rich composer. */
+.comments-thread__foot { margin: 12px 0 0 40px; }
+.comments-thread__reply-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 13px 0 11px;
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-medium);
+  background: var(--doc-paper-bg);
+  font-family: var(--doc-font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--doc-ink-body);
+  cursor: pointer;
+  transition: border-color var(--omni-transition-duration-fast) ease, color var(--omni-transition-duration-fast) ease, background var(--omni-transition-duration-fast) ease;
+}
+.comments-thread__reply-trigger:hover { border-color: var(--doc-ink-subtle); color: var(--doc-ink-strong); background: var(--doc-nested-bg); }
+.comments-thread__reply-ico { display: inline-flex; color: var(--doc-ink-subtle); }
+.comments-thread__reply-trigger:hover .comments-thread__reply-ico { color: var(--doc-accent); }
+
+.comments-thread__composer { margin: 12px 0 0 40px; }
+
+/* Keep the composer's emoji picker inside the narrow panel — anchor it to the
+   composer's right edge and cap the width so it can't clip past the panel edge
+   (the default 300px left-anchored picker overflowed the 340px panel). */
+.comments-thread__composer .emoji-picker {
+  left: auto;
+  right: 0;
+  width: 288px;
+  max-width: calc(100vw - 40px);
+}
+.comments-thread__composer .emoji-scroll { height: 188px; }
+
+/* ── right-side comments rail — a hairline inset from the browser edge with the
+   comments trigger sitting on it (the panel covers it when open). ──────────── */
+.doc-rail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 46px;
+  width: 1px;
+  z-index: 40;
+  pointer-events: none;
+}
+/* The hairline is its own layer so it can start BELOW the cover while the
+   button stays put. --rail-top is the hero's bottom edge in the viewport
+   (set by initHeroParallax, clamped at 0), so the line grows in as the cover
+   scrolls away and never crosses the hero. Defaults to full height when a
+   page has no hero. */
+.doc-rail__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--rail-top, 0px);
+  /* Ends AT the colophon's top hairline — the two lines meet, never cross.
+     --rail-bottom is the colophon's intrusion into the viewport (set by the
+     same scroll sync that drives --rail-top; 0 while it's below the fold). */
+  bottom: var(--rail-bottom, 0px);
+  background: var(--doc-rule);
+  /* ARRIVAL mirrors the left TOC rail: hidden over the cover, then the same
+     rise + focus-pull once the reader is past it (slid in from the right).
+     --rail-top keeps the line from ever crossing the hero geometrically;
+     this makes its appearance a designed moment instead of a pixel-tied
+     grow-in. Toggled by initHeroParallax at the TOC's 0.72-hero threshold. */
+  opacity: 0;
+  filter: blur(6px);
+  translate: 10px 0;
+  transition:
+    opacity 560ms var(--omni-transition-easing-smooth, ease),
+    filter 640ms var(--omni-transition-easing-smooth, ease),
+    translate 560ms var(--omni-transition-easing-smooth, ease);
+}
+.doc-rail.is-past-cover .doc-rail__line {
+  opacity: 1;
+  filter: blur(0);
+  translate: 0 0;
+}
+.doc-rail__btn {
+  position: absolute;
+  top: 92px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--doc-rule);
+  border-radius: 50%;
+  background: var(--doc-paper-bg);
+  color: var(--doc-ink-body);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 12px rgba(15, 23, 42, 0.08);
+  transition: color var(--omni-transition-duration-fast) ease, border-color var(--omni-transition-duration-fast) ease,
+    background var(--omni-transition-duration-fast) ease, box-shadow var(--omni-transition-duration-fast) ease, transform var(--omni-transition-duration-fast) ease;
+}
+.doc-rail__btn svg { width: 19px; height: 19px; }
+.doc-rail__btn:hover {
+  color: var(--doc-ink-strong);
+  border-color: var(--doc-ink-subtle);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08), 0 8px 20px rgba(15, 23, 42, 0.12);
+  transform: translateX(-50%) translateY(-1px);
+}
+/* Tactile press on click. */
+.doc-rail__btn:active { transform: translateX(-50%) scale(0.9); transition-duration: 90ms; }
+.doc-rail__btn.is-active {
+  color: var(--doc-accent);
+  border-color: var(--doc-accent);
+  background: var(--doc-accent-soft);
+}
+/* Icon gives a subtle nudge as the panel toggles open. */
+.doc-rail__btn svg { transition: transform var(--omni-transition-duration-fast) ease; }
+.doc-rail__btn.is-active svg { transform: scale(1.06); }
+.doc-rail__count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--doc-accent);
+  color: var(--omni-text-on-bright-bg, #fff);
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--doc-page-bg);
+}
+.doc-rail__count[hidden] { display: none; }
+
+@media (max-width: 640px) {
+  .doc-rail { right: 20px; }
+}
+
+/* @mention chip inside a comment body (panel + inline popover). */
+.doc-mention {
+  color: var(--doc-accent);
+  font-weight: 600;
+  background: var(--doc-accent-soft);
+  padding: 0 4px;
+  border-radius: var(--omni-radius-small);
+}
+
+/* ── dropdown menus (sort + more) ────────────────────────────────────────── */
+.comments-menu {
+  position: absolute;
+  z-index: 90;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-large);
+  box-shadow: var(--omni-shadow-elevation-2);
+}
+
+.comments-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--omni-radius-small);
+  font-family: var(--doc-font-body);
+  font-size: 13px;
+  color: var(--doc-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--omni-transition-duration-fast) ease;
+}
+.comments-menu__item:hover { background: var(--doc-nested-bg); }
+.comments-menu__item.is-active { color: var(--doc-accent); font-weight: 600; }
+.comments-menu__item.is-disabled { color: var(--doc-ink-subtle); cursor: default; }
+.comments-menu__item.is-disabled:hover { background: transparent; }
+.comments-menu__mark { width: 14px; display: inline-flex; align-items: center; justify-content: center; color: var(--doc-accent); flex: none; }
+.comments-menu__label { flex: 1; }
+.comments-menu__shortcut { color: var(--doc-ink-subtle); font-family: var(--doc-font-mono); font-size: 11px; }
+
+.comments-menu__divider { height: 1px; background: var(--doc-rule); margin: 6px 4px; }
+.comments-menu__heading {
+  padding: 8px 10px 4px;
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+}
+
+/* The reveal control lives in the header (.doc-header__comments in cover.css),
+   next to Share — no floating button. */
+
+/* On narrow screens the panel overlays instead of shifting the page (the JS
+   applyShift() skips the width change below the breakpoint). */
+@media (max-width: 900px) {
+  .comments-panel { width: min(340px, 92vw); box-shadow: var(--omni-shadow-elevation-3); }
+}

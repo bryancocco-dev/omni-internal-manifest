@@ -1,0 +1,238 @@
+/* ==========================================================================
+   Seam B — On-canvas search (ANDREW ROUND -> "B — ON-CANVAS SEARCH",
+   PLAN.md). Comment left on the live build, on the zoom rail: "Add on
+   canvas search." Everything below is new — the rail entry point's active-
+   state tint (the button itself lives in FlowCanvas.jsx, alongside its
+   siblings; flow.css already handles the shared square/hover/icon-size
+   rules every .react-flow__controls-button gets, this file only adds the
+   ONE declaration flow.css can't, since editing it is outside this seam's
+   file grant this round), the floating find bar, and the non-matching-node
+   dim. Tokens + the shared easing/duration vocabulary only (cw-tokens.css /
+   motion.css's --cw-e- and --cw-d- vars) — no invented colors, same rule
+   every other builder stylesheet follows.
+   ========================================================================== */
+
+/* ---- rail entry point ---------------------------------------------------
+   Same active-tint recipe flow.css already uses for cw-snap-toggle/
+   cw-comment-toggle ([aria-pressed='true'] -> accent tint) — duplicated
+   here at 2 declarations rather than editing that file's selector list. */
+#workflow-root .react-flow__controls-button.cw-search-btn[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--cw-accent) 12%, transparent);
+  color: var(--cw-accent);
+}
+
+/* ==========================================================================
+   Find bar — floating, top-center of the workspace band, "instrument
+   voice": hairline card, mono counter, drawn chevrons/cross. A plain
+   sibling of .cw-flow-stage in FlowCanvas.jsx (like .cw-instructions-card),
+   so it never pans/zooms with the graph.
+   ========================================================================== */
+#workflow-root .cw-search-bar {
+  position: absolute;
+  /* Clears the 64px frosted header the same way the Controls rail does
+     (flow.css's own `.react-flow__controls.top { top: 80px }`) — reusing
+     that exact constant rather than picking a new one. */
+  top: 80px;
+  /* Horizontal centering is InstructionsCard's own formula, verbatim
+     (instructions.css): the wrap already starts clear of the palette, so
+     only --cw-panel-w (the compiled panel floating over the wrap's right
+     side) needs subtracting. */
+  left: calc((100% - var(--cw-panel-w, 288px)) / 2);
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(420px, calc(100% - var(--cw-panel-w, 288px) - 48px));
+  padding: 6px 8px 6px 12px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 10px;
+  /* Same two-layer float shadow the Controls rail's own pill uses
+     (flow.css's --xy-controls-box-shadow), reused verbatim. */
+  box-shadow: var(--cw-shadow), 0 4px 10px rgba(16, 24, 40, 0.06);
+  transition: border-color var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+  animation: cw-search-bar-in var(--cw-d-2, 240ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* "focus ring blooms" language (nodes.css's own phrase for .cw-input/
+   .cw-textarea) reused here as a border tint rather than a literal box-
+   shadow ring — the bar already sits inside its own hairline card, so a
+   SECOND ring just outside it would compete with the card edge itself. */
+#workflow-root .cw-search-bar:focus-within {
+  border-color: var(--cw-accent);
+}
+
+@keyframes cw-search-bar-in {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-search-bar {
+    animation: none;
+    transition: none;
+  }
+}
+
+#workflow-root .cw-search-bar-icon {
+  flex: none;
+  color: var(--cw-text-3);
+}
+
+#workflow-root .cw-search-input {
+  flex: 1 1 100px;
+  min-width: 60px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--cw-font);
+  font-size: 12.5px;
+  color: var(--cw-text);
+}
+
+#workflow-root .cw-search-input::placeholder {
+  color: var(--cw-text-3);
+}
+
+/* "n of m" — the same mono/tabular-nums recipe ZoomReadout uses so every
+   numeral chip in this builder reads as one family (that button's own CSS
+   comment: family stated explicitly, not inherited, for exactly this
+   reason — flow.css's .cw-zoom-readout rule). */
+#workflow-root .cw-search-count {
+  flex: none;
+  font-family: var(--cw-font-mono);
+  font-size: 10.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  color: var(--cw-text-3);
+  white-space: nowrap;
+}
+
+/* Zero matches: PLAN.md — "dim NOTHING ... show the counter in warn text
+   instead." The one visible signal that the query came up empty. */
+#workflow-root .cw-search-count.is-warn {
+  color: var(--cw-warn-text);
+}
+
+#workflow-root .cw-search-nav {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+}
+
+#workflow-root .cw-search-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 13px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-search-nav-btn:hover:not(:disabled) {
+  color: var(--cw-accent);
+}
+
+#workflow-root .cw-search-nav-btn:disabled {
+  color: var(--cw-border);
+  cursor: default;
+}
+
+/* Drawn cross — the SAME 8x8 stroke mark CrossIcon already renders for the
+   issues popover's dismiss button and the comments composer's close button
+   (FlowCanvas.jsx's own CrossIcon header comment), reused a third time. */
+#workflow-root .cw-search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin-left: 2px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cw-text-3);
+  cursor: pointer;
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-search-close:hover {
+  background: var(--cw-field);
+  color: var(--cw-text);
+}
+
+/* ==========================================================================
+   Result dimming — a `.cw-search-dim` class on .cw-flow-stage (only while
+   there's a live query AND at least one hit — PLAN.md's own "on zero
+   matches dim NOTHING" carve-out) mutes every OTHER node; matches carry
+   `.is-search-hit`, set as a per-node React Flow `className` in
+   FlowCanvas.jsx (a plain Node field — verified against the installed
+   @xyflow/react package: NodeWrapper folds `node.className` straight into
+   the same div that already carries `react-flow__node` — so no nodes.css/
+   node-component edit was needed to reach the card). The "current" result
+   gets no extra treatment here — it's selected via the existing focusIssue
+   path, so it already carries nodes.css's own .is-selected accent border +
+   corner ticks for free.
+
+   FILTER, not opacity (Bryan: "some of the canvas elements turn transparent
+   and i can see through them which looks sloppy") — cards overlap other
+   cards and wires run behind them on this canvas, so opacity on the node
+   turns its whole body to glass: whatever sits underneath shows straight
+   through. `filter` only re-grades the node's own already-composited
+   pixels — it has nothing to do with what's behind, so a dimmed card stays
+   100% opaque paper no matter how much overlaps it. saturate/contrast/
+   brightness together read as "parked" with zero transparency.
+
+   A surface-veil pseudo-element was the fallback plan, but nodes.css's own
+   ::before/::after slots on .cw-node are BOTH already spoken for, and
+   neither is conditional in a way that frees it universally:
+   `.cw-node.is-selected::before` (the corner-tick registration marks) can
+   coexist with a dimmed node (a stale selection can sit on a now-non-
+   matching card), and `.cw-node--trigger::after` (the power-flicker glow)
+   is claimed by every trigger card regardless of state. No slot is free
+   across every node type/state, so a veil would clobber one of them
+   somewhere — filter-only is the answer that needs zero nodes.css touch,
+   exactly the fallback rule this seam was given.
+
+   Edges stay on opacity — a ~1.5px hairline (flow.css's --xy-edge-stroke-
+   width) has no body for anything to show through, so the glass problem
+   never applies to them. Dimmed uniformly (search only ever matches NODE
+   fields — title/type/agent/format/description — there's no such thing as
+   a "matching" edge) so a muted card's own wires read as part of the same
+   parked cluster instead of staying full-strength next to a grayed-out
+   card. Same duration/easing token as the node filter so both read as one
+   coordinated state change.
+   ========================================================================== */
+#workflow-root .cw-flow-stage.cw-search-dim .react-flow__node {
+  filter: saturate(0.15) contrast(0.92) brightness(1.02);
+  transition: filter var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+#workflow-root .cw-flow-stage.cw-search-dim .react-flow__node.is-search-hit {
+  filter: none;
+}
+
+#workflow-root .cw-flow-stage.cw-search-dim .react-flow__edge {
+  opacity: 0.4;
+  transition: opacity var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-flow-stage.cw-search-dim .react-flow__node,
+  #workflow-root .cw-flow-stage.cw-search-dim .react-flow__edge {
+    transition: none;
+  }
+}

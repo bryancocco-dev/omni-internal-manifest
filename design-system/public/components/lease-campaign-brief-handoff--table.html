@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+  OMNI component: table
+  Project: Brief
+  Note: .app-modal-table — Agents/Knowledge/Tools picker grid (thead row + one JS-rendered .app-modal-row; row from JS template)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — table · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="app-modal-table" role="table" aria-label="Agents">
+            <div class="app-modal-thead" role="row">
+              <div class="app-modal-th app-modal-th-check" role="columnheader">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select all"></span>
+              </div>
+              <div class="app-modal-th app-modal-th-name" role="columnheader">Agent</div>
+              <div class="app-modal-th app-modal-th-desc" role="columnheader">Description</div>
+              <div class="app-modal-th app-modal-th-date" role="columnheader">Date Modified</div>
+            </div>
+            <div class="app-modal-tbody">
+              <div class="app-modal-row" data-name="General">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select General" checked></span>
+                <span class="app-modal-row-name">General</span>
+                <span class="app-modal-row-desc">A normal user</span>
+                <span class="app-modal-row-date">May 12, 2026</span>
+              </div>
+              <div class="app-modal-row" data-name="Copywriter">
+                <span class="app-modal-check"><input type="checkbox" aria-label="Select Copywriter"></span>
+                <span class="app-modal-row-name">Copywriter</span>
+                <span class="app-modal-row-desc">A creative copywriter crafts engaging, persuasive content across briefs and channels.</span>
+                <span class="app-modal-row-date">May 10, 2026</span>
+              </div>
+            </div>
+          </div>
+</body>
+</html>

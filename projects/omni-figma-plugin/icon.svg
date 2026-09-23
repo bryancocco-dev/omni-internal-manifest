@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="24" fill="#1b1b1d"/>
+  <!-- OMNI four-point sparkle (concave-curved edges) -->
+  <path d="M64 22 Q70 58 106 64 Q70 70 64 106 Q58 70 22 64 Q58 58 64 22 Z" fill="#ffffff"/>
+</svg>

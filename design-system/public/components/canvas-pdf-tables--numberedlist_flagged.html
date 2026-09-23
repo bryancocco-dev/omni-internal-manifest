@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  OMNI component: numberedlist_flagged
+  Project: PDF Tables
+  Note: .flags — numbered failure legend: red circular index badge + title + description, <code> spans highlight the bad value (pairs with .sheet_broken mockups)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Tables — numberedlist_flagged · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-pdf-tables.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<ul class="flags">
+          <li><span class="flag-n">1</span><span><span class="flag-t">Headers overprint each other</span><span class="flag-d">Two column titles are drawn at fixed x-positions with no width check, so they render on top of one another: <code>GEOGRAPHY</code> + <code>SAMPLE</code> come out as <code>GEOGRAPHYSAMPLE</code>.</span></span></li>
+          <li><span class="flag-n">2</span><span><span class="flag-t">Cell values collide across columns</span><span class="flag-d">Same cause, one row down: <code>Secondary research</code> and <code>Nielsen / GWI</code> overlap into <code>SecondaryNielsen</code>. Two real values become one unreadable string.</span></span></li>
+          <li><span class="flag-n">3</span><span><span class="flag-t">Values break mid-token</span><span class="flag-d">Currency is hyphenated across lines — <code>$18K</code> prints as <code>$18-</code> then <code>K</code>. A number that breaks in half is worse than a number that is cut off, because it still looks like a number.</span></span></li>
+          <li><span class="flag-n">4</span><span><span class="flag-t">The prose column drives every row's height</span><span class="flag-d">NOTES gets whatever width is left over — about 14 characters — so one ordinary sentence becomes a 14-line column and stretches its whole row to match.</span></span></li>
+          <li><span class="flag-n">5</span><span><span class="flag-t">Rows tear across the page break</span><span class="flag-d">Row 4's NOTES text starts at the bottom of page 1 while the rest of row 4 renders on page 2 — and page 2 then holds a single row on otherwise blank paper.</span></span></li>
+        </ul>
+</body>
+</html>

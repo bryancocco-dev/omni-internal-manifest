@@ -1,0 +1,185 @@
+/* Seam B — Theme contract (THEMES PHASE)
+ *
+ * Single source of truth for every `--cw-*` custom property the builder
+ * consumes (app.css / nodes.css / flow.css / the node & edge JSX). Maps
+ * each one to the shell's own theme vars — set as inline styles on <body>
+ * by themes/'s ported profile module (Seam A) — with the CURRENT Omni
+ * Light value as the literal fallback, so the cascade "just works" with
+ * zero JS state in here: switch the shell theme, the builder follows.
+ *
+ * Scoped to #workflow-root only, so it can never leak into the shell.
+ * Import order (set by B in main.jsx): xyflow base -> this file -> D's
+ * flow.css -> B's app.css, so flow.css/app.css/nodes.css can rely on
+ * every --cw-* var already being defined by the time they load.
+ */
+
+#workflow-root {
+  /* ---- accent + on-accent ink -------------------------------------- */
+  --cw-accent: var(--accent, #1858EE);
+  --cw-accent-soft: var(--accent-soft, rgba(24, 88, 238, .12));
+  /* On-accent ink. NOT mapped to the shell's static --text-button — the
+     chat-hat base defines that as its own quiet-button ink (#0a0a0a in
+     light), which is the wrong semantics and painted black labels on accent
+     fills. Plain white is correct for the light default; the dark root and
+     the accent engine override below (Bryan: "text or icons on this color
+     should be white"). */
+  --cw-on-accent: #ffffff;
+
+  /* ---- typography ---------------------------------------------------- */
+  --cw-font: var(--font-sans, 'Inter', system-ui, sans-serif);
+
+  /* ---- surfaces -------------------------------------------------------- */
+  --cw-surface: var(--card-bg, #FFFFFF);
+  --cw-surface-2: var(--panel-bg-chat, #F6F7F9); /* inputs / quiet-row hover */
+  --cw-surface-3: var(--panel-bg-3, #F3F4F6); /* segmented control, idle */
+
+  /* ---- chrome + fields (UI ELEVATION PHASE, E1) --------------------------
+     --cw-chrome: the "wings" tint for palette/panel/header — one step below
+     the canvas so white cards pop on the brightest field. --cw-field: filled
+     input background (consumed by E2). Both derive from existing surface
+     tokens via color-mix, so dark/brand themes inherit correctly for free —
+     no separate dark-exceptions entry needed. ------------------------------ */
+  --cw-chrome: color-mix(in srgb, var(--cw-surface) 55%, var(--cw-surface-3));
+  /* Lightened (Bryan) — 55% read as a solid grey slab that swallowed the
+     hairlines of anything sitting on it. */
+  --cw-field: color-mix(in srgb, var(--cw-surface-3) 32%, var(--cw-surface));
+
+  /* ---- borders --------------------------------------------------------- */
+  /* Half-pixel hairline — matches the shell's own strokes (the CANVAS rail's
+     border-right, the rail-tools' border-top). Every structural stroke in
+     the builder rides this token (Bryan). */
+  --cw-hairline-w: 0.5px;
+  --cw-border: var(--line-solid, #E5E7EB);
+  --cw-border-soft: var(--line, rgba(0, 0, 0, .08));
+
+  /* ---- text tiers -------------------------------------------------------- */
+  --cw-text: var(--text-strong, #111827);
+  --cw-text-2: var(--text-body, #374151);
+  --cw-text-3: var(--text-subtle, #6B7280);
+  --cw-label: var(--text-subtle, #9CA3AF);
+
+  /* ---- canvas ------------------------------------------------------------ */
+  --cw-canvas-bg: var(--bg-canvas, #F7F8FA);
+  --cw-canvas-dot: var(--line-solid, #D9DDE3);
+
+  /* ---- edges + handles ---------------------------------------------------- */
+  --cw-edge: #B6BCC8;
+  --cw-edge-active: var(--cw-accent);
+  --cw-handle-bg: var(--cw-surface);
+  --cw-handle-border: var(--cw-edge);
+
+  /* ---- elevation + status ------------------------------------------------- */
+  --cw-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+  --cw-warn-bg: #FEF3C7;
+  --cw-warn-text: #92400E;
+  --cw-danger: #DC2626;
+  /* R1 (QA ledger RESIDUALS, post-F13) — text-on-fill and text-on-surface
+     turned out to need opposite things in dark: --cw-danger lightens to
+     #F87171 there for popover-text legibility (see the dark block below),
+     but .cw-issues-pill (app.css) fills ITS OWN background with a danger
+     token and puts ink on top of that fill — a lighter fill costs THAT
+     pairing contrast (white-on-#EF4444, dark's old danger, already measured
+     a sub-AA 3.76:1; white-on-#F87171 measures 2.77:1). Split: --cw-danger
+     stays the text/marks/tint token (diverges per theme below);
+     --cw-danger-fill is the solid-fill token for chips like the pill
+     (+ --cw-on-danger-fill, the ink that sits on it) and is intentionally
+     NOT redefined in the dark block — it holds at this light value in both
+     themes, measured white-on-#DC2626 = 4.83:1 (>= the 4.5:1 AA floor),
+     so the pill reads as the same solid red chip regardless of theme. */
+  --cw-danger-fill: #DC2626;
+  --cw-on-danger-fill: #ffffff;
+
+  /* ---- node "kind" accents — FIXED semantics, not brand-mapped. What a
+     kind means (trigger=green, human=orange, ...) doesn't change when the
+     workspace reskins; only the primary/accent color (task, output) does,
+     via --cw-accent above. ------------------------------------------------ */
+  --cw-kind-trigger: #10B981;
+  --cw-kind-human: #F59E0B;
+  --cw-kind-logic: #8B5CF6;
+  --cw-kind-wait: #64748B;
+  --cw-kind-stop: #DC2626;
+  /* WAVE 1 — THE VERB EXPANSION (PLAN.md master contract, "### Shared
+     infrastructure" -> "Color discipline"): "ONE new kind family... for
+     Source, Audience, Measure, Style Reference ('things that feed the flow
+     truth')." No Wave 1 node uses this yet (Gather/A-B Split both join the
+     existing --cw-kind-logic family) — defined now so Wave 2's Source/
+     Audience and Wave 3's Style Reference land with zero token work of
+     their own. Dark value brightened the same way --cw-danger is below
+     (a plain lighten, not a hue shift), for the same reason: a signal-cyan
+     ink pairing has to hold contrast against a near-black card surface. */
+  --cw-kind-signal: #0EA5E9;
+
+  /* ---- organizational tints (NODE TOOLBAR V2, Comfy's color-chip row) —
+     FIXED hues, same reasoning as the kind accents above: these tag a
+     card for the person's own filing, not its identity, so they don't
+     move with the workspace brand either. Muted/desaturated on purpose —
+     "small honest signals... never floods" (DESIGN BAR) — every use mixes
+     one of these into --cw-surface at a low percentage (nodes.css), so
+     the exact hue only has to read correctly at a ~7% wash in both a
+     near-white and a near-black surface, not stand on its own. ---------- */
+  /* Vibrant cut (Bryan: "more vibrant instead of muted") — same eight
+     identities, turned up. They paint the head BAND now, not a surface
+     wash, so they can afford full saturation. */
+  --cw-tint-slate: #0EA5E9;
+  --cw-tint-wine: #E11D48;
+  --cw-tint-rust: #F97316;
+  --cw-tint-forest: #16A34A;
+  --cw-tint-indigo: #4F46E5;
+  --cw-tint-teal: #0D9488;
+  --cw-tint-plum: #9333EA;
+  --cw-tint-olive: #D97706;
+
+  /* ---- structural leftovers (not theme-mapped; centralized here so
+     #workflow-root's own block in app.css can stay layout-only) ---------- */
+  --cw-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --cw-radius-sub: 10px;
+  --cw-radius-pill: 999px;
+  /* Tracks --cw-danger-fill (the pill's own background), not --cw-danger —
+     the glow should always match whatever red the chip itself is actually
+     painted, in both themes (R1). */
+  --cw-shadow-pill: 0 4px 14px color-mix(in srgb, var(--cw-danger-fill) 28%, transparent);
+}
+
+/* Dark exceptions — only the handful of values that don't already resolve
+   correctly through a shell var (edge/dot/shadow/warn/danger have no shell
+   equivalent to inherit from). Brand themes whose base is 'dark' (Rolls-
+   Royce, Spotify, Nike) inherit this for free: the profile module sets
+   body[data-theme] to the brand's own base, so this selector still matches. */
+body[data-theme="dark"] #workflow-root {
+  /* Dark's default accent is the cyan #0de0e1 — near-black ink wins there
+     (same value the themes module's accentInk computes). */
+  --cw-on-accent: #0e0f10;
+  --cw-edge: rgba(255, 255, 255, .28);
+  --cw-canvas-dot: rgba(255, 255, 255, .14);
+  --cw-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+  --cw-warn-bg: rgba(245, 158, 11, .14);
+  --cw-warn-text: #FBBF24;
+  /* WAVE 1 — THE VERB EXPANSION. Dark's own default accent is ALSO a cyan
+     (#0de0e1, this file's own note a few lines up) — a flat #0EA5E9 signal
+     tint would sit too close to it for the two to read as distinct
+     identities, so this brightens one step (sky-500 -> sky-400) rather
+     than holding flat like the other --cw-kind-* tokens (none of which
+     get a dark override at all — this is the one wave-specific exception,
+     called out by name in the master contract: "#0EA5E9 (light) /
+     brightened for dark"). */
+  --cw-kind-signal: #38BDF8;
+  /* QA ledger F13 — #EF4444 measured 4.11:1 against the popover surface
+     (--cw-surface -> --card-bg #23242a here), failing AA's 4.5:1 floor for
+     normal text (.cw-issues-popover-subject's headline, app.css). #F87171
+     measures 5.59:1 on that same surface — comfortably clear, and still
+     reads as a decisive red rather than pastel at the weights/sizes this
+     token is used at (menu/button danger-hover text, confirm-dialog "Go",
+     the popover headline). This used to also be the issues pill's own
+     fill color (a solid chip with white ink on top), which inverted the
+     relationship a lighter danger can't serve both jobs at once — RESOLVED
+     by R1: the pill now reads --cw-danger-fill / --cw-on-danger-fill
+     instead (defined above, deliberately not overridden here), so this
+     token only has to serve text/marks/tints from this point down. */
+  --cw-danger: #F87171;
+}
+
+/* Bryan (twice): ink on accent fills is WHITE, unconditionally, in light
+   themes. The earlier deferral to the accent engine's --text-button was the
+   one path that could smuggle a stale dark ink onto a blue thumb (theme
+   touring leaves inline vars behind), so it's gone — light = white, dark
+   keeps its cyan-appropriate ink above. */

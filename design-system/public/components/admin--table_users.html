@@ -1,0 +1,68 @@
+<!doctype html>
+<!--
+  OMNI component: table_users
+  Project: Admin
+  Note: .tbl — users list table, checkbox select column + sortable header icons + clickable email cell
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — table_users · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/admin.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<table class="tbl">
+      <thead>
+        <tr>
+          <th class="c-check"><input type="checkbox" class="chk" id="checkAll"></th>
+          <th>Email <i class="ph ph-arrows-down-up sort"></i></th>
+          <th>First Name <i class="ph ph-arrows-down-up sort"></i></th>
+          <th>Last Name <i class="ph ph-arrows-down-up sort"></i></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="c-check"><input type="checkbox" class="chk row-chk" data-i="0"></td>
+          <td class="email"><button class="email-open" data-i="0">admin@admin.com</button></td>
+          <td>admin</td>
+          <td>admin</td>
+        </tr>
+        <tr>
+          <td class="c-check"><input type="checkbox" class="chk row-chk" data-i="1" checked></td>
+          <td class="email"><button class="email-open" data-i="1">ines.duarte@omc.com</button></td>
+          <td>Ines</td>
+          <td>Duarte</td>
+        </tr>
+        <tr>
+          <td class="c-check"><input type="checkbox" class="chk row-chk" data-i="2" checked></td>
+          <td class="email"><button class="email-open" data-i="2">anton.panovski@omc.com</button></td>
+          <td>Anton</td>
+          <td>Panovski</td>
+        </tr>
+        <tr>
+          <td class="c-check"><input type="checkbox" class="chk row-chk" data-i="3" checked></td>
+          <td class="email"><button class="email-open" data-i="3">mende.bozhinovski@omc.com</button></td>
+          <td>Mende</td>
+          <td>Bozhinovski</td>
+        </tr>
+        <tr>
+          <td class="c-check"><input type="checkbox" class="chk row-chk" data-i="4"></td>
+          <td class="email"><button class="email-open" data-i="4">lee.gardiner@omc.com</button></td>
+          <td>Lee</td>
+          <td>Gardiner</td>
+        </tr>
+      </tbody>
+    </table>
+</body>
+</html>

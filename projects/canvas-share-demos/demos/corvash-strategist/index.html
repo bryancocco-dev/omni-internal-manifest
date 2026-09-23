@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Progress 2026 — Corvache · Palomar</title>
+<meta name="description" content="A shared progress report and forward-looking brief from Palomar." />
+<script>
+  /* The demo IS the full flow: a refresh restarts from the Outlook inbox so
+     the whole arc (inbox → Open → load-in → doc) replays. Direct navigations
+     (the email's Open) load normally; ?stay=1 opts out for iteration. */
+  (function () {
+    try {
+      var nav = performance.getEntriesByType('navigation')[0];
+      var isReload = nav
+        ? nav.type === 'reload'
+        : (performance.navigation && performance.navigation.type === 1);
+      if (isReload && new URLSearchParams(location.search).get('stay') !== '1') {
+        location.replace('./inbox/');
+      }
+    } catch (e) { /* never block the doc */ }
+  })();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/cover-gen.css" />
+<link rel="stylesheet" href="../../shared/components/cover-tags.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body data-demo="corvash-strategist">
+  <!-- Branded load-in cover — paints on the first frame; intro.js composes the
+       co-brand half from the live theme, then lifts the sheet away. -->
+  <div class="doc-intro" aria-hidden="true">
+    <div class="doc-intro__lockup">
+      <img class="doc-intro__mark" src="../../shared/assets/omni-logo.svg" alt="" />
+      <span class="doc-intro__x" hidden aria-hidden="true">×</span>
+      <span class="doc-intro__brandpair" hidden>
+        <span class="doc-intro__brand"></span>
+        <span class="doc-intro__name"></span>
+      </span>
+    </div>
+    <div class="doc-intro__rule"></div>
+    <div class="doc-intro__eyebrow">Shared Canvas · Read-Only</div>
+  </div>
+  <main class="doc" id="doc-root"></main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

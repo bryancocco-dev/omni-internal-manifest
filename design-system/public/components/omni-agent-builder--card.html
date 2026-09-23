@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  OMNI component: card
+  Project: Agent Builder
+  Note: .form-card — Description name + icon row
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — card · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="form-card">
+            <div class="name-row">
+              <div class="name-col">
+                <div class="field-meta">
+                  <h3>Name</h3>
+                  <span class="field-hint" id="nameHint">3 more characters required</span>
+                </div>
+                <input class="text-input" id="agentName" type="text" placeholder="Custom brand agent" />
+              </div>
+              <div class="icon-col">
+                <h3>Icon</h3>
+                <button class="icon-picker-btn" id="iconPickerBtn" type="button" aria-label="Choose icon">
+                  <i class="bx bx-plus" id="iconPickerPreview"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+</body>
+</html>

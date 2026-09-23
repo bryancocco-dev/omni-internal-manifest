@@ -1,0 +1,106 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <!-- PLAN §20.3 v2.2 — VIDEO, hand-rebuilt (Fable deep-dive). ONE figure: a strip
+       of film. Three fixes over the prior draft:
+       1. ALIGNMENT — the gate is dead-centered at cx=542.5 and the strip's rest
+          position puts a cell dead-center inside it (cell centers land on 542.5
+          exactly at the loop seam), so the composition is at rest a lockup, in
+          motion a mechanism.
+       2. FILM ANATOMY — sprocket perforations above and below the cells travel
+          with the strip. They are the subject's anatomy, not decoration, and their
+          fine texture makes the roll visibly move everywhere, not just at the
+          clip edges (identical solid cells alone read as static).
+       3. THE GATE CAPTURES — once per loop, exactly when a cell centers in the
+          gate (the seam), the gate interior flashes a soft coral wash (§18.5
+          seam-wrapped envelope). The projector advancing frames: cause, effect.
+       Accent unit = the gate: coral outline + static play triangle + capture wash.
+       Light authored as default; body[data-theme="dark"] inverts ground/ink only
+       (coral theme-constant). Reduced-motion: strip freezes at the rest lockup. -->
+  <style>
+    .vid-bg { fill: #ffffff; }
+    .vid-cell { fill: #000000; }
+    .vid-perf { fill: #000000; }
+    .vid-gate { fill: none; stroke: #1858EE; stroke-width: 8; }
+    .vid-play { fill: #1858EE; }
+    .vid-capture { fill: #1858EE; opacity: 0; }
+
+    .vid-strip { animation: vidRoll 5s linear infinite; }
+    @keyframes vidRoll {
+      from { transform: translateX(0px); }
+      to   { transform: translateX(-112px); } /* one cell pitch (96+16) */
+    }
+    /* capture wash — peaks at the seam, when a cell is centered in the gate */
+    .vid-capture { animation: vidCapture 5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+    @keyframes vidCapture {
+      0%   { opacity: 0.22; }
+      14%  { opacity: 0; }
+      86%  { opacity: 0; }
+      100% { opacity: 0.22; }
+    }
+    /* the glyph pops with the capture — legible in both themes (the wash alone
+       is faint over black cells in light mode) */
+    .vid-play {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: vidPlayPop 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes vidPlayPop {
+      0%   { transform: scale(1.18); }
+      14%  { transform: scale(1); }
+      86%  { transform: scale(1); }
+      100% { transform: scale(1.18); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vid-strip, .vid-capture, .vid-play { animation: none; }
+    }
+
+    body[data-theme="dark"] .vid-bg { fill: #000000; }
+    body[data-theme="dark"] .vid-cell { fill: #ffffff; }
+    body[data-theme="dark"] .vid-perf { fill: #ffffff; }
+  </style>
+
+  <rect class="vid-bg" width="1085" height="716"/>
+
+  <clipPath id="vid-viewport">
+    <rect x="214.5" y="210" width="656" height="296"/>
+  </clipPath>
+
+  <g clip-path="url(#vid-viewport)">
+    <g class="vid-strip">
+      <!-- 8 cells, pitch 112; rest position centers cell 5 (x=494.5) on cx=542.5,
+           so every loop seam re-centers a cell inside the gate. -->
+      <rect class="vid-cell" x="46.5"  y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="158.5" y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="270.5" y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="382.5" y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="494.5" y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="606.5" y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="718.5" y="258" width="96" height="200" rx="8"/>
+      <rect class="vid-cell" x="830.5" y="258" width="96" height="200" rx="8"/>
+      <!-- sprocket perforations: two per pitch (cell centers + gap centers),
+           rows above and below — the film's anatomy, and the motion's texture -->
+      <g class="vid-perf">
+        <rect x="88.5"  y="222" width="12" height="12" rx="2"/><rect x="144.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="200.5" y="222" width="12" height="12" rx="2"/><rect x="256.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="312.5" y="222" width="12" height="12" rx="2"/><rect x="368.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="424.5" y="222" width="12" height="12" rx="2"/><rect x="480.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="536.5" y="222" width="12" height="12" rx="2"/><rect x="592.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="648.5" y="222" width="12" height="12" rx="2"/><rect x="704.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="760.5" y="222" width="12" height="12" rx="2"/><rect x="816.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="872.5" y="222" width="12" height="12" rx="2"/><rect x="928.5" y="222" width="12" height="12" rx="2"/>
+        <rect x="88.5"  y="482" width="12" height="12" rx="2"/><rect x="144.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="200.5" y="482" width="12" height="12" rx="2"/><rect x="256.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="312.5" y="482" width="12" height="12" rx="2"/><rect x="368.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="424.5" y="482" width="12" height="12" rx="2"/><rect x="480.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="536.5" y="482" width="12" height="12" rx="2"/><rect x="592.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="648.5" y="482" width="12" height="12" rx="2"/><rect x="704.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="760.5" y="482" width="12" height="12" rx="2"/><rect x="816.5" y="482" width="12" height="12" rx="2"/>
+        <rect x="872.5" y="482" width="12" height="12" rx="2"/><rect x="928.5" y="482" width="12" height="12" rx="2"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- the gate: fixed accent unit — capture wash (under), outline, play glyph (over) -->
+  <rect class="vid-capture" x="490.5" y="254" width="104" height="208" rx="10"/>
+  <rect class="vid-gate" x="486.5" y="250" width="112" height="216" rx="12"/>
+  <path class="vid-play" d="M526,338 L526,378 L560,358 Z"/>
+</svg>

@@ -1,0 +1,5 @@
+/* Corvash Strategist — demo-specific overrides only. Structure, chrome,
+   palette, and component behavior all come from /shared: this is a
+   Canvas surface with the app frame removed, not a separately branded
+   document, so nothing here should touch color or type. Reserve this file
+   for layout nudges specific to this demo's content, if any are needed. */

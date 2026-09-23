@@ -1,0 +1,468 @@
+/* ------------------------------------------------------------------
+   ANNOUNCEMENT CARD — light theme, sits over a blurred page bg.
+   The card itself is intentionally restrained so the 938×800 stage
+   carries the visual energy.
+------------------------------------------------------------------ */
+
+:root {
+  /* Tokens pulled verbatim from /TINKER/omni-canvas/index.html so the
+     UI in the stage reads as the real Canvas, not a redraw. */
+  --omni-brand-500: #1858ee;
+  --omni-brand-600: #1346c8;
+  --omni-brand-50:  #e8eefd;
+
+  --omni-page-bg:        #f1f6fe;
+  --omni-card-bg:        #ffffff;
+  --omni-panel-bg-chat:  #f1f2f7;
+  --omni-canvas-bg:      #f6f7fa;   /* neutral-semantic-surface */
+  --omni-text-strong:    #0a0a0a;   /* ≈ text-body-high-contrast */
+  --omni-text-body:      #394457;   /* system text-body */
+  --omni-text-subtle:    #818ea6;   /* system text-subtle-01 */
+  --omni-line:           rgba(15, 23, 42, 0.10);  /* rule-line-hairline */
+  --omni-line-solid:     #e8e9ed;   /* rule-line */
+  --omni-hover-soft:     rgba(15, 23, 42, 0.04);
+
+  --omni-shadow-card:  0 30px 80px -20px rgba(24, 31, 64, 0.30),
+                       0 8px 24px -8px rgba(24, 31, 64, 0.18),
+                       0 1px 0 rgba(255, 255, 255, 0.6) inset;
+
+  --omni-font-sans:  'Inter', -apple-system, system-ui, sans-serif;
+  --omni-font-mono:  'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --omni-font-serif: 'Instrument Serif', Georgia, serif;
+
+  /* House easing — snap-feel curve used throughout */
+  --ease-snap:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-stand:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--omni-page-bg);
+  color: var(--omni-text-body);
+  font-family: var(--omni-font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* ---- Blurred page background -------------------------------- */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(60% 50% at 70% 35%, rgba(24, 88, 238, 0.10), transparent 60%),
+    radial-gradient(50% 40% at 20% 80%, rgba(13, 224, 225, 0.10), transparent 70%),
+    radial-gradient(80% 70% at 50% 50%, #eef3fc, var(--omni-page-bg));
+  filter: blur(0px);
+}
+.page-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(241, 246, 254, 0.55);
+  backdrop-filter: blur(40px) saturate(120%);
+  -webkit-backdrop-filter: blur(40px) saturate(120%);
+}
+
+/* ---- Card --------------------------------------------------- */
+.card {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: 1480px;
+  max-width: calc(100vw - 40px);
+  height: 800px;
+  max-height: calc(100vh - 40px);
+  display: grid;
+  grid-template-columns: 1fr 938px;
+  background: var(--omni-card-bg);
+  border-radius: 24px;
+  box-shadow: var(--omni-shadow-card);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ---- Left side: copy + ctas -------------------------------- */
+.card-left {
+  position: relative;
+  padding: 52px 56px 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--omni-card-bg);
+}
+.card-brand {
+  font-family: var(--omni-font-sans);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--omni-text-strong);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.card-brand i { font-style: normal; font-weight: 400; font-size: 13px; }
+.card-copy { margin-top: auto; }
+.card-title-dot {
+  color: var(--omni-text-strong);
+  font-family: var(--omni-font-serif);
+  font-weight: 400;
+}
+.card-modes { display: inline-flex; gap: 5px; margin-right: 4px; }
+.card-modes i {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.card-eyebrow {
+  font-family: var(--omni-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--omni-text-subtle);
+  margin: 0 0 12px;
+}
+
+.card-title {
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  font-size: 104px;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  color: var(--omni-text-strong);
+  margin: 0 0 12px;
+}
+.card-title em {
+  font-family: var(--omni-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--omni-brand-500);
+}
+
+.card-body {
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.1px;
+  color: var(--omni-text-body);
+  margin: 0 0 30px;
+  max-width: 33ch;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+
+.btn {
+  font-family: var(--omni-font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 180ms var(--ease-snap), background 180ms var(--ease-stand);
+}
+.btn-primary {
+  background: var(--omni-brand-500);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--omni-brand-600); }
+.btn-ghost {
+  background: transparent;
+  color: var(--omni-text-body);
+  border-color: var(--omni-line-solid);
+}
+.btn-ghost:hover { background: var(--omni-hover-soft); }
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 44px;
+  padding-top: 22px;
+  border-top: 0.5px solid var(--omni-line);
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  color: var(--omni-text-subtle);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.card-foot .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--omni-brand-500);
+  box-shadow: 0 0 0 4px rgba(24, 88, 238, 0.15);
+}
+
+.card-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--omni-line-solid);
+  background: var(--omni-card-bg);
+  color: var(--omni-text-body);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 160ms var(--ease-stand);
+}
+.card-close:hover { background: var(--omni-hover-soft); }
+
+/* ---- Right side: the 938×800 stage frame ------------------- */
+.card-right {
+  position: relative;
+  width: 938px;
+  height: 800px;
+  background: var(--omni-page-bg);
+  overflow: hidden;
+}
+
+/* ---- HUD --------------------------------------------------- */
+.hud {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 900px;
+  max-width: calc(100vw - 40px);
+  padding: 10px 14px 12px;
+  background: rgba(10, 10, 10, 0.82);
+  color: #f1f6fe;
+  border-radius: 16px;
+  font-family: var(--omni-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  z-index: 50;
+  user-select: none;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.hud-row { display: flex; align-items: center; gap: 8px; }
+.hud-time { font-variant-numeric: tabular-nums; min-width: 74px; text-align: center; }
+.hud-hint { margin-left: auto; opacity: 0.42; font-size: 10px; white-space: nowrap; }
+
+/* ---- scrubber ---- */
+.hud-scrub { position: relative; padding-bottom: 14px; }
+.hud-track {
+  position: relative;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  overflow: hidden;
+}
+.hud-segs { position: absolute; inset: 0; display: flex; }
+.hud-seg {
+  position: relative;
+  height: 100%;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  overflow: hidden;
+  transition: background 140ms ease;
+}
+.hud-seg:last-child { border-right: 0; }
+.hud-seg:nth-child(odd)  { background: rgba(255, 255, 255, 0.035); }
+.hud-seg.is-active { background: rgba(24, 88, 238, 0.30); }
+.hud-seg span {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.hud-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: rgba(24, 88, 238, 0.24);
+  pointer-events: none;
+}
+.hud-head {
+  position: absolute;
+  top: -2px; bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+.hud-ticks {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 12px;
+  pointer-events: none;
+}
+.hud-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+.hud-tip {
+  position: absolute;
+  top: -26px;
+  transform: translateX(-50%);
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: #1858ee;
+  color: #fff;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.hud-scrub:hover .hud-tip { opacity: 1; }
+
+.hud-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+.hud-btn {
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--omni-brand-500);
+  color: #fff;
+  cursor: pointer;
+}
+.hud-btn:hover { filter: brightness(1.1); }
+
+/* ---- Launcher (intro: OMNI logo → app tiles → click Canvas) - */
+.launcher {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.launcher-logo-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* CSS default-hidden (same idiom as the xpb2/xpe reveal elements):
+     both this and .launcher-tiles below are only ever shown via a
+     GSAP tween that starts from opacity:0, but that tween doesn't
+     exist until composeCues()'s dynamic import resolves and the
+     timeline is actually built. Without a CSS default, the raw HTML
+     renders fully opaque the instant .app-ready flips visibility on —
+     a real, visible window on a cold/slow load, not just a single
+     rAF gap. Defaulting to hidden here closes it at the right layer,
+     for every cut, without touching cue timing at all. */
+  opacity: 0;
+}
+.launcher-logo {
+  width: 430px;
+  height: auto;
+  display: block;
+  overflow: visible;
+  transform-origin: 50% 50%;
+}
+.launcher-tiles {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: 0; /* see .launcher-logo-wrap above — same reasoning */
+}
+.app-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: auto;              /* hug content — every label gets the same
+                               breathing room regardless of length */
+  min-width: 168px;
+  height: 88px;
+  padding: 0 26px 0 18px;
+  background: var(--omni-card-bg);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px -12px rgba(24, 31, 64, 0.18),
+              0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  will-change: transform;
+}
+.app-tile-icon { width: 50px; height: 50px; flex-shrink: 0; }
+.app-tile-icon svg { width: 100%; height: 100%; display: block; }
+.app-tile-label {
+  font-family: var(--omni-font-sans);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--omni-text-strong);
+  white-space: nowrap;
+}
+
+/* ---- Capture mode: hide everything except the stage --------- */
+body[data-capture="1"] {
+  background: transparent;
+}
+body[data-capture="1"] .page-bg,
+body[data-capture="1"] .card-left,
+body[data-capture="1"] .hud,
+body[data-capture="1"] .card-close {
+  display: none !important;
+}
+body[data-capture="1"] .card {
+  position: fixed;
+  inset: auto;
+  top: 0;
+  left: 0;
+  width: 938px;
+  height: 800px;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  grid-template-columns: 938px;
+  background: transparent;
+}
+body[data-capture="1"] .card-right {
+  border-radius: 0;
+}
+
+/* ---- plain card variant (ppt cut): normal sans hierarchy, no
+   eyebrow, no serif flourish — black headline, one quiet brand
+   accent on the period. ---- */
+.card--plain .card-eyebrow { display: none; }
+.card--plain .card-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 64px;           /* longer, feature-specific headline */
+  line-height: 1.04;
+}
+.card--plain .card-title em {
+  font-family: var(--omni-font-sans);
+  font-style: normal;
+  font-weight: 700;
+  color: var(--omni-text-strong);
+}
+.card--plain .card-title-dot {
+  font-family: var(--omni-font-sans);
+  font-weight: 700;
+  color: var(--omni-brand-500);
+}

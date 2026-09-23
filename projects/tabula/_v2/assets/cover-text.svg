@@ -1,0 +1,82 @@
+<svg viewBox="0 0 1085 716" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    v2.3 REWORK (coordinator strip review, round 2) of the v2.2 REBUILD
+    (PLAN §20.3 FINAL — "seven figures, one language"). The T, kept AS-IS
+    (same 16-vertex Regular/Bold/Italic/Sans skeleton + tCycle timing as
+    v1), is now solid ink fill with NO stroke (a coral outline around the
+    whole glyph read as sticker word-art — it made the entire figure the
+    accent). The one accent element is now a separate, static, solid
+    Humanity Coral DOT sitting at the baseline just after the T — a full
+    stop, typographic and minimal, the way "T." reads. Every v1 decoration
+    still stays dead: no metric guides, no caliper, no dimension line, no
+    pulsing dots. ONE motion: the T morphs through the four styles, full
+    cycle; the dot is static — nothing else moves.
+
+    Scaled 1.2457× from the v1 glyph so its height (436px) is 61% of the
+    716 frame height — matching cover-canvas.svg / cover-workflow.svg's
+    60% figure-width discipline (the landscape frame's shared dimension
+    with the square tiles is height, so that's what's held to the same
+    ratio); centered at (542.5, 358), margin 140px top/bottom, 341.9px
+    left/right (symmetric — "optically centered").
+
+    Flat fill/stroke only — no gradients/filters/glows/textures/shadows.
+    Ground WHITE by default (light-first); body[data-theme="dark"] flips
+    ground/ink (coral accent stays constant both themes). Same rekey
+    rationale as cover-canvas.svg's header comment: ready for the §11
+    inliner to consume as-is (just add the "cover-txt" class to this root
+    <svg>); standalone preview is light-only by design.
+  -->
+  <style>
+    .txt-ground { fill: #ffffff; }
+    .txt-ink    { fill: #000000; }
+    body[data-theme="dark"] .txt-ground { fill: #000000; }
+    body[data-theme="dark"] .txt-ink    { fill: #ffffff; }
+
+    /* ONE motion: THE T MORPHS TYPE STYLES — kept as-is from v1. One
+       canonical 16-vertex capital-T outline (M + 15 L + Z: crossbar top
+       corners, both beak-serif clusters at the crossbar tips, stem sides,
+       bracketed foot-serif cluster) expressed as four coordinate sets on
+       that IDENTICAL command skeleton — Regular / Bold / Italic (skew
+       baked directly into each vertex) / Sans (serif clusters collapsed
+       to co-linear points). Chrome interpolates `d` vertex-by-vertex
+       since every keyframe shares the same command skeleton, so the
+       glyph fluidly RESHAPES rather than crossfades. One shared 9s MID
+       sine token, each style owns a 25% slot: ~18% flat hold + ~7% morph
+       into the next style. Regular's path is the value at both 0% and
+       100% (zero-velocity seam): the morph into it lands, at zero
+       velocity, exactly as the flat hold begins, so rest state /
+       reduced-motion freezes on Regular — the live path element's own
+       `d` attribute IS the Regular outline, so `animation:none` alone
+       restores it. */
+    .txt-t {
+      animation: txt-tCycle 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes txt-tCycle {
+      0%   { d: path("M341.94,140.00 L743.06,140.00 L743.06,177.37 L733.09,177.40 L723.13,177.37 L566.17,177.37 L566.17,546.10 L608.52,567.28 L608.52,576.00 L476.48,576.00 L476.48,567.28 L518.83,546.10 L518.83,177.37 L361.87,177.37 L351.91,177.40 L341.94,177.37 Z"); }
+      18%  { d: path("M341.94,140.00 L743.06,140.00 L743.06,177.37 L733.09,177.40 L723.13,177.37 L566.17,177.37 L566.17,546.10 L608.52,567.28 L608.52,576.00 L476.48,576.00 L476.48,567.28 L518.83,546.10 L518.83,177.37 L361.87,177.37 L351.91,177.40 L341.94,177.37 Z"); }
+      25%  { d: path("M341.94,140.00 L743.06,140.00 L743.06,207.27 L725.62,207.30 L706.93,207.27 L584.85,207.27 L584.85,533.65 L639.67,567.28 L639.67,576.00 L445.33,576.00 L445.33,567.28 L500.15,533.65 L500.15,207.27 L378.07,207.27 L359.38,207.30 L341.94,207.27 Z"); }
+      43%  { d: path("M341.94,140.00 L743.06,140.00 L743.06,207.27 L725.62,207.30 L706.93,207.27 L584.85,207.27 L584.85,533.65 L639.67,567.28 L639.67,576.00 L445.33,576.00 L445.33,567.28 L500.15,533.65 L500.15,207.27 L378.07,207.27 L359.38,207.30 L341.94,207.27 Z"); }
+      50%  { d: path("M434.61,140.00 L835.73,140.00 L827.79,177.37 L817.82,177.40 L807.86,177.37 L650.90,177.37 L572.52,546.10 L610.38,567.28 L608.52,576.00 L476.48,576.00 L478.33,567.28 L525.18,546.10 L603.56,177.37 L446.60,177.37 L436.63,177.40 L426.67,177.37 Z"); }
+      68%  { d: path("M434.61,140.00 L835.73,140.00 L827.79,177.37 L817.82,177.40 L807.86,177.37 L650.90,177.37 L572.52,546.10 L610.38,567.28 L608.52,576.00 L476.48,576.00 L478.33,567.28 L525.18,546.10 L603.56,177.37 L446.60,177.37 L436.63,177.40 L426.67,177.37 Z"); }
+      75%  { d: path("M341.94,140 L743.06,140 L743.06,189.83 L733.09,189.83 L723.13,189.83 L567.41,189.83 L567.41,546.1 L567.41,567.28 L567.41,576 L517.59,576 L517.59,567.28 L517.59,546.1 L517.59,189.83 L361.87,189.83 L351.91,189.83 L341.94,189.83 Z"); }
+      93%  { d: path("M341.94,140 L743.06,140 L743.06,189.83 L733.09,189.83 L723.13,189.83 L567.41,189.83 L567.41,546.1 L567.41,567.28 L567.41,576 L517.59,576 L517.59,567.28 L517.59,546.1 L517.59,189.83 L361.87,189.83 L351.91,189.83 L341.94,189.83 Z"); }
+      100% { d: path("M341.94,140.00 L743.06,140.00 L743.06,177.37 L733.09,177.40 L723.13,177.37 L566.17,177.37 L566.17,546.10 L608.52,567.28 L608.52,576.00 L476.48,576.00 L476.48,567.28 L518.83,546.10 L518.83,177.37 L361.87,177.37 L351.91,177.40 L341.94,177.37 Z"); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .txt-t { animation: none; }
+    }
+  </style>
+
+  <rect class="txt-ground" width="1085" height="716"/>
+
+  <path class="txt-ink txt-t"
+        d="M341.94,140.00 L743.06,140.00 L743.06,177.37 L733.09,177.40 L723.13,177.37 L566.17,177.37 L566.17,546.10 L608.52,567.28 L608.52,576.00 L476.48,576.00 L476.48,567.28 L518.83,546.10 L518.83,177.37 L361.87,177.37 L351.91,177.40 L341.94,177.37 Z"/>
+
+  <!-- the one accent element: a static Humanity Coral full stop, resting
+       on the shared baseline (y=576, identical across all four morph
+       styles) clear of every style's widest baseline-height extent
+       (Bold's foot serifs reach x=639.67; the dot's left edge sits at
+       x=660, ~20px clear) -->
+  <circle cx="680" cy="556" r="20" fill="#1858EE"/>
+</svg>

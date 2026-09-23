@@ -1,0 +1,112 @@
+<!doctype html>
+<!--
+  OMNI component: commentspanel
+  Project: Share Demos
+  Note: .comments-panel — aggregated right-side comments sidebar for a read-only canvas (search, sort, foldable reply threads, deep-links to each section)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share Demos — commentspanel · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-share-demos.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<aside class="comments-panel is-open" aria-label="Comments" style="position:relative;height:560px">
+    <header class="comments-panel__head">
+      <div class="comments-panel__title-row">
+        <span class="comments-panel__title-group">
+          <span class="comments-panel__title">Comments</span>
+          <span class="comments-panel__count">5</span>
+        </span>
+        <button class="comments-panel__collapse" type="button" aria-label="Hide comments" title="Hide comments (⇧C)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+      </div>
+      <div class="comments-panel__controls">
+        <label class="comments-panel__search">
+          <span class="comments-panel__search-ico"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"></circle><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></span>
+          <input type="search" placeholder="Search" aria-label="Search comments">
+        </label>
+        <button class="comments-panel__tool comments-panel__sort" type="button" aria-label="Sort and filter"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h9M17.5 7H20"></path><circle cx="15" cy="7" r="2.3"></circle><path d="M4 17h9M17.5 17H20"></path><circle cx="15" cy="17" r="2.3"></circle><path d="M4 12h3M11 12h9"></path><circle cx="9" cy="12" r="2.3"></circle></svg></button>
+      </div>
+    </header>
+    <div class="comments-panel__body">
+    <div class="comments-panel__item comments-thread is-unread"><div class="comments-panel__msg comments-panel__msg--root">
+      <span class="comments-panel__avatar" style="--avatar: #8b5cf6">DR</span>
+      <div class="comments-panel__msg-main">
+        <div class="comments-panel__msg-head">
+          <span class="comments-panel__name">Devon Reyes</span>
+          <span class="comments-panel__time">Jul 12</span>
+        </div>
+        <p class="comments-panel__text">Finding #4 is the one that stings — we've been underfunding email for years and it's quietly outperforming everything. Can we make this louder?</p>
+      </div></div><button type="button" class="comments-thread__toggle"><span class="comments-thread__toggle-ico"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Hide replies</button><div class="comments-thread__replies"><div class="comments-panel__msg comments-panel__msg--reply">
+      <span class="comments-panel__avatar" style="--avatar: #0e8f9a">PA</span>
+      <div class="comments-panel__msg-main">
+        <div class="comments-panel__msg-head">
+          <span class="comments-panel__name">Priya Anand</span>
+          <span class="comments-panel__time">Jul 12</span>
+        </div>
+        <p class="comments-panel__text">Strong agree. Email is the least glamorous line item and the highest ROI. If we're reallocating budget for 2026, this is where I'd start.</p>
+      </div></div><div class="comments-panel__msg comments-panel__msg--reply">
+      <span class="comments-panel__avatar" style="--avatar: #c2506e">ML</span>
+      <div class="comments-panel__msg-main">
+        <div class="comments-panel__msg-head">
+          <span class="comments-panel__name">Mara Lindqvist</span>
+          <span class="comments-panel__time">Jul 12</span>
+        </div>
+        <p class="comments-panel__text">Noted — we'll pull email forward in the recommendation and put a real number against it instead of leaving it as a footnote.</p>
+      </div></div></div><div class="comments-thread__foot"><button type="button" class="comments-thread__reply-trigger"><span class="comments-thread__reply-ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M7 3.5 3 7l4 3.5M3.5 7H9a3.5 3.5 0 0 1 3.5 3.5V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Reply</button></div></div>
+    <div class="comments-panel__item comments-thread is-unread"><div class="comments-panel__msg comments-panel__msg--root">
+      <span class="comments-panel__avatar" style="--avatar: #c2506e">JH</span>
+      <div class="comments-panel__msg-main">
+        <div class="comments-panel__msg-head">
+          <span class="comments-panel__name">Jessie Harte</span>
+          <span class="comments-panel__time">Jul 12</span>
+        </div>
+        <p class="comments-panel__text">Is the Q4 jump partly seasonal? We always get a year-end bump — the show calendar plus December delivery timing — and I don't want to over-read a spike that comes back every winter.</p>
+      </div></div><button type="button" class="comments-thread__toggle"><span class="comments-thread__toggle-ico"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Hide replies</button><div class="comments-thread__replies"><div class="comments-panel__msg comments-panel__msg--reply">
+      <span class="comments-panel__avatar" style="--avatar: #6069f5">NF</span>
+      <div class="comments-panel__msg-main">
+        <div class="comments-panel__msg-head">
+          <span class="comments-panel__name">Noah Fielding</span>
+          <span class="comments-panel__time">Jul 12</span>
+        </div>
+        <p class="comments-panel__text">Good instinct. It's partly seasonal, but Q4 2025 is up ~28% over Q4 2024 on the same seasonal baseline, so there's real underlying growth on top of the year-end effect. I can add the year-over-year overlay if that's useful.</p>
+      </div></div><div class="comments-panel__msg comments-panel__msg--reply">
+      <span class="comments-panel__avatar" style="--avatar: #c2506e">JH</span>
+      <div class="comments-panel__msg-main">
+        <div class="comments-panel__msg-head">
+          <span class="comments-panel__name">Jessie Harte</span>
+          <span class="comments-panel__time">Jul 12</span>
+        </div>
+        <p class="comments-panel__text">Yes please — the YoY overlay is exactly what'll keep me honest when I present it.</p>
+      </div></div></div><div class="comments-thread__foot"><button type="button" class="comments-thread__reply-trigger"><span class="comments-thread__reply-ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M7 3.5 3 7l4 3.5M3.5 7H9a3.5 3.5 0 0 1 3.5 3.5V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Reply</button></div></div>
+    </div></aside>
+</body>
+</html>

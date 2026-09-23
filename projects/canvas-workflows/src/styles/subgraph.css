@@ -1,0 +1,401 @@
+/* ==========================================================================
+   SUBGRAPHS — full spec (PLAN.md "## SUBGRAPHS — full spec (the closing
+   flagship)", held to "## DESIGN BAR" + "## MODEL-AGNOSTIC POSTURE"). Owns:
+     1. the internal stage's theatrical shell (SubgraphStage.jsx) — scrim,
+        the FLIP surface, the ghost/content crossfade;
+     2. the step-card itself (StepNode.jsx) — a compact instrument card, same
+        visual family as nodes.css's real cards, at 240px instead of 340px;
+     3. the breadcrumb, minimal rail extras, and the "Add step" mini picker.
+   Imported LAST in main.jsx, after nodes.css/app.css/flow.css — every token
+   this file reads is already defined by the time it loads; nothing here
+   redefines a token, only consumes --cw- and --xy- ones from those files.
+   ========================================================================== */
+
+/* ----------------------------------------------------------------------
+   1. The theater — SubgraphStage.jsx's own DOM: root > scrim + surface >
+      ghost + content. Portaled to #workflow-root (position:fixed, so it
+      escapes .cw-app's layout and .cw-canvas-wrap's overflow clip exactly
+      like BlockPicker/RunPreview already do), z-index above EVERY other
+      layer in the builder — including RunPreview's own modal (50, the
+      previous highest, per that file's own comment) — because entering a
+      task's steps is now the dominant mode; nothing else should be able to
+      paint over it while it's up.
+   ---------------------------------------------------------------------- */
+#workflow-root .cw-subgraph-root {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+/* Inert during the FLIP itself — nothing should be clickable mid-flight in
+   either direction; `.is-open`-equivalent (the class drops once `phase`
+   settles to 'open') restores normal interaction. */
+#workflow-root .cw-subgraph-root.is-transitioning {
+  pointer-events: none;
+}
+
+/* "the parent canvas stays mounted beneath, frozen and dimmed (opaque
+   scrim at 92% surface — no bleed)". JS drives the actual opacity value
+   (SubgraphStage.jsx's playFlip) — this is just the rest/base paint. */
+#workflow-root .cw-subgraph-scrim {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--cw-surface) 92%, transparent);
+  opacity: 0;
+}
+
+/* The FLIP element itself — "the card's surface expands outward into a
+   full-viewport internal stage... the card BECOMES the room". Its LAYOUT
+   box is always full-viewport; `transform` (JS-driven, playFlip) is what
+   visually parks it at the real card's rect on the way in/out — a pure
+   compositor animation, no reflow per frame. `transform-origin: 0 0` is
+   required for the translate/scale math in playFlip to land correctly
+   (top-left is the pivot, matching how `rect.x/rect.y` are read). */
+#workflow-root .cw-subgraph-surface {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--cw-surface);
+  transform-origin: 0 0;
+  transform: translate(0px, 0px) scale(1, 1);
+  border-radius: 0px;
+  box-shadow:
+    0 24px 64px -24px rgba(16, 24, 40, 0.35),
+    0 4px 16px -4px rgba(16, 24, 40, 0.2);
+}
+
+/* Ghost layer — a quiet stand-in for "the card, as it looked a moment ago",
+   so the crossfade reads as continuity rather than a hard cut. Deliberately
+   simple: the SAME top accent band `.cw-node`'s own base rule paints (a
+   background-image strip, not a second element) plus the task's title,
+   nothing else — this is a peel-away, not a duplicate render of the card. */
+#workflow-root .cw-subgraph-ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: var(--cw-surface);
+  background-image: linear-gradient(var(--cw-accent), var(--cw-accent));
+  background-size: 100% 2.5px;
+  background-position: top;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+#workflow-root .cw-subgraph-ghost-title {
+  max-width: 70%;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.3;
+  color: var(--cw-text);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+#workflow-root .cw-subgraph-content {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/* ----------------------------------------------------------------------
+   2. The internal canvas frame — dot grid tinted by the task's own kind
+      color at 3% (PLAN.md: "dot grid tinted by the task's kind color at
+      3%" — Task always routes through --cw-accent, nodes.css's own
+      `.cw-node--task` rule, so no per-task lookup is needed here).
+   ---------------------------------------------------------------------- */
+#workflow-root .cw-subgraph-canvas-root {
+  position: absolute;
+  inset: 0;
+}
+#workflow-root .cw-subgraph-canvas-root .react-flow__background.cw-substage-dots {
+  --xy-background-pattern-color: color-mix(in srgb, var(--cw-accent) 3%, var(--cw-canvas-dot));
+}
+/* Typed-port rings "in parent task's kind" (PLAN.md "### Step-cards") —
+   flow.css's ALREADY-SHIPPED CP1 rules key every handle ring off
+   `var(--cw-port, ...)`; this is the one line a new node TYPE needs to join
+   that system (mirrors flow.css's own `.react-flow__node-task` rule, which
+   this is a direct sibling of in spirit — task's kind IS always
+   --cw-accent, so a step's ring matches its parent card exactly). */
+#workflow-root .react-flow__node-step {
+  --cw-port: var(--cw-accent);
+}
+
+/* ----------------------------------------------------------------------
+   Breadcrumb — "◂ ALL STEPS · 02 · DRAFT THE POST" (PLAN.md), eyebrow
+   language matching CardEyebrow's own mono/caps/letter-spacing voice.
+   Floats over the canvas top-left, same "chrome floats over the RF pane"
+   convention the outer builder's own search bar / issues pill already use
+   — CaretLeft (drawn glyph) stands in for the spec's "◂" literally, per
+   DESIGN BAR item 2 ("Drawn SVG glyphs over text glyphs — the × lesson").
+   ---------------------------------------------------------------------- */
+#workflow-root .cw-substage-breadcrumb {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 40px);
+  padding: 7px 12px 7px 10px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: var(--cw-radius-pill);
+  box-shadow: var(--cw-shadow);
+  font-family: var(--cw-font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--cw-text-3);
+}
+#workflow-root .cw-substage-crumb--exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--cw-text-2);
+  border-radius: 5px;
+  transition: color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-substage-crumb--exit:hover {
+  color: var(--cw-accent);
+}
+#workflow-root .cw-substage-crumb-sep {
+  color: var(--cw-border);
+}
+#workflow-root .cw-substage-crumb-num {
+  color: var(--cw-text-3);
+  font-variant-numeric: tabular-nums;
+}
+#workflow-root .cw-substage-crumb-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--cw-text);
+}
+
+/* Minimal rail — reuses the SAME react-flow__controls-* classnames the
+   outer canvas's own rail uses (flow.css's styling for those is scoped
+   `#workflow-root .react-flow__controls...`, generic to ANY instance
+   inside #workflow-root, this nested one included — "reuse, don't invent"
+   holds structurally here, zero new button chrome needed). */
+#workflow-root .cw-subgraph-canvas-root .react-flow__controls {
+  z-index: 2;
+}
+
+/* ----------------------------------------------------------------------
+   "Add step" mini picker — reuses .cw-header-menu/.cw-menu-item verbatim
+   (app.css) for the surface/row language; only position is overridden
+   here (fixed, JS-computed top/left) since app.css's own rule assumes
+   position:absolute against a relative-positioned menu button ancestor,
+   which doesn't exist in this context. `.cw-subgraph-root` already
+   establishes its own stacking context (position:fixed + z-index above),
+   so this only has to out-rank OTHER descendants of that root — no need to
+   reach for the outer app's z-index roster at all.
+   ---------------------------------------------------------------------- */
+#workflow-root .cw-substage-add-popover {
+  position: fixed;
+  z-index: 5;
+  min-width: 148px;
+}
+
+/* Empty state — every step deleted while still inside the view. */
+#workflow-root .cw-substage-empty {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: none;
+}
+#workflow-root .cw-substage-empty p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cw-text-3);
+}
+#workflow-root .cw-substage-empty .cw-quiet-row {
+  width: auto;
+  padding: 6px 12px;
+  pointer-events: auto;
+  border: var(--cw-hairline-w, 0.5px) dashed var(--cw-border);
+  border-radius: var(--cw-radius-pill);
+}
+
+/* Mini boom (NODE BOOM PHASE precedent, reapplied at this scale — see
+   SubgraphStage.jsx's own header comment) — same .cw-boom/.cw-boom-
+   silhouette classes/keyframes motion.css already ships, just a smaller
+   footprint matching a 240px step card instead of a full node. */
+#workflow-root .cw-substage-boom {
+  --boom-w: 200px;
+  --boom-h: 96px;
+}
+
+/* ==========================================================================
+   Step card (StepNode.jsx) — "240px wide" (PLAN.md "### Step-cards"). Same
+   material family as nodes.css's .cw-node (surface/border/radius/shadow,
+   the top accent band), independent class so it never inherits that rule's
+   340px width or its hover-scoped ghost-reveal (`.cw-node:hover .cw-ghost`
+   — this card isn't a `.cw-node`, so that rule can't reach it; the
+   duplicate hover rule below is what makes its OWN ghosts reachable).
+   ========================================================================== */
+#workflow-root .cw-step-card {
+  position: relative;
+  width: 240px;
+  background-color: var(--cw-surface);
+  background-image: linear-gradient(var(--step-accent, var(--cw-accent)), var(--step-accent, var(--cw-accent)));
+  background-size: 100% 2px;
+  background-position: top;
+  background-repeat: no-repeat;
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 12px;
+  box-shadow: var(--cw-shadow);
+  padding: 12px 14px 13px;
+  font-family: var(--cw-font);
+  cursor: default;
+  animation: cw-materialize var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
+  transition:
+    scale var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    border-color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-step-card:hover:not(.is-selected) {
+  border-color: color-mix(in srgb, var(--cw-border) 65%, var(--cw-text));
+}
+#workflow-root .cw-step-card.is-selected {
+  border-width: 1.5px;
+  border-color: var(--cw-accent);
+  scale: 1.01;
+}
+
+#workflow-root .cw-step-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  min-height: 20px;
+}
+#workflow-root .cw-step-glyph {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--step-accent, var(--cw-accent)) 14%, transparent);
+  color: var(--step-accent, var(--cw-accent));
+}
+#workflow-root .cw-step-number {
+  font-family: var(--cw-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cw-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+#workflow-root .cw-step-title {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 2px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cw-text);
+  border-radius: 4px;
+  transition: background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-step-title::placeholder {
+  color: var(--cw-text-3);
+  font-weight: 500;
+}
+#workflow-root .cw-step-title:hover {
+  background: var(--cw-field);
+}
+#workflow-root .cw-step-title:focus {
+  outline: none;
+  background: var(--cw-field);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cw-accent) 30%, transparent);
+}
+
+/* Ghost add-buttons — the SAME .cw-ghost/.cw-ghost--left/--right base rules
+   (nodes.css) drive shape/position/press-feedback; only the HOVER trigger
+   needs restating here since that rule is scoped to `.cw-node:hover`
+   there, and this card is deliberately not a `.cw-node`. */
+#workflow-root .cw-step-card:hover .cw-ghost {
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
+}
+
+/* Step toolbar — trash + rename only (PLAN.md), same material/spring-in
+   language as nodes.css's .cw-node-toolbar, scaled down (24px buttons vs
+   28px) to match this card's own smaller footprint. */
+#workflow-root .cw-step-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--cw-surface);
+  border: var(--cw-hairline-w, 0.5px) solid var(--cw-border);
+  border-radius: 9px;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.06),
+    0 10px 24px -10px rgba(16, 24, 40, 0.18);
+  animation: cw-toolbar-in var(--cw-d-2, 240ms) var(--cw-e-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+#workflow-root .cw-step-toolbar-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--cw-text-2);
+  transition:
+    background var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--cw-d-1, 140ms) var(--cw-e-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+#workflow-root .cw-step-toolbar-btn:hover {
+  background: var(--cw-surface-2);
+  color: var(--cw-accent);
+}
+#workflow-root .cw-step-toolbar-btn--danger:hover {
+  background: color-mix(in srgb, var(--cw-danger) 10%, var(--cw-surface));
+  color: var(--cw-danger);
+}
+#workflow-root .cw-step-toolbar-btn:active {
+  scale: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #workflow-root .cw-step-card {
+    animation: none;
+  }
+  #workflow-root .cw-step-card,
+  #workflow-root .cw-step-title,
+  #workflow-root .cw-substage-crumb--exit,
+  #workflow-root .cw-step-toolbar-btn {
+    transition: none;
+  }
+  #workflow-root .cw-step-toolbar {
+    animation: none;
+  }
+}

@@ -1,0 +1,701 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Scope Confirmation table — ported from the OMNI+ Canvas interactive data
+   table (lease-campaign 02 · Scope Confirmation): collapsible search filter
+   with match highlighting + live row count, 3-state column sort, row select,
+   2-line cell clamp with hover-expand, expand-all toggle, kebab actions
+   menu, and per-row IntersectionObserver build-in.
+
+   Adapted to this project's system: all color/type reads --doc-* theme
+   tokens (so every workspace theme restyles it), tool buttons follow the
+   house convention (borderless/transparent at rest, lift on hover), and
+   accents follow var(--doc-accent) rather than a fixed blue.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.doc-scope-intro {
+  margin-bottom: 26px;
+}
+
+/* ── Controls cluster — search + expand-all + kebab, in the same top-right
+   position as every board's tool cluster (.doc-board-tools), but functional.
+   The comment pin slides left to make room (rule at the bottom). ── */
+.scope-controls {
+  position: absolute;
+  top: var(--doc-card-padding);
+  right: var(--doc-card-padding);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 4;
+}
+
+/* Search — collapsed: a house tool button (34×34, quiet). Expanded: a pill
+   that grows leftward to 300px. The wrapper owns all chrome; the input is
+   chromeless so only one box transitions. */
+.scope-search {
+  position: relative;
+  flex: 0 0 auto;
+  width: 300px;
+  max-width: 300px;
+  height: 34px;
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-medium);
+  background: var(--doc-paper-bg);
+  overflow: hidden;
+  transition:
+    width 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    max-width 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease,
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-search.collapsed {
+  width: 34px;
+  max-width: 34px;
+  border-color: transparent;
+  background: transparent;
+  cursor: pointer;
+}
+.scope-search:hover {
+  border-color: var(--omni-rule-line-hairline);
+  background: var(--doc-paper-bg);
+  box-shadow: var(--omni-shadow-elevation-1);
+}
+.scope-search:not(.collapsed):focus-within {
+  border-color: var(--doc-accent);
+  box-shadow: 0 0 0 3px var(--doc-accent-soft);
+}
+.scope-search:hover .scope-search-icon,
+.scope-search:not(.collapsed):focus-within .scope-search-icon { color: var(--doc-accent); }
+.scope-search.collapsed:active { transform: scale(0.97); }
+
+.scope-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--doc-ink-subtle);
+  pointer-events: none;
+  transition:
+    color 200ms ease,
+    left 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-search.collapsed .scope-search-icon {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.scope-search input[type='search'] {
+  width: 100%;
+  height: 100%;
+  padding: 0 128px 0 34px;
+  border: 0;
+  background: transparent;
+  color: var(--doc-ink-strong);
+  font-family: var(--doc-font-body);
+  font-size: 13px;
+  letter-spacing: -0.05px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.scope-search input[type='search']::placeholder { color: var(--doc-ink-subtle); }
+.scope-search input[type='search']::-webkit-search-decoration,
+.scope-search input[type='search']::-webkit-search-cancel-button,
+.scope-search input[type='search']::-webkit-search-results-button,
+.scope-search input[type='search']::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.scope-search.collapsed input[type='search'] {
+  pointer-events: none;
+  cursor: pointer;
+}
+
+/* Clear (×) + live row count, pinned at the pill's right edge. */
+.scope-search-affordances {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-search.collapsed .scope-search-affordances {
+  opacity: 0;
+  pointer-events: none;
+}
+.scope-search-clear {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: color-mix(in srgb, var(--doc-ink) 10%, transparent);
+  color: var(--doc-ink-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 200ms ease, color 200ms ease,
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-search-clear:hover {
+  background: color-mix(in srgb, var(--doc-ink) 20%, transparent);
+  color: var(--doc-ink-strong);
+}
+.scope-search-clear:active { transform: scale(0.92); }
+.scope-search-clear svg { width: 8px; height: 8px; display: block; }
+.scope-search-count {
+  pointer-events: none;
+  padding-left: 12px;
+  border-left: 1px solid var(--doc-rule);
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Expand-all — house tool at rest; active lifts to the theme accent. The
+   three-line glyph spreads apart as rows open up. */
+.scope-expand-toggle {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  border-radius: var(--omni-radius-medium);
+  background: transparent;
+  color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition:
+    background 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-expand-toggle:hover {
+  border-color: var(--omni-rule-line-hairline);
+  background: var(--doc-paper-bg);
+  box-shadow: var(--omni-shadow-elevation-1);
+  color: var(--doc-ink-body);
+}
+.scope-expand-toggle:hover:not(.active) .scope-expand-line { stroke: var(--doc-accent); }
+.scope-expand-toggle:focus,
+.scope-expand-toggle:focus-visible { outline: none; }
+.scope-expand-toggle:active { transform: scale(0.97); }
+.scope-expand-toggle.active {
+  background: var(--doc-accent);
+  color: #fff;
+  border-color: var(--doc-accent);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--doc-accent) 18%, transparent),
+    0 6px 18px color-mix(in srgb, var(--doc-accent) 24%, transparent);
+}
+.scope-expand-toggle svg { width: 14px; height: 14px; display: block; overflow: visible; }
+.scope-expand-line {
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 8px 8px;
+}
+.scope-expand-toggle.active .scope-expand-line--top { transform: translateY(-2.2px); }
+.scope-expand-toggle.active .scope-expand-line--bot { transform: translateY(2.2px); }
+.scope-expand-toggle.active .scope-expand-line--mid { transform: scaleX(1.08); }
+
+/* Kebab + menu — verbatim house kebab, with the actions card below. */
+.scope-menu-wrap { position: relative; }
+.scope-menu-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--omni-radius-medium);
+  color: var(--doc-ink-subtle);
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+.scope-menu-btn:hover,
+.scope-menu-btn[aria-expanded='true'] {
+  background: var(--doc-nested-bg);
+  color: var(--doc-ink-strong);
+}
+.scope-menu-btn:focus,
+.scope-menu-btn:focus-visible { outline: none; }
+.scope-menu-btn svg { width: 16px; height: 16px; }
+
+.scope-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: 10px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 10px 32px rgba(15, 23, 42, 0.1);
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  pointer-events: none;
+  transition:
+    opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-theme='dark'] .scope-menu {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 10px 32px rgba(0, 0, 0, 0.42);
+}
+.scope-menu.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.scope-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--doc-ink-body);
+  font-family: var(--doc-font-body);
+  font-size: 13px;
+  letter-spacing: -0.05px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.scope-menu-item:hover {
+  background: var(--doc-nested-bg);
+  color: var(--doc-ink-strong);
+}
+.scope-menu-item:focus,
+.scope-menu-item:focus-visible { outline: none; }
+.scope-menu-item svg { flex-shrink: 0; color: var(--doc-ink-subtle); transition: color 160ms ease; }
+.scope-menu-item:hover svg { color: var(--doc-ink-body); }
+.scope-menu-divider { height: 1px; background: var(--doc-rule); margin: 4px 6px; }
+
+/* ── The table ── */
+/* Overflow stays VISIBLE on desktop: each row carries an invisible
+   .row-extender projecting into the board's right gutter (the row-copy
+   hover system), and a clipping wrap would spawn a phantom horizontal
+   scrollbar from it. Narrow screens trade the extenders for a scroll. */
+.scope-table-wrap { width: 100%; }
+@media (max-width: 900px) {
+  .scope-table-wrap { overflow-x: auto; }
+}
+.scope-table {
+  width: 100%;
+  min-width: 640px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--doc-font-body);
+  font-size: 13.5px;
+}
+/* Column distribution — Assumption (text-heavy) absorbs the remainder. */
+.scope-table thead th:nth-child(1) { width: 38px; }  /* row # */
+.scope-table thead th:nth-child(2) { width: 40px; }  /* select */
+.scope-table thead th:nth-child(3) { width: 19%; }   /* Dimension */
+.scope-table thead th:nth-child(4) { width: auto; }  /* Assumption (greedy) */
+.scope-table thead th:nth-child(5) { width: 16%; }   /* Status */
+.scope-table thead th:nth-child(6) { width: 13%; }   /* Owner */
+
+.scope-table thead th {
+  text-align: left;
+  font-family: var(--doc-font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--doc-ink-subtle);
+  padding: 14px 14px;
+  background: transparent;
+  border-bottom: 1px solid var(--doc-rule);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.scope-table tbody td {
+  padding: 16px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--doc-ink) 8%, transparent);
+  color: var(--doc-ink-body);
+  vertical-align: middle;
+  font-size: 13.5px;
+  line-height: 1.55;
+  /* Positioning context for the left-edge strip + the row extender. */
+  position: relative;
+}
+.scope-table tbody tr:last-child td { border-bottom: 0; }
+
+/* ── Row presentation — verbatim from the reference table system ──
+   Uniform 70px starting rows, a subtle zebra, and the premium hover
+   treatment: a directional accent-tinted gradient (focal point on the
+   left, pairing with the copy button arriving on the right) plus a 1px
+   accent strip scaling in on the row's left edge. */
+.scope-table tbody tr {
+  height: 70px;
+  background: transparent;
+  transition: background 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-table tbody tr:nth-child(even) { background: rgba(15, 23, 42, 0.025); }
+[data-theme='dark'] .scope-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+
+.scope-table tbody tr:hover:not(.row-selected) {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--doc-accent) 6%, transparent),
+    color-mix(in srgb, var(--doc-accent) 2%, transparent) 60%,
+    color-mix(in srgb, var(--doc-accent) 0.5%, transparent) 100%
+  );
+}
+[data-theme='dark'] .scope-table tbody tr:hover:not(.row-selected) {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--doc-accent) 10%, transparent),
+    color-mix(in srgb, var(--doc-accent) 4%, transparent) 60%,
+    color-mix(in srgb, var(--doc-accent) 1%, transparent) 100%
+  );
+}
+
+.scope-table tbody tr.row-selected,
+.scope-table tbody tr.row-selected:nth-child(even) { background: var(--doc-accent-soft); }
+
+/* Left-edge accent strip — pseudo on the first td (pseudos on <tr> have
+   spotty support). Fades + scales in vertically so it feels organic. */
+.scope-table tbody td:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--doc-accent);
+  transform: scaleY(0.4);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scope-table tbody tr:hover:not(.row-selected) td:first-child::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* ── Row-copy affordance — one floating button per board, absolutely
+   positioned in the right padding gutter; JS slides it to the hovered
+   row's (predicted) center. Selection-aware: widens with a count and
+   copies every selected row. ── */
+.row-copy-btn {
+  position: absolute;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px; /* half of height — vertical center against JS-set top */
+  border-radius: 6px;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  color: var(--doc-ink-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.08);
+  transition:
+    opacity 200ms ease,
+    top 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 160ms ease;
+  font-family: inherit;
+  padding: 0;
+}
+.row-copy-btn.visible { opacity: 1; pointer-events: auto; }
+.row-copy-btn:hover {
+  background: var(--doc-accent);
+  color: #fff;
+  border-color: var(--doc-accent);
+}
+.row-copy-btn:active { transform: scale(0.94); }
+/* When the target row is about to expand substantially, the top slide
+   matches the cell-clamp's 520ms curve so button + row center arrive
+   together. */
+.row-copy-btn.expanding-slide {
+  transition:
+    opacity 200ms ease,
+    top 520ms cubic-bezier(0.4, 0, 0.2, 1),
+    background 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 160ms ease;
+}
+.row-copy-btn:focus,
+.row-copy-btn:focus-visible { outline: none; }
+.row-copy-btn.copied { background: #16a34a; color: #fff; border-color: #16a34a; }
+[data-theme='dark'] .row-copy-btn.copied { background: #4ade80; color: #052e16; border-color: #4ade80; }
+.row-copy-btn svg { width: 14px; height: 14px; display: block; }
+.row-copy-btn.with-count {
+  width: auto;
+  min-width: 28px;
+  padding: 0 10px 0 9px;
+  gap: 6px;
+}
+.row-copy-count {
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Invisible row extender — projects each row's DOM 48px into the right
+   gutter so native tr:hover / mouseenter / mouseleave cover the gap
+   between the table edge and the copy button. */
+.row-extender {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -48px;
+  width: 48px;
+  pointer-events: auto;
+  background: transparent;
+}
+@media (max-width: 900px) {
+  .row-copy-btn, .row-extender { display: none; }
+}
+
+/* Row number — stable mono index, assigned once, rides along through sorts.
+   16px off the left edge (reference spec) — clear of the hover accent strip. */
+.scope-rownum-th { padding-left: 16px !important; padding-right: 8px !important; }
+.scope-rownum {
+  padding-left: 16px !important;
+  padding-right: 8px !important;
+  font-family: var(--doc-font-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--doc-ink-subtle);
+  white-space: nowrap;
+}
+
+/* Select checkbox — small circular mark, bounce-scales in with its row. */
+.scope-select-th, .scope-select { padding-left: 6px !important; padding-right: 10px !important; }
+.scope-checkbox {
+  width: 12px;
+  height: 12px;
+  border: 1px solid color-mix(in srgb, var(--doc-ink) 35%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+.scope-checkbox:hover { border-color: color-mix(in srgb, var(--doc-ink) 60%, transparent); }
+.scope-checkbox.checked,
+.scope-checkbox--header.indeterminate {
+  background: var(--doc-accent);
+  border-color: var(--doc-accent);
+  color: #fff;
+}
+.scope-check-icon { width: 7px; height: 7px; }
+.scope-checkbox--header.indeterminate .scope-check-icon { display: none; }
+.scope-checkbox--header.indeterminate::after {
+  content: '';
+  width: 5px;
+  height: 1px;
+  background: #fff;
+}
+
+/* Dimension column — the row's anchor. */
+.scope-table tbody td.scope-select + td {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--doc-ink-strong);
+  letter-spacing: -0.15px;
+}
+
+/* Owner — small mono caps tag. */
+.scope-table tbody td:last-child {
+  font-family: var(--doc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--doc-ink-subtle);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Status pill — mono caps + dot. Semantic colors (not brand accents), with
+   dark-theme lifts. */
+.scope-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--doc-font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 9px 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.scope-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.scope-status.confirmed { background: rgba(34, 197, 94, 0.10); color: #1f7a47; }
+.scope-status.confirmed::before { background: #22c55e; }
+.scope-status.pending   { background: rgba(245, 158, 11, 0.10); color: #a25208; }
+.scope-status.pending::before   { background: #f59e0b; }
+.scope-status.open      { background: rgba(239, 68, 68, 0.09); color: #b91c1c; }
+.scope-status.open::before      { background: #ef4444; }
+[data-theme='dark'] .scope-status.confirmed { color: #4ade80; }
+[data-theme='dark'] .scope-status.pending   { color: #fbbf24; }
+[data-theme='dark'] .scope-status.open      { color: #f87171; }
+
+/* Sortable header buttons — 3-state (asc/desc/off); active state reads in
+   strong ink with the paired chevrons resolving to one direction. */
+.scope-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: color 180ms ease;
+}
+.scope-sort-btn:hover { color: var(--doc-ink-body); }
+.scope-sort-btn:focus,
+.scope-sort-btn:focus-visible { outline: none; }
+.scope-sort-icons {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--doc-ink-subtle);
+  opacity: 0.5;
+  transition: opacity 180ms ease;
+  flex-shrink: 0;
+}
+.scope-sort-icons svg { display: block; }
+.scope-sort-btn:hover .scope-sort-icons { opacity: 0.85; }
+.scope-sort-btn.sort-asc,
+.scope-sort-btn.sort-desc { color: var(--doc-accent); }
+.scope-sort-btn.sort-asc .scope-sort-icons,
+.scope-sort-btn.sort-desc .scope-sort-icons {
+  opacity: 1;
+  color: var(--doc-accent);
+}
+.scope-sort-btn.sort-asc .scope-sort-icons svg:nth-child(2),
+.scope-sort-btn.sort-desc .scope-sort-icons svg:nth-child(1) { opacity: 0.25; }
+
+/* Filter match highlight — accent-tinted marker swipe, theme-aware. */
+.filter-hit {
+  background: color-mix(in srgb, var(--doc-accent) 22%, transparent);
+  border-radius: 2px;
+  padding: 0 1px;
+  margin: 0 -1px;
+  color: var(--doc-ink-strong);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ── Cell clamp — 2-line cap, JS-driven smooth expand on hover and via the
+   expand-all toggle (max-height is measured per cell in JS). ── */
+.cell-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+.cell-clamp.is-clamped {
+  max-height: 3em;
+  transition: max-height 520ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.scope-table.expand-all-rows .cell-clamp.is-clamped {
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  transition: max-height 340ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+.scope-table.expand-all-rows-shrinking .cell-clamp.is-clamped {
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  max-height: 3em !important;
+  transition: max-height 340ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* ── Row build-in — rows sit at opacity 0 ONLY once JS arms the board
+   (`.doc-scope--armed`), so a script failure can never strand an invisible
+   table. The per-row IntersectionObserver releases each row as it enters
+   the viewport; pills and checkboxes layer their own settle on top. ── */
+.doc-scope--armed .scope-table tbody tr { opacity: 0; }
+.doc-scope--armed .scope-table tbody .scope-status { opacity: 0; transform: translateY(3px); }
+.doc-scope--armed .scope-table tbody .scope-checkbox { opacity: 0; transform: scale(0.7); }
+.doc-scope--armed .scope-table tbody tr.row-anim-in {
+  opacity: 1;
+  transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.doc-scope--armed .scope-table tbody tr.row-anim-in .scope-status {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 560ms ease 120ms, transform 640ms cubic-bezier(0.22, 1, 0.36, 1) 120ms;
+}
+.doc-scope--armed .scope-table tbody tr.row-anim-in .scope-checkbox {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 460ms ease, transform 580ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The comment pin shares the top-right corner with three functional tools
+   here (vs. two decorative ones elsewhere) — shift it left to keep clear. */
+.doc-section--table .doc-comment-pin {
+  right: calc(var(--doc-card-padding) + 130px);
+}
+
+@media (max-width: 640px) {
+  .scope-controls { display: none; }
+  .doc-section--table .doc-comment-pin { right: var(--doc-card-padding); }
+}

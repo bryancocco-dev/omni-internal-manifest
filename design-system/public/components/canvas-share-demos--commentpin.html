@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+  OMNI component: commentpin
+  Project: Share Demos
+  Note: .doc-comment-pin + .doc-comment-popover — per-section comment affordance on a read-only canvas, open with a reply thread + composer (viewers can discuss without editing)
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share Demos — commentpin · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/tokens/tokens.css" />
+<link rel="stylesheet" href="../../shared/components/shell.css" />
+<link rel="stylesheet" href="../../shared/components/sections.css" />
+<link rel="stylesheet" href="../../shared/components/cover.css" />
+<link rel="stylesheet" href="../../shared/components/hero.css" />
+<link rel="stylesheet" href="../../shared/components/scope-table.css" />
+<link rel="stylesheet" href="../../shared/components/toc.css" />
+<link rel="stylesheet" href="../../shared/components/sources.css" />
+<link rel="stylesheet" href="../../shared/components/footer.css" />
+<link rel="stylesheet" href="../../shared/components/reveal.css" />
+<link rel="stylesheet" href="../../shared/components/comment-affordance.css" />
+<link rel="stylesheet" href="../../shared/components/composer.css" />
+<link rel="stylesheet" href="../../shared/components/comments-panel.css" />
+<link rel="stylesheet" href="../../shared/components/share-modal.css" />
+<link rel="stylesheet" href="../../shared/components/themes.css" />
+<link rel="stylesheet" href="../../shared/components/intro.css" />
+<link rel="stylesheet" href="../../shared/components/gate.css" />
+<link rel="stylesheet" href="../../shared/components/download-affordance.css" />
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/canvas-share-demos.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div style="position:relative;min-height:380px">
+    <button type="button" class="doc-comment-pin has-count is-open" aria-label="Leave a comment on this section"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="doc-comment-pin__count">3</span></button>
+    <div class="doc-comment-popover is-open"><div class="doc-comment-list"><div class="doc-comment-thread">
+    <div class="doc-comment">
+      <div class="doc-comment__avatar">JH</div>
+      <div class="doc-comment__body">
+        <div class="doc-comment__meta"><strong>Jessie Harte</strong><span>Jul 12</span></div>
+        <p>Is the Q4 jump partly seasonal? We always get a year-end bump — the show calendar plus December delivery timing — and I don't want to over-read a spike that comes back every winter.</p>
+      </div>
+    </div><div class="doc-comment-thread__replies">
+    <div class="doc-comment doc-comment--reply">
+      <div class="doc-comment__avatar">NF</div>
+      <div class="doc-comment__body">
+        <div class="doc-comment__meta"><strong>Noah Fielding</strong><span>Jul 12</span></div>
+        <p>Good instinct. It's partly seasonal, but Q4 2025 is up ~28% over Q4 2024 on the same seasonal baseline, so there's real underlying growth on top of the year-end effect. I can add the year-over-year overlay if that's useful.</p>
+      </div>
+    </div>
+    <div class="doc-comment doc-comment--reply">
+      <div class="doc-comment__avatar">JH</div>
+      <div class="doc-comment__body">
+        <div class="doc-comment__meta"><strong>Jessie Harte</strong><span>Jul 12</span></div>
+        <p>Yes please — the YoY overlay is exactly what'll keep me honest when I present it.</p>
+      </div>
+    </div></div></div></div><div class="composer">
+    <div class="composer__input" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Add a comment…"></div>
+    <div class="composer__attachments"></div>
+    <div class="composer__bar">
+      <div class="composer__tools">
+        <button class="composer__tool" type="button" data-act="emoji" aria-label="Emoji"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"></circle><circle cx="9" cy="10" r="1" fill="currentColor"></circle><circle cx="15" cy="10" r="1" fill="currentColor"></circle><path d="M8.5 14.5a4 4 0 0 0 7 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
+        <button class="composer__tool" type="button" data-act="mention" aria-label="Mention someone"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.6"></circle><path d="M15.4 9v4a2 2 0 0 0 4 0v-1a7.5 7.5 0 1 0-3 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
+        <button class="composer__tool" type="button" data-act="image" aria-label="Add image"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"></rect><circle cx="9" cy="9.5" r="1.6" stroke="currentColor" stroke-width="1.4"></circle><path d="M4 16.5 9 12l4 3.5L16 13l4 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+      </div>
+      <button class="composer__send" type="button" aria-label="Send"><svg viewBox="0 0 24 24" fill="none"><path d="M12 19V6M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+    </div>
+    <input type="file" accept="image/*" class="composer__file" hidden=""></div></div>
+  </div>
+</body>
+</html>

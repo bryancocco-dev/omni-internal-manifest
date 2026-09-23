@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  OMNI component: navlist
+  Project: Brief
+  Note: .rail-panel / .rail-nav — slide-out chapter navigation with expandable has-children groups
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief — navlist · OMNI</title>
+
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/lease-campaign-brief-handoff.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<aside class="rail-panel" id="railPanel" style="position:static;transform:none;opacity:1;visibility:visible;width:300px">
+      <ul class="rail-nav rail-nav-canvas">
+        <li data-target="overview" class="has-children expanded active">
+          <div class="nav-row"><span class="caret">›</span> Overview</div>
+          <div class="sub-wrap">
+            <ul class="rail-subnav">
+              <li data-chapter="cover">Cover</li>
+              <li data-chapter="assignment-summary">Assignment Summary</li>
+              <li data-chapter="success-metrics">Success Metrics</li>
+              <li data-chapter="general-observations">General Observations</li>
+            </ul>
+          </div>
+        </li>
+        <li data-target="brand" class="has-children">
+          <div class="nav-row"><span class="caret">›</span> Brand</div>
+          <div class="sub-wrap">
+            <ul class="rail-subnav">
+              <li data-chapter="brand-perception">Brand Perception</li>
+            </ul>
+          </div>
+        </li>
+        <li data-target="audiences" class="has-children">
+          <div class="nav-row"><span class="caret">›</span> Audiences</div>
+          <div class="sub-wrap">
+            <ul class="rail-subnav">
+              <li data-chapter="young-builder">The Young Builder</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="rail-divider"></div>
+      <ul class="rail-actions">
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Version History
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Export
+        </li>
+      </ul>
+    </aside>
+</body>
+</html>

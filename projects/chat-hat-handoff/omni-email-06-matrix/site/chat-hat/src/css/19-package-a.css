@@ -1,0 +1,465 @@
+  /* ══ AH.2 → BC — Package as a modal: the MANIFEST ═════════════════
+     #ptPackage keeps sharing #ptEditor/#ptPreview's own .pt-editor
+     grid-cell trick, but .pt-package turns that whole cell into a
+     SCRIM (centred flex, the shell's own dialog scrim colour — see
+     .app-modal above) instead of a bar-to-rail inset panel: "the Media
+     bar stays as it was behind the scrim… the board and the History
+     rail are untouched." No .pt-editor-topbar — the modal carries its
+     own HEAD/FOOT (below); Back (the bar's own) and Escape close it
+     (handleWizardBack / the dedicated keydown listener), same as AF.1,
+     plus the close X, a scrim click, and the Download action
+     completing (initPackageOverlay). BC (Bryan, 9/15: "clean up this
+     entire page and make it really nice and premium as the final
+     step"): the card reads as a manifest now — the delivery laid out
+     as it ships at ONE scale, its spec beside it as key · value rows
+     under mono eyebrows, one hierarchy, nothing mono that isn't data,
+     nothing important truncated, nothing haloed at open. */
+  .pt-editor.pt-package {
+    /* Bryan, 9/15 ("the package state should blur the entire
+       background and center the package panel"): the scrim is no
+       longer the canvas grid cell alone — it is a fixed layer over
+       the whole window (header, nav, chat and History all behind the
+       blur) at the shell's own dialog depth (.app-modal's 5000, still
+       under the hoisted popovers' 9999 so the desk's own combos open
+       above it), and the card centres on the viewport, not the column. */
+    position: fixed; inset: 0; width: auto; height: auto;
+    grid-column: auto; grid-row: auto;
+    margin-left: 0; padding-left: 32px;
+    z-index: 5000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px;
+    background: rgba(15, 23, 42, 0.32);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+  /* The card itself — house elevated shadow (the Studio stage's own
+     "level 2", grep --shadow-card), the shell's own dialog entrance
+     (scale .98 → 1 + fade, 260ms, house ease; scrim fades with it via
+     the inherited .pt-editor[data-visible] opacity transition). */
+  .pt-package-card {
+    position: relative;
+    width: min(1280px, calc(100% - 64px));
+    height: min(860px, calc(100% - 64px));
+    max-width: 100%; max-height: 100%;
+    display: flex; flex-direction: column;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px var(--shadow-card), 0 4px 12px var(--shadow-card);
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 260ms cubic-bezier(0.16,1,0.3,1), transform 260ms cubic-bezier(0.16,1,0.3,1);
+  }
+  /* BC.1 — focus lands on the card ITSELF at open (tabindex=-1 in the
+     markup, openPackageOverlay focuses it) so nothing opens haloed:
+     the card draws no ring of its own; the first Tab moves focus to
+     the close X, which keeps its own :focus-visible ring. */
+  .pt-package-card:focus, .pt-package-card:focus-visible { outline: none; }
+  .pt-editor.pt-package[data-visible="1"] .pt-package-card {
+    opacity: 1; transform: scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-package-card { transition: none; }
+  }
+  /* HEADER 72px (BC.1) — "Package" · a hairline divider (1 × 16,
+     --line, 14px air each side — AH.1's own divider recipe, retired
+     from the Media bar with AL.6, rebuilt locally for this dialog) ·
+     the board's name · the counts as one quiet sans line ("6 selects ·
+     3 sizes · 18 units"; with a plan "3 of 15 filled · 4 sizes"), the
+     close X at right (.app-modal-close, the shell's own dialog close,
+     repositioned static/flex-end the same way
+     .app-modal-card-instructions's own close sits in ITS flex header).
+     32px left so the title sits on the sheet's own left edge (the
+     stage pads 32 below it); 24px right so the X's glyph lands on the
+     spec sheet's own right edge. */
+  .pt-package-head {
+    position: relative;
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 16px;
+    height: 72px; padding: 0 24px 0 32px;
+    border-bottom: 0.5px solid var(--line);
+  }
+  .pt-package-lockup { display: flex; align-items: center; min-width: 0; flex: 1 1 auto; }
+  .pt-package-title {
+    flex-shrink: 0;
+    font-family: var(--font-sans); font-size: 18px; font-weight: 600; letter-spacing: -0.2px;
+    color: var(--text-strong); white-space: nowrap;
+  }
+  .pt-package-divider { flex-shrink: 0; width: 1px; height: 16px; margin: 0 14px; background: var(--line); }
+  .pt-package-board {
+    flex-shrink: 0;
+    font-family: var(--font-sans); font-size: 14px; font-weight: 500;
+    color: var(--text-body); white-space: nowrap;
+  }
+  .pt-package-board:empty { display: none; }
+  .pt-package-counts {
+    min-width: 0; margin-left: 12px;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 400;
+    color: var(--text-subtle);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pt-package-board:empty + .pt-package-counts { margin-left: 0; }
+  .pt-package-close { position: static; transform: none; margin-left: auto; flex-shrink: 0; }
+
+  /* BODY — the two columns carry their own 32px air now (the base
+     .pt-editor-body's 28px inset and 28px column gap retire here):
+     the contact sheet at left scrolls on its own, the spec sheet at
+     right (360px, a hairline at its left) scrolls on its own, and
+     NOTHING else in the card scrolls (the column wrappers clip). Both
+     scrollers wear the shell's own thin-scrollbar idiom (.gco-prompt's
+     rules, ink-toned for a light ground — the same values
+     .c4-type-list already uses): scrollbar-width: thin for the
+     standard property, the webkit pseudos for the engines that still
+     honour them. No reserved gutter (it would sit as dead air on every
+     overlay-scrollbar Mac): fitPackageStage re-measures the stage's
+     clientWidth after its first pass instead, so a classic scrollbar
+     appearing under the fit still leaves the widest size two per line. */
+  .pt-editor.pt-package .pt-editor-body { gap: 0; padding: 0; }
+  .pt-editor.pt-package .pt-editor-stage-col { gap: 0; overflow: hidden; }
+  .pt-package-stage,
+  .pt-editor.pt-package .pt-editor-controls {
+    overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 23, 42, 0.20) transparent;
+  }
+  .pt-package-stage::-webkit-scrollbar,
+  .pt-editor.pt-package .pt-editor-controls::-webkit-scrollbar { width: 4px; }
+  .pt-package-stage::-webkit-scrollbar-track,
+  .pt-editor.pt-package .pt-editor-controls::-webkit-scrollbar-track { background: transparent; }
+  .pt-package-stage::-webkit-scrollbar-thumb,
+  .pt-editor.pt-package .pt-editor-controls::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.18);
+    border-radius: 4px;
+    transition: background 180ms ease;
+  }
+  .pt-package-stage:hover::-webkit-scrollbar-thumb,
+  .pt-package-stage::-webkit-scrollbar-thumb:hover,
+  .pt-editor.pt-package .pt-editor-controls:hover::-webkit-scrollbar-thumb,
+  .pt-editor.pt-package .pt-editor-controls::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 23, 42, 0.34);
+  }
+  .pt-package-stage {
+    flex: 1 1 auto; min-height: 0; min-width: 0;
+    display: block;
+    padding: 32px;
+  }
+  .pt-editor.pt-package .pt-editor-controls {
+    box-sizing: border-box; width: 360px; margin: 0;
+    padding: 32px 24px;
+    gap: 0;
+    border-left: 0.5px solid var(--line);
+  }
+  /* .pt-editor-addtocanvas-btn is display:none outside .pt-editor-studio
+     by default (it normally lives in that mode's topbar) — Package
+     reuses the same recipe for "Download package", at the card's own
+     foot (below), so it needs its own visibility switch. */
+  .pt-editor.pt-package .pt-editor-addtocanvas-btn { display: inline-flex; }
+  .pt-editor-addtocanvas-btn:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
+  /* FOOT 72px (BC.4) — a hairline above; at left the STATUS lockup (a
+     7px dot + a sans 13/500 line: "Ready to ship" in the success hue,
+     "Awaiting … approval" in the pending hue — the file's own two
+     status colours, .pt-traffic-ok/-pending above) then the delivery
+     line in sans 12.5 subtle with the sheet's filename in mono; at
+     right "Copy sheet" (quiet) then "Download package" (primary, at
+     the far right — the primary is always last). */
+  .pt-package-foot {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    height: 72px; padding: 0 24px 0 32px;
+    border-top: 0.5px solid var(--line);
+  }
+  .pt-package-foot-lockup { display: flex; align-items: center; gap: 16px; min-width: 0; }
+  .pt-package-status {
+    display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 500; line-height: 20px;
+    white-space: nowrap;
+  }
+  .pt-package-status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .pt-package-status .pt-package-status-dot { width: 7px; height: 7px; }
+  .pt-package-stage-foot {
+    margin: 0; min-width: 0;
+    font-family: var(--font-sans); font-size: 12.5px; color: var(--text-subtle);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pt-package-foot-file { font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; }
+  .pt-package-foot-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; white-space: nowrap; }
+  /* the Copy button's own width fix — .pt-share-copy-row is a
+     full-width row in its own popover. */
+  .pt-package-foot .pt-share-copy-row { width: auto; flex: 0 0 auto; }
+  @media (max-width: 1200px) {
+    /* AH.2 — "below 1200 the columns stack inside the card and it
+       takes calc(100% − 32px) both ways" — same breakpoint idiom the
+       real Editor/Preview use at their own 1100px (.pt-editor-body),
+       the divider rotating from the columns' own left edge to the
+       stack's own top edge; the body becomes the one scroller. */
+    .pt-editor.pt-package { padding: 16px; }
+    .pt-package-card { width: calc(100% - 32px); height: calc(100% - 32px); }
+    .pt-editor.pt-package .pt-editor-body { flex-direction: column; overflow-y: auto; }
+    .pt-editor.pt-package .pt-editor-stage-col { overflow: visible; flex: 0 0 auto; }
+    .pt-package-stage { overflow: visible; flex: 0 0 auto; }
+    .pt-editor.pt-package .pt-editor-controls {
+      width: auto; overflow: visible; flex: 0 0 auto;
+      border-left: 0; border-top: 0.5px solid var(--line);
+    }
+  }
+
+  /* ── BC.2 — the CONTACT SHEET: the delivery as it ships. ONE scale
+     for the whole sheet (fitPackageStage: the largest s, capped .6 /
+     floored .3, at which the widest size fits two per line), so a
+     728×90 sits beside a 300×250 at true relative size. Tiles wrap in
+     their size group with 16px gaps; groups 32px apart under a
+     hairline that runs the stage's full inner width (the group is a
+     plain block child of the padded stage, so its border IS that
+     width); the group head — the size in sans 13/600 strong, the
+     count in sans 13 subtle — sits 12px above its tiles. ── */
+  .pt-package-group { min-width: 0; }
+  .pt-package-group + .pt-package-group {
+    margin-top: 32px; padding-top: 24px;
+    border-top: 0.5px solid var(--line);
+  }
+  .pt-package-group-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; line-height: 20px; }
+  .pt-package-group-size {
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600; letter-spacing: -0.1px;
+    color: var(--text-strong);
+  }
+  .pt-package-group-count { font-family: var(--font-sans); font-size: 13px; font-weight: 400; color: var(--text-subtle); }
+  .pt-package-group-tiles { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; }
+  /* A tile: the unit's clone in a 1px --line frame, square corners (ad
+     units ship square), no shadow, no lift; under it the unit's id
+     alone in the Selects strip's own .pt-strip-frame-id voice (mono
+     9.5 subtle, "A1"). The full filename rides the tile's title and
+     lives in CONTENTS — no captions. The clone still rides the
+     .pt-banner-scale/.pt-banner-fit shell applyCardScale sizes
+     (natural px × s on the wrapper, transform:scale on the fit level). */
+  .pt-package-unit {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+    flex-shrink: 0; min-width: 0;
+  }
+  .pt-package-unit-frame {
+    box-sizing: content-box;
+    border: 1px solid var(--line); border-radius: 0;
+    line-height: 0;
+  }
+  .pt-package-unit-id { display: block; padding-left: 1px; }
+  /* the clone's own board chrome, off: the sheet's card shadow, its
+     hover lift and its staggered rise entrance all belong to the
+     board — a manifest tile just sits there. */
+  #ptPackageStage .pt-banner-frame { box-shadow: none; animation: none; transition: none; }
+  #ptPackageStage .pt-banner-frame:hover { transform: none; box-shadow: none; }
+  #ptPackageStage .pt-banner { cursor: default; }
+  /* The open (unfilled plan) tile — .pt-slot-ghost's own dashed-tile
+     language at the shared scale: it rides the same shell (wearing
+     .pt-banner[data-size] for its natural width/height for free) so a
+     mixed filled/open group stays one uniform rank; no solid frame of
+     its own (the dashes are its frame — the frame element stays for
+     the geometry, its border transparent). Its dash, radius and label
+     are counter-scaled by --pkg-scale (set on the stage by
+     fitPackageStage) so they paint at 1.5px / 10px / 10.5px after the
+     fit's transform instead of shrinking with the tile. */
+  .pt-package-unit--open .pt-package-unit-frame { border-color: transparent; }
+  .pt-banner.pt-package-open-tile {
+    box-sizing: border-box;
+    background: transparent;
+    border: calc(1.5px / var(--pkg-scale, 1)) dashed var(--line-solid);
+    border-radius: calc(10px / var(--pkg-scale, 1));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-subtle); font-size: calc(10.5px / var(--pkg-scale, 1)); font-weight: 500;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  }
+
+  /* ── BC.3 — the SPEC SHEET: one hierarchy. A section eyebrow
+     (.pt-editor-drawer-eyebrow — mono 10.5 caps subtle, the only caps
+     on the sheet) and under it FIELD ROWS as key · value pairs: the
+     key in sans 12.5/500 subtle at a fixed 112px, the value filling
+     the rest, both on one baseline (the key's 6px top inset lands its
+     line centre on the value's own first line at 16px, so a wrapped
+     value keeps the key on its first line); rows 32px min, 6px apart;
+     sections 24px apart over a hairline. ── */
+  .pt-editor.pt-package .pt-editor-drawer-section { gap: 12px; }
+  .pt-editor.pt-package .pt-editor-drawer-section + .pt-editor-drawer-section {
+    margin-top: 24px; padding-top: 24px;
+    border-top: 0.5px solid var(--line);
+  }
+  .pt-package-row { display: flex; align-items: flex-start; gap: 8px; min-height: 32px; min-width: 0; }
+  .pt-package-row + .pt-package-row { margin-top: 6px; }
+  .pt-package-key {
+    flex: 0 0 112px; padding-top: 6px;
+    font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; line-height: 20px;
+    letter-spacing: 0; text-transform: none;
+    color: var(--text-subtle); white-space: nowrap;
+  }
+  .pt-package-val { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+  /* Values are QUIET FIELDS: at rest no border, the value reading as
+     text (sans 13 body; mono 12 for the pattern, the URL, the UTM and
+     the dates — data stays mono); a hairline box (--line, radius 8)
+     on hover; the .pt-cta-input focus ring on focus. The box
+     overhangs its column by its own inset (8px = 7px padding + the
+     1px border) so the text sits exactly on the value column's edge
+     at rest and the box wraps it on hover. Textareas (the URL, the
+     UTM, the pattern, the notes) are auto-height
+     (packageAutosizeTextareas) and wrap anywhere, so nothing
+     truncates; overflow hidden so they are never scrollers of their
+     own — the card's only scrollers are the stage and the panel. */
+  .pt-package-field {
+    display: block; box-sizing: border-box;
+    width: calc(100% + 16px); margin: 0 -8px;
+    padding: 5px 7px;
+    border: 1px solid transparent; border-radius: 8px;
+    background: transparent; color: var(--text-body);
+    font-family: var(--font-sans); font-size: 13px; line-height: 20px;
+    resize: none; overflow: hidden;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+  .pt-package-field--mono {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px; line-height: 18px;
+    padding: 6px 7px;
+  }
+  textarea.pt-package-field { min-height: 32px; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+  .pt-package-field:hover { border-color: var(--line); }
+  .pt-package-field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  /* The pattern's "e.g." example line — one line, the "e.g." label
+     fixed-width and the value truncating from the START so the tail
+     (the part that disambiguates one filename from the next) stays
+     readable: direction:rtl flips which end text-overflow's ellipsis
+     eats from, text-align:left keeps the tail pinned to the box's
+     right edge; <bdi> holds the actual character order LTR inside
+     that RTL flow so digits/punctuation don't reorder. title carries
+     the untruncated value. */
+  .pt-package-example {
+    display: flex; align-items: baseline; gap: 0;
+    margin-top: 2px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; line-height: 16px; color: var(--text-subtle);
+    overflow: hidden; white-space: nowrap;
+  }
+  .pt-package-example-label { flex-shrink: 0; white-space: pre; }
+  .pt-package-example-tail {
+    direction: rtl; text-align: left; unicode-bidi: isolate;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    min-width: 0; flex: 1 1 auto;
+  }
+  /* BJ.3 — DELIVERY's first row, the plan itself: a PLAIN value, not
+     a picker (no field box, no hover/focus state — nothing here is
+     editable), the source name in mono at rest, its space/size count
+     after it in the row's own quiet voice, wrapping together if the
+     column runs narrow. */
+  .pt-package-plan-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; padding-top: 6px; line-height: 20px; }
+  .pt-package-plan-source {
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px; color: var(--text-body);
+  }
+  .pt-package-plan-meta { font-family: var(--font-sans); font-size: 12px; color: var(--text-subtle); }
+  /* Start / End — two quiet mono fields on one line with an en dash
+     between them; the pair overhangs the column together (the first
+     field's box starts where the text would, the last ends on the
+     column's edge). */
+  .pt-package-daterow { display: flex; align-items: center; width: calc(100% + 16px); margin: 0 -8px; }
+  .pt-package-daterow .pt-package-field { flex: 1 1 0; width: auto; margin: 0; min-width: 0; padding-left: 4px; padding-right: 4px; }
+  .pt-package-daterow-sep {
+    flex-shrink: 0; padding: 0 3px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px; line-height: 18px; color: var(--text-subtle);
+  }
+  /* Combos (Format · Tracker profile · Rotation, and Version's three)
+     — the same quiet row with a caret at the value's end, opening the
+     house .pt-set-menu exactly as before (openSetMenu, wirePackagePanel;
+     never a native select). The box hugs its text so the caret follows
+     the last word; open = the focus ring, the caret turned. */
+  .pt-package-combo {
+    display: inline-flex; align-items: center; gap: 3px;
+    box-sizing: border-box; max-width: calc(100% + 16px); margin: 0 -8px;
+    padding: 5px 7px;
+    border: 1px solid transparent; border-radius: 8px;
+    background: transparent; color: var(--text-body);
+    font: inherit; font-family: var(--font-sans); font-size: 13px; line-height: 20px;
+    text-align: left; cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+  .pt-package-combo-label { min-width: 0; }
+  .pt-package-caret {
+    flex-shrink: 0; width: 7px; height: 7px; display: block;
+    color: var(--text-subtle);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+  }
+  .pt-package-combo:hover { border-color: var(--line); }
+  .pt-package-combo:focus, .pt-package-combo:focus-visible { outline: none; }
+  .pt-package-combo:focus-visible,
+  .pt-package-combo[aria-expanded="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pt-package-combo[aria-expanded="true"] .pt-package-caret { transform: rotate(180deg); color: var(--accent); }
+  /* Version — three quiet combos on one line ("Prospecting · English ·
+     v03"), the middle dots as separators; each combo's box overhangs
+     its own text by its inset (a 4px one here — the layout width is
+     the text + caret alone), so the row never wraps for want of
+     hover-box air, and a box's edge lands exactly on the dot's own
+     4px margin. The row may run a few px into the panel's right
+     padding rather than wrap — never past it. */
+  .pt-package-combo-row { display: flex; align-items: center; flex-wrap: nowrap; min-width: 0; }
+  .pt-package-combo-row .pt-package-combo { margin: 0 -4px; padding-left: 3px; padding-right: 3px; max-width: none; flex-shrink: 0; }
+  .pt-package-combo-dot { flex-shrink: 0; margin: 0 4px; color: var(--text-subtle); font-family: var(--font-sans); font-size: 13px; line-height: 20px; }
+  /* APPROVAL — two rows, keys "Brand" and "Legal", the value a status
+     lockup (a 6px dot + "Approved" / "Pending" in the file's own two
+     hues, sans 12.5) and the house .dip-switch at the row's right end;
+     the whole row is the switch (role=switch, setItemChecked flips the
+     dip with its own bloom). */
+  .pt-package-row--switch {
+    width: 100%; padding: 0; border: 0; background: transparent;
+    font: inherit; text-align: left; cursor: pointer; align-items: center;
+    border-radius: 6px;
+  }
+  .pt-package-row--switch:focus { outline: none; }
+  .pt-package-row--switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pt-package-row--switch .pt-package-key { padding-top: 0; }
+  .pt-package-row--switch .pt-package-val { flex-direction: row; align-items: center; }
+  .pt-package-approval-status {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; line-height: 20px;
+  }
+  /* The two status hues are .pt-traffic-ok/-pending's own (18-sheet-a.css)
+     — pinned here by compound selector because AK.6's brand-check list
+     (24-editor-studio-a.css, later in the cascade) repaints the bare
+     .pt-traffic-pending subtle and 12px for its own rows. */
+  .pt-package-status.pt-traffic-ok, .pt-package-approval-status.pt-traffic-ok { color: #1a7f4b; font-weight: 500; }
+  .pt-package-status.pt-traffic-pending, .pt-package-approval-status.pt-traffic-pending { color: #a25208; font-weight: 500; }
+  .pt-package-status.pt-traffic-ok, .pt-package-status.pt-traffic-pending { font-size: 13px; }
+  .pt-package-approval-status.pt-traffic-ok, .pt-package-approval-status.pt-traffic-pending { font-size: 12.5px; }
+  .pt-package-row--switch .dip-switch { margin-left: auto; }
+  /* CONTENTS — collapsed by default behind .pt-set-roster-footer's own
+     disclosure row (label + caret, rotates open), flush with the
+     section's own edges here. */
+  .pt-editor.pt-package .pt-set-roster-footer { margin-top: 0; padding: 8px 0; }
+  .pt-package-contents-body[hidden] { display: none; }
+  .pt-package-contents-body { padding-top: 10px; }
+  /* A deep file row (03_Reference/…) would run past the panel:
+     .pt-tree-name clips with an ellipsis (title carries the untruncated
+     name, set on the row by treeRow itself) and .pt-tree-meta (the
+     HTML5/fallback/row-count tag) is pinned. Scoped to the CONTENTS
+     body — the tree recipe is shared structure with no other caller
+     left since AF retired the old in-flow section. */
+  .pt-package-contents-body .pt-tree-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .pt-package-contents-body .pt-tree-row { min-width: 0; }
+  .pt-package-contents-body .pt-tree-meta { flex-shrink: 0; }
+
+  .pt-tree {
+    background: var(--card-bg);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 8px;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    line-height: 1.9;
+  }
+  .pt-tree-row { display: flex; align-items: center; gap: 8px; padding: 1px 10px; border-radius: 6px; }
+  .pt-tree-row:hover { background: var(--hover-soft); }
+  .pt-tree-row[data-depth="1"] { padding-left: 30px; }
+  .pt-tree-row[data-depth="2"] { padding-left: 50px; }
+  .pt-tree-row[data-depth="3"] { padding-left: 70px; }
+  .pt-tree-icon { width: 14px; flex-shrink: 0; color: var(--text-subtle); display: inline-flex; }
+  .pt-tree-icon svg { width: 13px; height: 13px; display: block; }
+  .pt-tree-row.is-dir .pt-tree-icon { color: var(--accent); }
+  .pt-tree-name { color: var(--text-body); }
+  .pt-tree-row.is-dir .pt-tree-name { font-weight: 600; color: var(--text-strong); }
+  .pt-tree-meta { margin-left: auto; font-size: 10.5px; color: var(--text-subtle); }
+  .pt-traffic-note { margin: 14px 2px 0; font-size: 11.5px; color: var(--text-subtle); }
+
+  .pt-selects-grid { display: flex; flex-wrap: wrap; gap: 16px; }

@@ -1,0 +1,79 @@
+<svg viewBox="0 0 716 716" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    v2.3 REWORK (coordinator strip review, round 2). The uniform 2×3 gray
+    grid read as a loading-skeleton, not a designed mark — rebuilt as an
+    ASYMMETRIC modular bento (one large + two medium + two small panel),
+    echoing the guidelines' color-palette page (p31)'s mixed-size color
+    swatches rather than a literal copy of it. Figure bounding box
+    (143,143)-(573,573), 430×430 = 60% of frame — same box/margins as the
+    workflow and text tiles for identical margin feel across the set.
+
+    Palette: ONE large panel permanently BLACK (ink, static — "no black
+    pulse"); the remaining four panels rest at #D1D1D1 gray. ONE motion:
+    THE BLUE FOCUS MIGRATES — an Innovation Blue overlay crossfades in and
+    back out on each of the four gray panels in turn (M1→M2→S1→S2), so
+    exactly one panel reads blue at any instant and the "focus" reads as
+    an eye moving across the canvas. The black panel never participates.
+
+    Flat fills only — no gradients/filters/glows/textures/shadows. Ground
+    WHITE by default (light-first); body[data-theme="dark"] flips
+    ground/ink/gray. Same rekey rationale as the other two tiles' header
+    comments: ready for the §11 inliner to consume as-is (just add the
+    "cover-cv" class to this root <svg>); standalone preview is
+    light-only by design (no <body> ancestor to match the dark rule).
+  -->
+  <style>
+    .cv-ground { fill: #ffffff; }
+    .cv-ink    { fill: #000000; }
+    .cv-gray   { fill: #D1D1D1; }
+    body[data-theme="dark"] .cv-ground { fill: #000000; }
+    body[data-theme="dark"] .cv-ink    { fill: #ffffff; }
+    body[data-theme="dark"] .cv-gray   { fill: #4A4A4A; }
+
+    /* ONE motion: the blue focus migrates. A blue overlay rect sits atop
+       each gray panel and crossfades 0→1→0 in sequence — §18 general
+       floor (opacity swing 0→1, exceeds the 0.25 floor); §18.5 envelope
+       (8% attack / 24% decay off a 50%-peak bump, zero-velocity baseline
+       identical at 0%/100%). MID 9s token, four panels staggered 2.25s
+       apart (9s ÷ 4), reading top-to-bottom: M1 → M2 → S1 → S2. */
+    .cv-focus {
+      opacity: 0;
+      animation: cv-focusFade 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes cv-focusFade {
+      0%, 42%, 100% { opacity: 0; }
+      50%           { opacity: 1; }
+      74%           { opacity: 0; }
+    }
+    .cv-f1 { animation-delay: -4.5s;  }
+    .cv-f2 { animation-delay: -2.25s; }
+    .cv-f3 { animation-delay: 0s;     }
+    .cv-f4 { animation-delay: -6.75s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cv-focus { animation: none; opacity: 0; }
+      .cv-f1    { opacity: 1; } /* rest freezes on the first beat: exactly one panel reads blue */
+    }
+  </style>
+
+  <rect class="cv-ground" width="716" height="716"/>
+
+  <!-- large panel: permanently black, static -->
+  <rect class="cv-ink" x="143" y="143" width="204" height="430"/>
+
+  <!-- medium panel 1 -->
+  <rect class="cv-gray" x="369" y="143" width="204" height="170"/>
+  <rect class="cv-focus cv-f1" x="369" y="143" width="204" height="170" fill="#4F7FF2"/>
+
+  <!-- medium panel 2 -->
+  <rect class="cv-gray" x="369" y="335" width="204" height="130"/>
+  <rect class="cv-focus cv-f2" x="369" y="335" width="204" height="130" fill="#4F7FF2"/>
+
+  <!-- small panel 1 -->
+  <rect class="cv-gray" x="369" y="487" width="91" height="86"/>
+  <rect class="cv-focus cv-f3" x="369" y="487" width="91" height="86" fill="#4F7FF2"/>
+
+  <!-- small panel 2 -->
+  <rect class="cv-gray" x="482" y="487" width="91" height="86"/>
+  <rect class="cv-focus cv-f4" x="482" y="487" width="91" height="86" fill="#4F7FF2"/>
+</svg>

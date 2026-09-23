@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  OMNI component: editbar_bulk
+  Project: Admin
+  Note: .bulkbar — selection toolbar that appears above the users table once rows are checked
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — editbar_bulk · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/admin.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="bulkbar" id="bulkbar">
+      <span class="cnt"><b id="selCount">3</b> selected</span>
+      <button class="btn btn-primary" id="editRecords"><i class="ph ph-pencil-simple"></i> Edit Records</button>
+      <button class="btn btn-danger"><i class="ph ph-trash"></i> Delete</button>
+    </div>
+</body>
+</html>

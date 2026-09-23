@@ -1,0 +1,11 @@
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     CHAT HAT prototype controller — additive JS only.
+     Owns the prompt-card UI in .chat-aux-panel and the persona-generation
+     demo flow Bryan asked for. Hooks every feedback item:
+       1) Stronger card contrast/entrance       → CSS .ch-prompt-active + .ch-just-fired
+       2) Selection IS the submit               → click handler closes panel + advances
+       3) Echo "You chose X" into the thread    → ChatHat._echo()
+       4) Numbered options                      → rendered as ch-opt-num
+       5) Free-text fallback in composer        → composerInput Enter handler
+     ════════════════════════════════════════════════════════════════════════ -->

@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+  OMNI component: input
+  Project: Media
+  Note: .composer — message composer with resize handle, textarea, add + send actions
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media — input · OMNI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/media.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="composer-wrap">
+        <div class="composer">
+          <div class="composer-resize-handle" id="composerResizeHandle" role="separator" aria-label="Resize composer" aria-orientation="horizontal" title="Drag to resize"></div>
+          <textarea id="composerInput" placeholder="Type your message..."></textarea>
+          <div class="composer-actions">
+            <div class="add-wrap">
+              <button class="round-btn ghost" title="Add" id="addBtn" aria-haspopup="menu" aria-expanded="false">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+            <div class="composer-right">
+              <div class="model-selector-wrap" id="modelSelectorWrap">
+                <button class="model-selector-btn" id="modelSelectorBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="modelSelectorMenu">
+                  <span class="model-selector-label" id="modelSelectorLabel">Claude Sonnet 4.6</span>
+                  <svg class="model-selector-caret" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                    <path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <button class="round-btn primary" title="Send" id="sendBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M9 5 L10.6 11.4 L17 13 L10.6 14.6 L9 21 L7.4 14.6 L1 13 L7.4 11.4 Z"/>
+                  <path d="M17 3 L17.7 5.3 L20 6 L17.7 6.7 L17 9 L16.3 6.7 L14 6 L16.3 5.3 Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+</body>
+</html>

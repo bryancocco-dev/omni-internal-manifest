@@ -1,0 +1,62 @@
+.doc-download {
+  display: flex;
+  align-items: center;
+  gap: var(--omni-space-12);
+  padding: var(--omni-space-12) var(--omni-space-16);
+  background: var(--doc-nested-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-medium);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--omni-transition-duration-fast) ease, box-shadow var(--omni-transition-duration-fast) ease, transform var(--omni-transition-duration-fast) ease;
+}
+
+.doc-download:hover {
+  border-color: var(--doc-accent);
+  box-shadow: var(--omni-shadow-elevation-1);
+  transform: translateY(-1px);
+}
+
+.doc-download__icon {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--omni-radius-small);
+  background: var(--doc-accent-soft);
+  color: var(--doc-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-download__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-download__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--doc-ink-strong);
+}
+
+.doc-download__meta {
+  font-family: var(--doc-font-mono);
+  font-size: 11.5px;
+  color: var(--doc-ink-subtle);
+}
+
+.doc-download__state {
+  margin-left: auto;
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  color: var(--doc-ink-subtle);
+  min-width: 66px;
+  text-align: right;
+}
+
+.doc-download.is-busy .doc-download__icon { color: var(--doc-ink-subtle); }
+.doc-download.is-done .doc-download__icon { color: var(--omni-primitive-brand-green01, #2de8af); }
+.doc-download.is-done { border-color: var(--omni-primitive-brand-green01, #2de8af); }

@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  OMNI component: celebration
+  Project: Agent Builder
+  Note: .agent-ready-modal — "agent ready" overlay with starfield + fidelity + CTAs
+
+  Part of the OMNI design system — restyle with var(--omni-*), see /CLAUDE.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Builder — celebration · OMNI</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://omni-system-hazel.vercel.app/library/omni-agent-builder.css">
+<style>
+  body { background: var(--omni-page-bg, #fff); margin: 0; }
+</style>
+</head>
+<body>
+<div class="agent-ready-modal show" id="agentReadyModal" role="dialog" aria-modal="true" aria-label="Agent ready" style="position:static;display:flex;opacity:1;visibility:visible;min-height:520px">
+  <div class="agent-ready-backdrop" id="agentReadyBackdrop"></div>
+  <div class="agent-ready-card">
+    <div class="agent-ready-flare" aria-hidden="true"></div>
+    <div class="agent-ready-starfield" id="agentReadyStarfield" aria-hidden="true"></div>
+    <h2 class="agent-ready-title">Your Agent is Ready to Go.</h2>
+    <div class="agent-ready-tile-stage" aria-hidden="true">
+      <span class="agent-ready-spark" style="--dx:118px;--dy:18px;--size:4px;--d:30ms;--dur:1550ms"></span>
+      <span class="agent-ready-spark" style="--dx:98px;--dy:50px;--size:2px;--d:0ms;--dur:1400ms"></span>
+      <span class="agent-ready-spark" style="--dx:82px;--dy:82px;--size:5px;--d:80ms;--dur:1600ms"></span>
+      <span class="agent-ready-spark" style="--dx:54px;--dy:96px;--size:3px;--d:40ms;--dur:1450ms"></span>
+      <span class="agent-ready-spark" style="--dx:26px;--dy:122px;--size:2px;--d:90ms;--dur:1500ms"></span>
+      <span class="agent-ready-spark agent-ready-spark--soft" style="--dx:6px;--dy:130px;--size:3px;--d:50ms;--dur:1480ms"></span>
+      <span class="agent-ready-spark" style="--dx:-22px;--dy:118px;--size:5px;--d:20ms;--dur:1550ms"></span>
+      <span class="agent-ready-spark" style="--dx:-48px;--dy:96px;--size:3px;--d:110ms;--dur:1400ms"></span>
+      <span class="agent-ready-spark agent-ready-spark--soft" style="--dx:-72px;--dy:76px;--size:4px;--d:60ms;--dur:1500ms"></span>
+      <span class="agent-ready-spark" style="--dx:-96px;--dy:54px;--size:2px;--d:70ms;--dur:1380ms"></span>
+      <span class="agent-ready-spark" style="--dx:-118px;--dy:22px;--size:4px;--d:140ms;--dur:1520ms"></span>
+      <span class="agent-ready-spark agent-ready-twinkle" style="--dx:62px;--dy:42px;--size:3px;--d:1800ms"></span>
+      <span class="agent-ready-spark agent-ready-twinkle" style="--dx:-58px;--dy:36px;--size:4px;--d:2050ms"></span>
+      <span class="agent-ready-tile-aura"></span>
+      <div class="agent-ready-tile">
+        <i class="bx bx-pen" id="agentReadyIcon"></i>
+      </div>
+    </div>
+    <div class="agent-ready-meta">
+      <div class="agent-ready-name" id="agentReadyName">Driftline Motors Brand Steward</div>
+      <div class="agent-ready-desc" id="agentReadyDesc">Maintains Driftline Motors's brand voice across every customer-facing surface — ad copy, landing pages, CRM emails, dealership scripts. Trained on the latest brand guidelines (v4.2), tone-of-voice manual, and the approved Q4 campaign messaging. Use it for copy reviews, content audits, and first-draft generation.</div>
+    </div>
+    <div class="agent-ready-fidelity">
+      <div class="agent-ready-fidelity-top">
+        <span class="agent-ready-fidelity-label">Agent Fidelity</span>
+        <span class="agent-ready-fidelity-num"><span id="agentReadyPct">62</span>%</span>
+      </div>
+      <div class="agent-ready-fidelity-bar"><div class="agent-ready-fidelity-fill" id="agentReadyFill" style="width:62%"></div></div>
+    </div>
+    <div class="agent-ready-ctas">
+      <button class="agent-ready-cta agent-ready-cta--primary" type="button" id="agentReadyLaunch">Launch Agent Now</button>
+      <button class="agent-ready-cta agent-ready-cta--secondary" type="button" id="agentReadyRefine">Continue refining</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

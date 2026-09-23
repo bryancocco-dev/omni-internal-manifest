@@ -1,0 +1,391 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Section block styles — one class per content "type" in the shared
+   content schema (see shared/content/*.json + shared/components/renderer.js).
+
+   Type + treatment mirror publish-to-workspace's .qa-* board system exactly:
+   Inter everywhere, bold near-black headlines, muted mono eyebrows, blue
+   pill chips, hairline nested cards. No serif. Keep additions here generic
+   so a second demo reuses them without brand-specific overrides.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Eyebrow — muted mono kicker, like .qa-eyebrow */
+.doc-eyebrow {
+  display: block;
+  font-family: var(--doc-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+  margin: 0 0 14px;
+}
+
+/* Headlines — Inter, bold, near-black (.qa-h1 / .qa-h2) */
+.doc-heading {
+  font-family: var(--doc-font-display);
+  font-weight: 600;
+  color: var(--doc-ink-strong);
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: var(--doc-heading-tracking, -0.6px);
+  margin: 0 0 14px;
+}
+
+.doc-heading--sub {
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+}
+
+.doc-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--doc-ink);
+  max-width: 760px;
+  margin: 0;
+}
+
+.doc-body + .doc-body { margin-top: 1em; }
+
+/* ── Sender's note — the opening personal message (kept sans, board-native) ── */
+
+.doc-note {
+  display: flex;
+  gap: var(--omni-space-16);
+  align-items: flex-start;
+}
+
+.doc-note__avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--doc-accent);
+  color: var(--omni-text-on-bright-bg, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--doc-font-mono);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+
+.doc-note__body { flex: 1; min-width: 0; }
+
+.doc-note__from {
+  font-size: 14px;
+  color: var(--doc-ink-strong);
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.doc-note__role {
+  font-size: 12.5px;
+  color: var(--doc-ink-subtle);
+  margin: 0 0 var(--omni-space-16);
+}
+
+.doc-note__message {
+  font-family: var(--doc-font-body);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: -0.2px;
+  color: var(--doc-ink-strong);
+  margin: 0;
+  max-width: 720px;
+}
+
+.doc-note__sign-off {
+  margin-top: var(--omni-space-16);
+  font-size: 14px;
+  color: var(--doc-ink-subtle);
+}
+
+/* ── Chips / pills — .qa-chip ────────────────────────────────────────────── */
+
+.doc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--doc-font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 4px 9px;
+  border-radius: var(--omni-radius-small);
+  white-space: nowrap;
+  background: var(--doc-accent-soft);
+  color: var(--doc-accent);
+  text-transform: capitalize;
+}
+
+/* ── Stat grid — nested hairline cards with bold sans values + provenance chip ── */
+
+.doc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--omni-space-12);
+  margin-top: var(--omni-space-20);
+}
+
+.doc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-large);
+}
+
+.doc-stat__value {
+  font-family: var(--doc-font-display);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: var(--doc-heading-tracking, -0.6px);
+  color: var(--doc-ink-strong);
+  margin: 0;
+}
+
+.doc-stat__value span {
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--doc-ink-strong);
+  margin-left: 0;
+}
+
+.doc-stat__label {
+  font-size: 13px;
+  color: var(--doc-ink-subtle);
+  line-height: 1.4;
+}
+
+/* Bottom-align the provenance chip across all cards: the grid stretches every
+   card to equal height, and margin-top:auto pins the chip to the card floor —
+   so a one-line label (left card) doesn't ride higher than the two-line ones.
+   align-self:flex-start keeps the chip hugging its text, not full width. */
+.doc-stat__tag { margin-top: auto; align-self: flex-start; }
+
+/* ── Chart wrapper — nested surface card, bars drawn by chart.js ─────────── */
+
+.doc-chart {
+  margin-top: var(--omni-space-20);
+  padding: var(--omni-space-20) var(--omni-space-20) var(--omni-space-16);
+  background: var(--doc-paper-bg);
+  border: 1px solid var(--doc-rule);
+  border-radius: var(--omni-radius-large);
+}
+
+.doc-chart__caption {
+  margin-top: var(--omni-space-12);
+  font-size: 12px;
+  color: var(--doc-ink-subtle);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--doc-font-mono);
+}
+
+.doc-chart__svg { display: block; width: 100%; height: auto; }
+
+.doc-chart__bar {
+  fill: var(--doc-accent);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  transform: scaleY(0.6);
+  transition: opacity 520ms var(--omni-transition-easing-smooth) var(--bar-delay, 0ms),
+    transform 520ms var(--omni-transition-easing-smooth) var(--bar-delay, 0ms);
+}
+
+.doc-chart.is-visible .doc-chart__bar { opacity: 1; transform: scaleY(1); }
+
+.doc-chart__value {
+  font-family: var(--doc-font-mono);
+  font-size: 11px;
+  fill: var(--doc-ink-strong);
+}
+
+.doc-chart__label {
+  font-family: var(--doc-font-mono);
+  font-size: 10.5px;
+  fill: var(--doc-ink-subtle);
+}
+
+.doc-chart__baseline { stroke: var(--doc-rule); stroke-width: 1; }
+
+/* ── Findings list — numbered, hairline-divided rows ────────────────────── */
+
+.doc-findings {
+  list-style: none;
+  margin: var(--omni-space-20) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--omni-space-16);
+}
+
+.doc-findings li {
+  display: flex;
+  gap: var(--omni-space-16);
+  padding-bottom: var(--omni-space-16);
+  border-bottom: 1px solid var(--doc-rule);
+}
+
+.doc-findings li:last-child { border-bottom: none; padding-bottom: 0; }
+
+.doc-findings__index {
+  flex: none;
+  font-family: var(--doc-font-mono);
+  font-size: 13px;
+  color: var(--doc-accent);
+  padding-top: 2px;
+  width: 22px;
+}
+
+.doc-findings__text h3 {
+  margin: 0 0 5px;
+  font-family: var(--doc-font-body);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--doc-ink-strong);
+}
+
+.doc-findings__text p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--doc-ink);
+}
+
+/* ── Forward-looking brief / recommendation — accent-soft callout (.qa-callout) ── */
+
+.doc-brief {
+  margin-top: var(--omni-space-20);
+  padding: 26px 28px;
+  background: var(--doc-accent-soft);
+  border-radius: var(--omni-radius-large);
+  border: 1px solid var(--doc-accent-line);
+}
+
+.doc-brief .doc-body { max-width: none; }
+
+/* ── CTA board — comment + download live here ───────────────────────────── */
+
+.doc-cta {
+  position: relative;
+  text-align: left;
+  background: var(--doc-paper-bg);
+  border-radius: var(--doc-card-radius);
+  padding: var(--doc-card-padding);
+}
+
+.doc-cta__heading {
+  font-family: var(--doc-font-body);
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--doc-ink-strong);
+  margin: 0 0 var(--omni-space-8);
+}
+
+.doc-cta__body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--doc-ink-subtle);
+  max-width: 60ch;
+  margin: 0 0 var(--omni-space-20);
+}
+
+.doc-cta__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--omni-space-12);
+  align-items: stretch;
+}
+
+/* The two closing cards — "Share your thoughts" (opens comments) + "Download
+   full report" — share the .doc-download treatment and balance side by side. */
+.doc-cta__row > .doc-download { flex: 1 1 300px; min-width: 0; }
+.doc-cta__comment { text-align: left; }
+
+/* ── Contributors — the document's colophon board, its own component above
+   the end-card. Collaborator identity system (avatar colour + initials) at
+   board scale: who made this, what they did, quietly credited. ── */
+.doc-contributors__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.doc-contributor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px;
+  background: var(--doc-nested-bg);
+  border-radius: var(--omni-radius-medium);
+}
+
+.doc-contributor__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--av, var(--doc-accent));
+  color: #fff;
+  font-family: var(--doc-font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.doc-contributor__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.doc-contributor__name {
+  font-family: var(--doc-font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  color: var(--doc-ink-strong);
+  line-height: 1.2;
+}
+
+.doc-contributor__tag {
+  font-family: var(--doc-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--doc-ink-subtle);
+  margin-bottom: 6px;
+}
+
+/* Contact lines — quiet, functional. Email is a live mailto. */
+.doc-contributor__contact {
+  font-family: var(--doc-font-body);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--doc-ink);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+a.doc-contributor__contact:hover { color: var(--doc-accent); }
+
+@media (max-width: 860px) {
+  .doc-contributors__grid { grid-template-columns: 1fr; gap: 12px; }
+}
