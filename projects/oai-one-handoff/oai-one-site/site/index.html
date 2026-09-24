@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OAI — Site Experience</title>
+<!-- Hand-built, matching the visual system build-index.py generates for
+     ../index.html (topbar / search / card grid). Not script-generated:
+     there is one item today. If this roster grows into several site
+     prototypes, port it into a build-site-index.py sibling to build-index.py
+     instead of hand-editing further. -->
+<style>
+  :root{
+    --ink:#1b1d21; --muted:#6b6d7a; --faint:#9b9dac;
+    --line:#dddfe1; --blue:#1858ee; --bg:#f6f7fa; --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1440px; margin:0 auto; padding:28px 32px 96px}
+
+  .topbar{
+    display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center;
+    gap:16px; margin:0 0 4px;
+  }
+  .logo{
+    font-weight:800; letter-spacing:-.01em; font-size:17px;
+    color:var(--ink); text-decoration:none; white-space:nowrap;
+  }
+  .logo:hover{color:var(--blue)}
+  .logo:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+  h1.micro-label{
+    margin:0; min-width:0; font-size:10.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.16em; color:var(--faint);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center;
+  }
+  .topbar-actions{ justify-self:end; display:flex; align-items:center; gap:16px; }
+  .nav-swap{
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--muted); text-decoration:none; white-space:nowrap;
+  }
+  .nav-swap:hover{color:var(--blue)}
+  .nav-swap:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+  .search-toggle{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:34px; padding:0; border:1px solid transparent; border-radius:2px;
+    background:none; color:var(--muted); cursor:pointer;
+  }
+  .search-toggle:hover, .search-toggle[aria-expanded="true"]{
+    color:var(--blue); border-color:var(--line); background:var(--card);
+  }
+  .search-toggle:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+
+  .search-row{
+    visibility:hidden; max-height:0; opacity:0; overflow:hidden;
+    transition:max-height .22s ease, opacity .18s ease, margin .22s ease;
+  }
+  .search-row.open{visibility:visible; max-height:140px; opacity:1; margin:18px 0 26px}
+
+  .search{position:relative; max-width:520px; margin:0 auto 10px}
+  .search > svg{position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--faint); pointer-events:none}
+  #q{
+    width:100%; padding:13px 40px; font:inherit; font-size:14px; color:var(--ink);
+    background:var(--card); border:1px solid var(--line); border-radius:2px; outline:none;
+  }
+  #q::placeholder{color:var(--faint)}
+  #q:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(24,88,238,.12)}
+  #clear{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%); display:none;
+    border:0; background:none; cursor:pointer; color:var(--faint); font-size:18px;
+    line-height:1; padding:6px 8px;
+  }
+  #clear:hover{color:var(--ink)}
+  .count{font-size:11px; color:var(--faint); text-align:center; margin:0; min-height:14px}
+
+  .grid{
+    list-style:none; margin:0; padding:0;
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:22px;
+  }
+  .section + .section{margin-top:40px}
+  .section-label{
+    margin:0 0 14px; font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.16em; color:var(--faint);
+    padding-bottom:10px; border-bottom:1px solid var(--line);
+  }
+  .section.hidden{display:none}
+  .card{
+    background:var(--card); border:1px solid var(--line); display:flex; flex-direction:column;
+    transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  }
+  .card:hover{border-color:#c3c9d4; box-shadow:0 4px 16px rgba(19,21,23,.08); transform:translateY(-2px)}
+
+  .shot{display:block; aspect-ratio:4/3; overflow:hidden; background:var(--bg); border-bottom:1px solid var(--line)}
+  .shot img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block}
+
+  .meta{padding:14px 16px 12px; display:flex; flex-direction:column; gap:10px; flex:1}
+  .open{display:flex; flex-direction:column; gap:3px; text-decoration:none; color:inherit}
+  .t{font-size:14px; font-weight:600; line-height:1.3}
+  .open:hover .t{color:var(--blue)}
+  .v{font-size:11.5px; color:var(--muted)}
+  .desc{margin:0; font-size:12.5px; line-height:1.5; color:var(--muted)}
+  .foot{margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:10px;
+        padding-top:10px; border-top:1px solid var(--line)}
+  .d{font-size:11.5px; color:var(--faint); font-variant-numeric:tabular-nums}
+  .go{
+    display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600;
+    color:var(--blue); text-decoration:none;
+  }
+  .go svg{transition:transform .15s ease}
+  .card:hover .go svg{transform:translateX(2px)}
+  .go:focus-visible, .open:focus-visible, #q:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+
+  .empty{display:none; padding:40px 18px; font-size:13px; color:var(--muted); text-align:center;
+         background:var(--card); border:1px solid var(--line)}
+  .empty.on{display:block}
+  footer{text-align:center; font-size:11px; color:var(--faint); margin-top:44px}
+
+  @media (max-width:600px){ .wrap{padding:40px 18px 72px} .grid{gap:16px} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="logo" href="../index.html">OMNI &#10022;</a>
+      <h1 class="micro-label">OAI - Site Experience</h1>
+      <div class="topbar-actions">
+        <a class="nav-swap" href="../index.html">Email &amp; Communications</a>
+        <button id="searchToggle" class="search-toggle" type="button" aria-expanded="false" aria-controls="searchRow" aria-label="Search site prototypes">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+            <circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="search-row" id="searchRow">
+      <div class="search">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" focusable="false">
+          <circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <input id="q" type="search" autocomplete="off" placeholder="Search site prototypes…" aria-label="Search site prototypes" aria-controls="results">
+        <button id="clear" type="button" aria-label="Clear search">&times;</button>
+      </div>
+      <p class="count" id="count" role="status" aria-live="polite"></p>
+    </div>
+
+    <div id="results">
+      <section class="section" data-section="site">
+        <h2 class="section-label">Site</h2>
+        <ul class="grid">
+          <li class="card" data-search="chat hat omni+ prototype canvas graphics video audio text generation workspace">
+            <a class="shot" href="chat-hat/index.html" tabindex="-1" aria-hidden="true">
+              <img src="chat-hat/cover-tablets-poster.jpg" width="900" height="675" alt="" loading="lazy" decoding="async">
+            </a>
+            <div class="meta">
+              <a class="open" href="chat-hat/index.html">
+                <span class="t">Chat Hat — OMNI+</span>
+                <span class="v">Prototype</span>
+              </a>
+              <p class="desc">The full chat‑canvas workspace prototype — graphics, video, audio and text generation in one connected surface.</p>
+              <div class="foot">
+                <time class="d" datetime="2026-09-03">3 Sep 2026</time>
+                <a class="go" href="chat-hat/index.html">
+                  Open
+                  <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+      <p class="empty" id="empty">No site prototypes match that search.</p>
+    </div>
+
+    <footer>&copy; 2026 Omnicom Group Inc.</footer>
+  </div>
+
+<script>
+(function () {
+  var toggle = document.getElementById('searchToggle'),
+      row = document.getElementById('searchRow'),
+      q = document.getElementById('q'),
+      clear = document.getElementById('clear'),
+      count = document.getElementById('count'),
+      empty = document.getElementById('empty'),
+      cards = [].slice.call(document.querySelectorAll('.card')),
+      sections = [].slice.call(document.querySelectorAll('.section')),
+      total = cards.length;
+
+  function label(n) {
+    return n === total
+      ? total + (total === 1 ? ' item' : ' items')
+      : n + ' of ' + total + ' items';
+  }
+
+  function filter() {
+    var term = q.value.trim().toLowerCase(), shown = 0;
+    var parts = term ? term.split(/\s+/) : [];
+    cards.forEach(function (card) {
+      var hay = card.getAttribute('data-search');
+      var hit = parts.every(function (p) { return hay.indexOf(p) !== -1; });
+      card.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    sections.forEach(function (sec) {
+      var any = [].slice.call(sec.querySelectorAll('.card'))
+        .some(function (c) { return c.style.display !== 'none'; });
+      sec.classList.toggle('hidden', !any);
+    });
+    empty.classList.toggle('on', shown === 0);
+    count.textContent = label(shown);
+    clear.style.display = term ? 'block' : 'none';
+  }
+
+  function openSearch() {
+    toggle.setAttribute('aria-expanded', 'true');
+    row.classList.add('open');
+    q.focus();
+  }
+  function closeSearch() {
+    toggle.setAttribute('aria-expanded', 'false');
+    row.classList.remove('open');
+    if (q.value) { q.value = ''; filter(); }
+  }
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    toggle.getAttribute('aria-expanded') === 'true' ? closeSearch() : openSearch();
+  });
+  document.addEventListener('click', function (e) {
+    if (toggle.getAttribute('aria-expanded') === 'true' && !row.contains(e.target)) closeSearch();
+  });
+
+  q.addEventListener('input', filter);
+  q.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (q.value) { q.value = ''; filter(); }
+    else { closeSearch(); toggle.focus(); }
+  });
+  clear.addEventListener('click', function () { q.value = ''; filter(); q.focus(); });
+  filter();
+})();
+</script>
+</body>
+</html>
